@@ -23,7 +23,6 @@ import { z, ZodString } from "zod";
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
-import { clearUser, loadUserData } from "./collections/user";
 import { updateFromServer as updateConfigFromServer } from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
@@ -45,6 +44,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
+import { clearUser, loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";

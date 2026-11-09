@@ -12,7 +12,7 @@ import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import { SnapshotResult } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { insertLocalResult } from "./collections/results";
-import { addXp, getUser, recordResult, setStreak } from "./collections/user";
+import { addXp, getUser, recordResult, setStreak } from "./states/user";
 import { setLastResult } from "./states/last-result";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { FunboxMetadata } from "@monkeytype/funbox";
@@ -20,7 +20,7 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 let testActivityByYear: Record<string, TestActivityCalendar> | undefined;
 
-/** Read-only shim over the user collection, until readers use `getUser()`. */
+/** Read-only shim over the user store, until readers use `getUser()`. */
 export const getSnapshot = getUser;
 
 export function getLocalPB<M extends Mode>(

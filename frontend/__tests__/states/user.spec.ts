@@ -18,7 +18,7 @@ import {
   updateLbMemory,
   updateName,
   updateProfile,
-} from "../../src/ts/collections/user";
+} from "../../src/ts/states/user";
 import {
   getDefaultSnapshot,
   Snapshot,
@@ -97,12 +97,6 @@ afterEach(() => {
 });
 
 describe("getUser", () => {
-  it("returns the row without collection props", () => {
-    expect(Object.keys(getUser() ?? {}).some((k) => k.startsWith("$"))).toBe(
-      false,
-    );
-  });
-
   it("is undefined without a user", () => {
     clearUser();
     expect(getUser()).toBeUndefined();
@@ -112,7 +106,7 @@ describe("getUser", () => {
 describe("loadUserData", () => {
   afterEach(() => setUserId(null));
 
-  it("downloads the user into the row", async () => {
+  it("downloads the user into the store", async () => {
     clearUser();
     setUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(

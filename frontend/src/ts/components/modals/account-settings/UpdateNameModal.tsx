@@ -7,10 +7,10 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import { updateName } from "../../../collections/user";
 import { getSnapshot } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { updateName } from "../../../states/user";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {

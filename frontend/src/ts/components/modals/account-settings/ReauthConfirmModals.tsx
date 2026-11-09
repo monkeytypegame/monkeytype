@@ -6,11 +6,11 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import { resetPersonalBests } from "../../../collections/user";
 import { resetConfig } from "../../../config/lifecycle";
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
+import { resetPersonalBests } from "../../../states/user";
 import FileStorage from "../../../utils/file-storage";
 import { reloadAfter } from "../../../utils/misc";
 

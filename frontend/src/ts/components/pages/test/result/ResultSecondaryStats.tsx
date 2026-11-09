@@ -11,7 +11,6 @@ import {
 } from "solid-js";
 
 import { useTagsLiveQuery } from "../../../../collections/tags";
-import { getUser, setQuoteFavorite } from "../../../../collections/user";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
@@ -29,6 +28,7 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
+import { getUser, setQuoteFavorite } from "../../../../states/user";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";

@@ -3,7 +3,7 @@ import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
 import { configEvent } from "../events/config";
 import * as DB from "../db";
-import { setQuoteFavorite } from "../collections/user";
+import { setQuoteFavorite } from "../states/user";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import { QuoteData } from "@monkeytype/schemas/quotes";

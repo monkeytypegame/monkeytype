@@ -13,10 +13,10 @@ import {
   findConnectionToUser,
   rejectConnection,
 } from "../../../collections/connections";
-import { getUser } from "../../../collections/user";
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getUser } from "../../../states/user";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";

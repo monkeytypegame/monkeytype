@@ -1,10 +1,10 @@
 import { Show } from "solid-js";
 
 import Ape from "../../../ape";
-import { getUser } from "../../../collections/user";
 import { showLoaderBar } from "../../../states/loader-bar";
 import { showModal } from "../../../states/modals";
 import { showErrorNotification } from "../../../states/notifications";
+import { getUser } from "../../../states/user";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import {

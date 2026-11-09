@@ -7,7 +7,6 @@ import {
   Show,
 } from "solid-js";
 
-import { updateLbMemory } from "../../../collections/user";
 import { getSnapshot } from "../../../db";
 import { queryClient } from "../../../queries";
 import {
@@ -17,6 +16,7 @@ import {
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { isAuthenticated } from "../../../states/core";
 import { pageSize, Selection } from "../../../states/leaderboard-selection";
+import { updateLbMemory } from "../../../states/user";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";

@@ -1,7 +1,6 @@
 import { For, JSXElement, onCleanup, onMount, Show } from "solid-js";
 import { debounce } from "throttle-debounce";
 
-import { getUser } from "../../../collections/user";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import {
@@ -12,6 +11,7 @@ import {
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
 import { isFocusMode } from "../../../states/test";
+import { getUser } from "../../../states/user";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";

@@ -13,72 +13,44 @@ import {
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
-import {
-  createCollection,
-  localOnlyCollectionOptions,
-} from "@tanstack/solid-db";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
-import { createStore, reconcile } from "solid-js/store";
+import { createStore, produce, reconcile, unwrap } from "solid-js/store";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import { Snapshot, SnapshotResult } from "../constants/default-snapshot";
-import { isAuthenticated } from "../states/core";
-import { setXpBarData } from "../states/header";
 import { SnapshotInitError } from "../utils/snapshot-init-error";
 import { DeepReadonly } from "../utils/types";
+import { isAuthenticated } from "./core";
+import { setXpBarData } from "./header";
 
 /**
- * The signed-in user's data, a single row keyed by uid. Local only: the auth
- * flow loads it, sign-out clears it.
+ * The signed-in user's data. The auth flow loads it, sign-out clears it.
+ * Written only through the named functions below.
  */
-const userCollection = createCollection(
-  localOnlyCollectionOptions<Snapshot, string>({
-    id: "user",
-    getKey: (it) => it.uid,
-  }),
-);
-
-const [mirror, setMirror] = createStore<{ value: Snapshot | undefined }>({
+const [store, setStore] = createStore<{ value: Snapshot | undefined }>({
   value: undefined,
 });
 
-/** A copy of the row, without TanStack's virtual props (`$synced`...). */
-function copyRow(): Snapshot | undefined {
-  const row = userCollection.toArray[0];
-  if (row === undefined) return undefined;
-  return Object.fromEntries(
-    Object.entries(structuredClone(row)).filter(
-      ([key]) => !key.startsWith("$"),
-    ),
-  ) as Snapshot;
+/** A plain copy of the user, detached from the store. */
+function copyUser(): Snapshot | undefined {
+  const user = unwrap(store).value;
+  return user === undefined ? undefined : structuredClone(user);
 }
-
-userCollection.subscribeChanges(
-  () => {
-    const row = copyRow();
-    if (row === undefined) {
-      setMirror("value", undefined);
-    } else {
-      setMirror("value", reconcile(row, { merge: true }));
-    }
-  },
-  { includeInitialState: true },
-);
 
 /**
  * The signed-in user, `undefined` while signed out, loading or after a failed
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
 export function getUser(): DeepReadonly<Snapshot> | undefined {
-  return mirror.value;
+  return store.value;
 }
 
 // --- Loading ---
 
 /**
- * Downloads the user and replaces the row. Throws `SnapshotInitError` if the
+ * Downloads the user and replaces the stored one. Throws `SnapshotInitError` if the
  * request fails, leaving no user.
  */
 export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
@@ -138,8 +110,7 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
       lbMemory: userData.lbMemory,
     };
 
-    clearUser();
-    userCollection.insert(row);
+    setStore("value", reconcile(row, { merge: true }));
   } catch (e) {
     clearUser();
     throw e;
@@ -149,16 +120,19 @@ export async function loadUserData(): Promise<DeepReadonly<Snapshot>> {
 }
 
 export function clearUser(): void {
-  const keys = [...userCollection.keys()];
-  if (keys.length > 0) userCollection.delete(keys);
+  setStore("value", undefined);
 }
 
 // --- Direct writes: mirror what the server already did ---
 
 function write(recipe: (user: Snapshot) => void): void {
-  const uid = userCollection.toArray[0]?.uid;
-  if (uid === undefined) return;
-  userCollection.update(uid, recipe);
+  if (store.value === undefined) return;
+  setStore(
+    "value",
+    produce((user) => {
+      if (user !== undefined) recipe(user);
+    }),
+  );
 }
 
 export function recordResult(
@@ -275,20 +249,17 @@ export async function updateLbMemory<M extends Mode>(
  * to the values to keep (the server may change them); the recipe is applied
  * again with those. On failure the fields the recipe changed are rolled back,
  * except those changed again since (by a direct write or another action),
- * which keep the newer value. Both are direct writes, not a TanStack
- * optimistic action: while one of those is pending, direct writes (eg.
- * `addXp`) are held back and hidden from it, so it would drop them when
- * keeping its row. The recipe must be idempotent.
+ * which keep the newer value. The recipe must be idempotent.
  */
 function optimisticAction<T>(
   recipe: (user: Snapshot, vars: T) => void,
   request: (vars: T) => Promise<T>,
 ): (vars: T) => Promise<void> {
   return async (vars) => {
-    const before = copyRow();
+    const before = copyUser();
     if (before === undefined) throw new Error("Not signed in");
     write((user) => recipe(user, vars));
-    const written = copyRow() ?? before;
+    const written = copyUser() ?? before;
     const same = (a: unknown, b: unknown): boolean =>
       JSON.stringify(a) === JSON.stringify(b);
     const changed = (
@@ -502,9 +473,8 @@ function matchesPb(
 }
 
 export const __testing = {
-  /** Replaces the row without a download, for tests. */
+  /** Replaces the user without a download, for tests. */
   setUser(user: Snapshot | undefined): void {
-    clearUser();
-    if (user !== undefined) userCollection.insert(user);
+    setStore("value", user === undefined ? undefined : structuredClone(user));
   },
 };

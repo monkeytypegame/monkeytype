@@ -45,7 +45,7 @@ import {
   toSelection,
 } from "../states/leaderboard-selection";
 import { SettingsSearchSchema } from "../states/settings-highlight";
-import { getUser } from "../collections/user";
+import { getUser } from "../states/user";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth } from "./create-router-auth";
 import {

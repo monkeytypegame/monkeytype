@@ -87,7 +87,6 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
-import { __testing as userTesting } from "../../src/ts/collections/user";
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
@@ -110,6 +109,7 @@ import {
   setResultCalculating,
   setTestActive,
 } from "../../src/ts/states/test";
+import { __testing as userTesting } from "../../src/ts/states/user";
 import { canStartTest } from "../../src/ts/test/test-page-state";
 
 /** A page's content mounting, and whether it was in the document by then. */

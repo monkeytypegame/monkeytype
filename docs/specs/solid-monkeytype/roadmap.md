@@ -66,7 +66,7 @@ Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, 
 |---|---|---|---|---|---|
 | [ ] | H1 | XS · merge | Merge **#8490** (app-shell test speed-up) | none | Faster harness for every later step; merge before TH1 if TH1 extends the app-shell harness |
 | [ ] | H2 | XS · close | Close **#8031** | none | Superseded by master's PractiseWordsModal |
-| [ ] | H3 | XS · close | Close **#7373** and **#7717** | none | Superseded by the single-row user collection (U1) |
+| [ ] | H3 | XS · close | Close **#7373** and **#7717** | none | Superseded by the user store (U1) |
 | [ ] | H4 | XS · comment | Comment on **#7787** | none | To be redone as EP3 on top of the render store |
 | [x] | H5 | S · commit | Add glossary terms: test settings, restart-required setting, theme attributes, test mode, funbox, finish, fail, result, active tags, pace caret, focus mode | none | Test engine, render store and layout pass are code structure: defined in the spec, not the glossary |
 
@@ -108,8 +108,8 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
-| [x] | U1 | L · PR | Single-row user collection with `getUser()` and named writes (direct writes for server-side effects, optimistic actions for user changes, incl. quote ratings); convert **all writers** (result save, xp, badges, inbox count, lb memory, streak offset, quote rate, favourite quotes, edit profile, update name, unlink Discord, Discord OAuth, auth); delete the reactive mirror; `DB.getSnapshot()` becomes a read-only shim over the row | none | Done: `collections/user.ts` (local-only collection; `loadUserData`/`clearUser` for auth); `DB.getSnapshot = getUser`; last-result signal in `states/last-result.ts` |
-| [ ] | U2 | M · PR | Activity calendar (row already holds plain activity data; the per-year cache sits in `db.ts`): the calendar becomes a Solid component; delete the imperative test-activity modules | U1 (data shape) | Can share a PR with U1 |
+| [x] | U1 | L · PR | User store with `getUser()` and named writes (direct writes for server-side effects, optimistic actions for user changes, incl. quote ratings); convert **all writers** (result save, xp, badges, inbox count, lb memory, streak offset, quote rate, favourite quotes, edit profile, update name, unlink Discord, Discord OAuth, auth); delete the reactive mirror; `DB.getSnapshot()` becomes a read-only shim over the store | none | Done: `states/user.ts` (one Solid store, no collection, spec Q30; `loadUserData`/`clearUser` for auth); `DB.getSnapshot = getUser`; last-result signal in `states/last-result.ts` |
+| [ ] | U2 | M · PR | Activity calendar (user store already holds plain activity data; the per-year cache sits in `db.ts`): the calendar becomes a Solid component; delete the imperative test-activity modules | U1 (data shape) | Can share a PR with U1 |
 | [ ] | U3 | M · PR | Remove the snapshot-updated auth event (PSA, last-signed-out-result modal read `getUser()`); auth becomes a signal the router reads, with the user-data load as state (loading/loaded/failed) plus `reloadUserData()` (reruns `loadUserData()`) replacing the event's promise; delete the auth bus | U1 | |
 | [ ] | U4 | S · commit per area | Readers move from the `DB.getSnapshot()` shim to `getUser()`, by area; the last PR deletes the shim and the snapshot code in `db.ts` | U1 | Parallel by area |
 | [ ] | U5 | M · PR | Tags, presets and custom themes get the `getUser()` pattern: plain getters backed by a module-level reactive mirror, replacing their live-query hooks (keep `gcTime: Infinity`). Rewrite the non-test `__nonReactive` callers as Solid code reading the getters: commandline tag/preset lists, the custom-themes check in config metadata, the tag PB helpers in `db.ts` (or they go with U4) | none | Test-page callers go with T6a/T6c |
