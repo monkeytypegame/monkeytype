@@ -543,7 +543,7 @@ async function init(): Promise<boolean> {
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
     wordsHaveNumbers = gen.hasNumbers;
-    wordsKoreanStatus = gen.koreanStatus;
+    wordsKoreanStatus = gen.hasKorean;
     ({ allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();

@@ -605,7 +605,7 @@ type TestWordFacts = {
   hasTab: boolean;
   hasNewline: boolean;
   hasNumbers: boolean;
-  koreanStatus: boolean;
+  hasKorean: boolean;
 };
 
 type GenerateWordsReturn = TestWordFacts & {
@@ -628,7 +628,7 @@ export function getTestWordFacts(wordLists: string[][]): TestWordFacts {
     hasTab: text.includes("\t"),
     hasNewline: text.includes("\n"),
     hasNumbers: /\p{N}/u.test(text),
-    koreanStatus: koreanRegex.test(text),
+    hasKorean: koreanRegex.test(text),
   };
 }
 
@@ -653,7 +653,7 @@ export async function generateWords(
     hasTab: false,
     hasNewline: false,
     hasNumbers: false,
-    koreanStatus: false,
+    hasKorean: false,
     allJoiningScript: language.joiningScript ?? false,
   };
 

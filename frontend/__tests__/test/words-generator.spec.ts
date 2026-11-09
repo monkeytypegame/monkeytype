@@ -7,7 +7,7 @@ describe("words-generator", () => {
       hasTab: false,
       hasNewline: false,
       hasNumbers: false,
-      koreanStatus: false,
+      hasKorean: false,
     };
 
     it("finds nothing in plain words", () => {
@@ -20,9 +20,9 @@ describe("words-generator", () => {
       ["a digit", "abc1", { hasNumbers: true }],
       ["an Arabic-Indic digit", "٣", { hasNumbers: true }],
       ["a Devanagari digit", "३", { hasNumbers: true }],
-      ["a Hangul syllable", "안녕", { koreanStatus: true }],
-      ["decomposed Hangul", "안녕".normalize("NFD"), { koreanStatus: true }],
-      ["compatibility jamo", "ㅎ", { koreanStatus: true }],
+      ["a Hangul syllable", "안녕", { hasKorean: true }],
+      ["decomposed Hangul", "안녕".normalize("NFD"), { hasKorean: true }],
+      ["compatibility jamo", "ㅎ", { hasKorean: true }],
     ])("finds %s", (_name, word, expected) => {
       expect(getTestWordFacts([[word]])).toEqual({ ...none, ...expected });
     });
@@ -33,7 +33,7 @@ describe("words-generator", () => {
       expect(getTestWordFacts([generated, wordset])).toEqual({
         ...none,
         hasNumbers: true,
-        koreanStatus: true,
+        hasKorean: true,
       });
     });
   });
