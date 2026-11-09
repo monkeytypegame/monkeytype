@@ -172,12 +172,12 @@ export async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    const user = await loadUserData();
+    const userData = await loadUserData();
     //TODO: preload collections for now, remove when __nonReactive is removed from collections
     await waitForPresetsReady();
     await waitForTagsReady();
 
-    void Sentry.setUser(user.uid, user.name);
+    void Sentry.setUser(userData.uid, userData.name);
 
     await updateConfigFromServer();
     return true;
