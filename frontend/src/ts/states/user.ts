@@ -125,7 +125,7 @@ export function clearUser(): void {
 
 // --- Direct writes: mirror what the server already did ---
 
-function write(recipe: (user: UserData) => void): void {
+function updateUserStore(recipe: (user: UserData) => void): void {
   if (store.value === undefined) return;
   setStore(
     "value",
@@ -139,7 +139,7 @@ export function recordResult(
   result: UserResult<Mode>,
   options: { isPb: boolean },
 ): void {
-  write((user) => {
+  updateUserStore((user) => {
     if (user.testActivity !== undefined) {
       incrementTestActivity(user.testActivity, result.timestamp);
     }
@@ -157,7 +157,7 @@ export function recordResult(
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
   if (getUser() === undefined) return;
-  write((user) => {
+  updateUserStore((user) => {
     user.xp += xp;
   });
   setXpBarData({
@@ -168,27 +168,27 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function setStreak(streak: number): void {
-  write((user) => {
+  updateUserStore((user) => {
     user.streak = streak;
     if (streak > user.maxStreak) user.maxStreak = streak;
   });
 }
 
 export function setInboxUnreadSize(size: number): void {
-  write((user) => {
+  updateUserStore((user) => {
     user.inboxUnreadSize = size;
   });
 }
 
 export function addBadge(badge: Badge): void {
-  write((user) => {
+  updateUserStore((user) => {
     user.inventory ??= { badges: [] };
     user.inventory.badges.push(badge);
   });
 }
 
 export function resetPersonalBests(): void {
-  write((user) => {
+  updateUserStore((user) => {
     user.personalBests = {
       time: {},
       words: {},
@@ -203,7 +203,7 @@ export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  write((user) => {
+  updateUserStore((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
@@ -228,7 +228,7 @@ export async function updateLbMemory<M extends Mode>(
   if (user === undefined) return;
 
   const current = user.lbMemory?.time?.[timeMode2]?.[language];
-  write((user) => {
+  updateUserStore((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };
     user.lbMemory.time[timeMode2] ??= {};
@@ -258,7 +258,7 @@ function optimisticAction<T>(
   return async (vars) => {
     const before = copyUser();
     if (before === undefined) throw new Error("Not signed in");
-    write((user) => recipe(user, vars));
+    updateUserStore((user) => recipe(user, vars));
     const written = copyUser() ?? before;
     const same = (a: unknown, b: unknown): boolean =>
       JSON.stringify(a) === JSON.stringify(b);
@@ -270,7 +270,7 @@ function optimisticAction<T>(
     try {
       kept = await request(vars);
     } catch (e) {
-      write((user) => {
+      updateUserStore((user) => {
         for (const key of changed) {
           if (!same(user[key], written[key])) continue;
           (user as Record<string, unknown>)[key] = before[key];
@@ -278,7 +278,7 @@ function optimisticAction<T>(
       });
       throw e;
     }
-    write((user) => recipe(user, kept));
+    updateUserStore((user) => recipe(user, kept));
   };
 }
 
@@ -289,19 +289,15 @@ function throwIfFailed(response: {
   if (response.status !== 200) throw new Error(response.body.message);
 }
 
-const updateNameAction = optimisticAction<{ name: string }>(
-  (user, { name }) => {
+export const updateName = optimisticAction<string>(
+  (user, name) => {
     user.name = name;
   },
-  async (vars) => {
-    throwIfFailed(await Ape.users.updateName({ body: { name: vars.name } }));
-    return vars;
+  async (name) => {
+    throwIfFailed(await Ape.users.updateName({ body: { name } }));
+    return name;
   },
 );
-
-export async function updateName(name: string): Promise<void> {
-  await updateNameAction({ name });
-}
 
 const unlinkDiscordAction = optimisticAction<undefined>(
   (user) => {
@@ -310,7 +306,6 @@ const unlinkDiscordAction = optimisticAction<undefined>(
   },
   async () => {
     throwIfFailed(await Ape.users.unlinkDiscord());
-    return undefined;
   },
 );
 
@@ -318,23 +313,21 @@ export async function unlinkDiscord(): Promise<void> {
   await unlinkDiscordAction(undefined);
 }
 
-const setStreakHourOffsetAction = optimisticAction<{ hourOffset: number }>(
-  (user, { hourOffset }) => {
+export const setStreakHourOffset = optimisticAction<number>(
+  (user, hourOffset) => {
     user.streakHourOffset = hourOffset;
   },
-  async (vars) => {
-    throwIfFailed(await Ape.users.setStreakHourOffset({ body: vars }));
-    return vars;
+  async (hourOffset) => {
+    throwIfFailed(
+      await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
+    );
+    return hourOffset;
   },
 );
 
-export async function setStreakHourOffset(hourOffset: number): Promise<void> {
-  await setStreakHourOffsetAction({ hourOffset });
-}
-
 type QuoteRating = { language: Language; quoteId: number; rating: number };
 
-const rateQuoteAction = optimisticAction<QuoteRating>(
+export const rateQuote = optimisticAction<QuoteRating>(
   (user, { language, quoteId, rating }) => {
     user.quoteRatings ??= {};
     user.quoteRatings[language] ??= {};
@@ -346,13 +339,9 @@ const rateQuoteAction = optimisticAction<QuoteRating>(
   },
 );
 
-export async function rateQuote(rating: QuoteRating): Promise<void> {
-  await rateQuoteAction(rating);
-}
-
 type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
-const setQuoteFavoriteAction = optimisticAction<QuoteFavorite>(
+export const setQuoteFavorite = optimisticAction<QuoteFavorite>(
   (user, { language, quoteId, favorite }) => {
     const list = user.favoriteQuotes?.[language] ?? [];
     const without = list.filter((id) => id !== quoteId);
@@ -370,27 +359,18 @@ const setQuoteFavoriteAction = optimisticAction<QuoteFavorite>(
   },
 );
 
-export async function setQuoteFavorite(favorite: QuoteFavorite): Promise<void> {
-  await setQuoteFavoriteAction(favorite);
-}
-
 type ProfileUpdate = {
   details: UserProfileDetails;
   selectedBadgeId: number;
 };
 
-function applyProfile(
-  user: UserData,
-  { details, selectedBadgeId }: ProfileUpdate,
-): void {
-  user.details = details;
-  for (const badge of user.inventory?.badges ?? []) {
-    badge.selected = badge.id === selectedBadgeId;
-  }
-}
-
-const updateProfileAction = optimisticAction<ProfileUpdate>(
-  applyProfile,
+export const updateProfile = optimisticAction<ProfileUpdate>(
+  (user, { details, selectedBadgeId }) => {
+    user.details = details;
+    for (const badge of user.inventory?.badges ?? []) {
+      badge.selected = badge.id === selectedBadgeId;
+    }
+  },
   async (update) => {
     const response = await Ape.users.updateProfile({
       body: { ...update.details, selectedBadgeId: update.selectedBadgeId },
@@ -400,10 +380,6 @@ const updateProfileAction = optimisticAction<ProfileUpdate>(
     return { ...update, details: response.body.data ?? update.details };
   },
 );
-
-export async function updateProfile(update: ProfileUpdate): Promise<void> {
-  await updateProfileAction(update);
-}
 
 // --- Helpers ---
 
