@@ -1,64 +1,27 @@
-import * as TestUI from "../../test/test-ui";
-import {
-  isComposing,
-  isTestActive,
-  setCompositionData,
-} from "../../states/test";
+import { isComposing } from "../../states/test";
 import { isDeadKeyPending, setDeadKeyPending } from "../state";
 
-type KeyboardLayoutMap = { get(code: string): string | undefined };
-type NavigatorWithKeyboard = Navigator & {
-  keyboard?: { getLayoutMap?: () => Promise<KeyboardLayoutMap> };
-};
+// On Windows, dead keys don't fire composition events like on Linux,
+// only a keydown with key "Dead", so we track the pending accent ourselves.
 
-let layoutMap: KeyboardLayoutMap | undefined;
-
-// shown when the browser can't tell us the accent (eg. brave blocks getLayoutMap)
-const PLACEHOLDER = "◌";
-
-async function getDeadKeyChar(event: KeyboardEvent): Promise<string> {
-  // layout map only knows the unmodified character of a key
-  if (event.shiftKey || event.altKey || event.ctrlKey) return "";
-  try {
-    layoutMap ??= await (
-      navigator as NavigatorWithKeyboard
-    ).keyboard?.getLayoutMap?.();
-    return layoutMap?.get(event.code) ?? "";
-  } catch {
-    return "";
-  }
-}
-
-/**
- * On Windows, dead keys don't fire composition events like on Linux,
- * only a keydown with key "Dead". Show the accent as pending composition.
- */
-export async function onDeadKeyDown(event: KeyboardEvent): Promise<void> {
+export function onDeadKeyDown(): void {
   if (isComposing()) return;
   setDeadKeyPending(true);
-  if (!isTestActive()) return;
-  const char = (await getDeadKeyChar(event)) || PLACEHOLDER;
-  // another key may have resolved the dead key while we were waiting
-  if (!isDeadKeyPending()) return;
-  setCompositionData(char);
-  TestUI.afterTestCompositionUpdate();
 }
 
-export function clearDeadKey(rerender = false): void {
-  if (!isDeadKeyPending()) return;
+export function clearDeadKey(): void {
   setDeadKeyPending(false);
-  if (isComposing()) return;
-  setCompositionData("");
-  if (rerender && isTestActive()) TestUI.afterTestCompositionUpdate();
 }
 
 /**
- * Backspace while a dead key is pending should only cancel the accent.
+ * Backspace while a dead key is pending only cancels the accent, like the OS
+ * does. Browsers would otherwise delete the previous letter (Chromium) or
+ * insert the accent (Firefox).
  * Returns true if the backspace was consumed.
  */
 export function cancelDeadKeyOnBackspace(event: KeyboardEvent): boolean {
   if (!isDeadKeyPending() || isComposing()) return false;
   event.preventDefault();
-  clearDeadKey(true);
+  clearDeadKey();
   return true;
 }

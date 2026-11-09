@@ -171,11 +171,15 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   }
 
   if (event.key === "Dead") {
-    await onDeadKeyDown(event);
+    onDeadKeyDown();
     return;
   }
 
-  if (event.key === "Backspace" && cancelDeadKeyOnBackspace(event)) {
+  // firefox reports the accent as the key, so check the code too
+  if (
+    (event.key === "Backspace" || event.code === "Backspace") &&
+    cancelDeadKeyOnBackspace(event)
+  ) {
     return;
   }
 
