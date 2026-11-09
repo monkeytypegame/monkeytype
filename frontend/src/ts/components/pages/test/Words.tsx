@@ -85,15 +85,15 @@ export function Words(props: {
 
   return (
     <>
-      <CaretElement
-        kind="paceCaret"
+      <Caret
+        id="paceCaret"
         ref={(el) => (paceCaretRef = el)}
         caretStyle={getConfig.paceCaretStyle}
         hidden={paceCaretTarget() === undefined}
         debug={isCaretDebug()}
       />
-      <CaretElement
-        kind="caret"
+      <Caret
+        id="caret"
         ref={(el) => (caretRef = el)}
         caretStyle={getConfig.caretStyle}
         hidden={!layout.isCaretShown()}
@@ -158,8 +158,8 @@ export function Words(props: {
  * A caret element (#caret, #paceCaret). Words' layout moves it through its
  * ref; this renders its style class, visibility and blinking.
  */
-function CaretElement(props: {
-  kind: "caret" | "paceCaret";
+function Caret(props: {
+  id: string;
   ref: (el: HTMLDivElement) => void;
   caretStyle: CaretStyle;
   hidden: boolean;
@@ -170,9 +170,9 @@ function CaretElement(props: {
 }): JSXElement {
   return (
     <div
-      id={props.kind}
+      id={props.id}
       ref={props.ref}
-      data-ui-element={props.kind}
+      data-ui-element={props.id}
       // not cn: tailwind-merge drops a style class like block next to hidden
       class={clsx("full-width", props.caretStyle, {
         hidden: props.hidden,
