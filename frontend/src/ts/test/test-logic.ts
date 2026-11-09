@@ -121,6 +121,7 @@ import {
   setCrownType,
 } from "../states/result";
 import { blurInputElement, setInputElementValue } from "../input/input-element";
+import { setDeadKeyPending } from "../input/state";
 import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
@@ -216,6 +217,7 @@ function resetTestState(): void {
   clearQuoteStats();
   setComposing(false);
   setCompositionData("");
+  setDeadKeyPending(false);
   Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";

@@ -18,6 +18,7 @@ import {
 } from "../../states/test";
 import { getCurrentInput } from "../../test/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
+import { clearDeadKey } from "../helpers/dead-key";
 
 export async function onBeforeInput(event: InputEvent): Promise<void> {
   if (!(event instanceof InputEvent)) {
@@ -50,6 +51,9 @@ export async function onBeforeInput(event: InputEvent): Promise<void> {
       // insertLineBreak events dont have data set
       data = "\n";
     }
+
+    // the dead key resolved into this text (windows)
+    clearDeadKey();
 
     const preventDefault = onBeforeInsertText(data);
     if (preventDefault) {
