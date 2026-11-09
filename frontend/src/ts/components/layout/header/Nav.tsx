@@ -65,10 +65,10 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const user = getUserData();
-    if (user === undefined) return false;
+    const userData = getUserData();
+    if (userData === undefined) return false;
 
-    return user.inboxUnreadSize > 0;
+    return userData.inboxUnreadSize > 0;
   });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
