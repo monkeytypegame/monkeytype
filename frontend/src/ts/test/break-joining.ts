@@ -1,5 +1,6 @@
 import { Config } from "../config/store";
 import { isJoiningScript } from "../states/test";
+import { LETTER_SELECTOR } from "../states/word-elements";
 import { ElementWithUtils } from "../utils/dom";
 
 function canBreak(wordEl: ElementWithUtils): boolean {
@@ -12,7 +13,7 @@ function canBreak(wordEl: ElementWithUtils): boolean {
 function applyIfNeeded(wordEl: ElementWithUtils): void {
   if (!canBreak(wordEl)) return;
 
-  const letters = wordEl.qsa("letter");
+  const letters = wordEl.qsa(LETTER_SELECTOR);
   const firstTop = Math.floor(letters[0]?.getOffsetTop() ?? 0);
   const isWrapped = letters.some(
     (l) => Math.floor(l.getOffsetTop()) !== firstTop,

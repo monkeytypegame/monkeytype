@@ -11,7 +11,11 @@ import { showSimpleModal } from "../../../states/simple-modal";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 import { Section } from "./utils";
 
 export function BlockedUsersTab() {
@@ -44,7 +48,8 @@ export function BlockedUsersTab() {
 }
 
 function getColumns(): DataTableColumnDef<Connection>[] {
-  const defineColumn = createColumnHelper<Connection>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, Connection>()
+    .accessor;
   const cols = [
     defineColumn("initiatorName", {
       header: "name",

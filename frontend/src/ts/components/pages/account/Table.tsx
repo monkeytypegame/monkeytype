@@ -15,7 +15,11 @@ import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
@@ -93,7 +97,8 @@ function getColumns<M extends Mode>({
   tags: TagItem[];
   onMiniResultChartSelected(val: string): void;
 }): DataTableColumnDef<UserResult<M>>[] {
-  const defineColumn = createColumnHelper<UserResult<M>>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, UserResult<M>>()
+    .accessor;
   const columns = [
     defineColumn("isPb", {
       header: "",

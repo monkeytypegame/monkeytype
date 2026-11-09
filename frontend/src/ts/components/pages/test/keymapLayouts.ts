@@ -6,7 +6,8 @@ import {
 } from "@tanstack/solid-hotkeys";
 import { OneOf } from "../../../utils/types";
 
-const options: FormatDisplayOptions = {};
+// `parts?: false` selects the string-returning overload of formatForDisplay
+const options: FormatDisplayOptions & { parts?: false } = {};
 export const Ctrl = formatForDisplay("Ctrl", options);
 export const Shift = formatForDisplay("Shift", { platform: "mac" });
 export const Alt = formatForDisplay("Alt", options);

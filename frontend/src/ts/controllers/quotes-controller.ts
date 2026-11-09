@@ -1,7 +1,9 @@
 import { removeLanguageSize } from "../utils/strings";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
-import { configEvent } from "../events/config";
+import { createRoot } from "solid-js";
+import { getConfig } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 import { getUser, setQuoteFavorite } from "../states/user";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
@@ -213,10 +215,13 @@ class QuotesController {
 
 const quoteController = new QuotesController();
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "quoteLength") {
-    quoteController.updateQuoteQueue(newValue);
-  }
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  createEffectOn(
+    () => [...getConfig.quoteLength],
+    (value) => quoteController.updateQuoteQueue(value),
+    { defer: true },
+  );
 });
 
 export default quoteController;

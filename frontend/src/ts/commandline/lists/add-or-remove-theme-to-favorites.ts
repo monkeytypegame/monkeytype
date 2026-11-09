@@ -1,8 +1,11 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { randomTheme } from "../../controllers/theme-controller";
+import { getRandomTheme } from "../../states/theme";
 import { Command } from "../types";
+
+const getCurrentTheme = (): ThemeName =>
+  (getRandomTheme()?.name as ThemeName | undefined) ?? Config.theme;
 
 const commands: Command[] = [
   {
@@ -11,15 +14,14 @@ const commands: Command[] = [
     fa: { icon: "fa-star" },
     available: (): boolean => {
       return (
-        !Config.customTheme &&
-        !Config.favThemes.includes((randomTheme as ThemeName) ?? Config.theme)
+        !Config.customTheme && !Config.favThemes.includes(getCurrentTheme())
       );
     },
     exec: (): void => {
-      const { theme, favThemes, customTheme } = Config;
-      const themeToUpdate = randomTheme ?? theme;
-      if (!customTheme && !favThemes.includes(themeToUpdate as ThemeName)) {
-        setConfig("favThemes", [...favThemes, themeToUpdate as ThemeName]);
+      const { favThemes, customTheme } = Config;
+      const themeToUpdate = getCurrentTheme();
+      if (!customTheme && !favThemes.includes(themeToUpdate)) {
+        setConfig("favThemes", [...favThemes, themeToUpdate]);
       }
     },
   },
@@ -29,13 +31,12 @@ const commands: Command[] = [
     fa: { icon: "fa-star", variant: "regular" },
     available: (): boolean => {
       return (
-        !Config.customTheme &&
-        Config.favThemes.includes((randomTheme as ThemeName) ?? Config.theme)
+        !Config.customTheme && Config.favThemes.includes(getCurrentTheme())
       );
     },
     exec: (): void => {
-      const { theme, favThemes, customTheme } = Config;
-      const themeToUpdate = (randomTheme as ThemeName) ?? theme;
+      const { favThemes, customTheme } = Config;
+      const themeToUpdate = getCurrentTheme();
       if (!customTheme && favThemes.includes(themeToUpdate)) {
         setConfig("favThemes", [
           ...favThemes.filter((t) => t !== themeToUpdate),
