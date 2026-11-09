@@ -59,6 +59,9 @@ import {
 } from "@tanstack/solid-router";
 import { vi } from "vitest";
 
+import type { WordStatus } from "../../src/ts/components/pages/test/Word";
+import type { LetterStatus } from "../../src/ts/components/pages/test/WordLetter";
+
 import { TestPage } from "../../src/ts/components/pages/test/TestPage";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
@@ -70,6 +73,7 @@ import {
   isTestFinished,
   isTestRestarting,
 } from "../../src/ts/states/test";
+import { LETTER_SELECTOR } from "../../src/ts/states/word-elements";
 import * as CustomText from "../../src/ts/test/custom-text";
 
 // fake timers, then jsdom gaps: matchMedia (ad controller, on import; no
@@ -126,16 +130,6 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 
 export type TestPhase = "ready" | "active" | "finished";
 
-export type LetterState =
-  | "untyped"
-  | "correct"
-  | "incorrect"
-  | "extra"
-  | "dead"
-  | "deadCorrect";
-
-export type WordState = "active" | "typed" | "error" | "upcoming";
-
 export type RenderTestPageOptions = {
   /** The test shows exactly these words, in order (a custom test). */
   words?: string[];
@@ -154,8 +148,9 @@ export type TestPageHarness = {
   /** Moves the clock by `ms`, running timers and frames on the way. */
   advance: (ms: number) => Promise<void>;
   word: (index: number) => {
-    letters: () => { char: string; state: LetterState }[];
-    state: WordState;
+    letters: () => { char: string; state: LetterStatus }[];
+    state: WordStatus;
+    isActive: boolean;
   };
   phase: () => TestPhase;
   liveStats: () => {
@@ -165,23 +160,6 @@ export type TestPageHarness = {
     seconds?: number;
   };
 };
-
-function letterState(letter: Element): LetterState {
-  const has = (name: string): boolean => letter.classList.contains(name);
-  if (has("dead")) return has("correct") ? "deadCorrect" : "dead";
-  if (has("extra")) return "extra";
-  if (has("incorrect")) return "incorrect";
-  if (has("correct")) return "correct";
-  return "untyped";
-}
-
-function wordState(word: Element): WordState {
-  const has = (name: string): boolean => word.classList.contains(name);
-  if (has("active")) return "active";
-  if (has("error")) return "error";
-  if (has("typed")) return "typed";
-  return "upcoming";
-}
 
 async function frame(): Promise<void> {
   vi.advanceTimersToNextFrame();
@@ -229,7 +207,7 @@ export async function renderTestPage(
 
   const wordElement = (index: number): Element => {
     const el = container.querySelector(
-      `#words .word[data-wordindex="${index}"]`,
+      `#words [data-ui-element="word"][data-wordindex="${index}"]`,
     );
     if (el === null) throw new Error(`Word ${index} is not rendered`);
     return el;
@@ -254,14 +232,21 @@ export async function renderTestPage(
     },
     word: (index) => ({
       letters: () =>
-        [...wordElement(index).querySelectorAll(":scope > letter")].map(
-          (letter) => ({
-            char: letter.textContent ?? "",
-            state: letterState(letter),
-          }),
-        ),
+        [
+          ...wordElement(index).querySelectorAll<HTMLElement>(
+            `:scope > ${LETTER_SELECTOR}`,
+          ),
+        ].map((letter) => ({
+          char: letter.textContent ?? "",
+          state: letter.dataset["uiState"] as LetterStatus,
+        })),
       get state() {
-        return wordState(wordElement(index));
+        return (wordElement(index) as HTMLElement).dataset[
+          "uiState"
+        ] as WordStatus;
+      },
+      get isActive() {
+        return wordElement(index).hasAttribute("data-ui-active");
       },
     }),
     phase: () =>

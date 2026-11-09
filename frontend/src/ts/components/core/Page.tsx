@@ -12,6 +12,7 @@ import { Dynamic } from "solid-js/web";
 
 import type { PageName } from "../../router/routes";
 
+import { setVisiblePage } from "../../states/router";
 import { cn } from "../../utils/cn";
 import { capitalizeFirstLetter } from "../../utils/strings";
 import { LoadingPage } from "../pages/LoadingPage";
@@ -43,6 +44,7 @@ function Page(props: PageProps): JSXElement {
       if (isDisposed) return;
       if (pageEl?.isConnected === true) {
         frame = undefined;
+        setVisiblePage(props.name);
         setAttached(true);
         return;
       }

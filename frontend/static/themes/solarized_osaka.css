@@ -1,4 +1,4 @@
-#words {
+[data-ui-element="words"] {
   --correct-letter-color: var(--text-color);
   --untyped-letter-color: #586e75;
 }
