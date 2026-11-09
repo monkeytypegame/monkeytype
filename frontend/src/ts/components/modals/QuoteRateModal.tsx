@@ -43,8 +43,8 @@ export function QuoteRateModal(): JSXElement {
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
-    const user = getUserData();
-    const alreadyRated = user?.quoteRatings?.[quote.language]?.[quote.id];
+    const userData = getUserData();
+    const alreadyRated = userData?.quoteRatings?.[quote.language]?.[quote.id];
     if (isSafeNumber(alreadyRated)) {
       setRating(alreadyRated);
     }

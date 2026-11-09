@@ -147,14 +147,14 @@ class QuotesController {
   }
 
   getRandomFavoriteQuote(language: Language): Quote | null {
-    const user = getUserData();
-    if (!user) {
+    const userData = getUserData();
+    if (!userData) {
       return null;
     }
 
     const normalizedLanguage = removeLanguageSize(language);
     const quoteIds: string[] = [];
-    const { favoriteQuotes } = user;
+    const { favoriteQuotes } = userData;
 
     if (favoriteQuotes === undefined) {
       return null;
@@ -179,12 +179,12 @@ class QuotesController {
   }
 
   isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
-    const user = getUserData();
-    if (!user) {
+    const userData = getUserData();
+    if (!userData) {
       return false;
     }
 
-    const { favoriteQuotes } = user;
+    const { favoriteQuotes } = userData;
 
     if (favoriteQuotes === undefined) {
       return false;

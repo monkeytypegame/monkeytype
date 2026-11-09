@@ -225,10 +225,10 @@ export async function updateLbMemory<M extends Mode>(
 ): Promise<void> {
   if (mode2 === undefined || mode !== "time") return;
   const timeMode2 = mode2 as "15" | "60";
-  const user = getUserData();
-  if (user === undefined) return;
+  const userData = getUserData();
+  if (userData === undefined) return;
 
-  const current = user.lbMemory?.time?.[timeMode2]?.[language];
+  const current = userData.lbMemory?.time?.[timeMode2]?.[language];
   update((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };

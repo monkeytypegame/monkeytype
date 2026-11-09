@@ -25,20 +25,20 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const user = getUserData();
-  if (user === undefined) {
+  const userData = getUserData();
+  if (userData === undefined) {
     throw new Error("missing user in EditProfile");
   }
-  const badges = user.inventory?.badges ?? [];
+  const badges = userData.inventory?.badges ?? [];
   const form = createForm(() => ({
     defaultValues: {
-      bio: user.details?.bio ?? "",
-      keyboard: user.details?.keyboard ?? "",
-      github: user.details?.socialProfiles?.github ?? "",
-      twitter: user.details?.socialProfiles?.twitter ?? "",
-      website: user.details?.socialProfiles?.website ?? "",
+      bio: userData.details?.bio ?? "",
+      keyboard: userData.details?.keyboard ?? "",
+      github: userData.details?.socialProfiles?.github ?? "",
+      twitter: userData.details?.socialProfiles?.twitter ?? "",
+      website: userData.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        user.details?.showActivityOnPublicProfile ?? true,
+        userData.details?.showActivityOnPublicProfile ?? true,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
     },
     onSubmit: async ({ value }) => {

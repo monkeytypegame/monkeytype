@@ -72,15 +72,15 @@ export function saveLocalResult(data: SaveLocalResultData): void {
 export async function getTestActivityCalendar(
   yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
-  const user = getUserData();
-  if (!isAuthenticated() || user === undefined) return undefined;
+  const userData = getUserData();
+  if (!isAuthenticated() || userData === undefined) return undefined;
 
   const currentYear = new Date().getFullYear().toString();
   if (yearString === "current" || yearString === currentYear) {
-    if (user.testActivity === undefined) return undefined;
+    if (userData.testActivity === undefined) return undefined;
     const calendar = new ModifiableTestActivityCalendar(
-      [...user.testActivity.testsByDays],
-      new Date(user.testActivity.lastDay),
+      [...userData.testActivity.testsByDays],
+      new Date(userData.testActivity.lastDay),
       firstDayOfTheWeek,
     );
     return yearString === "current" ? calendar : calendar.getFullYearCalendar();

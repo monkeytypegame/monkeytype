@@ -12,8 +12,8 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
-  const user = getUserData();
-  if (!user) return;
+  const userData = getUserData();
+  if (!userData) return;
 
   const presetToApply = __nonReactive.getPreset(_id);
   if (presetToApply === undefined) {

@@ -13,15 +13,15 @@ import { getUserData, updateName } from "../../../states/user";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
-  const user = getUserData();
-  if (!isAuthenticated() || !user) return;
+  const userData = getUserData();
+  if (!isAuthenticated() || !userData) return;
 
   showSimpleModal({
     title: "Update name",
     buttonText: isUsingPasswordAuthentication()
       ? "update"
       : "reauthenticate to update",
-    text: user.needsToChangeName
+    text: userData.needsToChangeName
       ? "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience."
       : undefined,
     schema: z.object({

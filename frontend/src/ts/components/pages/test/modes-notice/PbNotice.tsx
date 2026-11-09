@@ -17,7 +17,7 @@ export function PbNotice() {
     //react on config.funbox
     const _funbox = getConfig.funbox;
     //react on new localPB
-    const _user = getUserData();
+    const _userData = getUserData();
 
     const mode2 = getMode2(getConfig, getCurrentQuote());
     const pb = getLocalPB(
