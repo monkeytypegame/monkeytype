@@ -1,4 +1,5 @@
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { XpBreakdown } from "@monkeytype/schemas/results";
@@ -398,6 +399,28 @@ export async function updateProfile(profile: ProfileUpdate): Promise<void> {
   );
 }
 
+// --- Reads ---
+
+/** The user's PB matching these settings, if any and the funboxes allow PBs. */
+export function getLocalPB<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+  funboxes: FunboxMetadata[],
+): PersonalBest | undefined {
+  if (!funboxes.every((f) => f.canGetPb)) return undefined;
+
+  const byMode2: Readonly<Record<string, readonly PersonalBest[]>> | undefined =
+    getUserData()?.personalBests?.[mode];
+  return byMode2?.[mode2]?.find((pb) =>
+    matchesPb(pb, { punctuation, numbers, difficulty, language, lazyMode }),
+  );
+}
+
 // --- Helpers ---
 
 function incrementTestActivity(
@@ -452,7 +475,7 @@ function matchesPb(
     punctuation: boolean;
     numbers: boolean;
     difficulty: Difficulty;
-    language: Language;
+    language: string;
     lazyMode: boolean;
   },
 ): boolean {

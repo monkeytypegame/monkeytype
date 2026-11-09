@@ -1,4 +1,8 @@
-import { Result, ResultMinified } from "@monkeytype/schemas/results";
+import {
+  Result,
+  ResultMinified,
+  XpBreakdown,
+} from "@monkeytype/schemas/results";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
@@ -46,6 +50,7 @@ import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
+import { addXp, getUserData, recordResult, setStreak } from "../states/user";
 import { removeLanguageSize } from "../utils/strings";
 
 export type NormalizedLocalResult<M extends Mode> = Omit<
@@ -450,6 +455,28 @@ export async function insertLocalResult(
   }
   const transaction = actions.insertLocalResult(params);
   await transaction.when("settled");
+}
+
+export type SaveLocalResultData = {
+  xp?: number;
+  xpBreakdown?: XpBreakdown;
+  streak?: number;
+  result?: NormalizedLocalResult<Mode>;
+  isPb?: boolean;
+};
+
+/** Saves a finished test locally: the results list, last result and user. */
+export function saveLocalResult(data: SaveLocalResultData): void {
+  if (getUserData() === undefined) return;
+
+  if (data.result !== undefined) {
+    void insertLocalResult({ result: data.result });
+    setLastResult(data.result);
+    recordResult(data.result, { isPb: data.isPb ?? false });
+  }
+
+  if (data.streak !== undefined) setStreak(data.streak);
+  if (data.xp !== undefined) addXp(data.xp, data.xpBreakdown);
 }
 
 export async function deleteLocalTag(

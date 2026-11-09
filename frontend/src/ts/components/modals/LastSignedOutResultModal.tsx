@@ -6,8 +6,11 @@ import { createMemo, JSX } from "solid-js";
 import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
+import {
+  saveLocalResult,
+  SaveLocalResultData,
+} from "../../collections/results";
 import { getConfig } from "../../config/store";
-import { saveLocalResult, SaveLocalResultData } from "../../db";
 import { authEvent } from "../../events/auth";
 import { getAuthenticatedUser } from "../../firebase";
 import { hideModal, showModal } from "../../states/modals";

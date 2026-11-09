@@ -1,20 +1,78 @@
 import { TestActivity } from "@monkeytype/schemas/users";
+import * as Dates from "date-fns";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
+import Ape from "../../../ape";
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
-import { getTestActivityCalendar } from "../../../db";
 import {
   clear as clearTestActivity,
   init as initTestActivity,
   update,
 } from "../../../elements/test-activity";
-import { TestActivityCalendar } from "../../../elements/test-activity-calendar";
+import {
+  ModifiableTestActivityCalendar,
+  TestActivityCalendar,
+} from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
+import { isAuthenticated } from "../../../states/core";
+import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
+import { showErrorNotification } from "../../../states/notifications";
 import { getUserData } from "../../../states/user";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
+
+// per-year calendars for past years, downloaded once
+let testActivityByYear: Record<string, TestActivityCalendar> | undefined;
+
+async function getTestActivityCalendar(
+  yearString: string,
+): Promise<TestActivityCalendar | undefined> {
+  const userData = getUserData();
+  if (!isAuthenticated() || userData === undefined) return undefined;
+
+  const currentYear = new Date().getFullYear().toString();
+  if (yearString === "current" || yearString === currentYear) {
+    if (userData.testActivity === undefined) return undefined;
+    const calendar = new ModifiableTestActivityCalendar(
+      [...userData.testActivity.testsByDays],
+      new Date(userData.testActivity.lastDay),
+      firstDayOfTheWeek,
+    );
+    return yearString === "current" ? calendar : calendar.getFullYearCalendar();
+  }
+
+  if (testActivityByYear === undefined) {
+    showLoaderBar();
+    const response = await Ape.users.getTestActivity();
+    if (response.status !== 200) {
+      showErrorNotification("Error getting test activities", { response });
+      hideLoaderBar();
+      return undefined;
+    }
+
+    testActivityByYear = {};
+    for (const year in response.body.data) {
+      if (year === currentYear) continue;
+      const testsByDays = response.body.data[year] ?? [];
+      const lastDay = Dates.addDays(
+        new Date(parseInt(year), 0, 1),
+        testsByDays.length,
+      );
+
+      testActivityByYear[year] = new TestActivityCalendar(
+        testsByDays,
+        lastDay,
+        firstDayOfTheWeek,
+        true,
+      );
+    }
+    hideLoaderBar();
+  }
+
+  return testActivityByYear[yearString];
+}
 
 export function ActivityCalendar(props: {
   isAccountPage?: true;

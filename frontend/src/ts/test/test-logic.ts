@@ -1,4 +1,4 @@
-import { getUserData } from "../states/user";
+import { getLocalPB, getUserData } from "../states/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,
@@ -23,7 +23,7 @@ import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
-import * as DB from "../db";
+import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
@@ -1261,7 +1261,7 @@ async function saveResult(
   const data = response.body.data;
   setResultState("resultId", data.insertedId);
 
-  const localDataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
@@ -1290,7 +1290,7 @@ async function saveResult(
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
-    const localPb = DB.getLocalPB(
+    const localPb = getLocalPB(
       result.mode,
       result.mode2,
       result.punctuation,
@@ -1318,7 +1318,7 @@ async function saveResult(
   if (isRetrying) {
     showSuccessNotification("Result saved", { important: true });
   }
-  DB.saveLocalResult(localDataToSave);
+  saveLocalResult(localDataToSave);
   return response;
 }
 
