@@ -109,6 +109,10 @@ export type WordsInputPosition = {
 export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
 
+// set by WordsInput on focus/blur of #wordsInput. Words shows the caret while
+// it's focused
+export const [isWordsInputFocused, setWordsInputFocused] = createSignal(false);
+
 // Words scrolls the window to the active word on each request (during a test)
 export const [trackScrollWindowToActiveWord, triggerScrollWindowToActiveWord] =
   createTrigger();

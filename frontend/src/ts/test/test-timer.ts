@@ -10,7 +10,6 @@ import {
   showErrorNotification,
   removeNotification,
 } from "../states/notifications";
-import * as Caret from "./caret";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import * as SoundController from "../controllers/sound-controller";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
@@ -242,7 +241,6 @@ function checkIfTimeIsUp(testTime: number): void {
   if (maxTime !== undefined && maxTime !== 0 && testTime >= maxTime) {
     //times up
     if (timer !== null) clearTimeout(timer);
-    Caret.hide();
     clearSlowTimer();
     slowTimerCount = 0;
     onFinish();

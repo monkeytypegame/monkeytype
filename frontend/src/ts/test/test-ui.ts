@@ -3,7 +3,6 @@ import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -124,7 +123,6 @@ function afterAnyTestInput(
   }
 
   setFocusMode(true);
-  Caret.stopAnimation();
 }
 
 export function afterTestTextInput(
@@ -252,7 +250,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   setLayoutfluidTimerVisible(false);
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
-  Caret.resetPosition();
   setTestInitFailed(false);
   setTestInitError(null);
   focusWords(true);
@@ -280,7 +277,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 }
 
 export function onTestFinish(): void {
-  Caret.hide();
   setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();

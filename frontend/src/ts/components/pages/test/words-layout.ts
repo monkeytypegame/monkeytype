@@ -1,6 +1,6 @@
 import type { JSAnimation } from "animejs";
 
-import { createEffect, on, onCleanup } from "solid-js";
+import { Accessor, createEffect, createSignal, on, onCleanup } from "solid-js";
 import { debounce, throttle } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
@@ -11,10 +11,14 @@ import {
 import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
+  getTestDirection,
+  isPaceRepeat,
+  isResultCalculating,
   isSlowTimer,
   isTestActive,
   isTestFinished,
   isTestRightToLeft,
+  isWordsInputFocused,
   setOutOfFocusMaxHeight,
   setTestFocusState,
   setWordsInputPosition,
@@ -38,13 +42,12 @@ import {
   type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
-import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
-import { getCurrentInput } from "../../../test/events/data";
-import * as PaceCaret from "../../../test/pace-caret";
+import { paceCaretTarget } from "../../../test/pace-caret";
 import { ElementWithUtils } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
 import * as Strings from "../../../utils/strings";
+import { Caret, getTapeLetterShift } from "./caret";
 
 type WordChange = "forward" | "back" | "initial";
 
@@ -72,6 +75,18 @@ function getWordElement(index: number): ElementWithUtils | null {
 
 function getActiveWordElement(): ElementWithUtils | null {
   return getWordElement(getActiveWordIndex());
+}
+
+/**
+ * Typed input of word `index` as rendered (the last flush), with its IME
+ * composition. The caret and the tape follow what's on screen.
+ */
+function getRenderedInput(index: number): {
+  input: string;
+  composition: string;
+} {
+  const word = wordsRenderState.words[index];
+  return { input: word?.input ?? "", composition: word?.composition ?? "" };
 }
 
 /**
@@ -245,13 +260,19 @@ export function wouldActiveWordOverflow(
 
 /**
  * Lays out the test words (#words): line jump, tape scroll, the words
- * wrapper's height. Reacts to words flushes, config changes and resizes until
+ * wrapper's height, and moves the caret and pace caret on them. Reacts to
+ * words flushes, config changes, resizes and the pace caret's target until
  * its owner (the Words component) is disposed.
  */
 export function createWordsLayout(options: {
   words: () => HTMLElement | undefined;
   wordsWrapper: () => HTMLElement | undefined;
-}): void {
+  caret: () => HTMLElement | undefined;
+  paceCaret: () => HTMLElement | undefined;
+}): {
+  /** focused, test not over, not resizing */
+  isCaretShown: Accessor<boolean>;
+} {
   function wordsEl(): ElementWithUtils {
     const el = options.words();
     if (el === undefined) throw new Error("#words not mounted");
@@ -262,6 +283,74 @@ export function createWordsLayout(options: {
     const el = options.wordsWrapper();
     if (el === undefined) throw new Error("#wordsWrapper not mounted");
     return new ElementWithUtils(el);
+  }
+
+  let caretHandle: Caret | undefined;
+  let paceCaretHandle: Caret | undefined;
+  /** The caret's handle, undefined before it mounts. */
+  function caret(): Caret | undefined {
+    const el = options.caret();
+    if (el === undefined) return undefined;
+    if (caretHandle?.native !== el) {
+      caretHandle = new Caret(el, {
+        isMainCaret: true,
+        style: () => Config.caretStyle,
+        wordsWrapper: () => wordsWrapperEl().native,
+      });
+    }
+    return caretHandle;
+  }
+  /** The pace caret's handle, undefined before it mounts. */
+  function paceCaret(): Caret | undefined {
+    const el = options.paceCaret();
+    if (el === undefined) return undefined;
+    if (paceCaretHandle?.native !== el) {
+      paceCaretHandle = new Caret(el, {
+        isMainCaret: false,
+        style: () => Config.paceCaretStyle,
+        wordsWrapper: () => wordsWrapperEl().native,
+      });
+    }
+    return paceCaretHandle;
+  }
+
+  /** Moves the caret to the typed position in the rendered active word. */
+  function updateCaret(noAnim: boolean): void {
+    const wordIndex = wordsRenderState.renderedActiveWordIndex;
+    const { input, composition } = getRenderedInput(wordIndex);
+    const typed = input + composition;
+    const testDirection = getTestDirection();
+    caret()?.goTo({
+      wordIndex,
+      letterIndex: typed.length,
+      testDirection,
+      ...(Config.mode === "zen" && {
+        zenWordDirection: Strings.getWordDirection(
+          Strings.splitIntoCharacters(typed).at(-1),
+          testDirection,
+        ),
+      }),
+      animate: Config.smoothCaret !== "off" && !noAnim,
+    });
+  }
+
+  /** New words: both carets drop their animations and margins. */
+  function resetCarets(): void {
+    caret()?.stopAllAnimations();
+    caret()?.clearMargins();
+    const pace = paceCaret();
+    if (pace === undefined) return;
+    pace.stopAllAnimations();
+    pace.clearMargins();
+    // zen words have no letters to go to
+    if (Config.paceCaret === "off" && !isPaceRepeat()) return;
+    if (Config.mode === "zen") return;
+    pace.goTo({
+      wordIndex: 0,
+      letterIndex: 0,
+      testDirection: getTestDirection(),
+      animate: false,
+    });
   }
 
   /**
@@ -349,8 +438,8 @@ export function createWordsLayout(options: {
   function shiftWords(marginChange: number, widthRemoved = marginChange): void {
     const words = wordsEl();
     words.setStyle({ marginLeft: `${getMarginLeft(words) + marginChange}px` });
-    Caret.caret?.handleTapeWordsRemoved(widthRemoved);
-    PaceCaret.caret?.handleTapeWordsRemoved(widthRemoved);
+    caret()?.handleTapeWordsRemoved(widthRemoved);
+    paceCaret()?.handleTapeWordsRemoved(widthRemoved);
   }
 
   function invalidateAsyncLayout(): void {
@@ -639,26 +728,12 @@ export function createWordsLayout(options: {
 
     /* calculate current word width to add to #words margin */
     let currentWordWidth = 0;
-    const inputLength = getCurrentInput().length;
+    const inputLength = getRenderedInput(activeItem.index).input.length;
     if (Config.tapeMode === "letter" && inputLength > 0) {
-      const letters = activeWordEl.qsa(LETTER_SELECTOR);
-      let lastPositiveLetterWidth = 0;
-      for (let i = 0; i < inputLength; i++) {
-        const letter = letters[i];
-        if (
-          (Config.blindMode || Config.hideExtraLetters) &&
-          letter?.getAttribute("data-ui-state") === "extra"
-        ) {
-          continue;
-        }
-        const letterOuterWidth = letter?.getOffsetWidth() ?? 0;
-        currentWordWidth += letterOuterWidth;
-        if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
-      }
-      // if current letter has zero width move the tape to previous positive width letter
-      if (letters[inputLength]?.getOffsetWidth() === 0) {
-        currentWordWidth -= lastPositiveLetterWidth;
-      }
+      currentWordWidth = getTapeLetterShift(
+        activeWordEl.qsa(LETTER_SELECTOR),
+        inputLength,
+      );
     }
 
     /* change to new #words & .afterNewline margins */
@@ -678,8 +753,8 @@ export function createWordsLayout(options: {
       ease: tapeScrollEase,
     };
 
-    Caret.caret?.handleTapeScroll(caretScrollOptions);
-    PaceCaret.caret?.handleTapeScroll(caretScrollOptions);
+    caret()?.handleTapeScroll(caretScrollOptions);
+    paceCaret()?.handleTapeScroll(caretScrollOptions);
 
     setMarginLeft(wordsEl(), newMargin, duration);
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
@@ -768,8 +843,8 @@ export function createWordsLayout(options: {
       newMarginTop,
       duration: Config.smoothLineScroll ? duration : 0,
     };
-    Caret.caret?.handleLineJump(caretLineJumpOptions);
-    PaceCaret.caret?.handleLineJump(caretLineJumpOptions);
+    caret()?.handleLineJump(caretLineJumpOptions);
+    paceCaret()?.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;
@@ -807,7 +882,7 @@ export function createWordsLayout(options: {
     void centerActiveLine();
     updateWordsMargin();
     invalidateTypoHintsLayout();
-    Caret.updatePosition(true);
+    updateCaret(true);
     positionWordsInput();
     if (!isInputElementFocused()) setTestFocusState("unfocused");
   }
@@ -828,9 +903,9 @@ export function createWordsLayout(options: {
   /** The new words' first flush: lays them out from scratch. */
   function layoutNewWords(): void {
     dropOldWordsLayout();
+    resetCarets();
     layoutAll();
     void layoutActiveWord("initial");
-    PaceCaret.resetCaretPosition();
   }
 
   /** The active word moving, and the words whose input changed. */
@@ -844,7 +919,7 @@ export function createWordsLayout(options: {
     for (const wordIndex of flush.updatedWords) {
       void lineJumpIfWrapped(wordIndex);
     }
-    Caret.updatePosition(false);
+    updateCaret(false);
   }
 
   onCleanup(
@@ -893,7 +968,7 @@ export function createWordsLayout(options: {
           void document.fonts.ready.then(() => {
             // words reset (restart, unmount) or the test ended meanwhile
             if (generation !== layoutGeneration || isTestFinished()) return;
-            Caret.updatePosition(true);
+            updateCaret(true);
           });
         });
       },
@@ -915,10 +990,11 @@ export function createWordsLayout(options: {
     positionWordsInput();
     focusInputElement(true);
     scrollWindowToActiveWord(true);
-    Caret.show();
+    setResizing(false);
   });
   // the caret is hidden while resizing, shown once the words are laid out
-  const hideCaret = throttle(250, () => Caret.hide());
+  const [isResizing, setResizing] = createSignal(false);
+  const hideCaret = throttle(250, () => setResizing(true));
   function onResize(): void {
     hideCaret();
     resized();
@@ -929,4 +1005,66 @@ export function createWordsLayout(options: {
     hideCaret.cancel();
     resized.cancel();
   });
+
+  // while the input is focused, until the test ends. Hidden while resizing,
+  // shown once the words are laid out
+  const isCaretShown = (): boolean =>
+    isWordsInputFocused() &&
+    !isResultCalculating() &&
+    !isTestFinished() &&
+    !isResizing();
+  // shown again: it may have moved meanwhile
+  createEffect(
+    on(
+      isCaretShown,
+      (shown) => {
+        if (shown) updateCaret(true);
+      },
+      { defer: true },
+    ),
+  );
+  // effects run after the bindings: the new style class is applied
+  createEffect(
+    on(
+      () => getConfig.caretStyle,
+      () => {
+        caret()?.resetWidth();
+        updateCaret(true);
+      },
+      { defer: true },
+    ),
+  );
+  createEffect(
+    on(
+      () => getConfig.paceCaretStyle,
+      () => paceCaret()?.resetWidth(),
+      { defer: true },
+    ),
+  );
+  // the pace caret moves at a linear pace, reaching its target by its step end
+  createEffect(
+    on(
+      paceCaretTarget,
+      (target) => {
+        if (target === undefined) return;
+        try {
+          paceCaret()?.goTo({
+            wordIndex: target.wordIndex,
+            letterIndex: target.letterIndex,
+            testDirection: getTestDirection(),
+            animate: true,
+            animationOptions: {
+              duration: target.stepEnd - performance.now(),
+              easing: "linear",
+            },
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      },
+      { defer: true },
+    ),
+  );
+
+  return { isCaretShown };
 }

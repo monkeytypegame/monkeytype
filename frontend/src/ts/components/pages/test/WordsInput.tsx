@@ -23,9 +23,9 @@ import {
   isRealWordsInputShown,
   isTestFinished,
   setTestFocusState,
+  setWordsInputFocused,
   wordsInputPosition,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
 import { cn } from "../../../utils/cn";
 
 /**
@@ -39,6 +39,7 @@ export function WordsInput(): JSXElement {
   onMount(() => {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
     onCleanup(registerInputElement(inputRef));
+    onCleanup(() => setWordsInputFocused(false));
   });
 
   const px = (value: number | undefined): string | undefined =>
@@ -87,15 +88,15 @@ export function WordsInput(): JSXElement {
           if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
             setTestFocusState("focused");
           }
-          Caret.show(true);
         }
+        setWordsInputFocused(isInputElementFocused());
         onFocus();
       }}
       on:blur={() => {
         if (!isInputElementFocused()) {
           setTestFocusState("unfocused");
         }
-        Caret.hide();
+        setWordsInputFocused(isInputElementFocused());
       }}
       on:compositionstart={onCompositionStart}
       on:compositionupdate={onCompositionUpdate}
