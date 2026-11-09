@@ -12,7 +12,7 @@ import {
   setApeKeysDenied,
   setLastGeneratedApeKey,
 } from "../states/account-settings";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { ApeKey } from "@monkeytype/schemas/ape-keys";
 import { showSuccessNotification } from "../states/notifications";
 import {
@@ -37,8 +37,9 @@ export function useApeKeyLiveQuery() {
   );
 }
 
-const apeKeysCollection = createCollection(
-  queryCollectionOptions({
+const apeKeysCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
     queryKey: queryKeys.root(),
     queryClient,
@@ -70,7 +71,8 @@ const apeKeysCollection = createCollection(
       return dataArray;
     },
   }),
-);
+  ...keepForever,
+});
 
 type ActionType = {
   insertKey: { name: string };

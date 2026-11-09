@@ -12,7 +12,7 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
-  const snapshot = DB.getSnapshot();
+  const snapshot = DB.getUserData();
   if (!snapshot) return;
 
   const presetToApply = __nonReactive.getPreset(_id);

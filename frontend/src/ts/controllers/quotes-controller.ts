@@ -148,7 +148,7 @@ class QuotesController {
   }
 
   getRandomFavoriteQuote(language: Language): Quote | null {
-    const snapshot = DB.getSnapshot();
+    const snapshot = DB.getUserData();
     if (!snapshot) {
       return null;
     }
@@ -180,7 +180,7 @@ class QuotesController {
   }
 
   isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
-    const snapshot = DB.getSnapshot();
+    const snapshot = DB.getUserData();
     if (!snapshot) {
       return false;
     }
@@ -206,7 +206,7 @@ class QuotesController {
   }
 
   async setQuoteFavorite(quote: Quote, isFavorite: boolean): Promise<void> {
-    const snapshot = DB.getSnapshot();
+    const snapshot = DB.getUserData();
     if (!snapshot) {
       throw new Error("Snapshot is not available");
     }

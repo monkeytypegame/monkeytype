@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/solid-query";
 import { baseKey } from "./utils/keys";
 import Ape from "../ape";
 import { queryClient } from ".";
-import { getSnapshot } from "../states/snapshot";
+import { getUserData } from "../states/snapshot";
 
 const queryKeys = {
   root: () => baseKey("profiles"),
@@ -33,7 +33,7 @@ export const getUserProfile = (username: string) =>
   });
 
 export async function invalidateMyProfile(): Promise<void> {
-  const username = getSnapshot()?.name;
+  const username = getUserData()?.name;
   if (username !== undefined) {
     await queryClient.resetQueries({ queryKey: queryKeys.profile(username) });
   }

@@ -11,14 +11,14 @@ import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
 import {
   configurationPromise,
   get as getServerConfiguration,
 } from "../ape/server-configuration";
-import { getSnapshot } from "../states/snapshot";
+import { getUserData } from "../states/snapshot";
 import { Connection } from "@monkeytype/schemas/connections";
 import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";
@@ -32,8 +32,9 @@ const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
 };
 
-const connectionsCollection = createCollection(
-  queryCollectionOptions({
+const connectionsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     ...blockingDownloadOptions,
     staleTime: 5 * 60 * 1000,
     queryKey: queryKeys.root(),
@@ -51,7 +52,8 @@ const connectionsCollection = createCollection(
       return response.body.data;
     },
   }),
-);
+  ...keepForever,
+});
 
 const connectionsQuery = createRoot(() =>
   useLiveQuery((q) =>
@@ -174,8 +176,8 @@ const actions = {
         status: "pending",
         receiverName,
         receiverUid: receiverUid ?? tempId(),
-        initiatorName: getSnapshot()?.name ?? "",
-        initiatorUid: getSnapshot()?.uid ?? "",
+        initiatorName: getUserData()?.name ?? "",
+        initiatorUid: getUserData()?.uid ?? "",
         lastModified: Date.now(),
       });
     },

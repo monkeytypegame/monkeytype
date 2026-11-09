@@ -235,7 +235,7 @@ export function QuoteSearchModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
   const isQuoteMod = (): boolean => {
-    const quoteMod = DB.getSnapshot()?.quoteMod;
+    const quoteMod = DB.getUserData()?.quoteMod;
     return (
       quoteMod !== undefined &&
       (quoteMod === true || (quoteMod as string) !== "")

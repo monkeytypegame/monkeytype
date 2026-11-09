@@ -40,7 +40,7 @@ import { updateTagsInFilterStorage } from "./states/result-filters";
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
-export function getSnapshot(): Snapshot | undefined {
+export function getUserData(): Snapshot | undefined {
   return dbSnapshot;
 }
 
@@ -275,7 +275,7 @@ export async function updateLbMemory<M extends Mode>(
     const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
 
-    const snapshot = getSnapshot();
+    const snapshot = getUserData();
     if (!snapshot) return;
     snapshot.lbMemory ??= {
       time: { "15": { english: 0 }, "60": { english: 0 } },
@@ -308,7 +308,7 @@ export type SaveLocalResultData = {
 };
 
 export function saveLocalResult(data: SaveLocalResultData): void {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (!snapshot) return;
 
   if (data.result !== undefined) {
@@ -375,7 +375,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
 }
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (!snapshot) return;
 
   snapshot.xp ??= 0;
@@ -391,7 +391,7 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function updateInboxUnreadSize(newSize: number): void {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (!snapshot) return;
 
   snapshot.inboxUnreadSize = newSize;
@@ -399,7 +399,7 @@ export function updateInboxUnreadSize(newSize: number): void {
 }
 
 export function addBadge(badge: Badge): void {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (!snapshot) return;
 
   snapshot.inventory ??= {

@@ -7,7 +7,7 @@ import {
   reauthenticate,
 } from "../../../auth";
 import { resetConfig } from "../../../config/lifecycle";
-import { getSnapshot } from "../../../db";
+import { getUserData } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
@@ -112,7 +112,7 @@ export function showResetPersonalBestsModal(): void {
         };
       }
 
-      const snapshot = getSnapshot();
+      const snapshot = getUserData();
       if (!snapshot) {
         return {
           status: "error",
