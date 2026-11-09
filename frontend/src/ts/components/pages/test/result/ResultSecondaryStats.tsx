@@ -28,7 +28,7 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
-import { getUser, setQuoteFavorite } from "../../../../states/user";
+import { getUserData, setQuoteFavorite } from "../../../../states/user";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -296,7 +296,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
 
   const isRated = (): boolean =>
     isSafeNumber(
-      getUser()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
+      getUserData()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
     );
 
   const rating = (): string => {
@@ -305,7 +305,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
 
   const toggleFavorite = async (): Promise<void> => {
-    if (getUser() === undefined) return;
+    if (getUserData() === undefined) return;
     const remove = isFavorite();
 
     showLoaderBar();

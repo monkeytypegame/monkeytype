@@ -18,7 +18,7 @@ async function waitForUser(
 ): Promise<void> {
   // lazy: the user store pulls in the api client, and the debug handle loads
   // in jsdom tests
-  const { getUser } = await import("../states/user");
+  const { getUserData: getUser } = await import("../states/user");
   const start = Date.now();
   while (!matches(getUser())) {
     if (Date.now() - start > timeoutMs) {

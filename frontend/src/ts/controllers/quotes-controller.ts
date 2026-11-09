@@ -4,7 +4,7 @@ import { cachedFetchJson } from "../utils/json-data";
 import { createRoot } from "solid-js";
 import { getConfig } from "../config/store";
 import { createEffectOn } from "../hooks/effects";
-import { getUser, setQuoteFavorite } from "../states/user";
+import { getUserData, setQuoteFavorite } from "../states/user";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import { QuoteData } from "@monkeytype/schemas/quotes";
@@ -147,7 +147,7 @@ class QuotesController {
   }
 
   getRandomFavoriteQuote(language: Language): Quote | null {
-    const user = getUser();
+    const user = getUserData();
     if (!user) {
       return null;
     }
@@ -179,7 +179,7 @@ class QuotesController {
   }
 
   isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
-    const user = getUser();
+    const user = getUserData();
     if (!user) {
       return false;
     }

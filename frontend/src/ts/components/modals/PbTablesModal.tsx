@@ -5,7 +5,7 @@ import { createMemo, createSignal, JSXElement } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { pbTablesMode } from "../../states/pb-tables-modal";
-import { getUser } from "../../states/user";
+import { getUserData } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
@@ -26,7 +26,7 @@ type PBRow = PBWithMode2 & {
 };
 
 function buildRows(mode: Mode): PBRow[] {
-  const allmode2 = getUser()?.personalBests?.[mode] as
+  const allmode2 = getUserData()?.personalBests?.[mode] as
     | Record<Mode2<Mode>, PBWithMode2[]>
     | undefined;
   if (allmode2 === undefined) return [];

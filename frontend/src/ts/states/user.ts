@@ -35,7 +35,7 @@ const [store, setStore] = createStore<{ value: UserData | undefined }>({
 });
 
 /** A plain copy of the user, detached from the store. */
-function copyUser(): UserData | undefined {
+function copyUserData(): UserData | undefined {
   const user = unwrap(store).value;
   return user === undefined ? undefined : structuredClone(user);
 }
@@ -44,7 +44,7 @@ function copyUser(): UserData | undefined {
  * The signed-in user, `undefined` while signed out, loading or after a failed
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
-export function getUser(): DeepReadonly<UserData> | undefined {
+export function getUserData(): DeepReadonly<UserData> | undefined {
   return store.value;
 }
 
@@ -113,14 +113,14 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
 
     setStore("value", reconcile(row, { merge: true }));
   } catch (e) {
-    clearUser();
+    clearUserData();
     throw e;
   }
 
-  return getUser() as DeepReadonly<UserData>;
+  return getUserData() as DeepReadonly<UserData>;
 }
 
-export function clearUser(): void {
+export function clearUserData(): void {
   setStore("value", undefined);
 }
 
@@ -157,13 +157,13 @@ export function recordResult(
 }
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
-  if (getUser() === undefined) return;
+  if (getUserData() === undefined) return;
   update((user) => {
     user.xp += xp;
   });
   setXpBarData({
     addedXp: xp,
-    resultingXp: getUser()?.xp ?? 0,
+    resultingXp: getUserData()?.xp ?? 0,
     breakdown,
   });
 }
@@ -225,7 +225,7 @@ export async function updateLbMemory<M extends Mode>(
 ): Promise<void> {
   if (mode2 === undefined || mode !== "time") return;
   const timeMode2 = mode2 as "15" | "60";
-  const user = getUser();
+  const user = getUserData();
   if (user === undefined) return;
 
   const current = user.lbMemory?.time?.[timeMode2]?.[language];
@@ -246,41 +246,40 @@ export async function updateLbMemory<M extends Mode>(
 // --- Optimistic actions: user changes, rolled back if the request fails ---
 
 /**
- * An action that applies `recipe` at once and sends `request`, which resolves
- * to the values to keep (the server may change them); the recipe is applied
+ * Applies `recipe` with `vars` at once and sends `request`, which resolves to
+ * the values to keep (the server may change them); the recipe is applied
  * again with those. On failure the fields the recipe changed are rolled back,
  * except those changed again since (by a direct write or another action),
  * which keep the newer value. The recipe must be idempotent.
  */
-function optimisticAction<T>(
+async function optimisticUpdate<T>(
+  vars: T,
   recipe: (user: UserData, vars: T) => void,
-  request: (vars: T) => Promise<T>,
-): (vars: T) => Promise<void> {
-  return async (vars) => {
-    const before = copyUser();
-    if (before === undefined) throw new Error("Not signed in");
-    update((user) => recipe(user, vars));
-    const written = copyUser() ?? before;
-    const same = (a: unknown, b: unknown): boolean =>
-      JSON.stringify(a) === JSON.stringify(b);
-    const changed = (
-      Object.keys({ ...before, ...written }) as (keyof UserData)[]
-    ).filter((key) => !same(before[key], written[key]));
+  request: () => Promise<T>,
+): Promise<void> {
+  const before = copyUserData();
+  if (before === undefined) throw new Error("Not signed in");
+  update((user) => recipe(user, vars));
+  const written = copyUserData() ?? before;
+  const same = (a: unknown, b: unknown): boolean =>
+    JSON.stringify(a) === JSON.stringify(b);
+  const changed = (
+    Object.keys({ ...before, ...written }) as (keyof UserData)[]
+  ).filter((key) => !same(before[key], written[key]));
 
-    let kept: T;
-    try {
-      kept = await request(vars);
-    } catch (e) {
-      update((user) => {
-        for (const key of changed) {
-          if (!same(user[key], written[key])) continue;
-          (user as Record<string, unknown>)[key] = before[key];
-        }
-      });
-      throw e;
-    }
-    update((user) => recipe(user, kept));
-  };
+  let kept: T;
+  try {
+    kept = await request();
+  } catch (e) {
+    update((user) => {
+      for (const key of changed) {
+        if (!same(user[key], written[key])) continue;
+        (user as Record<string, unknown>)[key] = before[key];
+      }
+    });
+    throw e;
+  }
+  update((user) => recipe(user, kept));
 }
 
 function throwIfFailed(response: {
@@ -290,97 +289,114 @@ function throwIfFailed(response: {
   if (response.status !== 200) throw new Error(response.body.message);
 }
 
-export const updateName = optimisticAction<string>(
-  (user, name) => {
-    user.name = name;
-  },
-  async (name) => {
-    throwIfFailed(await Ape.users.updateName({ body: { name } }));
-    return name;
-  },
-);
-
-const unlinkDiscordAction = optimisticAction<undefined>(
-  (user) => {
-    user.discordId = undefined;
-    user.discordAvatar = undefined;
-  },
-  async () => {
-    throwIfFailed(await Ape.users.unlinkDiscord());
-  },
-);
-
-export async function unlinkDiscord(): Promise<void> {
-  await unlinkDiscordAction(undefined);
+export async function updateName(name: string): Promise<void> {
+  await optimisticUpdate(
+    name,
+    (user, name) => {
+      user.name = name;
+    },
+    async () => {
+      throwIfFailed(await Ape.users.updateName({ body: { name } }));
+      return name;
+    },
+  );
 }
 
-export const setStreakHourOffset = optimisticAction<number>(
-  (user, hourOffset) => {
-    user.streakHourOffset = hourOffset;
-  },
-  async (hourOffset) => {
-    throwIfFailed(
-      await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
-    );
-    return hourOffset;
-  },
-);
+export async function unlinkDiscord(): Promise<void> {
+  await optimisticUpdate(
+    undefined,
+    (user) => {
+      user.discordId = undefined;
+      user.discordAvatar = undefined;
+    },
+    async () => {
+      throwIfFailed(await Ape.users.unlinkDiscord());
+      return undefined;
+    },
+  );
+}
+
+export async function setStreakHourOffset(hourOffset: number): Promise<void> {
+  await optimisticUpdate(
+    hourOffset,
+    (user, hourOffset) => {
+      user.streakHourOffset = hourOffset;
+    },
+    async () => {
+      throwIfFailed(
+        await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
+      );
+      return hourOffset;
+    },
+  );
+}
 
 type QuoteRating = { language: Language; quoteId: number; rating: number };
 
-export const rateQuote = optimisticAction<QuoteRating>(
-  (user, { language, quoteId, rating }) => {
-    user.quoteRatings ??= {};
-    user.quoteRatings[language] ??= {};
-    user.quoteRatings[language][quoteId] = rating;
-  },
-  async (vars) => {
-    throwIfFailed(await Ape.quotes.addRating({ body: vars }));
-    return vars;
-  },
-);
+export async function rateQuote(rating: QuoteRating): Promise<void> {
+  await optimisticUpdate(
+    rating,
+    (user, { language, quoteId, rating }) => {
+      user.quoteRatings ??= {};
+      user.quoteRatings[language] ??= {};
+      user.quoteRatings[language][quoteId] = rating;
+    },
+    async () => {
+      throwIfFailed(await Ape.quotes.addRating({ body: rating }));
+      return rating;
+    },
+  );
+}
 
 type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
-export const setQuoteFavorite = optimisticAction<QuoteFavorite>(
-  (user, { language, quoteId, favorite }) => {
-    const list = user.favoriteQuotes?.[language] ?? [];
-    const without = list.filter((id) => id !== quoteId);
-    user.favoriteQuotes ??= {};
-    user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
-  },
-  async (vars) => {
-    const body = { language: vars.language, quoteId: vars.quoteId };
-    throwIfFailed(
-      vars.favorite
-        ? await Ape.users.addQuoteToFavorites({ body })
-        : await Ape.users.removeQuoteFromFavorites({ body }),
-    );
-    return vars;
-  },
-);
+export async function setQuoteFavorite(favorite: QuoteFavorite): Promise<void> {
+  await optimisticUpdate(
+    favorite,
+    (user, { language, quoteId, favorite }) => {
+      const list = user.favoriteQuotes?.[language] ?? [];
+      const without = list.filter((id) => id !== quoteId);
+      user.favoriteQuotes ??= {};
+      user.favoriteQuotes[language] = favorite
+        ? [...without, quoteId]
+        : without;
+    },
+    async () => {
+      const body = { language: favorite.language, quoteId: favorite.quoteId };
+      throwIfFailed(
+        favorite.favorite
+          ? await Ape.users.addQuoteToFavorites({ body })
+          : await Ape.users.removeQuoteFromFavorites({ body }),
+      );
+      return favorite;
+    },
+  );
+}
 
 type ProfileUpdate = {
   details: UserProfileDetails;
   selectedBadgeId: number;
 };
 
-export const updateProfile = optimisticAction<ProfileUpdate>(
-  (user, { details, selectedBadgeId }) => {
-    user.details = details;
-    for (const badge of user.inventory?.badges ?? []) {
-      badge.selected = badge.id === selectedBadgeId;
-    }
-  },
-  async (update) => {
-    const response = await Ape.users.updateProfile({
-      body: { ...update.details, selectedBadgeId: update.selectedBadgeId },
-    });
-    if (response.status !== 200) throw new Error(response.body.message);
-    // the server sanitizes the details
-    return { ...update, details: response.body.data ?? update.details };
-  },
-);
+export async function updateProfile(profile: ProfileUpdate): Promise<void> {
+  await optimisticUpdate(
+    profile,
+    (user, { details, selectedBadgeId }) => {
+      user.details = details;
+      for (const badge of user.inventory?.badges ?? []) {
+        badge.selected = badge.id === selectedBadgeId;
+      }
+    },
+    async () => {
+      const response = await Ape.users.updateProfile({
+        body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
+      });
+      if (response.status !== 200) throw new Error(response.body.message);
+      // the server sanitizes the details
+      return { ...profile, details: response.body.data ?? profile.details };
+    },
+  );
+}
 
 // --- Helpers ---
 

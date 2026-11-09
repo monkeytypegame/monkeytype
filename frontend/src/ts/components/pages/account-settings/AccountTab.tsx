@@ -4,7 +4,7 @@ import Ape from "../../../ape";
 import { showLoaderBar } from "../../../states/loader-bar";
 import { showModal } from "../../../states/modals";
 import { showErrorNotification } from "../../../states/notifications";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import {
@@ -29,7 +29,7 @@ export function AccountTab() {
 }
 
 function Discord() {
-  const isLinked = () => getUser()?.discordId !== undefined;
+  const isLinked = () => getUserData()?.discordId !== undefined;
   return (
     <Section
       title="discord integration"
@@ -128,11 +128,11 @@ function UpdateStreakOffset() {
         text: "update hour offset",
         onClick: () => showModal("StreakHourOffset"),
       }}
-      disabled={getUser()?.streakHourOffset !== undefined}
+      disabled={getUserData()?.streakHourOffset !== undefined}
       disabledDescription=<>
         <Fa icon="fa-exclamation-triangle" /> You have already set your streak
         hour offset to{" "}
-        {`${(getUser()?.streakHourOffset ?? 0) > 0 ? "+" : ""} ${getUser()?.streakHourOffset}`}
+        {`${(getUserData()?.streakHourOffset ?? 0) > 0 ? "+" : ""} ${getUserData()?.streakHourOffset}`}
         .
       </>
     />
@@ -153,7 +153,7 @@ function OptOutLeaderboard() {
         text: "opt out",
         onClick: () => showOptOutOfLeaderboardsModal(),
       }}
-      disabled={getUser()?.lbOptOut === true}
+      disabled={getUserData()?.lbOptOut === true}
       disabledDescription=<>
         <Fa icon="fa-exclamation-triangle" />
         You have opted out of leaderboards.

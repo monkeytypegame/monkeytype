@@ -1,4 +1,4 @@
-import { getUser } from "../states/user";
+import { getUserData } from "../states/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,
@@ -993,9 +993,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
-    (!getUser()?.lbOptOut &&
+    (!getUserData()?.lbOptOut &&
       (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (getUser()?.lbOptOut === true &&
+    (getUserData()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");

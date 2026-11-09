@@ -11,7 +11,7 @@ import {
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
 import { isFocusMode } from "../../../states/test";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
@@ -78,7 +78,7 @@ export function Banners(): JSXElement {
 
   let nameChangeAdded = false;
   createEffectOn(
-    () => getUser()?.needsToChangeName,
+    () => getUserData()?.needsToChangeName,
     (needsToChange) => {
       if (needsToChange && !nameChangeAdded) {
         nameChangeAdded = true;

@@ -17,7 +17,7 @@ import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { getUser } from "../../../../states/user";
+import { getUserData } from "../../../../states/user";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
@@ -145,7 +145,7 @@ function Watermark(): JSXElement {
         const date = format(new Date(), "dd MMM yyyy HH:mm");
         return (
           <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
-            <Show when={getUser()}>
+            <Show when={getUserData()}>
               {(user) => (
                 <>
                   <span>

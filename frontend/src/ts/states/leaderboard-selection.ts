@@ -6,7 +6,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { SearchFlagSchema } from "../router/search-params";
-import { getUser } from "./user";
+import { getUserData } from "./user";
 
 export const pageSize = 50;
 
@@ -86,7 +86,7 @@ export function toSelection(search: LeaderboardSearch): Selection {
   if (search.type === undefined) return getLastSelection();
   const friendsOnly =
     (search.friendsOnly ?? false) &&
-    getUser() !== undefined &&
+    getUserData() !== undefined &&
     getServerConfiguration()?.connections.enabled !== false;
 
   if (search.type === "weekly") {

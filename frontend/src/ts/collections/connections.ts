@@ -18,7 +18,7 @@ import {
   configurationPromise,
   get as getServerConfiguration,
 } from "../ape/server-configuration";
-import { getUser } from "../states/user";
+import { getUserData } from "../states/user";
 import { Connection } from "@monkeytype/schemas/connections";
 import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";
@@ -174,8 +174,8 @@ const actions = {
         status: "pending",
         receiverName,
         receiverUid: receiverUid ?? tempId(),
-        initiatorName: getUser()?.name ?? "",
-        initiatorUid: getUser()?.uid ?? "",
+        initiatorName: getUserData()?.name ?? "",
+        initiatorUid: getUserData()?.uid ?? "",
         lastModified: Date.now(),
       });
     },

@@ -2,7 +2,7 @@ import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
@@ -58,7 +58,7 @@ export function AccountMenu(props: Props): JSXElement {
             fixedWidth: true,
           }}
           to="/profile/$uidOrName"
-          params={{ uidOrName: getUser()?.name ?? "" }}
+          params={{ uidOrName: getUserData()?.name ?? "" }}
         />
         <Button
           text="Account settings"

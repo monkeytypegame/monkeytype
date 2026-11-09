@@ -13,7 +13,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { getUser, updateProfile } from "../../states/user";
+import { getUserData, updateProfile } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -25,7 +25,7 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const user = getUser();
+  const user = getUserData();
   if (user === undefined) {
     throw new Error("missing user in EditProfile");
   }

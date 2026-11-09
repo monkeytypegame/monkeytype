@@ -15,7 +15,7 @@ import {
   updateQuoteStats,
   getRatingAverage,
 } from "../../states/quote-rate";
-import { getUser, rateQuote } from "../../states/user";
+import { getUserData, rateQuote } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -43,7 +43,7 @@ export function QuoteRateModal(): JSXElement {
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
-    const user = getUser();
+    const user = getUserData();
     const alreadyRated = user?.quoteRatings?.[quote.language]?.[quote.id];
     if (isSafeNumber(alreadyRated)) {
       setRating(alreadyRated);
@@ -61,7 +61,7 @@ export function QuoteRateModal(): JSXElement {
 
     hideModalAndClearChain("QuoteRate");
 
-    const oldRating = getUser()?.quoteRatings?.[quote.language]?.[quote.id];
+    const oldRating = getUserData()?.quoteRatings?.[quote.language]?.[quote.id];
 
     showLoaderBar();
     try {

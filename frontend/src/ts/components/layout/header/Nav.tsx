@@ -19,7 +19,7 @@ import {
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
 import { isFocusMode } from "../../../states/test";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
@@ -52,7 +52,7 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUser, (user) => {
+  createEffectOn(getUserData, (user) => {
     if (user === undefined) {
       setAnimatedLevel(0);
       return;
@@ -65,7 +65,7 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const user = getUser();
+    const user = getUserData();
     if (user === undefined) return false;
 
     return user.inboxUnreadSize > 0;
@@ -150,7 +150,7 @@ export function Nav(): JSXElement {
       </Button>
       <AnimePresence exitBeforeEnter>
         <Show
-          when={getUser()}
+          when={getUserData()}
           fallback={
             <Anime
               initial={{ opacity: 0 }}

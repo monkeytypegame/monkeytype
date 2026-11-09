@@ -1,4 +1,4 @@
-import { getUser } from "./states/user";
+import { getUserData } from "./states/user";
 // Import sorting is disabled for this file (.oxfmtrc.json): many imports run
 // side effects on load, so their order matters.
 
@@ -81,7 +81,7 @@ void init(onAuthStateChanged).then(() => {
 });
 
 addToGlobal({
-  user: getUser,
+  user: getUserData,
   config: Config,
   glarsesMode: () => {
     console.log("Moved to settings > danger zone > the rest");

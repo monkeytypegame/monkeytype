@@ -12,7 +12,7 @@ import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
 import type { NormalizedLocalResult } from "./collections/results";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { insertLocalResult } from "./collections/results";
-import { addXp, getUser, recordResult, setStreak } from "./states/user";
+import { addXp, getUserData, recordResult, setStreak } from "./states/user";
 import { setLastResult } from "./states/last-result";
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { FunboxMetadata } from "@monkeytype/funbox";
@@ -35,7 +35,7 @@ export function getLocalPB<M extends Mode>(
   }
 
   const byMode2: Readonly<Record<string, readonly PersonalBest[]>> | undefined =
-    getUser()?.personalBests?.[mode];
+    getUserData()?.personalBests?.[mode];
   const pbs = byMode2?.[mode2];
 
   return pbs?.find(
@@ -57,7 +57,7 @@ export type SaveLocalResultData = {
 };
 
 export function saveLocalResult(data: SaveLocalResultData): void {
-  if (getUser() === undefined) return;
+  if (getUserData() === undefined) return;
 
   if (data.result !== undefined) {
     void insertLocalResult({ result: data.result });
@@ -72,7 +72,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
 export async function getTestActivityCalendar(
   yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
-  const user = getUser();
+  const user = getUserData();
   if (!isAuthenticated() || user === undefined) return undefined;
 
   const currentYear = new Date().getFullYear().toString();

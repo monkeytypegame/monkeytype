@@ -16,7 +16,7 @@ import {
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -64,7 +64,7 @@ export function FriendsList() {
 
                   validation: {
                     isValid: async (name: string) => {
-                      if (name === getUser()?.name) {
+                      if (name === getUserData()?.name) {
                         return "That is not how you make friends.";
                       }
 

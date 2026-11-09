@@ -1,4 +1,4 @@
-import { getUser } from "../states/user";
+import { getUserData } from "../states/user";
 import { Config } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
 import { showSuccessNotification } from "../states/notifications";
@@ -12,7 +12,7 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
-  const user = getUser();
+  const user = getUserData();
   if (!user) return;
 
   const presetToApply = __nonReactive.getPreset(_id);

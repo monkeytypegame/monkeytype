@@ -6,8 +6,8 @@ import {
   __testing,
   addBadge,
   addXp,
-  clearUser,
-  getUser,
+  clearUserData,
+  getUserData,
   loadUserData,
   recordResult,
   resetPersonalBests,
@@ -93,10 +93,10 @@ afterEach(() => {
   __testing.setUser(undefined);
 });
 
-describe("getUser", () => {
+describe("getUserData", () => {
   it("is undefined without a user", () => {
-    clearUser();
-    expect(getUser()).toBeUndefined();
+    clearUserData();
+    expect(getUserData()).toBeUndefined();
   });
 });
 
@@ -104,7 +104,7 @@ describe("loadUserData", () => {
   afterEach(() => setUserId(null));
 
   it("downloads the user into the store", async () => {
-    clearUser();
+    clearUserData();
     setUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(
       ok({
@@ -124,7 +124,7 @@ describe("loadUserData", () => {
 
     await loadUserData();
 
-    expect(getUser()).toMatchObject({
+    expect(getUserData()).toMatchObject({
       uid: "uid2",
       name: "alice",
       personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {} },
@@ -147,7 +147,7 @@ describe("loadUserData", () => {
     } as never);
 
     await expect(loadUserData()).rejects.toBeInstanceOf(UserDataLoadError);
-    expect(getUser()).toBeUndefined();
+    expect(getUserData()).toBeUndefined();
   });
 });
 
@@ -155,7 +155,7 @@ describe("direct writes", () => {
   it("records a result: typing stats, activity and pb", () => {
     recordResult(result(), { isPb: true });
 
-    const u = getUser();
+    const u = getUserData();
     expect(u?.typingStats).toEqual({
       timeTyping: 16,
       startedTests: 4,
@@ -167,7 +167,7 @@ describe("direct writes", () => {
     ]);
 
     recordResult(result({ wpm: 120 }), { isPb: true });
-    expect(getUser()?.personalBests.time["15"]).toEqual([
+    expect(getUserData()?.personalBests.time["15"]).toEqual([
       expect.objectContaining({ wpm: 120 }),
     ]);
   });
@@ -175,27 +175,27 @@ describe("direct writes", () => {
   it("records a result on a later day, padding missed days", () => {
     recordResult(result({ timestamp: LAST_DAY + 3 * DAY }), { isPb: false });
 
-    expect(getUser()?.testActivity).toEqual({
+    expect(getUserData()?.testActivity).toEqual({
       testsByDays: [3, null, 2, null, null, 1],
       lastDay: LAST_DAY + 3 * DAY,
     });
-    expect(getUser()?.personalBests.time).toEqual({});
+    expect(getUserData()?.personalBests.time).toEqual({});
   });
 
   it("adds xp and shows it on the xp bar", () => {
     __testing.setUser(user({ xp: 10 }));
     addXp(5);
 
-    expect(getUser()?.xp).toBe(15);
+    expect(getUserData()?.xp).toBe(15);
     expect(getXpBarData()).toMatchObject({ addedXp: 5, resultingXp: 15 });
   });
 
   it("sets the streak, raising the max streak", () => {
     __testing.setUser(user({ streak: 1, maxStreak: 2 }));
     setStreak(3);
-    expect(getUser()).toMatchObject({ streak: 3, maxStreak: 3 });
+    expect(getUserData()).toMatchObject({ streak: 3, maxStreak: 3 });
     setStreak(1);
-    expect(getUser()).toMatchObject({ streak: 1, maxStreak: 3 });
+    expect(getUserData()).toMatchObject({ streak: 1, maxStreak: 3 });
   });
 
   it("adds badges, sets inbox size, links discord, resets pbs", () => {
@@ -206,8 +206,10 @@ describe("direct writes", () => {
     setDiscordLink({ discordId: "d1", discordAvatar: "a1" });
     resetPersonalBests();
 
-    expect(getUser()?.inventory?.badges.map((b) => b.id)).toEqual([1, 2, 3]);
-    expect(getUser()).toMatchObject({
+    expect(getUserData()?.inventory?.badges.map((b) => b.id)).toEqual([
+      1, 2, 3,
+    ]);
+    expect(getUserData()).toMatchObject({
       inboxUnreadSize: 4,
       discordId: "d1",
       discordAvatar: "a1",
@@ -216,10 +218,10 @@ describe("direct writes", () => {
   });
 
   it("does nothing without a user", () => {
-    clearUser();
+    clearUserData();
     addXp(5);
     setStreak(5);
-    expect(getUser()).toBeUndefined();
+    expect(getUserData()).toBeUndefined();
   });
 
   it("saves lb memory, sending only a changed rank", async () => {
@@ -228,7 +230,7 @@ describe("direct writes", () => {
       .mockResolvedValue(ok());
 
     await updateLbMemory("time", "15", "english", 7, true);
-    expect(getUser()?.lbMemory?.time?.["15"]?.["english"]).toBe(7);
+    expect(getUserData()?.lbMemory?.time?.["15"]?.["english"]).toBe(7);
     expect(send).toHaveBeenCalledOnce();
 
     await updateLbMemory("time", "15", "english", 7, true);
@@ -244,18 +246,18 @@ describe("optimistic actions", () => {
     );
 
     const done = updateName("carl");
-    expect(getUser()?.name).toBe("carl");
+    expect(getUserData()?.name).toBe("carl");
 
     respond(ok());
     await done;
-    expect(getUser()?.name).toBe("carl");
+    expect(getUserData()?.name).toBe("carl");
   });
 
   it("rolls back and rejects on failure", async () => {
     vi.spyOn(Ape.users, "updateName").mockResolvedValue(fail("taken"));
 
     await expect(updateName("carl")).rejects.toThrow("taken");
-    expect(getUser()?.name).toBe("bob");
+    expect(getUserData()?.name).toBe("bob");
   });
 
   it("keeps a direct write made while the action was pending", async () => {
@@ -269,7 +271,7 @@ describe("optimistic actions", () => {
     respond(ok());
     await done;
 
-    expect(getUser()).toMatchObject({ name: "carl", xp: 5 });
+    expect(getUserData()).toMatchObject({ name: "carl", xp: 5 });
   });
 
   it("keeps a direct write made while a failing action was pending", async () => {
@@ -283,14 +285,14 @@ describe("optimistic actions", () => {
     respond(fail("taken"));
     await expect(done).rejects.toThrow("taken");
 
-    expect(getUser()).toMatchObject({ name: "bob", xp: 5 });
+    expect(getUserData()).toMatchObject({ name: "bob", xp: 5 });
   });
 
   it("never shows the old value again on success", async () => {
     vi.spyOn(Ape.users, "updateName").mockResolvedValue(ok());
     const names: (string | undefined)[] = [];
     const dispose = createRoot((dispose) => {
-      createEffect(() => names.push(getUser()?.name));
+      createEffect(() => names.push(getUserData()?.name));
       return dispose;
     });
 
@@ -310,11 +312,11 @@ describe("optimistic actions", () => {
     const second = updateName("dave");
     responses[0]?.(fail("taken"));
     await expect(first).rejects.toThrow("taken");
-    expect(getUser()?.name).toBe("dave");
+    expect(getUserData()?.name).toBe("dave");
 
     responses[1]?.(ok());
     await second;
-    expect(getUser()?.name).toBe("dave");
+    expect(getUserData()?.name).toBe("dave");
   });
 
   it("keeps a newer favourite when an older one fails", async () => {
@@ -339,7 +341,7 @@ describe("optimistic actions", () => {
     await second;
 
     // the failed one stays too: the list changed since, so it isn't rolled back
-    expect(getUser()?.favoriteQuotes?.["english"]).toEqual(["5", "6"]);
+    expect(getUserData()?.favoriteQuotes?.["english"]).toEqual(["5", "6"]);
   });
 
   it("adds and removes a favourite quote", async () => {
@@ -356,14 +358,14 @@ describe("optimistic actions", () => {
       quoteId: "6",
       favorite: true,
     });
-    expect(getUser()?.favoriteQuotes?.["english"]).toEqual(["5", "6"]);
+    expect(getUserData()?.favoriteQuotes?.["english"]).toEqual(["5", "6"]);
 
     await setQuoteFavorite({
       language: "english",
       quoteId: "5",
       favorite: false,
     });
-    expect(getUser()?.favoriteQuotes?.["english"]).toEqual(["6"]);
+    expect(getUserData()?.favoriteQuotes?.["english"]).toEqual(["6"]);
   });
 
   it("updates the profile with the server's sanitized details", async () => {
@@ -373,8 +375,8 @@ describe("optimistic actions", () => {
 
     await updateProfile({ details: { bio: "dirty" }, selectedBadgeId: 2 });
 
-    expect(getUser()?.details).toEqual({ bio: "clean" });
-    expect(getUser()?.inventory?.badges).toEqual([
+    expect(getUserData()?.details).toEqual({ bio: "clean" });
+    expect(getUserData()?.inventory?.badges).toEqual([
       { id: 1, selected: false },
       { id: 2, selected: true },
     ]);

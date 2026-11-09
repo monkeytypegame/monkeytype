@@ -44,7 +44,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
-import { clearUser, loadUserData } from "./states/user";
+import { clearUserData, loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
@@ -230,7 +230,7 @@ export async function onAuthStateChanged(
       userPromise = loadUser(user);
     } else {
       setUserId(null);
-      clearUser();
+      clearUserData();
     }
   }
 

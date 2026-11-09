@@ -4,7 +4,7 @@ import { getConfig } from "../../../../config/store";
 import { getLocalPB } from "../../../../db";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { getCurrentQuote } from "../../../../states/test";
-import { getUser } from "../../../../states/user";
+import { getUserData } from "../../../../states/user";
 import { getActiveFunboxes } from "../../../../test/funbox/list";
 import { getMode2 } from "../../../../utils/misc";
 import { Notice } from "./Notice";
@@ -17,7 +17,7 @@ export function PbNotice() {
     //react on config.funbox
     const _funbox = getConfig.funbox;
     //react on new localPB
-    const _user = getUser();
+    const _user = getUserData();
 
     const mode2 = getMode2(getConfig, getCurrentQuote());
     const pb = getLocalPB(

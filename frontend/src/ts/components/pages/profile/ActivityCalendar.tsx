@@ -10,7 +10,7 @@ import {
 } from "../../../elements/test-activity";
 import { TestActivityCalendar } from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { getUser } from "../../../states/user";
+import { getUserData } from "../../../states/user";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
 
@@ -28,7 +28,7 @@ export function ActivityCalendar(props: {
   createEffect(() =>
     (() => {
       const testActivity = props.isAccountPage
-        ? getUser()?.testActivity
+        ? getUserData()?.testActivity
         : props.testActivity;
       if (testActivity === undefined || element() === undefined) {
         calendar = undefined;
@@ -58,8 +58,8 @@ export function ActivityCalendar(props: {
 
   const yearOptions = () => {
     const startYear =
-      getUser()?.addedAt !== undefined
-        ? new Date(getUser()?.addedAt ?? 0).getFullYear()
+      getUserData()?.addedAt !== undefined
+        ? new Date(getUserData()?.addedAt ?? 0).getFullYear()
         : 2020;
     const currentYear = new Date().getFullYear();
     const years: SlimSelectProps["options"] = [
@@ -71,7 +71,8 @@ export function ActivityCalendar(props: {
     for (let year = currentYear; year >= startYear; year--) {
       if (
         years.length < 2 ||
-        (getSeverConfiguration()?.users.premium.enabled && getUser()?.isPremium)
+        (getSeverConfiguration()?.users.premium.enabled &&
+          getUserData()?.isPremium)
       ) {
         years.push({
           text: year.toString(),

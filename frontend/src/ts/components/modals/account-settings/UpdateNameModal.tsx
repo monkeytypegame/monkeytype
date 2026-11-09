@@ -9,11 +9,11 @@ import {
 } from "../../../auth";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getUser, updateName } from "../../../states/user";
+import { getUserData, updateName } from "../../../states/user";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
-  const user = getUser();
+  const user = getUserData();
   if (!isAuthenticated() || !user) return;
 
   showSimpleModal({
