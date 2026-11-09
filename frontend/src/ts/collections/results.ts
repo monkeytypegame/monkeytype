@@ -44,6 +44,7 @@ import {
 } from "./utils/blocking-download";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
+import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
 import { removeLanguageSize } from "../utils/strings";
 
@@ -256,11 +257,11 @@ function normalizeResult(
   } as NormalizedLocalResult<Mode>;
 }
 
-const resultsCollection = createCollection(
-  queryCollectionOptions({
+const resultsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     ...blockingDownloadOptions,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
@@ -291,7 +292,8 @@ const resultsCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
   }),
-);
+  ...keepForever,
+});
 
 resultsCollection.createIndex((row) => row.timestamp, {
   indexType: BTreeIndex,
