@@ -6,6 +6,7 @@ import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
+  getFunboxUnsupportedReason,
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
@@ -157,6 +158,14 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
         important: true,
       },
     );
+    return false;
+  }
+
+  const unsupportedReason = Config.funbox.includes(funbox)
+    ? undefined
+    : getFunboxUnsupportedReason(funbox);
+  if (unsupportedReason !== undefined) {
+    showNoticeNotification(unsupportedReason, { durationMs: 5000 });
     return false;
   }
 

@@ -19,7 +19,6 @@ export function ThemeIndicator(): JSXElement {
       }
       if (isAuthenticated() && themes().length < 1) {
         showNoticeNotification("No custom themes!");
-        setConfig("customTheme", false);
         return;
       }
       setConfig("customTheme", true);

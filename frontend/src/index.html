@@ -44,6 +44,19 @@
         --nav-focus-opacity: 0;
       }
     </style>
+    <!-- last configured theme colors (theme controller), applied before the
+    first paint to avoid an initial flash of the default theme (and the body
+    background fading from it) -->
+    <script>
+      try {
+        var cachedTheme = localStorage.getItem("firstPaintThemeCss");
+        if (cachedTheme) {
+          var style = document.createElement("style");
+          style.textContent = cachedTheme;
+          document.head.appendChild(style);
+        }
+      } catch (e) {}
+    </script>
     <link
       rel="icon"
       type="image/x-icon"
@@ -133,7 +146,6 @@
   <body class="loading">
     <!-- shown without js or css, so it can't be rendered by solid -->
     <load src="html/warnings.html" />
-    <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
     <script
       src="https://www.google.com/recaptcha/api.js?render=explicit"
       async

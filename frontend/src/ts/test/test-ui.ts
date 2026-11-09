@@ -10,7 +10,6 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import * as Focus from "../test/focus";
 import {
   blurInputElement,
   focusInputElement,
@@ -44,6 +43,7 @@ import {
   highlightKeymapKey,
   setWordsInputPosition,
   triggerScrollWindowToActiveWord,
+  setFocusMode,
 } from "../states/test";
 import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
@@ -112,7 +112,7 @@ function afterAnyTestInput(
     void SoundController.playClick();
   }
 
-  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy() ?? 100);
   if (!isNaN(acc)) {
     setCurrentLiveStats({ acc });
   }
@@ -125,7 +125,7 @@ function afterAnyTestInput(
     }
   }
 
-  Focus.set(true);
+  setFocusMode(true);
   Caret.stopAnimation();
 }
 
@@ -206,7 +206,7 @@ export async function afterTestWordChange(
 }
 
 export function onTestStart(): void {
-  Focus.set(true);
+  setFocusMode(true);
   setCurrentLiveStats({
     wpm: 0,
     acc: 100,
@@ -243,7 +243,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   typingTestEl().setStyle({ opacity: "0" });
   setTypingTestHidden(false);
   setWordsInputPosition((position) => ({ ...position, left: 0 }));
-  Focus.set(false);
+  setFocusMode(false);
   setCurrentLiveStats({
     wpm: undefined,
     acc: undefined,

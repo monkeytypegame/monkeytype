@@ -12,8 +12,9 @@ describe("TestPage", () => {
     const page = await renderTestPage({ words: ["the", "fox"] });
 
     expect(page.phase()).toBe("ready");
-    expect(page.word(0).state).toBe("active");
-    expect(page.word(1).state).toBe("upcoming");
+    expect(page.word(0).isActive).toBe(true);
+    expect(page.word(1).isActive).toBe(false);
+    expect(page.word(1).state).toBe("untyped");
     expect(page.word(1).letters()).toEqual([
       { char: "f", state: "untyped" },
       { char: "o", state: "untyped" },
@@ -71,7 +72,7 @@ describe("TestPage", () => {
       await page.type("the ");
 
       expect(page.word(0).state).toBe("typed");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(1).isActive).toBe(true);
     });
 
     it("marks a mistyped word as an error", async () => {
@@ -79,8 +80,8 @@ describe("TestPage", () => {
 
       await page.type("th ");
 
-      expect(page.word(0).state).toBe("error");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(0).state).toBe("typedIncorrectly");
+      expect(page.word(1).isActive).toBe(true);
     });
   });
 
@@ -102,8 +103,9 @@ describe("TestPage", () => {
 
       await page.type("th \b");
 
-      expect(page.word(0).state).toBe("active");
-      expect(page.word(1).state).toBe("upcoming");
+      expect(page.word(0).isActive).toBe(true);
+      expect(page.word(1).isActive).toBe(false);
+      expect(page.word(1).state).toBe("untyped");
     });
 
     it("doesn't go back into a correct word", async () => {
@@ -112,7 +114,7 @@ describe("TestPage", () => {
       await page.type("the \b");
 
       expect(page.word(0).state).toBe("typed");
-      expect(page.word(1).state).toBe("active");
+      expect(page.word(1).isActive).toBe(true);
     });
 
     it("goes back into a correct word in freedom mode", async () => {
@@ -123,7 +125,60 @@ describe("TestPage", () => {
 
       await page.type("the \b");
 
-      expect(page.word(0).state).toBe("active");
+      expect(page.word(0).isActive).toBe(true);
+    });
+  });
+
+  describe("word delete", () => {
+    it("clears the word it leaves when it also deletes a strict space", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox", "ran"],
+        config: { strictSpace: true },
+      });
+
+      await page.type("th  ");
+      expect(page.word(1).letters()[0]?.state).toBe("incorrect");
+
+      await page.deleteWord();
+
+      expect(page.word(0).isActive).toBe(true);
+      expect(page.word(1).letters()).toEqual([
+        { char: "f", state: "untyped" },
+        { char: "o", state: "untyped" },
+        { char: "x", state: "untyped" },
+      ]);
+    });
+  });
+
+  describe("read ahead funbox", () => {
+    it("shows the words again after a backspace over a wrong letter", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox"],
+        config: { funbox: ["read_ahead"] },
+      });
+      const words = document.querySelector("#words");
+
+      await page.type("tx");
+      expect(words?.classList).not.toContain("read_ahead_disabled");
+
+      await page.type("\b");
+      expect(words?.classList).toContain("read_ahead_disabled");
+
+      await page.type("h ");
+      expect(words?.classList).not.toContain("read_ahead_disabled");
+    });
+
+    it("keeps the words hidden on a backspace in an empty word after a correct one", async () => {
+      const page = await renderTestPage({
+        words: ["the", "fox"],
+        config: { funbox: ["read_ahead"] },
+      });
+
+      await page.type("the \b");
+
+      expect(document.querySelector("#words")?.classList).not.toContain(
+        "read_ahead_disabled",
+      );
     });
   });
 

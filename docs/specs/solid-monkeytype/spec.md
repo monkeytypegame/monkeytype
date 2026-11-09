@@ -26,7 +26,7 @@ One architecture, described below as the final state:
   1. a DOM-free **test engine** (lifecycle phases, words, timer, EventLog, stats, funbox plugins) that owns its state and exposes commands and read-only signals,
   2. an **input layer** (the WordsInput component plus handlers) that turns browser input into engine commands and render-store writes, never rendering synchronously,
   3. a **render layer** (TestPage, Words and the components around them) that owns every element it draws, including layout (line jump, tape scroll, break joining), drives both carets, and runs every fade.
-- **Imperative DOM work survives only inside the component that owns the element** (measuring, animating, canvas, focus), started from that component's lifecycle. Document-level effects (body classes, head links) each belong to one dedicated component, like Theme and Font do today.
+- **Imperative DOM work survives only inside the component that owns the element** (measuring, animating, canvas, focus), started from that component's lifecycle. Document-level effects (body classes, head links) each belong to one dedicated component, like Theme and Font do today. Body classes go through the `useBodyClasses` hook (a `classList`-style record, removed on cleanup), never hand-rolled `document.body.classList` calls; each class has one owner.
 - **Theming targets a stable attribute API**, `data-ui-element` / `data-ui-state` / `data-ui-variant`, which navigation already uses. Ids and classes become internal.
 
 Users should see no behaviour change, except where a bug at today's seams disappears and except intended deviations listed per PR.
@@ -84,7 +84,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 
 42. As a theme author, I want to target stable `data-ui-element` / `data-ui-state` / `data-ui-variant` attributes, so that markup refactors don't break my theme.
 43. As a theme author, I want every themeable part of the test (words, word, letter, caret, pace caret, typo hint, live stats, result parts) to carry a `data-ui-element`, so that I can style all of it.
-44. As a theme author, I want letter and word states (correct, incorrect, extra, typed, active, blind…) exposed as `data-ui-state`, so that I don't depend on internal class names.
+44. As a theme author, I want letter and word states (correct, incorrect, extra, typed…), the active word and the words modes (blind, highlight, flipped…) exposed as `data-ui-*` attributes, so that I don't depend on internal class names.
 45. As a user with custom CSS, I want old selectors to keep working until a single announced removal, so that I have time to move my CSS over.
 46. As a funbox CSS author, I want funbox styling to keep a stable hook (body-level funbox state and the funbox stylesheet), so that funbox styles apply.
 
@@ -197,8 +197,8 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 
 ### Theming and styling
 
-- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (eg. correct, incorrect, extra, typed, active, blind) and `data-ui-variant`. Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
-- **`<letter>` goes away**: letters render as `<span data-ui-element="letter" data-ui-state="…">` (inline by default, so no extra CSS). Benchmark letter rendering with the profiling harness when switching states to attributes. Any other made-up elements get the same treatment.
+- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (one value from the component's status type, eg. a letter's `LetterStatus`, a word's `WordStatus`) and `data-ui-variant` (one value, eg. a letter's `tab`/`newline`). Facts independent of the state get their own attribute, one per fact, never a space-separated list: `data-ui-active` on the active word; `data-ui-word-highlight` (the highlight mode, eg. `next-two-words`), `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script` and `data-ui-rtl` on words; `data-ui-corrected` and `data-ui-extra-corrected` on result letters. The result words containers are `wordsHistory` and `replayWords`; their words and letters share the `word`/`letter` names, and words share `WordStatus` (typed means committed, in the replay too). Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words wrapper, words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
+- **`<letter>` goes away**: letters render as `<span data-ui-element="letter" data-ui-state="…">` (inline by default, so no extra CSS). Any other made-up elements (`<hint>`) get the same treatment. The attributes come first (T1), on the old tags with their classes, so legacy selectors keep working; the tags become spans in CL3, the single announced break. Code finds letters by `LETTER_SELECTOR`, never the tag.
 - **Migration of themes**: each conversion PR adds the attributes and moves the bundled themes and funbox CSS over. Old ids/classes/`letter` selectors keep working until one announced removal step at the end, which is the single break for user custom CSS.
 - **Styling**: all component styling is Tailwind through the class-merge helper. SCSS remains only for keyframes and base styles that must target `data-ui-*` (eg. letter colours from theme variables, blind mode); the test, caret and letter SCSS is rewritten against `data-ui-*` and the SCSS files are deleted by the end.
 
@@ -266,6 +266,12 @@ From config (C1):
 - A key that fails to apply during a whole-config apply holds its default in the store (it used to hold the rejected value).
 - A single setting change runs store effects before config event listeners. A whole-config apply runs them once, before failed keys are re-saved and before full-config-change finished (they used to run after it).
 
+From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
+
+- Renamed commands: Minimum speed → Min speed, Minimum accuracy → Min accuracy (both get a "minimum" alias), Sound on click/error → Play sound on click/error, Pace caret mode → Pace caret, Live progress color/opacity → Timer color/opacity (a "progress" alias), Key tips → Show key tips, Out of focus warning → Show out of focus warning.
+- Renamed options: key tips, out of focus warning and caps lock warning show/hide (were on/off); error sound 4 "missed punch" (was "punch miss"); layout "default" (was "off"); random theme "favorite" (was "fav"); pace caret "tag pb" (was "tagPb").
+- Kept commandline labels: blind mode on/off (settings shows a blank "on" for button height), quote length, sound volume, font family and keymap layout (no settings label of their own to share).
+
 ## Settled decisions (grilling, 2026-10-24)
 
 | # | Decision |
@@ -279,7 +285,7 @@ From config (C1):
 | Q7 | Test-page harness is the main test seam |
 | Q8 | Tribe lands after everything else is Solid |
 | Q9 | Spec and roadmap live in `docs/specs/solid-monkeytype/`, committed; no tracker |
-| Q10 | `<letter>` becomes `<span data-ui-element="letter">` |
+| Q10 | `<letter>` becomes `<span data-ui-element="letter">`, in CL3; T1 adds the attributes to the old tag |
 | Q11 | Engine owns its state module |
 | Q12 | All styling to Tailwind; SCSS only for keyframes and `data-ui-*` base styles |
 | Q14 | Lint rules land when each layer is clean |

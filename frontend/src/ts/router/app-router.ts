@@ -8,8 +8,8 @@ import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
 import { isAuthenticated } from "../states/core";
 import { getRoutePage } from "../states/router";
+import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";
-import * as Focus from "../test/focus";
 import { updateTitle } from "../utils/misc";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { createRouterAuth } from "./create-router-auth";
@@ -60,7 +60,7 @@ router.subscribe("onResolved", () => {
   prevPage = page;
 
   updatePageTitle(page);
-  Focus.set(false);
+  setFocusMode(false);
   void AdController.reinstate();
 });
 

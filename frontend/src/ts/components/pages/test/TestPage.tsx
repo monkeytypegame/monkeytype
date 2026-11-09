@@ -7,7 +7,7 @@ import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
 import { isResultShown } from "../../../states/result";
 import {
-  getFocus,
+  isFocusMode,
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
   isResultLoading,
@@ -21,7 +21,6 @@ import {
 } from "../../../states/test";
 import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
-import * as Funbox from "../../../test/funbox/funbox";
 import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
@@ -107,10 +106,6 @@ export function TestPage(): JSXElement {
     void restartTest({ noAnim: true });
 
     resetIncompleteTests();
-    // registered last so it runs after the modules above have unbound
-    signal.addEventListener("abort", () => {
-      void Funbox.clear();
-    });
 
     window.addEventListener(
       "blur",
@@ -207,6 +202,7 @@ export function TestPage(): JSXElement {
         </div>
         <div
           id="wordsWrapper"
+          data-ui-element="wordsWrapper"
           ref={(el) => (wordsWrapperRef = el)}
           class={cn("content-grid full-width", wordsModeClasses(), {
             hidden: isWordsWrapperHidden(),
@@ -253,7 +249,7 @@ export function TestPage(): JSXElement {
             "focus:opacity-100 focus:transition-none",
             getConfig.quickRestart !== "off" && "hidden",
             "pointer-coarse:block", //always show the button if using a pointer-coarse device
-            getFocus() && "opacity-0", //always hide if we are focused
+            isFocusMode() && "opacity-0", //always hide if we are focused
           )}
           balloon={{
             text: "Restart Test",

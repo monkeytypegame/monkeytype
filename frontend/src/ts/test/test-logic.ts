@@ -36,7 +36,6 @@ import {
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
 import * as AdController from "../controllers/ad-controller";
-import * as Focus from "./focus";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
@@ -85,6 +84,7 @@ import {
   setComposing,
   setCompositionData,
   highlightKeymapKey,
+  setFocusMode,
 } from "../states/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
@@ -199,7 +199,7 @@ function recordIncompleteTest(): void {
   TestTimer.clear(true);
   const liveEventLog = buildEventLog();
   const tt = getIncompleteTestSeconds(liveEventLog);
-  const acc = Numbers.roundTo2(getLiveCachedAccuracy());
+  const acc = Numbers.roundTo2(getLiveCachedAccuracy() ?? 100);
   pushIncompleteTest({ acc, seconds: tt });
 }
 
@@ -814,7 +814,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     ),
     charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
     charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage),
+    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage ?? 0),
     language: language,
     testDuration: duration,
     lastKeyToEnd: getLastKeypressToEndMs(eventLog),
@@ -1193,7 +1193,7 @@ async function showResult(
     });
   }
 
-  Focus.set(false);
+  setFocusMode(false);
 
   const canQuickRestartTest = canQuickRestart(
     Config.mode,

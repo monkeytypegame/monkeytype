@@ -1,10 +1,13 @@
+import { createRoot } from "solid-js";
 import { Config } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 import { getCurrentInput } from "./events/data";
 import {
   isDirectionReversed,
   isLanguageRightToLeft,
   getActiveWordIndex,
   getCompositionData,
+  isFocusMode,
 } from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
@@ -61,6 +64,15 @@ export function initElement(
     if (caret === created) caret = undefined;
   });
 }
+
+// the caret stops blinking in focus mode
+createRoot(() => {
+  createEffectOn(
+    isFocusMode,
+    (focused) => (focused ? stopAnimation() : startAnimation()),
+    { defer: true },
+  );
+});
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {

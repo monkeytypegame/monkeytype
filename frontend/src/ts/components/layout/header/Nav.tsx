@@ -19,7 +19,7 @@ import {
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
 import { getSnapshot } from "../../../states/snapshot";
-import { getFocus } from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
@@ -49,7 +49,7 @@ export function Nav(): JSXElement {
 
   const buttonClass = () =>
     cn("aspect-square", {
-      "opacity-(--nav-focus-opacity)": getFocus(),
+      "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
   createEffectOn(getSnapshot, (snapshot) => {
@@ -185,7 +185,7 @@ export function Nav(): JSXElement {
                 ref={accountMenuRef}
                 class={cn(
                   "relative",
-                  !getFocus() &&
+                  !isFocusMode() &&
                     "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
                   "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
                   getAccountMenuOpen() &&
@@ -209,7 +209,7 @@ export function Nav(): JSXElement {
                   class={cn(
                     "h-full",
                     "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",
-                    { "opacity-(--nav-focus-opacity)": getFocus() },
+                    { "opacity-(--nav-focus-opacity)": isFocusMode() },
                   )}
                   to="/account"
                   dataset={{
