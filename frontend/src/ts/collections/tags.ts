@@ -22,7 +22,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { isTempId, tempId } from "./utils/misc";
+import { isTempId, tempId, keepForever } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
 import { isAuthenticated } from "../states/core";
@@ -35,8 +35,8 @@ const queryKeys = {
 
 const tagsCollection = createCollection({
   ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     queryClient,
     enabled: isAuthenticated,
@@ -57,10 +57,7 @@ const tagsCollection = createCollection({
       return results;
     },
   }),
-  // queryCollectionOptions only applies gcTime to the query cache. Without
-  // this the collection is cleaned up 5 min after its last subscriber and
-  // __nonReactive readers (commandline) get an empty list.
-  gcTime: Infinity, //remove when __nonReactive is removed
+  ...keepForever,
 });
 
 // oxlint-disable-next-line typescript/explicit-function-return-type

@@ -10,7 +10,7 @@ import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -28,10 +28,10 @@ export function useCustomThemesLiveQuery() {
   });
 }
 
-const customThemesCollection = createCollection(
-  queryCollectionOptions({
+const customThemesCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     startSync: true,
     queryKey: queryKeys.root(),
     queryClient,
@@ -48,7 +48,8 @@ const customThemesCollection = createCollection(
       return response.body.data;
     },
   }),
-);
+  ...keepForever,
+});
 
 // Its query is created disabled: startSync runs at module load, before the
 // auth state resolves, and the query never re-evaluates `enabled` on its own.
