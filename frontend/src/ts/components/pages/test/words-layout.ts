@@ -311,6 +311,14 @@ export function createWordsLayout(options: {
     return paceCaretHandle;
   }
 
+  /**
+   * Every mounted caret. Line jumps and tape scrolls move them all, so carets
+   * added later (tribe) only need to be listed here.
+   */
+  function allCarets(): Caret[] {
+    return [caret(), paceCaret()].filter((c) => c !== undefined);
+  }
+
   /** Moves the caret to the typed position in the rendered active word. */
   function updateCaret(noAnim: boolean): void {
     const wordIndex = wordsRenderState.renderedActiveWordIndex;
@@ -435,8 +443,7 @@ export function createWordsLayout(options: {
   function shiftWords(marginChange: number, widthRemoved = marginChange): void {
     const words = wordsEl();
     words.setStyle({ marginLeft: `${getMarginLeft(words) + marginChange}px` });
-    caret()?.handleTapeWordsRemoved(widthRemoved);
-    paceCaret()?.handleTapeWordsRemoved(widthRemoved);
+    for (const c of allCarets()) c.handleTapeWordsRemoved(widthRemoved);
   }
 
   function invalidateAsyncLayout(): void {
@@ -750,8 +757,7 @@ export function createWordsLayout(options: {
       ease: tapeScrollEase,
     };
 
-    caret()?.handleTapeScroll(caretScrollOptions);
-    paceCaret()?.handleTapeScroll(caretScrollOptions);
+    for (const c of allCarets()) c.handleTapeScroll(caretScrollOptions);
 
     setMarginLeft(wordsEl(), newMargin, duration);
     for (let i = 0; i < afterNewlinesNewMargins.length; i++) {
@@ -840,8 +846,7 @@ export function createWordsLayout(options: {
       newMarginTop,
       duration: Config.smoothLineScroll ? duration : 0,
     };
-    caret()?.handleLineJump(caretLineJumpOptions);
-    paceCaret()?.handleLineJump(caretLineJumpOptions);
+    for (const c of allCarets()) c.handleLineJump(caretLineJumpOptions);
 
     if (Config.smoothLineScroll) {
       lineTransition = true;

@@ -154,7 +154,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by |
 |---|---|---|---|---|
-| [ ] | TR1 | L · PR | Re-port the `newtribemerge` branch onto the final architecture (router, Words, caret boundary, engine commands), following the recorded tribe decisions | CL |
+| [ ] | TR1 | L · PR | Re-port the `newtribemerge` branch onto the final architecture (router, Words, caret boundary, engine commands), following the recorded tribe decisions. Tribe carets are rendered by Words like the pace caret, added to the layout's `allCarets` (see the spec's Carets); `tribe-carets.ts` isn't ported | CL |
 
 ## Suggested sequencing for 2–3 people
 
