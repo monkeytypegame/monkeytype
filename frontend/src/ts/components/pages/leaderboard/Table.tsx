@@ -2,7 +2,7 @@ import {
   LeaderboardEntry,
   XpLeaderboardEntry,
 } from "@monkeytype/schemas/leaderboards";
-import { createColumnHelper } from "@tanstack/solid-table";
+import { createColumnHelper, type RowData } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement, Show } from "solid-js";
@@ -16,7 +16,11 @@ import { Formatting } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
 import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 
 type SpeedEntry = LeaderboardEntry;
 type XpEntry = XpLeaderboardEntry;
@@ -117,58 +121,67 @@ function NoEntriesFound(): JSXElement {
 }
 
 const friendsRankColumn = () =>
-  createColumnHelper<SpeedEntry | XpEntry>().accessor("friendsRank", {
-    header: () => <Fa icon="fa-user-friends" />,
-    cell: (info) =>
-      info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-    meta: {
-      align: "center",
-      headerMeta: {
-        "aria-label": "Friends rank",
-        "data-balloon-pos": "down",
+  createColumnHelper<DataTableFeatures, SpeedEntry | XpEntry>().accessor(
+    "friendsRank",
+    {
+      header: () => <Fa icon="fa-user-friends" />,
+      cell: (info) =>
+        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
+      meta: {
+        align: "center",
+        headerMeta: {
+          "aria-label": "Friends rank",
+          "data-balloon-pos": "down",
+        },
       },
     },
-  });
+  );
 
 const rankColumn = (friendsOnly: boolean) =>
-  createColumnHelper<SpeedEntry | XpEntry>().accessor("rank", {
-    header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
-    cell: (info) =>
-      info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
-    meta: {
-      align: "center",
-      headerMeta: {
-        "aria-label": "Global rank",
-        "data-balloon-pos": "down",
+  createColumnHelper<DataTableFeatures, SpeedEntry | XpEntry>().accessor(
+    "rank",
+    {
+      header: () => <Fa icon={friendsOnly ? "fa-users" : "fa-hashtag"} />,
+      cell: (info) =>
+        info.getValue() === 1 ? <Fa icon="fa-crown" /> : info.getValue(),
+      meta: {
+        align: "center",
+        headerMeta: {
+          "aria-label": "Global rank",
+          "data-balloon-pos": "down",
+        },
       },
     },
-  });
+  );
 
 const userColumn = ({
   userOverride,
 }: {
   userOverride?: Accessor<JSXElement>;
 }) =>
-  createColumnHelper<SpeedEntry | XpEntry>().accessor("uid", {
-    header: "name",
-    cell: (info) =>
-      userOverride?.() ?? (
-        <User
-          avatarFallback="user-circle"
-          avatarColor="sub"
-          flagsColor="sub"
-          user={info.row.original}
-          isFriend={hasConnection(info.row.original.uid, "accepted")}
-          class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
-          linkToProfile={true}
-        />
-      ),
-    meta: {
-      cellMeta: () => ({ class: "w-full" }),
+  createColumnHelper<DataTableFeatures, SpeedEntry | XpEntry>().accessor(
+    "uid",
+    {
+      header: "name",
+      cell: (info) =>
+        userOverride?.() ?? (
+          <User
+            avatarFallback="user-circle"
+            avatarColor="sub"
+            flagsColor="sub"
+            user={info.row.original}
+            isFriend={hasConnection(info.row.original.uid, "accepted")}
+            class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+            linkToProfile={true}
+          />
+        ),
+      meta: {
+        cellMeta: () => ({ class: "w-full" }),
+      },
     },
-  });
+  );
 
-function defineResponsivePair<T>() {
+function defineResponsivePair<T extends RowData>() {
   return <KA extends string & keyof T, KB extends string & keyof T>({
     columns,
     switchBreakpoint: breakpoint,
@@ -248,7 +261,8 @@ function getSpeedColumns({
   userOverride?: Accessor<JSXElement>;
   addHeader?: boolean;
 }): DataTableColumnDef<SpeedEntry>[] {
-  const defineColumn = createColumnHelper<SpeedEntry>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, SpeedEntry>()
+    .accessor;
   const columns = [
     friendsRankColumn() as DataTableColumnDef<SpeedEntry>,
     rankColumn(friendsOnly) as DataTableColumnDef<SpeedEntry>,
@@ -329,7 +343,8 @@ function getXpColumns({
   userOverride?: Accessor<JSXElement>;
   addHeader?: boolean;
 }): DataTableColumnDef<XpEntry>[] {
-  const defineColumn = createColumnHelper<XpEntry>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, XpEntry>()
+    .accessor;
   const columns = [
     friendsRankColumn() as DataTableColumnDef<XpEntry>,
     rankColumn(friendsOnly) as DataTableColumnDef<XpEntry>,
