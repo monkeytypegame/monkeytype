@@ -1,4 +1,6 @@
-import { ResultMinified } from "@monkeytype/schemas/results";
+import { Result, ResultMinified } from "@monkeytype/schemas/results";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
@@ -23,7 +25,6 @@ import {
 import { queryOptions } from "@tanstack/solid-query";
 import { Accessor, createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
-import { LocalResult } from "../constants/user-data";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
@@ -46,19 +47,54 @@ import { getMode2 } from "../utils/misc";
 import { getCurrentQuote } from "../states/test";
 import { removeLanguageSize } from "../utils/strings";
 
+export type NormalizedLocalResult<M extends Mode> = Omit<
+  Result<M>,
+  | "bailedOut"
+  | "blindMode"
+  | "lazyMode"
+  | "difficulty"
+  | "funbox"
+  | "language"
+  | "numbers"
+  | "punctuation"
+  | "quoteLength"
+  | "restartCount"
+  | "incompleteTestSeconds"
+  | "afkDuration"
+  | "tags"
+> & {
+  bailedOut: boolean;
+  blindMode: boolean;
+  lazyMode: boolean;
+  difficulty: Difficulty;
+  funbox: FunboxName[];
+  language: Language;
+  numbers: boolean;
+  punctuation: boolean;
+  quoteLength: number;
+  restartCount: number;
+  incompleteTestSeconds: number;
+  afkDuration: number;
+  tags: string[];
+  //calculated values
+  words: number;
+  timeTyping: number;
+  dayTimestamp: number;
+};
+
 export type ResultsQueryState = {
-  difficulty: LocalResult<Mode>["difficulty"][];
-  pb: LocalResult<Mode>["isPb"][];
-  mode: LocalResult<Mode>["mode"][];
+  difficulty: NormalizedLocalResult<Mode>["difficulty"][];
+  pb: NormalizedLocalResult<Mode>["isPb"][];
+  mode: NormalizedLocalResult<Mode>["mode"][];
   words: ("10" | "25" | "50" | "100" | "custom")[];
   time: ("15" | "30" | "60" | "120" | "custom")[];
-  punctuation: LocalResult<Mode>["punctuation"][];
-  numbers: LocalResult<Mode>["numbers"][];
-  timestamp: LocalResult<Mode>["timestamp"];
-  quoteLength: LocalResult<Mode>["quoteLength"][];
-  tags: LocalResult<Mode>["tags"];
-  funbox: LocalResult<Mode>["funbox"];
-  language: LocalResult<Mode>["language"][];
+  punctuation: NormalizedLocalResult<Mode>["punctuation"][];
+  numbers: NormalizedLocalResult<Mode>["numbers"][];
+  timestamp: NormalizedLocalResult<Mode>["timestamp"];
+  quoteLength: NormalizedLocalResult<Mode>["quoteLength"][];
+  tags: NormalizedLocalResult<Mode>["tags"];
+  funbox: NormalizedLocalResult<Mode>["funbox"];
+  language: NormalizedLocalResult<Mode>["language"][];
 };
 
 const queryKeys = {
@@ -139,7 +175,7 @@ export function useResultStatsLiveQuery(
 export async function getResultsQueryOnce(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof LocalResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>;
 }) {
@@ -156,7 +192,7 @@ export async function getResultsQueryOnce(options: {
 }
 
 /**
- * get list of LocalResult for the current result selection
+ * get list of NormalizedLocalResult for the current result selection
  * @param queryState
  * @returns
  */
@@ -164,7 +200,7 @@ export async function getResultsQueryOnce(options: {
 export function useResultsLiveQuery(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof LocalResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>;
   limit: Accessor<number>;
@@ -184,9 +220,9 @@ export function useResultsLiveQuery(options: {
 }
 
 function normalizeResult(
-  result: ResultMinified | LocalResult<Mode>,
+  result: ResultMinified | NormalizedLocalResult<Mode>,
   knownTagIds?: Set<string>,
-): LocalResult<Mode> {
+): NormalizedLocalResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
   resultDate.setMinutes(0);
@@ -217,7 +253,7 @@ function normalizeResult(
     timeTyping: calcTimeTyping(result),
     words: Math.round((result.wpm / 60) * result.testDuration),
     dayTimestamp: resultDate.getTime(),
-  } as LocalResult<Mode>;
+  } as NormalizedLocalResult<Mode>;
 }
 
 const resultsCollection = createCollection(
@@ -270,7 +306,7 @@ type ActionType = {
     afterUpdate?: (params: { tagPbs: string[] }) => void;
   };
   insertLocalResult: {
-    result: LocalResult<Mode>;
+    result: NormalizedLocalResult<Mode>;
   };
   deleteLocalTag: {
     tagId: string;
@@ -728,7 +764,7 @@ createRoot(() =>
   }),
 );
 
-function getResults(): LocalResult<Mode>[] {
+function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];
 }
 /**

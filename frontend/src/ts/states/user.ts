@@ -19,7 +19,8 @@ import { createStore, produce, reconcile, unwrap } from "solid-js/store";
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
-import { UserData, LocalResult } from "../constants/user-data";
+import { UserData } from "../constants/user-data";
+import type { NormalizedLocalResult } from "../collections/results";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
@@ -136,7 +137,7 @@ function update(recipe: (user: UserData) => void): void {
 }
 
 export function recordResult(
-  result: LocalResult<Mode>,
+  result: NormalizedLocalResult<Mode>,
   options: { isPb: boolean },
 ): void {
   update((user) => {
@@ -402,7 +403,10 @@ function incrementTestActivity(
   }
 }
 
-function savePb(personalBests: PersonalBests, result: LocalResult<Mode>): void {
+function savePb(
+  personalBests: PersonalBests,
+  result: NormalizedLocalResult<Mode>,
+): void {
   const { mode, mode2, punctuation, numbers, language, difficulty } = result;
   const lazyMode = result.lazyMode;
   const pb = {

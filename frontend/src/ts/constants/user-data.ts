@@ -4,45 +4,6 @@ import {
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
 import { getDefaultConfig } from "./default-config";
-import { Mode } from "@monkeytype/schemas/shared";
-import { Result } from "@monkeytype/schemas/results";
-import { Difficulty, FunboxName } from "@monkeytype/schemas/configs";
-import { Language } from "@monkeytype/schemas/languages";
-
-export type LocalResult<M extends Mode> = Omit<
-  Result<M>,
-  | "bailedOut"
-  | "blindMode"
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "punctuation"
-  | "quoteLength"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-> & {
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: Difficulty;
-  funbox: FunboxName[];
-  language: Language;
-  numbers: boolean;
-  punctuation: boolean;
-  quoteLength: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  afkDuration: number;
-  tags: string[];
-  //calculated values
-  words: number;
-  timeTyping: number;
-  dayTimestamp: number;
-};
 
 export type UserData = Omit<
   User,

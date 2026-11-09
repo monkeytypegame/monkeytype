@@ -3,9 +3,10 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../../collections/results";
+
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { LocalResult } from "../../../constants/user-data";
 import { getFormatting } from "../../../states/core";
 import { getTheme } from "../../../states/theme";
 import { blendTwoHexColors } from "../../../utils/colors";
@@ -20,7 +21,7 @@ export type HistoryChartClickEvent = {
   _id: string;
 };
 export function HistoryChart(props: {
-  results: LocalResult<Mode>[];
+  results: NormalizedLocalResult<Mode>[];
   beginAtZero: boolean;
   typingSpeedUnit: TypingSpeedUnitSettings;
   format: Formatting;
@@ -351,7 +352,7 @@ export function HistoryChart(props: {
   );
 }
 
-function Trend(props: { results: LocalResult<Mode>[] }): JSXElement {
+function Trend(props: { results: NormalizedLocalResult<Mode>[] }): JSXElement {
   const format = getFormatting;
 
   const trend = createMemo(() => {

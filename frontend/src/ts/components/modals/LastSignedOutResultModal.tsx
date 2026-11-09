@@ -3,9 +3,10 @@ import { Mode } from "@monkeytype/schemas/shared";
 import objectHash from "object-hash";
 import { createMemo, JSX } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../collections/results";
+
 import Ape from "../../ape";
 import { getConfig } from "../../config/store";
-import { LocalResult } from "../../constants/user-data";
 import { saveLocalResult, SaveLocalResultData } from "../../db";
 import { authEvent } from "../../events/auth";
 import { getAuthenticatedUser } from "../../firebase";
@@ -166,8 +167,10 @@ async function syncLastSignedOutResult(): Promise<void> {
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a LocalResult - might not cause issues but worth investigating
-  const result = structuredClone(updatedResult) as unknown as LocalResult<Mode>;
+  // into a NormalizedLocalResult - might not cause issues but worth investigating
+  const result = structuredClone(
+    updatedResult,
+  ) as unknown as NormalizedLocalResult<Mode>;
 
   const dataToSave: SaveLocalResultData = {
     xp: response.body.data.xp,

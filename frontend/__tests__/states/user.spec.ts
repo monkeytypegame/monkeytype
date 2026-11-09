@@ -19,11 +19,8 @@ import {
   updateName,
   updateProfile,
 } from "../../src/ts/states/user";
-import {
-  getDefaultUserData,
-  UserData,
-  LocalResult,
-} from "../../src/ts/constants/user-data";
+import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
+import type { NormalizedLocalResult } from "../../src/ts/collections/results";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
@@ -56,8 +53,8 @@ function user(overrides: Partial<UserData> = {}): UserData {
 }
 
 function result(
-  overrides: Partial<LocalResult<"time">> = {},
-): LocalResult<"time"> {
+  overrides: Partial<NormalizedLocalResult<"time">> = {},
+): NormalizedLocalResult<"time"> {
   return {
     mode: "time",
     mode2: "15",
@@ -76,7 +73,7 @@ function result(
     afkDuration: 1,
     restartCount: 3,
     ...overrides,
-  } as LocalResult<"time">;
+  } as NormalizedLocalResult<"time">;
 }
 
 function ok<T>(data: T = null as T): never {

@@ -9,7 +9,7 @@ import {
 import { showLoaderBar, hideLoaderBar } from "./states/loader-bar";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Mode, Mode2, PersonalBest } from "@monkeytype/schemas/shared";
-import { LocalResult } from "./constants/user-data";
+import type { NormalizedLocalResult } from "./collections/results";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { insertLocalResult } from "./collections/results";
 import { addXp, getUser, recordResult, setStreak } from "./states/user";
@@ -52,7 +52,7 @@ export type SaveLocalResultData = {
   xp?: number;
   xpBreakdown?: XpBreakdown;
   streak?: number;
-  result?: LocalResult<Mode>;
+  result?: NormalizedLocalResult<Mode>;
   isPb?: boolean;
 };
 
