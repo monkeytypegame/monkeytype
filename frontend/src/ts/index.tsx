@@ -81,7 +81,7 @@ void init(onAuthStateChanged).then(() => {
 });
 
 addToGlobal({
-  user: getUserData,
+  userData: getUserData,
   config: Config,
   glarsesMode: () => {
     console.log("Moved to settings > danger zone > the rest");
