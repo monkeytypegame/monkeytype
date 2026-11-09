@@ -52,12 +52,12 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUserData, (user) => {
-    if (user === undefined) {
+  createEffectOn(getUserData, (userData) => {
+    if (userData === undefined) {
       setAnimatedLevel(0);
       return;
     }
-    setAnimatedLevel(getLevelFromTotalXp(user.xp ?? 0));
+    setAnimatedLevel(getLevelFromTotalXp(userData.xp ?? 0));
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
