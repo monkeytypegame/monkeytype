@@ -185,7 +185,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 - The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints, including the typed input that layout and the caret position from.
 - **Words owns all layout**: after each flush it runs one layout pass: line jump, tape scroll, input positioning and caret updates. Joining-script dots (dots typed effect) are CSS only: letters stay inline, so nothing is measured and nothing writes into Word. The word-element registry becomes private to Words; only the overflow check is exported.
 - **Words keeps the active line in view** as part of that layout pass: during a test, when the words wrapper is taller than the window, it scrolls the window to the active word (down only while typing, both ways when recentering after a re-layout or on request). The focus flow asks for a recenter through a request signal. Before the test, TestPage keeps the test block in view.
-- **Carets: boundary fixed, internals decided during the caret rewrite.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Whether a caret animates through fully reactive props, imperative calls on a private handle, or a mix is decided during that step, based on what gets the movement looking right. Tribe carets follow whatever is chosen.
+- **Carets: Words renders and drives both.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Decided in T3, a mix: Words renders the caret elements with their style class, visibility (caret: words input focused, test not ending or finished, window not resizing; pace caret: has a target) and blinking (off in focus mode) reactively; movement (position, line-jump and tape-scroll margins) stays anime.js animations on a private imperative handle the words layout owns, so it looks as before. The pace caret's timing is a DOM-free module whose output is a target signal (word, letter, step end). Tribe carets follow the same pattern.
 - **TestPage runs all fades**, driven by the engine's phase: words fade out on finish; when the fade-out completes, the result fades in if the result signal has a value, otherwise a spinner fades in and is swapped for the result when it arrives. Restart fades follow the restart flow above.
 - **test-ui is deleted.** Sound, keymap highlight and monkey-power triggers become effects on engine/input signals or direct calls from the input layer.
 - **Focus mode**: a signal. The root layout binds focus state on the app, header, footer and banners; cursor hiding is CSS keyed off that state. One component owns the mouse-move exit listener.
@@ -273,6 +273,14 @@ From joining-script dots (T2): break joining is gone. With the dots typed effect
 - The shrink animation matches other scripts but shows the letter's standalone form (a `::before` copy from the letter's new `data-char` attribute); the text stays joined before and after.
 - The `broken-joining` and `needs-wrap` word classes are gone.
 
+From the caret boundary (T3):
+
+- The caret hides as soon as a test ends, in every mode (it used to hide at once only when the time ran out, otherwise after the fade out).
+- A window resize no longer shows the caret while the words input is out of focus.
+- The caret stops blinking on the frame typing applies focus mode, with the letters, instead of synchronously on input.
+- Caret debug (dev options) outlines the pace caret for as long as it's on.
+- Seam bug fixed: in tape mode, the caret sits on its letter in a word whose direction differs from the test's (it was up to ~105px off, ~194px in word tape). The tape scroll itself is unchanged: in letter tape such a word still moves by its typed letters' width.
+
 From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
 
 - Renamed commands: Minimum speed → Min speed, Minimum accuracy → Min accuracy (both get a "minimum" alias), Sound on click/error → Play sound on click/error, Pace caret mode → Pace caret, Live progress color/opacity → Timer color/opacity (a "progress" alias), Key tips → Show key tips, Out of focus warning → Show out of focus warning.
@@ -284,7 +292,7 @@ From commandline metadata (C5): generated config commands use the settings label
 | # | Decision |
 |---|---|
 | Q1 | DOM-free test engine is part of the final state |
-| Q2 | Deferred: caret internals decided during the caret rewrite; only the boundary is fixed |
+| Q2 | Caret internals decided in T3: reactive style, visibility and blinking; movement on a private imperative handle (see Carets) |
 | Q3 | Single config store; mutable config and config bus deleted |
 | Q4 | No global event buses; `createEvent` only for local use |
 | Q5 | Superseded by Q22: the user is a single-row collection, not a store |
