@@ -183,14 +183,7 @@ export function Nav(): JSXElement {
             >
               <div
                 ref={accountMenuRef}
-                class={cn(
-                  "relative",
-                  !isFocusMode() &&
-                    "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
-                  "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
-                  getAccountMenuOpen() &&
-                    "**:data-[ui-element='accountMenu']:pointer-events-auto **:data-[ui-element='accountMenu']:opacity-100",
-                )}
+                class="group/account-menu relative"
                 // oxlint-disable-next-line react/no-unknown-property
                 on:click={(e: MouseEvent) => {
                   if (isCoarse()) {
@@ -208,7 +201,11 @@ export function Nav(): JSXElement {
                   variant="text"
                   class={cn(
                     "h-full",
-                    "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",
+                    // the level badge's background reads this var: swap it
+                    // on hover instead of targeting the badge with a
+                    // descendant selector, which every element would be tested
+                    // against on each style recalc
+                    "hover:[--themable-button-text:var(--themable-button-hover-text)]",
                     { "opacity-(--nav-focus-opacity)": isFocusMode() },
                   )}
                   to="/account"
@@ -228,6 +225,14 @@ export function Nav(): JSXElement {
                   />
                 </Button>
                 <AccountMenu
+                  class={cn(
+                    // group variants: only the menu is tested against these
+                    // selectors, unlike descendant (`**:`) variants
+                    !isFocusMode() &&
+                      "group-hover/account-menu:pointer-events-auto group-hover/account-menu:opacity-100",
+                    "group-has-focus-visible/account-menu:pointer-events-auto group-has-focus-visible/account-menu:opacity-100",
+                    getAccountMenuOpen() && "pointer-events-auto opacity-100",
+                  )}
                   showFriendsNotificationBubble={showFriendsNotificationBubble()}
                 />
               </div>
