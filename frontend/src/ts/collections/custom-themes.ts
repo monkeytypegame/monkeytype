@@ -19,15 +19,6 @@ const queryKeys = {
   root: () => [...baseKey("customThemes", { isUserSpecific: true })],
 };
 
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useCustomThemesLiveQuery() {
-  return useLiveQuery((q) => {
-    return q
-      .from({ customTheme: customThemesCollection })
-      .orderBy(({ customTheme }) => customTheme.name, "asc");
-  });
-}
-
 const customThemesCollection = createCollection({
   ...queryCollectionOptions({
     ...keepForever,
@@ -59,6 +50,16 @@ createRoot(() =>
     if (hasUser) {
       void customThemesCollection.utils.refetch();
     }
+  }),
+);
+
+// The module-level mirror the getters read: a live query owned by a root that
+// lives as long as the page. Read `.state` and `.status` only: calling
+// `customThemesQuery()` suspends
+const customThemesQuery = createRoot(() =>
+  useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
+    return q.from({ customTheme: customThemesCollection });
   }),
 );
 
@@ -149,14 +150,27 @@ const actions = {
 
 // --- Public API ---
 
-function getCustomThemes(): CustomThemeItem[] {
-  return [...customThemesCollection.values()].sort((a, b) =>
+/**
+ * The loaded custom themes, sorted by name. Reactive in components and
+ * effects, a plain read elsewhere. Returns only what's loaded, never fetches.
+ */
+export function getCustomThemes(): CustomThemeItem[] {
+  return [...customThemesQuery.state.values()].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
 }
 
-function getCustomTheme(id: string): CustomThemeItem | undefined {
-  return customThemesCollection.get(id);
+/** A loaded custom theme by id. Reactive like `getCustomThemes`. */
+export function getCustomTheme(id: string): CustomThemeItem | undefined {
+  return customThemesQuery.state.get(id);
+}
+
+/**
+ * Whether the custom themes have loaded (false while loading, failed or signed
+ * out). Unlike tags and presets, sign in doesn't wait for them.
+ */
+export function areCustomThemesLoaded(): boolean {
+  return customThemesQuery.status === "ready";
 }
 
 export async function addCustomTheme(
@@ -179,11 +193,3 @@ export async function deleteCustomTheme(
   const transaction = actions.deleteCustomTheme(params);
   await transaction.when("settled");
 }
-
-/**
- * Used for non reactive access. Do not use in Solid components.
- */
-export const __nonReactive = {
-  getCustomThemes,
-  getCustomTheme,
-};

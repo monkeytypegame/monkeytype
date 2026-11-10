@@ -1,20 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createEffect, createRoot } from "solid-js";
 
 vi.mock("../../src/ts/ape", () => ({
   default: {
     users: {
       getCustomThemes: vi.fn(async () => ({
         status: 200,
-        body: { data: [] },
+        body: {
+          data: [
+            { _id: "c2", name: "zebra", colors: [] },
+            { _id: "c1", name: "mine", colors: [] },
+          ],
+        },
       })),
+      deleteCustomTheme: vi.fn(async () => ({ status: 200, body: {} })),
     },
   },
 }));
 
 import Ape from "../../src/ts/ape";
-import "../../src/ts/collections/custom-themes";
+import {
+  areCustomThemesLoaded,
+  deleteCustomTheme,
+  getCustomTheme,
+  getCustomThemes,
+} from "../../src/ts/collections/custom-themes";
 import { queryClient } from "../../src/ts/queries/index";
 import { setUserId } from "../../src/ts/states/core";
+
+const names = (themes: { name: string }[]): string[] =>
+  themes.map((it) => it.name);
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
 async function flush(): Promise<void> {
@@ -64,5 +79,48 @@ describe("customThemes collection", () => {
     setUserId("uid");
     await waitFor(hasDownloaded, "the customThemes query to fetch");
     expect(Ape.users.getCustomThemes).toHaveBeenCalled();
+  });
+
+  it("is empty while signed out", () => {
+    expect(getCustomThemes()).toEqual([]);
+  });
+
+  it("returns the loaded themes sorted by name", async () => {
+    setUserId("uid");
+    await waitFor(() => getCustomThemes().length === 2, "the themes to load");
+    expect(names(getCustomThemes())).toEqual(["mine", "zebra"]);
+    expect(getCustomTheme("c2")?.name).toEqual("zebra");
+  });
+
+  it("reads a delete synchronously and re-runs effects", async () => {
+    setUserId("uid");
+    await waitFor(() => getCustomThemes().length === 2, "the themes to load");
+    const seen: string[][] = [];
+    const dispose = createRoot((dispose) => {
+      createEffect(() => seen.push(names(getCustomThemes())));
+      return dispose;
+    });
+
+    const deleted = deleteCustomTheme({ themeId: "c2" });
+
+    expect(getCustomTheme("c2")).toBeUndefined();
+    expect(seen.at(-1)).toEqual(["mine"]);
+    await deleted;
+    dispose();
+  });
+
+  it("empties on sign out", async () => {
+    setUserId("uid");
+    await waitFor(() => getCustomThemes().length > 0, "the themes to load");
+    setUserId(null);
+    expect(getCustomThemes()).toEqual([]);
+  });
+
+  it("reports loaded only once signed in and downloaded", async () => {
+    expect(areCustomThemesLoaded()).toBe(false);
+    setUserId("uid");
+    await waitFor(areCustomThemesLoaded, "the themes to load");
+    setUserId(null);
+    expect(areCustomThemesLoaded()).toBe(false);
   });
 });

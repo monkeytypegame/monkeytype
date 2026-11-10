@@ -1,6 +1,6 @@
 import { createMemo } from "solid-js";
 
-import { useActiveTagsLiveQuery } from "../../../../collections/tags";
+import { getActiveTags } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
 import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
@@ -378,14 +378,12 @@ function OppositeShift() {
 }
 
 function Tags() {
-  const tags = useActiveTagsLiveQuery();
-
   return (
     <Notice
-      when={tags().length > 0}
-      icon={tags().length === 1 ? "fa-tag" : "fa-tags"}
+      when={getActiveTags().length > 0}
+      icon={getActiveTags().length === 1 ? "fa-tag" : "fa-tags"}
       openCommandline="tags"
-      text={tags()
+      text={getActiveTags()
         .map((tag) => tag.name)
         .join(", ")}
     />

@@ -21,7 +21,7 @@ describe("PresetController", () => {
       //
     }));
     const dbGetSnapshotMock = vi.spyOn(DB, "getUserData");
-    const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
+    const getPresetMock = vi.spyOn(Presets, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
       Persistence,

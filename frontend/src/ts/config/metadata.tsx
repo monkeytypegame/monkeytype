@@ -5,7 +5,7 @@ import { roundTo1 } from "@monkeytype/util/numbers";
 import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
 
-import * as CustomThemes from "../collections/custom-themes";
+import { getCustomThemes } from "../collections/custom-themes";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { isAuthenticated } from "../states/core";
@@ -1711,7 +1711,7 @@ const configMetadataEntries = {
           );
           return true;
         }
-        if (CustomThemes.__nonReactive.getCustomThemes().length === 0) {
+        if (getCustomThemes().length === 0) {
           showNoticeNotification(
             "Random theme 'custom' requires at least one custom theme to be saved",
           );

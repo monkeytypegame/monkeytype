@@ -10,6 +10,7 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId, keepForever } from "./utils/misc";
+import { createRoot } from "solid-js";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
@@ -18,16 +19,6 @@ export type PresetItem = Preset;
 const queryKeys = {
   root: () => [...baseKey("presets", { isUserSpecific: true })],
 };
-
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function usePresetsLiveQuery() {
-  return useLiveQuery((q) => {
-    if (!isAuthenticated()) return undefined;
-    return q
-      .from({ preset: presetsCollection })
-      .orderBy(({ preset }) => preset.name, "asc");
-  });
-}
 
 const presetsCollection = createCollection({
   ...queryCollectionOptions({
@@ -52,6 +43,16 @@ const presetsCollection = createCollection({
   }),
   ...keepForever,
 });
+
+// The module-level mirror the getters read: a live query owned by a root that
+// lives as long as the page. Read `.state` and `.status` only: calling
+// `presetsQuery()` suspends
+const presetsQuery = createRoot(() =>
+  useLiveQuery((q) => {
+    if (!isAuthenticated()) return undefined;
+    return q.from({ preset: presetsCollection });
+  }),
+);
 
 type ActionType = {
   addPreset: {
@@ -166,14 +167,24 @@ export async function waitForPresetsReady(): Promise<void> {
   await presetsCollection.stateWhenReady();
 }
 
-function getPresets(): PresetItem[] {
-  return [...presetsCollection.values()].sort((a, b) =>
+/**
+ * The loaded presets, sorted by name. Reactive in components and effects, a
+ * plain read elsewhere. Returns only what's loaded, never fetches.
+ */
+export function getPresets(): PresetItem[] {
+  return [...presetsQuery.state.values()].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
 }
 
-function getPreset(id: string): PresetItem | undefined {
-  return presetsCollection.get(id);
+/** A loaded preset by id. Reactive like `getPresets`, never fetches. */
+export function getPreset(id: string): PresetItem | undefined {
+  return presetsQuery.state.get(id);
+}
+
+/** Whether the presets have loaded (false while loading, failed or signed out). */
+export function arePresetsLoaded(): boolean {
+  return presetsQuery.status === "ready";
 }
 
 export async function addPreset(
@@ -196,11 +207,3 @@ export async function deletePreset(
   const transaction = actions.deletePreset(params);
   await transaction.when("settled");
 }
-
-/**
- * Used for non reactive access. Do not use in Solid components.
- */
-export const __nonReactive = {
-  getPresets,
-  getPreset,
-};

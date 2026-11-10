@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 
 import Ape from "../../../../ape";
-import { useTagsLiveQuery } from "../../../../collections/tags";
+import { getTags } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
@@ -210,9 +210,8 @@ function Lines(props: { lines: string[] }): JSXElement {
 }
 
 function Tags(): JSXElement {
-  const userTags = useTagsLiveQuery();
   const tagNames = createMemo(
-    () => new Map((userTags() ?? []).map((t) => [t._id, t.name])),
+    () => new Map(getTags().map((t) => [t._id, t.name])),
   );
 
   const openEditModal = (): void => {

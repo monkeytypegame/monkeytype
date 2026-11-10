@@ -6,10 +6,7 @@ import { PresetNameSchema, PresetType } from "@monkeytype/schemas/presets";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Show } from "solid-js";
 
-import {
-  __nonReactive as __nonReactivePresets,
-  editPreset,
-} from "../../../collections/presets";
+import { getPreset, editPreset } from "../../../collections/presets";
 import { createEffectOn } from "../../../hooks/effects";
 import { editPresetData } from "../../../states/edit-preset-modal";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
@@ -113,7 +110,7 @@ export function EditPresetModal(): JSXElement {
       form.reset();
       form.setFieldValue("presetName", data.name);
 
-      const preset = __nonReactivePresets.getPreset(data.presetId);
+      const preset = getPreset(data.presetId);
       if (preset === undefined) return;
 
       if (preset.settingGroups === undefined || preset.settingGroups === null) {

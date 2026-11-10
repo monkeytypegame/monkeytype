@@ -6,7 +6,7 @@ import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
+import { type TagItem, getTags } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import { getFormatting, isAuthenticated } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
@@ -31,7 +31,6 @@ export function Charts(props: {
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
   const format = getFormatting;
-  const tags = useTagsLiveQuery();
 
   const resultsQuery = useLiveQuery((q) => {
     if (!isAuthenticated()) return undefined;
@@ -47,7 +46,7 @@ export function Charts(props: {
       {({ resultsQueryData }) => (
         <div class="flex flex-col gap-8">
           <div>
-            <FilterSummary filters={props.filters} tags={tags()} />
+            <FilterSummary filters={props.filters} tags={getTags()} />
             <HistoryChart
               results={resultsQueryData()}
               beginAtZero={beginAtZero()}

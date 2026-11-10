@@ -1,29 +1,18 @@
 // static json (layouts...) read from disk, the test state module loads some
 import "../../../../__harness__/mock-static";
 import { render } from "@solidjs/testing-library";
-import { Suspense } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// tags() suspends until the tags load (never, here), tags.state fills in when they do
+// the tag getter returns only loaded tags, they fill in when they load
 const tagNames = vi.hoisted(() => ({
   set: undefined as ((id: string, name: string) => void) | undefined,
 }));
 vi.mock("../../../../../src/ts/collections/tags", async () => {
-  const { createResource } = await import("solid-js");
   const { createStore } = await import("solid-js/store");
+  const [names, setNames] = createStore<Record<string, { name: string }>>({});
+  tagNames.set = (id, name) => setNames(id, { name });
   return {
-    useTagsLiveQuery: () => {
-      const [names, setNames] = createStore<Record<string, { name: string }>>(
-        {},
-      );
-      tagNames.set = (id, name) => setNames(id, { name });
-      const [pending] = createResource(
-        async () => new Promise<never>(() => undefined),
-      );
-      return Object.assign(() => pending(), {
-        state: { get: (id: string) => names[id] },
-      });
-    },
+    getTag: (id: string) => names[id],
   };
 });
 vi.mock("../../../../../src/ts/db", () => ({
@@ -63,23 +52,20 @@ describe("ResultChart", () => {
     setResultState("tags", [{ id: "tag1", isPb: false, chartPb: 100 }]);
     setResultShown(true);
 
-    const { queryByTestId, getByTestId, queryByText } = render(() => (
-      <Suspense fallback={<div>suspended</div>}>
-        <ResultChart
-          result={
-            {
-              mode: "time",
-              mode2: "15",
-              funbox: [],
-              chartData: "toolong",
-            } as unknown as CompletedResult
-          }
-          eventLog={[] as never}
-        />
-      </Suspense>
+    const { queryByTestId, getByTestId } = render(() => (
+      <ResultChart
+        result={
+          {
+            mode: "time",
+            mode2: "15",
+            funbox: [],
+            chartData: "toolong",
+          } as unknown as CompletedResult
+        }
+        eventLog={[] as never}
+      />
     ));
 
-    expect(queryByText("suspended")).toBeNull();
     expect(queryByTestId("chart")).not.toBeNull();
     expect(getByTestId("chart")).not.toHaveTextContent("PB");
 

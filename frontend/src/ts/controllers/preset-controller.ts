@@ -9,13 +9,13 @@ import {
   saveActiveToLocalStorage,
 } from "../collections/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import { __nonReactive, type PresetItem } from "../collections/presets";
+import { getPreset, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getUserData();
   if (!snapshot) return;
 
-  const presetToApply = __nonReactive.getPreset(_id);
+  const presetToApply = getPreset(_id);
   if (presetToApply === undefined) {
     return;
   }

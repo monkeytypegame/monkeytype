@@ -14,7 +14,7 @@ import {
   insertResultFilterPreset,
   useResultFilterPresetsLiveQuery,
 } from "../../../collections/result-filter-presets";
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
+import { type TagItem, getTags } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
 import { showSimpleModal } from "../../../states/simple-modal";
@@ -213,7 +213,6 @@ export function Filters(props: {
     );
   };
 
-  const tags = useTagsLiveQuery();
   const [isShowAdvanced, setShowAdvanced] = createSignal(false);
 
   const setFilter = (
@@ -240,11 +239,15 @@ export function Filters(props: {
         <div class="mb-4 grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
           <Button
             text="all"
-            onClick={() => props.onChangeFilters(fromDefaultSettings(tags()))}
+            onClick={() =>
+              props.onChangeFilters(fromDefaultSettings(getTags()))
+            }
           />
           <Button
             text="current settings"
-            onClick={() => props.onChangeFilters(fromCurrentSettings(tags()))}
+            onClick={() =>
+              props.onChangeFilters(fromCurrentSettings(getTags()))
+            }
           />
           <Button
             text="advanced"
@@ -324,7 +327,7 @@ export function Filters(props: {
             <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
             <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
 
-            <Show when={tags().length > 0}>
+            <Show when={getTags().length > 0}>
               <Dropdown
                 icon="fa-tag"
                 text="tags"
@@ -332,7 +335,7 @@ export function Filters(props: {
                 format={(tag) =>
                   tag === "none"
                     ? "no tag"
-                    : (tags().find((it) => it._id === tag)?.name ?? tag)
+                    : (getTags().find((it) => it._id === tag)?.name ?? tag)
                 }
               />
             </Show>
@@ -341,7 +344,7 @@ export function Filters(props: {
               text="funbox"
               group="funbox"
               class={cn("", {
-                "col-span-2": tags().length === 0,
+                "col-span-2": getTags().length === 0,
               })}
               format={(val) =>
                 val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)

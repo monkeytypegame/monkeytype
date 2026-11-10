@@ -34,7 +34,7 @@ import {
   getTagsOnce,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  useActiveTagsLiveQuery,
+  getActiveTags,
 } from "./tags";
 import {
   blockingDownloadOptions,
@@ -611,8 +611,6 @@ export function useUserAverage10LiveQuery(options: {
     };
   });
 
-  const activeTagsQuery = useActiveTagsLiveQuery();
-
   const average = useLiveQuery((q) => {
     //disable query
     if (!isAuthenticated()) return undefined;
@@ -622,7 +620,7 @@ export function useUserAverage10LiveQuery(options: {
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(settingsFilter(), {
-          tagIds: activeTagsQuery().map((it) => it._id),
+          tagIds: getActiveTags().map((it) => it._id),
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),

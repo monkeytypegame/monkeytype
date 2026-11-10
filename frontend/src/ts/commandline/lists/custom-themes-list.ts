@@ -1,6 +1,6 @@
 import { setConfig } from "../../config/setters";
 import { isAuthenticated } from "../../states/core";
-import * as CustomThemes from "../../collections/custom-themes";
+import { getCustomThemes } from "../../collections/custom-themes";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -30,7 +30,7 @@ export function update(): void {
 
   subgroup.list = [];
 
-  const customThemes = CustomThemes.__nonReactive.getCustomThemes();
+  const customThemes = getCustomThemes();
   for (const theme of customThemes) {
     subgroup.list.push({
       id: `setCustomThemeId${theme._id}`,

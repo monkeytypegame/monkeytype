@@ -1,20 +1,27 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createRoot, createEffect } from "solid-js";
 
 vi.mock("../../src/ts/ape/user", () => ({
   fetchUserFromApi: vi.fn(async () => ({
-    tags: [{ _id: "t1", name: "my_tag", personalBests: {} }],
+    tags: [
+      { _id: "t2", name: "zebra", personalBests: {} },
+      { _id: "t1", name: "my_tag", personalBests: {} },
+    ],
   })),
 }));
 
-import { __nonReactive, waitForTagsReady } from "../../src/ts/collections/tags";
+import {
+  areTagsLoaded,
+  getActiveTags,
+  getTag,
+  getTags,
+  toggleTagActive,
+  waitForTagsReady,
+} from "../../src/ts/collections/tags";
 import { setUserId } from "../../src/ts/states/core";
 
-/**
- * The commandline and result saving read tags through `__nonReactive`, which
- * doesn't subscribe. Loaded only by `waitForTagsReady` in the login flow, the
- * collection must not be garbage collected while nothing subscribes
- * (TanStack DB's default collection gcTime is 5 min).
- */
+const names = (tags: { name: string }[]): string[] => tags.map((it) => it.name);
+
 describe("tags collection", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -22,15 +29,86 @@ describe("tags collection", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    setUserId(null);
   });
 
-  it("keeps its data with no subscriber", async () => {
+  it("is empty while signed out", () => {
+    expect(getTags()).toEqual([]);
+  });
+
+  it("returns the loaded tags sorted by name", async () => {
     setUserId("uid");
     await waitForTagsReady();
-    expect(__nonReactive.getTags().map((it) => it.name)).toEqual(["my tag"]);
+    expect(names(getTags())).toEqual(["my tag", "zebra"]);
+    expect(getTag("t2")?.name).toEqual("zebra");
+  });
+
+  /**
+   * The commandline and result saving read tags outside a tracking scope.
+   * Loaded only by `waitForTagsReady` in the login flow, the collection must
+   * not be garbage collected (TanStack DB's default collection gcTime is 5 min).
+   */
+  it("keeps its data over time", async () => {
+    setUserId("uid");
+    await waitForTagsReady();
 
     await vi.advanceTimersByTimeAsync(10 * 60_000);
 
-    expect(__nonReactive.getTags().map((it) => it.name)).toEqual(["my tag"]);
+    expect(names(getTags())).toEqual(["my tag", "zebra"]);
+  });
+
+  it("reads a toggle synchronously and re-runs effects", async () => {
+    setUserId("uid");
+    await waitForTagsReady();
+    const seen: string[][] = [];
+    const dispose = createRoot((dispose) => {
+      createEffect(() => seen.push(names(getActiveTags())));
+      return dispose;
+    });
+
+    void toggleTagActive({ tagId: "t1", noSave: true });
+
+    expect(getTag("t1")?.active).toBe(true);
+    expect(seen.at(-1)).toEqual(["my tag"]);
+    dispose();
+    void toggleTagActive({ tagId: "t1", noSave: true });
+  });
+
+  it("empties on sign out", async () => {
+    setUserId("uid");
+    await waitForTagsReady();
+    setUserId(null);
+    expect(getTags()).toEqual([]);
+  });
+
+  it("reports loaded only once signed in and ready", async () => {
+    expect(areTagsLoaded()).toBe(false);
+    setUserId("uid");
+    await waitForTagsReady();
+    expect(areTagsLoaded()).toBe(true);
+    setUserId(null);
+    expect(areTagsLoaded()).toBe(false);
+  });
+
+  it("re-runs a single-tag reader only for its own tag", async () => {
+    setUserId("uid");
+    await waitForTagsReady();
+    let runs = 0;
+    const dispose = createRoot((dispose) => {
+      createEffect(() => {
+        getTag("t2");
+        runs++;
+      });
+      return dispose;
+    });
+
+    void toggleTagActive({ tagId: "t1", noSave: true });
+    void toggleTagActive({ tagId: "t1", noSave: true });
+    expect(runs).toBe(1);
+
+    void toggleTagActive({ tagId: "t2", noSave: true });
+    expect(runs).toBe(2);
+    dispose();
+    void toggleTagActive({ tagId: "t2", noSave: true });
   });
 });

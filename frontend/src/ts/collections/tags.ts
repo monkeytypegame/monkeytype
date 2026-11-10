@@ -23,6 +23,7 @@ import {
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { isTempId, tempId, keepForever } from "./utils/misc";
+import { createRoot } from "solid-js";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
 import { isAuthenticated } from "../states/core";
@@ -60,15 +61,15 @@ const tagsCollection = createCollection({
   ...keepForever,
 });
 
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useTagsLiveQuery() {
-  return useLiveQuery((q) => {
+// The module-level mirror the getters read: a live query owned by a root that
+// lives as long as the page. Read `.state` and `.status` only: calling
+// `tagsQuery()` suspends
+const tagsQuery = createRoot(() =>
+  useLiveQuery((q) => {
     if (!isAuthenticated()) return undefined;
-    return q
-      .from({ tag: tagsCollection })
-      .orderBy(({ tag }) => tag.name, "asc");
-  });
-}
+    return q.from({ tag: tagsCollection });
+  }),
+);
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export async function getActiveTagsOnce() {
@@ -84,17 +85,6 @@ export async function getActiveTagsOnce() {
 export async function getTagsOnce() {
   return queryOnce((q) => {
     return q.from({ tag: tagsCollection });
-  });
-}
-
-// oxlint-disable-next-line typescript/explicit-function-return-type
-export function useActiveTagsLiveQuery() {
-  return useLiveQuery((q) => {
-    if (!isAuthenticated()) return undefined;
-    return q
-      .from({ tag: tagsCollection })
-      .where(({ tag }) => eq(tag.active, true))
-      .orderBy(({ tag }) => tag.name, "asc");
   });
 }
 
@@ -320,17 +310,28 @@ export async function clearActiveTags(
   await transaction.when("settled");
 }
 
-function getTags(): TagItem[] {
-  return [...tagsCollection.values()].sort((a, b) =>
+/**
+ * The loaded tags, sorted by name. Reactive in components and effects, a plain
+ * read elsewhere. Returns only what's loaded, never fetches.
+ */
+export function getTags(): TagItem[] {
+  return [...tagsQuery.state.values()].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
 }
 
-function getTag(id: string): TagItem | undefined {
-  return tagsCollection.get(id);
+/** A loaded tag by id. Reactive like `getTags`, never fetches. */
+export function getTag(id: string): TagItem | undefined {
+  return tagsQuery.state.get(id);
 }
 
-function getActiveTags(): TagItem[] {
+/** Whether the tags have loaded (false while loading, failed or signed out). */
+export function areTagsLoaded(): boolean {
+  return tagsQuery.status === "ready";
+}
+
+/** The active loaded tags, sorted by name. Reactive like `getTags`. */
+export function getActiveTags(): TagItem[] {
   return getTags().filter((tag) => tag.active);
 }
 
@@ -563,7 +564,7 @@ export function getActiveTagsPB<M extends Mode>(
 }
 
 /**
- * Used for non reactive access. Do not use in Solid components.
+ * Kept for the test-page callers until T6a/T6c; use the getters above.
  */
 export const __nonReactive = {
   getTags,

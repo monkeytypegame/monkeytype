@@ -1,7 +1,7 @@
 import * as PresetController from "../../controllers/preset-controller";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
-import { __nonReactive } from "../../collections/presets";
+import { getPresets } from "../../collections/presets";
 import { showModal } from "../../states/modals";
 
 const subgroup: CommandsSubgroup = {
@@ -26,7 +26,7 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const presets = __nonReactive.getPresets();
+  const presets = getPresets();
   subgroup.list = [];
   if (presets.length === 0) return;
   presets.forEach((preset) => {

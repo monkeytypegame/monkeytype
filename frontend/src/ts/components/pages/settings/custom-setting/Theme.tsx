@@ -1,5 +1,5 @@
 import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
-import { For, JSXElement, Show, Suspense, untrack } from "solid-js";
+import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
 
@@ -7,7 +7,8 @@ import {
   addCustomTheme,
   deleteCustomTheme,
   editCustomTheme,
-  useCustomThemesLiveQuery,
+  areCustomThemesLoaded,
+  getCustomThemes,
 } from "../../../../collections/custom-themes";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
@@ -41,6 +42,7 @@ import { AnimeSwitch } from "../../../common/anime";
 import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
+import { LoadingCircle } from "../../../common/LoadingCircle";
 import { Separator } from "../../../common/Separator";
 import { ThemeBubbles } from "../../../common/ThemeBubbles";
 import { SearchableSetting } from "../SearchableSetting";
@@ -52,8 +54,6 @@ export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
 });
 
 export function Theme(): JSXElement {
-  const customThemes = useCustomThemesLiveQuery();
-
   const Presets = () => (
     <div class="grid gap-4">
       <Show when={getConfig.favThemes.length > 0}>
@@ -85,13 +85,13 @@ export function Theme(): JSXElement {
   const Customs = () => (
     <div class="grid gap-4">
       <Show when={isAuthenticated()}>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
-          <Suspense>
-            <For each={customThemes()}>
+        <Show when={areCustomThemesLoaded()} fallback={<LoadingCircle />}>
+          <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
+            <For each={getCustomThemes()}>
               {(theme) => <CustomThemeButton theme={theme} />}
             </For>
-          </Suspense>
-        </div>
+          </div>
+        </Show>
       </Show>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Picker color="bg" />
@@ -199,7 +199,7 @@ export function Theme(): JSXElement {
           <Button
             text="save as new"
             onClick={() => {
-              if (customThemes().length >= 20) {
+              if (getCustomThemes().length >= 20) {
                 showNoticeNotification("Custom themes limit reached");
                 return;
               }

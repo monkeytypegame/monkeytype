@@ -4,7 +4,7 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
+import { type TagItem, getTags } from "../../../collections/tags";
 import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
@@ -38,12 +38,10 @@ export function Table<M extends Mode>(props: {
     undefined,
   );
 
-  const tags = useTagsLiveQuery();
-
   const columns = createMemo(() =>
     getColumns<M>({
       format: getFormatting(),
-      tags: tags(),
+      tags: getTags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
         if (id !== undefined) showModal("MiniResultChartModal");

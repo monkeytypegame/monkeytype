@@ -1,7 +1,8 @@
 import {
   clearActiveTags,
   toggleTagActive,
-  __nonReactive,
+  getTag,
+  getTags,
 } from "../../collections/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
@@ -30,7 +31,7 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const tags = __nonReactive.getTags();
+  const tags = getTags();
   subgroup.list = [];
 
   if (tags.length > 0) {
@@ -57,7 +58,7 @@ function update(): void {
         display: tag.name,
         sticky: true,
         active: () => {
-          return __nonReactive.getTag(tag._id)?.active ?? false;
+          return getTag(tag._id)?.active ?? false;
         },
         exec: async (): Promise<void> => {
           await toggleTagActive({ tagId: tag._id });

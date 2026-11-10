@@ -1,9 +1,6 @@
-import { For, JSXElement, Suspense } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
-import {
-  deletePreset,
-  usePresetsLiveQuery,
-} from "../../../../collections/presets";
+import { deletePreset, getPresets } from "../../../../collections/presets";
 import { apply } from "../../../../controllers/preset-controller";
 import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
@@ -12,8 +9,6 @@ import { Button } from "../../../common/Button";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function Presets(): JSXElement {
-  const presets = usePresetsLiveQuery();
-
   return (
     <SearchableSetting
       key="presets"
@@ -24,51 +19,49 @@ export function Presets(): JSXElement {
       }}
       inputs={
         <div class="grid gap-2">
-          <Suspense>
-            <For each={presets()}>
-              {(preset) => (
-                <div class="grid grid-cols-[1fr_auto_auto] gap-2">
-                  <Button
-                    text={preset.name}
-                    onClick={() => {
-                      void apply(preset._id);
-                    }}
-                  />
-                  <Button
-                    fa={{
-                      icon: "fa-pen",
-                    }}
-                    onClick={() => {
-                      showEditPresetModal({
-                        presetId: preset._id,
-                        name: preset.name,
-                      });
-                    }}
-                  />
-                  <Button
-                    fa={{
-                      icon: "fa-trash",
-                    }}
-                    onClick={() => {
-                      showSimpleModal({
-                        title: "Delete preset",
-                        text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
-                        buttonText: "delete",
-                        execFn: async () => {
-                          await deletePreset({ presetId: preset._id });
+          <For each={getPresets()}>
+            {(preset) => (
+              <div class="grid grid-cols-[1fr_auto_auto] gap-2">
+                <Button
+                  text={preset.name}
+                  onClick={() => {
+                    void apply(preset._id);
+                  }}
+                />
+                <Button
+                  fa={{
+                    icon: "fa-pen",
+                  }}
+                  onClick={() => {
+                    showEditPresetModal({
+                      presetId: preset._id,
+                      name: preset.name,
+                    });
+                  }}
+                />
+                <Button
+                  fa={{
+                    icon: "fa-trash",
+                  }}
+                  onClick={() => {
+                    showSimpleModal({
+                      title: "Delete preset",
+                      text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
+                      buttonText: "delete",
+                      execFn: async () => {
+                        await deletePreset({ presetId: preset._id });
 
-                          return {
-                            status: "success",
-                            message: "Preset deleted",
-                          };
-                        },
-                      });
-                    }}
-                  />
-                </div>
-              )}
-            </For>
-          </Suspense>
+                        return {
+                          status: "success",
+                          message: "Preset deleted",
+                        };
+                      },
+                    });
+                  }}
+                />
+              </div>
+            )}
+          </For>
           <Button
             text="add preset"
             onClick={() => {

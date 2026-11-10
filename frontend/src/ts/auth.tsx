@@ -173,7 +173,8 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     const snapshot = await DB.initSnapshot();
-    //TODO: preload collections for now, remove when __nonReactive is removed from collections
+    // blocking user data: tags and presets are loaded before any test can
+    // start, so their getters (which never fetch) are ready for it
     await waitForPresetsReady();
     await waitForTagsReady();
 
