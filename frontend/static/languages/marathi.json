@@ -1,6 +1,8 @@
 {
   "name": "marathi",
+  "joiningScript": true,
   "noLazyMode": true,
+  "bcp47": "mr-IN",
   "orderedByFrequency": true,
   "words": [
     "म्हणून",
