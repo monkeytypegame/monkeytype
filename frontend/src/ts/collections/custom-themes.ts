@@ -7,10 +7,10 @@ import {
 } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
 import Ape from "../ape";
-import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { tempId, keepForever } from "./utils/misc";
+import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -42,15 +42,10 @@ const customThemesCollection = createCollection({
   ...keepForever,
 });
 
-// Its query is created disabled: startSync runs at module load, before the
-// auth state resolves, and the query never re-evaluates `enabled` on its own.
-// Kick the download when the user signs in, like the other user collections.
-createRoot(() =>
-  createEffectOn(isAuthenticated, (hasUser) => {
-    if (hasUser) {
-      void customThemesCollection.utils.refetch();
-    }
-  }),
+// a fresh download per sign in: the rows outlive a sign out, so until it
+// lands they may be the previous session's
+const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+  customThemesCollection.utils.refetch(),
 );
 
 // The module-level mirror the getters read: a live query owned by a root that
@@ -58,7 +53,7 @@ createRoot(() =>
 // `customThemesQuery()` suspends
 const customThemesQuery = createRoot(() =>
   useLiveQuery((q) => {
-    if (!isAuthenticated()) return undefined;
+    if (!download.isLoaded()) return undefined;
     return q.from({ customTheme: customThemesCollection });
   }),
 );

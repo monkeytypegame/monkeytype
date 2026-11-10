@@ -123,4 +123,31 @@ describe("customThemes collection", () => {
     setUserId(null);
     expect(areCustomThemesLoaded()).toBe(false);
   });
+
+  it("drops the previous user's themes until the new ones load", async () => {
+    setUserId("uid");
+    await waitFor(areCustomThemesLoaded, "the themes to load");
+    setUserId(null);
+
+    let release = (): void => undefined;
+    vi.mocked(Ape.users.getCustomThemes).mockImplementationOnce(
+      async () =>
+        new Promise((resolve) => {
+          release = () =>
+            resolve({
+              status: 200,
+              body: { data: [{ _id: "c3", name: "other", colors: [] }] },
+            } as never);
+        }),
+    );
+    setUserId("uid2");
+    await flush();
+
+    expect(getCustomThemes()).toEqual([]);
+    expect(areCustomThemesLoaded()).toBe(false);
+
+    release();
+    await waitFor(areCustomThemesLoaded, "the new themes to load");
+    expect(names(getCustomThemes())).toEqual(["other"]);
+  });
 });

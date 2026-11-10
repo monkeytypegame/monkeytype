@@ -23,6 +23,7 @@ import {
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { isTempId, tempId, keepForever } from "./utils/misc";
+import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
 import { createRoot } from "solid-js";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
@@ -61,16 +62,6 @@ const tagsCollection = createCollection({
   ...keepForever,
 });
 
-// The module-level mirror the getters read: a live query owned by a root that
-// lives as long as the page. Read `.state` and `.status` only: calling
-// `tagsQuery()` suspends
-const tagsQuery = createRoot(() =>
-  useLiveQuery((q) => {
-    if (!isAuthenticated()) return undefined;
-    return q.from({ tag: tagsCollection });
-  }),
-);
-
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export async function getActiveTagsOnce() {
   return queryOnce((q) => {
@@ -87,6 +78,22 @@ export async function getTagsOnce() {
     return q.from({ tag: tagsCollection });
   });
 }
+
+// a fresh download per sign in: the rows outlive a sign out, so until it
+// lands they may be the previous session's
+const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+  tagsCollection.utils.refetch(),
+);
+
+// The module-level mirror the getters read: a live query owned by a root that
+// lives as long as the page. Read `.state` and `.status` only: calling
+// `tagsQuery()` suspends
+const tagsQuery = createRoot(() =>
+  useLiveQuery((q) => {
+    if (!download.isLoaded()) return undefined;
+    return q.from({ tag: tagsCollection });
+  }),
+);
 
 type ActionType = {
   insertTag: {
@@ -258,7 +265,10 @@ const actions = {
 // --- Public API ---
 
 export async function waitForTagsReady(): Promise<void> {
+  // starts the sync on the first sign in; the download since this sign in
+  // may still be on its way after that (the rows outlive a sign out)
   await tagsCollection.stateWhenReady();
+  await download.whenSettled();
 }
 
 export async function insertTag(

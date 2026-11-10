@@ -18,6 +18,7 @@ import {
   toggleTagActive,
   waitForTagsReady,
 } from "../../src/ts/collections/tags";
+import { fetchUserFromApi } from "../../src/ts/ape/user";
 import { setUserId } from "../../src/ts/states/core";
 
 const names = (tags: { name: string }[]): string[] => tags.map((it) => it.name);
@@ -110,5 +111,48 @@ describe("tags collection", () => {
     expect(runs).toBe(2);
     dispose();
     void toggleTagActive({ tagId: "t2", noSave: true });
+  });
+
+  it("drops the previous user's tags on sign out", async () => {
+    setUserId("uid");
+    await waitForTagsReady();
+    setUserId(null);
+
+    let release = (): void => undefined;
+    vi.mocked(fetchUserFromApi).mockImplementationOnce(
+      async () =>
+        new Promise((resolve) => {
+          release = () =>
+            resolve({
+              tags: [{ _id: "t3", name: "other", personalBests: {} }],
+            } as never);
+        }),
+    );
+    setUserId("uid2");
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(getTags()).toEqual([]);
+    expect(areTagsLoaded()).toBe(false);
+
+    release();
+    await waitForTagsReady();
+    expect(names(getTags())).toEqual(["other"]);
+    expect(areTagsLoaded()).toBe(true);
+  });
+
+  it("doesn't hang sign in when the download fails", async () => {
+    // the first try and the query's 3 retries
+    for (let i = 0; i < 4; i++) {
+      vi.mocked(fetchUserFromApi).mockRejectedValueOnce(new Error("offline"));
+    }
+    setUserId("uid3");
+
+    const ready = waitForTagsReady();
+    // the retries back off 1s, 2s, 4s
+    await vi.advanceTimersByTimeAsync(10_000);
+    await ready;
+
+    expect(areTagsLoaded()).toBe(false);
+    expect(getTags()).toEqual([]);
   });
 });

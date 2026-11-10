@@ -10,6 +10,7 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId, keepForever } from "./utils/misc";
+import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
 import { createRoot } from "solid-js";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
@@ -44,12 +45,18 @@ const presetsCollection = createCollection({
   ...keepForever,
 });
 
+// a fresh download per sign in: the rows outlive a sign out, so until it
+// lands they may be the previous session's
+const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+  presetsCollection.utils.refetch(),
+);
+
 // The module-level mirror the getters read: a live query owned by a root that
 // lives as long as the page. Read `.state` and `.status` only: calling
 // `presetsQuery()` suspends
 const presetsQuery = createRoot(() =>
   useLiveQuery((q) => {
-    if (!isAuthenticated()) return undefined;
+    if (!download.isLoaded()) return undefined;
     return q.from({ preset: presetsCollection });
   }),
 );
@@ -164,7 +171,10 @@ const actions = {
 
 // --- Public API ---
 export async function waitForPresetsReady(): Promise<void> {
+  // starts the sync on the first sign in; the download since this sign in
+  // may still be on its way after that (the rows outlive a sign out)
   await presetsCollection.stateWhenReady();
+  await download.whenSettled();
 }
 
 /**
