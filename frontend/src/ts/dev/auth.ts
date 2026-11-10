@@ -17,7 +17,7 @@ async function waitForSnapshot(
 ): Promise<void> {
   // lazy: the db collections open indexedDB on import, and the debug handle
   // loads in jsdom tests
-  const { getSnapshot } = await import("../db");
+  const { getUserData: getSnapshot } = await import("../db");
   const start = Date.now();
   while (!matches(getSnapshot())) {
     if (Date.now() - start > timeoutMs) {

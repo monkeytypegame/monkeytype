@@ -14,7 +14,7 @@ import {
   replaceSpacesWithUnderscores,
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { isAuthenticated } from "../states/core";
 
@@ -22,8 +22,9 @@ const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
 };
 
-const resultFilterPresetsCollection = createCollection(
-  queryCollectionOptions({
+const resultFilterPresetsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
     startSync: true,
     queryKey: queryKeys.root(),
@@ -40,7 +41,8 @@ const resultFilterPresetsCollection = createCollection(
       }));
     },
   }),
-);
+  ...keepForever,
+});
 
 // Its query is created disabled: startSync runs at module load, before the
 // auth state resolves, and the query never re-evaluates `enabled` on its own.

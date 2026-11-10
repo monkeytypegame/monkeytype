@@ -22,7 +22,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
-import { isTempId, tempId } from "./utils/misc";
+import { isTempId, tempId, keepForever } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
 import { isAuthenticated } from "../states/core";
@@ -33,10 +33,10 @@ const queryKeys = {
   root: () => [...baseKey("tags", { isUserSpecific: true })],
 };
 
-const tagsCollection = createCollection(
-  queryCollectionOptions({
+const tagsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     queryClient,
     enabled: isAuthenticated,
@@ -57,7 +57,8 @@ const tagsCollection = createCollection(
       return results;
     },
   }),
-);
+  ...keepForever,
+});
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useTagsLiveQuery() {

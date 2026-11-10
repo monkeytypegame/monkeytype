@@ -32,7 +32,7 @@ export function _setSnapshot(newValue: Snapshot | undefined): void {
   }
 }
 
-export function getSnapshot(): MiniSnapshot | undefined {
+export function getUserData(): MiniSnapshot | undefined {
   return snapshot.value;
 }
 
