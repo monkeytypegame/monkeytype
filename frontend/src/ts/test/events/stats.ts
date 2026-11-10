@@ -264,7 +264,11 @@ export function getKeypressesPerSecond(eventLog: EventLog): number[] {
 export function getBurstHistory(eventLog: EventLog): number[] {
   const { counts, boundaries } = countPerInterval(
     eventLog,
-    (e) => e.type === "input" && e.data.inputType === "insertText",
+    (e) =>
+      e.type === "input" &&
+      (e.data.inputType === "insertText" ||
+        (eventLog.context.koreanStatus &&
+          e.data.inputType === "insertCompositionText")),
   );
 
   let prevBoundary = 0;
