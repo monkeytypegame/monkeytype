@@ -12,7 +12,7 @@ createRoot(() =>
     //
     // The reset doesn't clear a collection's rows: tags, presets and custom
     // themes hide them until the download since the sign in lands
-    // (`trackLoadSinceSignIn`).
+    // (`createSessionDownload`).
     //
     // Do NOT reset on sign in. Each collection already starts its own
     // initial download once authenticated: live queries fetch on first

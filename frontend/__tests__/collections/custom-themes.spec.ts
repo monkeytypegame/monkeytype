@@ -20,15 +20,17 @@ vi.mock("../../src/ts/ape", () => ({
 
 import Ape from "../../src/ts/ape";
 import {
-  areCustomThemesLoaded,
-  haveCustomThemesFailed,
-  retryCustomThemes,
+  getCustomThemesStatus,
+  reloadCustomThemes,
   deleteCustomTheme,
   getCustomTheme,
   getCustomThemes,
 } from "../../src/ts/collections/custom-themes";
 import { queryClient } from "../../src/ts/queries/index";
 import { setUserId } from "../../src/ts/states/core";
+
+const isLoaded = (): boolean => getCustomThemesStatus() === "loaded";
+const hasFailed = (): boolean => getCustomThemesStatus() === "failed";
 
 const names = (themes: { name: string }[]): string[] =>
   themes.map((it) => it.name);
@@ -119,16 +121,16 @@ describe("customThemes collection", () => {
   });
 
   it("reports loaded only once signed in and downloaded", async () => {
-    expect(areCustomThemesLoaded()).toBe(false);
+    expect(getCustomThemesStatus()).toBe("loading");
     setUserId("uid");
-    await waitFor(areCustomThemesLoaded, "the themes to load");
+    await waitFor(isLoaded, "the themes to load");
     setUserId(null);
-    expect(areCustomThemesLoaded()).toBe(false);
+    expect(getCustomThemesStatus()).toBe("loading");
   });
 
   it("drops the previous user's themes until the new ones load", async () => {
     setUserId("uid");
-    await waitFor(areCustomThemesLoaded, "the themes to load");
+    await waitFor(isLoaded, "the themes to load");
     setUserId(null);
 
     let release = (): void => undefined;
@@ -146,28 +148,28 @@ describe("customThemes collection", () => {
     await flush();
 
     expect(getCustomThemes()).toEqual([]);
-    expect(areCustomThemesLoaded()).toBe(false);
+    expect(getCustomThemesStatus()).toBe("loading");
 
     release();
-    await waitFor(areCustomThemesLoaded, "the new themes to load");
+    await waitFor(isLoaded, "the new themes to load");
     expect(names(getCustomThemes())).toEqual(["other"]);
   });
 
-  it("reports a failed download, and loads on retry", async () => {
+  it("reports a failed download, and loads on reload", async () => {
     // no retries: the failure is final at once
     queryClient.setQueryDefaults(["user", "customThemes"], { retry: false });
     vi.mocked(Ape.users.getCustomThemes).mockRejectedValueOnce(
       new Error("offline"),
     );
     setUserId("uid4");
-    await waitFor(haveCustomThemesFailed, "the download to fail");
+    await waitFor(hasFailed, "the download to fail");
 
-    expect(areCustomThemesLoaded()).toBe(false);
+    expect(getCustomThemesStatus()).toBe("failed");
 
-    retryCustomThemes();
-    expect(haveCustomThemesFailed()).toBe(false);
-    await waitFor(areCustomThemesLoaded, "the themes to load on retry");
-    expect(haveCustomThemesFailed()).toBe(false);
+    reloadCustomThemes();
+    expect(getCustomThemesStatus()).toBe("loading");
+    await waitFor(isLoaded, "the themes to load on reload");
+    expect(getCustomThemesStatus()).not.toBe("failed");
     expect(getCustomThemes()).toHaveLength(2);
     queryClient.setQueryDefaults(["user", "customThemes"], {});
   });

@@ -10,7 +10,10 @@ import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { tempId, keepForever } from "./utils/misc";
-import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
+import {
+  createSessionDownload,
+  type SessionDownloadStatus,
+} from "./utils/session-download";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -44,7 +47,7 @@ const customThemesCollection = createCollection({
 
 // a fresh download per sign in: the rows outlive a sign out, so until it
 // lands they may be the previous session's
-const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+const download = createSessionDownload(queryKeys.root(), async () =>
   customThemesCollection.utils.refetch(),
 );
 
@@ -53,7 +56,7 @@ const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
 // `customThemesQuery()` suspends
 const customThemesQuery = createRoot(() =>
   useLiveQuery((q) => {
-    if (!download.isLoaded()) return undefined;
+    if (download.status() !== "loaded") return undefined;
     return q.from({ customTheme: customThemesCollection });
   }),
 );
@@ -160,22 +163,23 @@ export function getCustomTheme(id: string): CustomThemeItem | undefined {
   return customThemesQuery.state.get(id);
 }
 
-/** Whether the custom themes download failed (after its retries). Reactive. */
-export function haveCustomThemesFailed(): boolean {
-  return download.hasFailed();
-}
-
-/** Downloads the custom themes again after a failure. */
-export function retryCustomThemes(): void {
-  download.retry();
-}
-
 /**
- * Whether the custom themes have loaded (false while loading, failed or signed
- * out). Unlike tags and presets, sign in doesn't wait for them.
+ * Whether the custom themes have loaded in this session: `loading` (also while signed
+ * out), `loaded` once the getters return them, or `failed`.
+ * Unlike tags and presets, sign in doesn't wait for them. Reactive.
  */
-export function areCustomThemesLoaded(): boolean {
-  return customThemesQuery.status === "ready";
+export function getCustomThemesStatus(): SessionDownloadStatus {
+  const status = download.status();
+  // the getters' live query catches up a tick after the download
+  if (status === "loaded" && customThemesQuery.status !== "ready") {
+    return "loading";
+  }
+  return status;
+}
+
+/** Downloads the custom themes again, eg. after a failure. */
+export function reloadCustomThemes(): void {
+  download.reload();
 }
 
 export async function addCustomTheme(

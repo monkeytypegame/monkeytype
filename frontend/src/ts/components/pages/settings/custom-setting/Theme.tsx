@@ -7,9 +7,8 @@ import {
   addCustomTheme,
   deleteCustomTheme,
   editCustomTheme,
-  areCustomThemesLoaded,
-  haveCustomThemesFailed,
-  retryCustomThemes,
+  getCustomThemesStatus,
+  reloadCustomThemes,
   getCustomThemes,
 } from "../../../../collections/custom-themes";
 import { configMetadata } from "../../../../config/metadata";
@@ -88,17 +87,17 @@ export function Theme(): JSXElement {
     <div class="grid gap-4">
       <Show when={isAuthenticated()}>
         <Switch fallback={<LoadingCircle />}>
-          <Match when={haveCustomThemesFailed()}>
+          <Match when={getCustomThemesStatus() === "failed"}>
             <div class="flex items-center gap-4">
               <div class="text-error">Failed to load custom themes</div>
               <Button
                 fa={{ icon: "fa-redo-alt" }}
                 text="Retry"
-                onClick={() => retryCustomThemes()}
+                onClick={() => reloadCustomThemes()}
               />
             </div>
           </Match>
-          <Match when={areCustomThemesLoaded()}>
+          <Match when={getCustomThemesStatus() === "loaded"}>
             <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
               <For each={getCustomThemes()}>
                 {(theme) => <CustomThemeButton theme={theme} />}

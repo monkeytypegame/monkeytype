@@ -10,7 +10,10 @@ import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId, keepForever } from "./utils/misc";
-import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
+import {
+  createSessionDownload,
+  type SessionDownloadStatus,
+} from "./utils/session-download";
 import { createRoot } from "solid-js";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
@@ -47,7 +50,7 @@ const presetsCollection = createCollection({
 
 // a fresh download per sign in: the rows outlive a sign out, so until it
 // lands they may be the previous session's
-const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+const download = createSessionDownload(queryKeys.root(), async () =>
   presetsCollection.utils.refetch(),
 );
 
@@ -56,7 +59,7 @@ const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
 // `presetsQuery()` suspends
 const presetsQuery = createRoot(() =>
   useLiveQuery((q) => {
-    if (!download.isLoaded()) return undefined;
+    if (download.status() !== "loaded") return undefined;
     return q.from({ preset: presetsCollection });
   }),
 );
@@ -192,9 +195,17 @@ export function getPreset(id: string): PresetItem | undefined {
   return presetsQuery.state.get(id);
 }
 
-/** Whether the presets have loaded (false while loading, failed or signed out). */
-export function arePresetsLoaded(): boolean {
-  return presetsQuery.status === "ready";
+/**
+ * Whether the presets have loaded in this session: `loading` (also while signed
+ * out), `loaded` once the getters return them, or `failed`. Reactive.
+ */
+export function getPresetsStatus(): SessionDownloadStatus {
+  const status = download.status();
+  // the getters' live query catches up a tick after the download
+  if (status === "loaded" && presetsQuery.status !== "ready") {
+    return "loading";
+  }
+  return status;
 }
 
 export async function addPreset(

@@ -23,7 +23,10 @@ import {
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { isTempId, tempId, keepForever } from "./utils/misc";
-import { trackLoadSinceSignIn } from "./utils/loaded-since-sign-in";
+import {
+  createSessionDownload,
+  type SessionDownloadStatus,
+} from "./utils/session-download";
 import { createRoot } from "solid-js";
 import { fetchUserFromApi } from "../ape/user";
 import { updateTagsInFilterStorage } from "../states/result-filters";
@@ -81,7 +84,7 @@ export async function getTagsOnce() {
 
 // a fresh download per sign in: the rows outlive a sign out, so until it
 // lands they may be the previous session's
-const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
+const download = createSessionDownload(queryKeys.root(), async () =>
   tagsCollection.utils.refetch(),
 );
 
@@ -90,7 +93,7 @@ const download = trackLoadSinceSignIn(queryKeys.root(), async () =>
 // `tagsQuery()` suspends
 const tagsQuery = createRoot(() =>
   useLiveQuery((q) => {
-    if (!download.isLoaded()) return undefined;
+    if (download.status() !== "loaded") return undefined;
     return q.from({ tag: tagsCollection });
   }),
 );
@@ -335,9 +338,17 @@ export function getTag(id: string): TagItem | undefined {
   return tagsQuery.state.get(id);
 }
 
-/** Whether the tags have loaded (false while loading, failed or signed out). */
-export function areTagsLoaded(): boolean {
-  return tagsQuery.status === "ready";
+/**
+ * Whether the tags have loaded in this session: `loading` (also while signed
+ * out), `loaded` once the getters return them, or `failed`. Reactive.
+ */
+export function getTagsStatus(): SessionDownloadStatus {
+  const status = download.status();
+  // the getters' live query catches up a tick after the download
+  if (status === "loaded" && tagsQuery.status !== "ready") {
+    return "loading";
+  }
+  return status;
 }
 
 /** The active loaded tags, sorted by name. Reactive like `getTags`. */

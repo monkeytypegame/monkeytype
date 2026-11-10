@@ -19,7 +19,7 @@ vi.mock("../../src/ts/ape", () => ({
 }));
 
 import {
-  arePresetsLoaded,
+  getPresetsStatus,
   deletePreset,
   getPreset,
   getPresets,
@@ -89,12 +89,12 @@ describe("presets collection", () => {
     expect(getPresets()).toEqual([]);
   });
 
-  it("reports loaded only once signed in and ready", async () => {
-    expect(arePresetsLoaded()).toBe(false);
+  it("reports loaded only once signed in and downloaded", async () => {
+    expect(getPresetsStatus()).toBe("loading");
     setUserId("uid");
     await waitForPresetsReady();
-    expect(arePresetsLoaded()).toBe(true);
+    expect(getPresetsStatus()).toBe("loaded");
     setUserId(null);
-    expect(arePresetsLoaded()).toBe(false);
+    expect(getPresetsStatus()).toBe("loading");
   });
 });

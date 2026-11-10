@@ -11,7 +11,7 @@ vi.mock("../../src/ts/ape/user", () => ({
 }));
 
 import {
-  areTagsLoaded,
+  getTagsStatus,
   getActiveTags,
   getTag,
   getTags,
@@ -82,13 +82,13 @@ describe("tags collection", () => {
     expect(getTags()).toEqual([]);
   });
 
-  it("reports loaded only once signed in and ready", async () => {
-    expect(areTagsLoaded()).toBe(false);
+  it("reports loaded only once signed in and downloaded", async () => {
+    expect(getTagsStatus()).toBe("loading");
     setUserId("uid");
     await waitForTagsReady();
-    expect(areTagsLoaded()).toBe(true);
+    expect(getTagsStatus()).toBe("loaded");
     setUserId(null);
-    expect(areTagsLoaded()).toBe(false);
+    expect(getTagsStatus()).toBe("loading");
   });
 
   it("re-runs a single-tag reader only for its own tag", async () => {
@@ -132,12 +132,12 @@ describe("tags collection", () => {
     await vi.advanceTimersByTimeAsync(0);
 
     expect(getTags()).toEqual([]);
-    expect(areTagsLoaded()).toBe(false);
+    expect(getTagsStatus()).toBe("loading");
 
     release();
     await waitForTagsReady();
     expect(names(getTags())).toEqual(["other"]);
-    expect(areTagsLoaded()).toBe(true);
+    expect(getTagsStatus()).toBe("loaded");
   });
 
   it("doesn't hang sign in when the download fails", async () => {
@@ -152,7 +152,7 @@ describe("tags collection", () => {
     await vi.advanceTimersByTimeAsync(10_000);
     await ready;
 
-    expect(areTagsLoaded()).toBe(false);
+    expect(getTagsStatus()).toBe("failed");
     expect(getTags()).toEqual([]);
   });
 });
