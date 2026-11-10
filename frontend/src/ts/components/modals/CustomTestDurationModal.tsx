@@ -39,7 +39,7 @@ export function CustomTestDurationModal(): JSXElement {
     },
   }));
 
-  const durationValue = form.useStore((s) => s.values.duration);
+  const durationValue = form.useSelector((s) => s.values.duration);
 
   const humanTime = () => {
     const duration = parseInput(durationValue());

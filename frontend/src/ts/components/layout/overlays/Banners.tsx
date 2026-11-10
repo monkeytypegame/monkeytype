@@ -10,7 +10,7 @@ import {
   removeBanner,
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
-import { getSnapshot } from "../../../states/snapshot";
+import { getUserData } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
@@ -78,7 +78,7 @@ export function Banners(): JSXElement {
 
   let nameChangeAdded = false;
   createEffectOn(
-    () => getSnapshot()?.needsToChangeName,
+    () => getUserData()?.needsToChangeName,
     (needsToChange) => {
       if (needsToChange && !nameChangeAdded) {
         nameChangeAdded = true;

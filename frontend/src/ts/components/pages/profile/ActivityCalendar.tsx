@@ -2,7 +2,7 @@ import { TestActivity } from "@monkeytype/schemas/users";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
-import { getSnapshot, getTestActivityCalendar } from "../../../db";
+import { getUserData, getTestActivityCalendar } from "../../../db";
 import {
   clear as clearTestActivity,
   init as initTestActivity,
@@ -28,7 +28,7 @@ export function ActivityCalendar(props: {
     (() => {
       if (
         (!props.isAccountPage && props.testActivity === undefined) ||
-        (props.isAccountPage && getSnapshot()?.testActivity === undefined) ||
+        (props.isAccountPage && getUserData()?.testActivity === undefined) ||
         element() === undefined
       ) {
         calendar = undefined;
@@ -38,7 +38,7 @@ export function ActivityCalendar(props: {
 
       if (props.isAccountPage) {
         //signals cannot store classes, use the testActivity from the snapshot for now
-        calendar = getSnapshot()?.testActivity;
+        calendar = getUserData()?.testActivity;
       } else {
         const testActivity = props.testActivity as TestActivity;
         calendar = new TestActivityCalendar(
@@ -64,8 +64,8 @@ export function ActivityCalendar(props: {
 
   const yearOptions = () => {
     const startYear =
-      getSnapshot()?.addedAt !== undefined
-        ? new Date(getSnapshot()?.addedAt ?? 0).getFullYear()
+      getUserData()?.addedAt !== undefined
+        ? new Date(getUserData()?.addedAt ?? 0).getFullYear()
         : 2020;
     const currentYear = new Date().getFullYear();
     const years: SlimSelectProps["options"] = [
@@ -78,7 +78,7 @@ export function ActivityCalendar(props: {
       if (
         years.length < 2 ||
         (getSeverConfiguration()?.users.premium.enabled &&
-          getSnapshot()?.isPremium)
+          getUserData()?.isPremium)
       ) {
         years.push({
           text: year.toString(),

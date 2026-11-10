@@ -20,7 +20,7 @@ describe("PresetController", () => {
     vi.mock("../../src/ts/test/pace-caret", () => ({
       //
     }));
-    const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
+    const dbGetSnapshotMock = vi.spyOn(DB, "getUserData");
     const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(

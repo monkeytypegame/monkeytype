@@ -2,11 +2,14 @@ import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
-import { getSnapshot } from "../../../states/snapshot";
+import { getUserData } from "../../../states/snapshot";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
 type Props = {
+  /** classes for the menu's outer element, eg. when to show it */
+  class?: string;
   showFriendsNotificationBubble?: boolean;
 };
 
@@ -16,7 +19,10 @@ export function AccountMenu(props: Props): JSXElement {
 
   return (
     <div
-      class="pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125"
+      class={cn(
+        "pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125",
+        props.class,
+      )}
       data-ui-element="accountMenu"
     >
       <div class="h-3"></div>
@@ -58,7 +64,7 @@ export function AccountMenu(props: Props): JSXElement {
             fixedWidth: true,
           }}
           to="/profile/$uidOrName"
-          params={{ uidOrName: getSnapshot()?.name ?? "" }}
+          params={{ uidOrName: getUserData()?.name ?? "" }}
         />
         <Button
           text="Account settings"

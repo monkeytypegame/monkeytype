@@ -9,7 +9,7 @@ import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 
@@ -29,10 +29,10 @@ export function usePresetsLiveQuery() {
   });
 }
 
-const presetsCollection = createCollection(
-  queryCollectionOptions({
+const presetsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     queryClient,
     enabled: isAuthenticated,
@@ -50,7 +50,8 @@ const presetsCollection = createCollection(
       }));
     },
   }),
-);
+  ...keepForever,
+});
 
 type ActionType = {
   addPreset: {

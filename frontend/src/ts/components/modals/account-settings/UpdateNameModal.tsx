@@ -7,13 +7,13 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import { setSnapshot, getSnapshot } from "../../../db";
+import { setSnapshot, getUserData } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (!isAuthenticated() || !snapshot) return;
 
   showSimpleModal({

@@ -44,7 +44,7 @@ function fakeLayout(): void {
 
 function renderWord(text: string): HTMLElement {
   const container = renderWords();
-  appendRenderedWord(text);
+  appendRenderedWord({ display: text });
   setActiveWord(0);
   flush();
   return container;

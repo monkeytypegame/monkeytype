@@ -3,8 +3,9 @@ import {
   RouterContextProvider,
   RouterProvider as RouteRenderer,
 } from "@tanstack/solid-router";
-import { JSXElement } from "solid-js";
+import { createEffect, JSXElement, onMount } from "solid-js";
 
+import * as MonkeyPower from "../../elements/monkey-power";
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
 import { getGlobalOffsetTop, isAppReady } from "../../states/core";
@@ -23,9 +24,19 @@ import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
 import { CustomBackground } from "./CustomBackground";
 import { Font } from "./Font";
 import { Funbox } from "./Funbox";
+import { NoCssDetails } from "./NoCssDetails";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
+  // until monkey power owns its canvas (L3)
+  onMount(() => MonkeyPower.init());
+
+  // on the root, not #app: the focus mode cursor rule then needs no :has(),
+  // which is slow to match and invalidate on every style recalc
+  createEffect(() => {
+    document.documentElement.toggleAttribute("data-focused", isFocusMode());
+  });
+
   return (
     <Providers>
       <Overlays />
@@ -41,7 +52,6 @@ export function App(): JSXElement {
       <Anime
         id="app"
         class={cn("content-grid", { hidden: !isAppReady() })}
-        data-focused={isFocusMode() ? "" : undefined}
         initial={{ opacity: 0 }}
         animate={{ opacity: isAppReady() ? 1 : 0, duration: 250 }}
         style={{
@@ -66,6 +76,7 @@ export function App(): JSXElement {
         <Advertisement id="ad-footer" visible={"sellout"} />
       </Anime>
       <DevTools />
+      <NoCssDetails />
     </Providers>
   );
 }
