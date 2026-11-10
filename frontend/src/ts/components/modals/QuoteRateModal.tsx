@@ -44,7 +44,7 @@ export function QuoteRateModal(): JSXElement {
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
-    const snapshot = DB.getSnapshot();
+    const snapshot = DB.getUserData();
     const alreadyRated = snapshot?.quoteRatings?.[quote.language]?.[quote.id];
     if (isSafeNumber(alreadyRated)) {
       setRating(alreadyRated);
@@ -73,7 +73,7 @@ export function QuoteRateModal(): JSXElement {
       return;
     }
 
-    const snapshot = DB.getSnapshot();
+    const snapshot = DB.getUserData();
     if (!snapshot) return;
     const quoteRatings = snapshot.quoteRatings ?? {};
     const languageRatings = quoteRatings?.[quote.language] ?? {};

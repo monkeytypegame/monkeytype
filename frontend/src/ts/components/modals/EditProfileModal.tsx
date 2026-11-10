@@ -8,7 +8,7 @@ import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
 import Ape from "../../ape";
-import { getSnapshot, setSnapshot } from "../../db";
+import { getUserData, setSnapshot } from "../../db";
 import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
@@ -26,7 +26,7 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const snapshot = getSnapshot();
+  const snapshot = getUserData();
   if (snapshot === undefined) {
     throw new Error("missing snapshot in EditProfile");
   }
