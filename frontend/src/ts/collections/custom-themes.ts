@@ -160,6 +160,16 @@ export function getCustomTheme(id: string): CustomThemeItem | undefined {
   return customThemesQuery.state.get(id);
 }
 
+/** Whether the custom themes download failed (after its retries). Reactive. */
+export function haveCustomThemesFailed(): boolean {
+  return download.hasFailed();
+}
+
+/** Downloads the custom themes again after a failure. */
+export function retryCustomThemes(): void {
+  download.retry();
+}
+
 /**
  * Whether the custom themes have loaded (false while loading, failed or signed
  * out). Unlike tags and presets, sign in doesn't wait for them.

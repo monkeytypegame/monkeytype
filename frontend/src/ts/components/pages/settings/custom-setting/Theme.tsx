@@ -1,5 +1,5 @@
 import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
-import { For, JSXElement, Show, untrack } from "solid-js";
+import { For, JSXElement, Match, Show, Switch, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
 
@@ -8,6 +8,8 @@ import {
   deleteCustomTheme,
   editCustomTheme,
   areCustomThemesLoaded,
+  haveCustomThemesFailed,
+  retryCustomThemes,
   getCustomThemes,
 } from "../../../../collections/custom-themes";
 import { configMetadata } from "../../../../config/metadata";
@@ -85,13 +87,25 @@ export function Theme(): JSXElement {
   const Customs = () => (
     <div class="grid gap-4">
       <Show when={isAuthenticated()}>
-        <Show when={areCustomThemesLoaded()} fallback={<LoadingCircle />}>
-          <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
-            <For each={getCustomThemes()}>
-              {(theme) => <CustomThemeButton theme={theme} />}
-            </For>
-          </div>
-        </Show>
+        <Switch fallback={<LoadingCircle />}>
+          <Match when={haveCustomThemesFailed()}>
+            <div class="flex items-center gap-4">
+              <div class="text-error">Failed to load custom themes</div>
+              <Button
+                fa={{ icon: "fa-redo-alt" }}
+                text="Retry"
+                onClick={() => retryCustomThemes()}
+              />
+            </div>
+          </Match>
+          <Match when={areCustomThemesLoaded()}>
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
+              <For each={getCustomThemes()}>
+                {(theme) => <CustomThemeButton theme={theme} />}
+              </For>
+            </div>
+          </Match>
+        </Switch>
       </Show>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Picker color="bg" />

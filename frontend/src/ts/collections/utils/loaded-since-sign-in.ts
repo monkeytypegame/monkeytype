@@ -28,6 +28,10 @@ export function trackLoadSinceSignIn(
 ): {
   /** The download since the last sign in succeeded. Reactive. */
   isLoaded: () => boolean;
+  /** The download since the last sign in failed (after the query's retries). Reactive. */
+  hasFailed: () => boolean;
+  /** Downloads again; pending until it settles. */
+  retry: () => void;
   /** Resolves once the download since the last sign in succeeded or failed. */
   whenSettled: () => Promise<void>;
 } {
@@ -37,6 +41,10 @@ export function trackLoadSinceSignIn(
   const queryStatus = (): SessionLoadStatus => {
     const query = queryClient.getQueryCache().get(queryHash);
     if (query === undefined || query.state.status === "pending") {
+      return "pending";
+    }
+    // a retry after a failure keeps the error status while it fetches
+    if (query.state.status === "error" && query.state.fetchStatus !== "idle") {
       return "pending";
     }
     return query.state.status;
@@ -69,5 +77,15 @@ export function trackLoadSinceSignIn(
       );
     });
 
-  return { isLoaded: () => status() === "success", whenSettled };
+  const retry = (): void => {
+    setStatus("pending");
+    void refetch();
+  };
+
+  return {
+    isLoaded: () => status() === "success",
+    hasFailed: () => status() === "error",
+    retry,
+    whenSettled,
+  };
 }

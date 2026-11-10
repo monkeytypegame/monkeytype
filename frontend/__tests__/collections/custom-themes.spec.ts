@@ -21,6 +21,8 @@ vi.mock("../../src/ts/ape", () => ({
 import Ape from "../../src/ts/ape";
 import {
   areCustomThemesLoaded,
+  haveCustomThemesFailed,
+  retryCustomThemes,
   deleteCustomTheme,
   getCustomTheme,
   getCustomThemes,
@@ -149,5 +151,24 @@ describe("customThemes collection", () => {
     release();
     await waitFor(areCustomThemesLoaded, "the new themes to load");
     expect(names(getCustomThemes())).toEqual(["other"]);
+  });
+
+  it("reports a failed download, and loads on retry", async () => {
+    // no retries: the failure is final at once
+    queryClient.setQueryDefaults(["user", "customThemes"], { retry: false });
+    vi.mocked(Ape.users.getCustomThemes).mockRejectedValueOnce(
+      new Error("offline"),
+    );
+    setUserId("uid4");
+    await waitFor(haveCustomThemesFailed, "the download to fail");
+
+    expect(areCustomThemesLoaded()).toBe(false);
+
+    retryCustomThemes();
+    expect(haveCustomThemesFailed()).toBe(false);
+    await waitFor(areCustomThemesLoaded, "the themes to load on retry");
+    expect(haveCustomThemesFailed()).toBe(false);
+    expect(getCustomThemes()).toHaveLength(2);
+    queryClient.setQueryDefaults(["user", "customThemes"], {});
   });
 });
