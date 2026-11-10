@@ -9,7 +9,6 @@ import { getFontPreview } from "../../../states/font";
 import {
   getActiveWordIndex,
   getTestDirection,
-  isPaceRepeat,
   isResultCalculating,
   isSlowTimer,
   isTestActive,
@@ -348,7 +347,6 @@ export function createWordsLayout(options: {
     pace.stopAllAnimations();
     pace.clearMargins();
     // zen words have no letters to go to
-    if (Config.paceCaret === "off" && !isPaceRepeat()) return;
     if (Config.mode === "zen") return;
     pace.goTo({
       wordIndex: 0,

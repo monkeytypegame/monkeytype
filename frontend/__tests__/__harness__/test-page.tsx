@@ -40,7 +40,7 @@
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
  * - Mocked: firebase (signed out, so a finished test isn't saved), the theme
- *   controller (indexedDB), the chart (canvas). Stubbed in jsdom: matchMedia
+ *   controller (indexedDB), the chart and confetti (canvas). Stubbed in jsdom: matchMedia
  *   (nothing matches), scrolling. The engine's debug logs are muted.
  * - The page mounts in a router with only the test page, so it reads as the
  *   test page (typing starts a test only there) and the result's links work.
@@ -129,6 +129,8 @@ vi.mock("../../src/ts/components/common/ChartJs", () => ({
 vi.mock("../../src/ts/controllers/theme-controller", () => ({
   randomizeTheme: vi.fn(),
 }));
+// draws on a canvas, which jsdom lacks
+vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
 
 export type TestPhase = "ready" | "active" | "finished";
 

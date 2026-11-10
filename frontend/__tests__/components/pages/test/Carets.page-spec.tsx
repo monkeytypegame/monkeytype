@@ -35,6 +35,16 @@ describe("caret", () => {
     expect(page.phase()).not.toBe("finished");
     expect(page.caret().shown).toBe(false);
   });
+
+  it("hides as soon as a timed test runs out", async () => {
+    const page = await renderTestPage({ config: { mode: "time", time: 1 } });
+
+    await page.type("a");
+    await page.advance(1000);
+
+    expect(page.phase()).not.toBe("finished");
+    expect(page.caret().shown).toBe(false);
+  });
 });
 
 describe("pace caret", () => {
