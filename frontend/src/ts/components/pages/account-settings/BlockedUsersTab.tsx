@@ -61,7 +61,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           }}
           showAvatar={false}
           linkToProfile
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
         />
       ),
     }),

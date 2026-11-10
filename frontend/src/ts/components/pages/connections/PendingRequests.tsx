@@ -56,7 +56,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           user={{ name: info.getValue(), uid: info.row.original.initiatorUid }}
           showAvatar={false}
           linkToProfile
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
         />
       ),
     }),

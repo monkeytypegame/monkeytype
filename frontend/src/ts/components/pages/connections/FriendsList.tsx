@@ -140,7 +140,7 @@ function getColumns({
           flagsColor="sub"
           user={info.row.original}
           isFriend={false}
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
           linkToProfile
           hideBadgeTextOnWidth="lg"
         />
