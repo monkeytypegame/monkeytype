@@ -9,12 +9,13 @@ import { createMemo, For, JSXElement, Show } from "solid-js";
 import { getFormatting } from "../../../states/core";
 import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { formatTopPercentage } from "../../../utils/misc";
+import { DeepReadonly } from "../../../utils/types";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
 import { UserDetails } from "./UserDetails";
 
 export function UserProfile(props: {
-  profile: UserProfileType;
+  profile: DeepReadonly<UserProfileType>;
   isAccountPage?: true;
 }): JSXElement {
   return (
@@ -103,7 +104,7 @@ function LeaderboardPosition(props: {
 function PbCard<M extends "time" | "words">(props: {
   mode: M;
   mode2: string[];
-  pbs: PersonalBests[M];
+  pbs: DeepReadonly<PersonalBests[M]>;
   isAccountPage?: true;
 }): JSXElement {
   const format = getFormatting;
@@ -112,7 +113,7 @@ function PbCard<M extends "time" | "words">(props: {
     props.mode2.map((mode) => {
       const pbArray = props.pbs[mode] ?? [];
 
-      const best = pbArray.reduce<PersonalBest | undefined>(
+      const best = pbArray.reduce<DeepReadonly<PersonalBest> | undefined>(
         (max, current) => (current.wpm > (max?.wpm ?? 0) ? current : max),
         undefined,
       );

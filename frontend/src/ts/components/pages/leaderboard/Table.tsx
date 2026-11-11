@@ -64,7 +64,7 @@ export function Table(
             activeRow: getUserId,
             class: cn(
               "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
-              "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+              "[&_[data-ui-element=button]]:[--themable-button-text:var(--text-main)]",
             ),
           },
     scrollToSelectedRow: props.scrollToUser,
@@ -171,7 +171,7 @@ const userColumn = ({
             flagsColor="sub"
             user={info.row.original}
             isFriend={hasConnection(info.row.original.uid, "accepted")}
-            class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+            class="w-min text-[1em] [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
             linkToProfile={true}
           />
         ),

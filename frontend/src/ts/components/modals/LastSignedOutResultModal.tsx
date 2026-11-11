@@ -3,10 +3,14 @@ import { Mode } from "@monkeytype/schemas/shared";
 import objectHash from "object-hash";
 import { createMemo, JSX } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../collections/results";
+
 import Ape from "../../ape";
+import {
+  saveLocalResult,
+  SaveLocalResultData,
+} from "../../collections/results";
 import { getConfig } from "../../config/store";
-import { SnapshotResult } from "../../constants/default-snapshot";
-import { saveLocalResult, SaveLocalResultData } from "../../db";
 import { authEvent } from "../../events/auth";
 import { getAuthenticatedUser } from "../../firebase";
 import { hideModal, showModal } from "../../states/modals";
@@ -166,10 +170,10 @@ async function syncLastSignedOutResult(): Promise<void> {
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
+  // into a NormalizedLocalResult - might not cause issues but worth investigating
   const result = structuredClone(
     updatedResult,
-  ) as unknown as SnapshotResult<Mode>;
+  ) as unknown as NormalizedLocalResult<Mode>;
 
   const dataToSave: SaveLocalResultData = {
     xp: response.body.data.xp,
@@ -202,7 +206,7 @@ export function updateUidAndHash(
 }
 
 authEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
+  if (event.type === "userDataLoaded" && event.data.isInitial) {
     if (getLastSignedOutResult() !== null) {
       showModal(modalId);
     }
