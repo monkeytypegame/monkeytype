@@ -75,6 +75,7 @@ export function authenticateTsRestRequest<
 
     try {
       if (options.isPublic === true) {
+        // skip authentication for public endpoints without optional user, even if an auth header is provided
         token = {
           type: "None",
           uid: "",
