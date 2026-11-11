@@ -16,7 +16,7 @@ import {
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getUserData } from "../../../states/snapshot";
+import { getUserData } from "../../../states/user";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -140,7 +140,7 @@ function getColumns({
           flagsColor="sub"
           user={info.row.original}
           isFriend={false}
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
           linkToProfile
           hideBadgeTextOnWidth="lg"
         />

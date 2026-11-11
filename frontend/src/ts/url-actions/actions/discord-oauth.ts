@@ -2,7 +2,7 @@
 // its hash carries the token. A url action (../action.ts)
 
 import Ape from "../../ape";
-import * as DB from "../../db";
+import { setDiscordLink } from "../../states/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   showErrorNotification,
@@ -55,16 +55,5 @@ async function applyDiscordToken(
 
   showSuccessNotification(response.body.message);
 
-  const snapshot = DB.getUserData();
-  if (!snapshot) return;
-
-  const { discordId, discordAvatar } = response.body.data;
-  if (discordId !== undefined) {
-    snapshot.discordId = discordId;
-  }
-  if (discordAvatar !== undefined) {
-    snapshot.discordAvatar = discordAvatar;
-  }
-
-  DB.setSnapshot(snapshot);
+  setDiscordLink(response.body.data);
 }

@@ -21,7 +21,7 @@ For a developer, this means two ways to do everything. It is unclear which one i
 One architecture, described below as the final state:
 
 - **One Solid root** renders the whole app. The static HTML holds only what must work without JS/CSS (the no-JS/no-CSS warnings) and the entry script.
-- **State has one home per concern**: config in a single store, the user in a single-row user collection, server data in TanStack Query/DB collections, engine state in the engine's own module, UI state in signals/stores under the states area. Changes propagate through reactivity and direct commands, not event buses.
+- **State has one home per concern**: config in a single store, the user in a single user store, server data in TanStack Query/DB collections, engine state in the engine's own module, UI state in signals/stores under the states area. Changes propagate through reactivity and direct commands, not event buses.
 - **The typing test splits into three layers with one-way dependencies**:
   1. a DOM-free **test engine** (lifecycle phases, words, timer, EventLog, stats, funbox plugins) that owns its state and exposes commands and read-only signals,
   2. an **input layer** (the WordsInput component plus handlers) that turns browser input into engine commands and render-store writes, never rendering synchronously,
@@ -98,7 +98,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 49. As a developer, I want one canonical way to read and write config, so that I don't have to sync two copies.
 50. As a developer, I want config reactions to be effects on the config store, so that I never read stale values in a listener.
 51. As a developer, I want test restarts to be triggered by the config metadata's restart flag, so that callers don't have to remember to restart.
-52. As a developer, I want the user to be one single-row collection with named mutations and one read function, so that there is a single copy, updates are tracked and nothing is mutated in place.
+52. As a developer, I want the user to be one store with named mutations and one read function, so that there is a single copy, updates are tracked and nothing is mutated in place.
 53. As a developer, I want server data to come only from queries and collections, and small collections to have one getter that is reactive in components and synchronous elsewhere, so that caching and reads are uniform.
 54. As a developer, I want the test engine to have no DOM access and own its state, so that I can test it headless and feed it to replay.
 55. As a developer, I want the EventLog to stay the source of truth for stats, with pure stat functions of an EventLog, so that replay can recompute every stat.
@@ -132,16 +132,17 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 - **Config**: the config store is the only copy. The setter validates, writes the store, persists, then anything else. The mutable config object, its event bus and the full-config-change start/finish events are deleted. Reactions are effects on the specific keys they care about. Non-tracking reads in plain functions (engine, commandline actions) read the store directly. Batch-applying a whole config (preset, import, sign-in) is one batched store reconcile, so effects run once.
   - Interim rule until the event bus is gone: the store must be updated *before* the event fires, so listeners never see stale values.
 - **Config metadata** is the single source for settings UI, commandline generation, validation and restart behaviour (`changeRequiresRestart`). The separate commandline-metadata module is merged into it. Commandline icons use the icon component's types, not strings.
-- **User**: a single-row TanStack DB collection keyed by uid replaces both the mutable user snapshot and its reactive mirror (and the planned snapshot store).
-  - It's a query collection on the existing cached user response (as tags already are); the mapping from the API shape lives in its `queryFn`. `enabled` while signed in, `staleTime`/`gcTime: Infinity`.
-  - The row holds what the snapshot holds today. Test activity is plain data (days and last day); the calendar class and per-year cache live in the calendar component. Tags, presets etc. stay in their own collections; the last-result signal stays a signal.
-  - Signed out means no row; consumers handle "no user". No default user stands in. A failed user fetch shows the error and leaves no row (today it silently falls back to defaults). Sign-in waits for the row inside the blocking user-data step, as it does for tags and presets.
-  - **Reads**: one `getUser()`, backed by a module-level reactive mirror of the row: reactive inside components and effects, a plain synchronous read elsewhere (engine at finish, plain modules). No separate hook, no `__nonReactive`, no direct collection access outside the module.
-  - **Writes**: named functions only; the raw update stays private. Mirrors of what the server already did (xp, streak, typing stats, PBs, leaderboard memory, badges, inbox count) are direct writes with no API call or refetch. User-initiated changes (name, Discord unlink, streak offset, quote ratings, favourite quotes) are optimistic actions that call the API and roll back on failure, as custom themes and connections do. Server-owned flags (banned, verified, leaderboard opt-out) have no setters.
+- **User**: one Solid store in `states/user.ts` replaces both the mutable user snapshot and its reactive mirror.
+  - Not a TanStack DB collection: there is no sync source to back it (a query collection's refetch resolves before the row lands, and a disabled query doesn't clear it on sign-out), so a local-only collection only added a second copy that a store had to mirror, and TanStack optimistic transactions hide direct writes made while they are pending.
+  - Loading is imperative: `loadUserData()` fetches the user and maps the API shape (in the user module), reconciling it into the store; sign-out clears it. No TanStack Query for the user.
+  - The store holds what the snapshot holds today. Test activity is plain data (days and last day); the calendar class and per-year cache live in the calendar component. Tags, presets etc. stay in their own collections; the last-result signal stays a signal.
+  - Signed out means no user; consumers handle "no user". No default user stands in. A failed user fetch shows the error and leaves no user (today it silently falls back to defaults). Sign-in waits for the user inside the blocking user-data step, as it does for tags and presets.
+  - **Reads**: one `getUser()`, returning the store's (readonly) user: reactive inside components and effects, a plain synchronous read elsewhere (engine at finish, plain modules). No separate hook, no `__nonReactive`, no store access outside the module.
+  - **Writes**: named functions only; the raw update stays private. Mirrors of what the server already did (xp, streak, typing stats, PBs and PB reset, leaderboard memory, badges, inbox count, Discord link) are direct writes with no API call or refetch. User-initiated changes (name, Discord unlink, streak offset, quote ratings, favourite quotes, profile) are optimistic actions that call the API and roll back on failure, as custom themes and connections do. On success an action keeps the current user with its change applied, not the user as it was when the action started, so direct writes made meanwhile survive; on failure it rolls back only the fields nobody changed since. Server-owned flags (banned, verified, leaderboard opt-out) have no setters.
   - The auth bus's snapshot-updated event goes away; consumers read `getUser()`.
-- **Auth**: auth state is a signal (unknown, signed in, signed out), which the router's auth context and UI read. The user-data load sits next to it as state (loading, loaded, failed with an error) plus a `reloadUserData()` command; the router's auth context reads it for the blocking user-data step (user row, tags, presets) and its retry, instead of receiving a promise through an event. The auth bus (both its auth-state-changed and snapshot-updated events) is deleted.
-- **Server data**: Query for read-only server data, DB collections for user-owned lists (results, tags, presets, connections, ape keys, inbox, custom themes, filter presets) and the single-row user collection above.
-  - Small collections (tags, presets, custom themes) use the same read pattern as the user: each module exports plain getters (eg. `getTags()`, `getActiveTags()`) backed by a module-level reactive mirror, reactive in components and synchronous elsewhere. They replace both `__nonReactive` and the separate live-query hooks for these collections, are documented as "returns only what's loaded, never fetches", and keep `gcTime: Infinity`.
+- **Auth**: auth state is a signal (unknown, signed in, signed out), which the router's auth context and UI read. The user-data load sits next to it as state (loading, loaded, failed with an error) plus a `reloadUserData()` command; the router's auth context reads it for the blocking user-data step (user, tags, presets) and its retry, instead of receiving a promise through an event. The auth bus (both its auth-state-changed and snapshot-updated events) is deleted.
+- **Server data**: Query for read-only server data, DB collections for user-owned lists (results, tags, presets, connections, ape keys, inbox, custom themes, filter presets). The user is a store (above), not a collection.
+  - Small collections (tags, presets, custom themes) each export plain getters (eg. `getTags()`, `getActiveTags()`) backed by a module-level reactive mirror of the collection, reactive in components and synchronous elsewhere, the same read shape as `getUser()`. They replace both `__nonReactive` and the separate live-query hooks for these collections, are documented as "returns only what's loaded, never fetches", and keep `gcTime: Infinity`.
   - `__nonReactive` exists only for old-style code. It is not replaced one-for-one: each caller is rewritten as Solid code (or moved into the engine) as part of its own step, and `__nonReactive` is deleted once the last caller is gone. Reading a getter outside a tracking scope, as the engine does at finish, is ordinary Solid usage, not an escape hatch. Sign-in already waits for tags and presets inside the blocking user-data step, so they're loaded before any test can start; no extra blocking data is added.
   - Large reads (all results) use the async `*Once` form and stay off hot paths.
 - **UI state**: module-level signals and stores grouped by feature in the states area, created with the existing helpers. No plain `let` state that UI reads. Engine state is not here (see below).
@@ -236,7 +237,7 @@ Seams, highest first:
 2. **Test-page harness** (`frontend/__tests__/__harness__/test-page.tsx`, usage in its header; the main seam for the test): mounts the *real* TestPage with the real engine, types through WordsInput (input/beforeinput/keydown/composition), advances frames, and checks rendered words/letters (via `data-ui-*`), engine phase, live stats, the finish → result/spinner flow and the restart flow. Built early on the critical path, before the risky steps; every later test-page step keeps it green. Prior art: the render-words harness and the Words, WordsInput and TypoHints specs.
 3. **Engine, headless**: commands in, signals out: restart merging and test settings, finish/fail transitions, calculating → result, save status, tags read at finish. No DOM.
 4. **Pure modules** (existing pattern): letters/display rules, typo-hint merging, keymap converter, stats as functions of an EventLog, word generation, config setter validation, config metadata. Prior art: the letters/typo-hints specs, the config and config-metadata specs, the stats specs.
-5. **Store/state modules**: user collection mutations and `getUser()`, config store apply/reconcile, words-render buffer flush. Assert through their public getters.
+5. **Store/state modules**: user store mutations and `getUser()`, config store apply/reconcile, words-render buffer flush. Assert through their public getters.
 
 Also test as they change: funbox document effects (state and links on mount/unmount), the activity calendar component. Profile: letter rendering with attribute states, and finish on a worst-case long test.
 
@@ -281,6 +282,12 @@ From the caret boundary (T3):
 - Caret debug (dev options) outlines the pace caret for as long as it's on.
 - Seam bug fixed: in tape mode, the caret sits on its letter in a word whose direction differs from the test's (it was up to ~105px off, ~194px in word tape). The tape scroll itself is unchanged: in letter tape such a word still moves by its typed letters' width.
 
+From user data (U1):
+
+- Resetting PBs updates the PBs shown straight away (the reactive copy used to keep the old ones).
+- User changes (name, Discord unlink, streak offset, quote rating, favourite quote, profile) show at once and roll back if the request fails; they used to show only after the request.
+- The account page's activity calendar updates after a test without a reload.
+
 From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
 
 - Renamed commands: Minimum speed → Min speed, Minimum accuracy → Min accuracy (both get a "minimum" alias), Sound on click/error → Play sound on click/error, Pace caret mode → Pace caret, Live progress color/opacity → Timer color/opacity (a "progress" alias), Key tips → Show key tips, Out of focus warning → Show out of focus warning.
@@ -295,7 +302,7 @@ From commandline metadata (C5): generated config commands use the settings label
 | Q2 | Caret internals decided in T3: reactive style, visibility and blinking; movement on a private imperative handle (see Carets) |
 | Q3 | Single config store; mutable config and config bus deleted |
 | Q4 | No global event buses; `createEvent` only for local use |
-| Q5 | Superseded by Q22: the user is a single-row collection, not a store |
+| Q5 | Superseded by Q22, then reinstated by Q30: the user is a store |
 | Q6a–c | `data-ui-element`/`-state`/`-variant` is the theme API; bundled CSS moved over per PR; legacy selectors removed in one announced step |
 | Q7 | Test-page harness is the main test seam |
 | Q8 | Tribe lands after everything else is Solid |
@@ -312,14 +319,15 @@ From commandline metadata (C5): generated config commands use the settings label
 | Q19 | Funboxes are DOM-free engine plugins plus one Funbox component |
 | Q20 | Critical-path order as in the roadmap |
 | Q21 | Server-provided HTML stays as a sanitized `innerHTML` allowlist |
-| Q22 | Single-row user collection replaces the mutable snapshot and its mirror; row = today's snapshot; test activity plain data; tags etc. stay separate |
-| Q23 | Query collection on the cached user response; signed out = no row (no default user); fetch failure = error, no row; sign-in waits for the row |
+| Q22 | (Collection part superseded by Q30) Single-row user collection replaces the mutable snapshot and its mirror; row = today's snapshot; test activity plain data; tags etc. stay separate |
+| Q23 | Imperative `loadUserData()` (no query); signed out = no user (no default user); fetch failure = error, no user; sign-in waits for the user |
 | Q24 | Named write functions only: direct writes for server-side effects, optimistic actions for user changes; no setters for server-owned flags |
-| Q25 | U1 adds the collection and converts all writers; a read-only `DB.getSnapshot()` shim stays until readers move, then is deleted |
-| Q26 | Quote ratings stay in the user row as an optimistic action; #7717 closed |
+| Q25 | U1 adds the user store and converts all writers; a read-only `DB.getSnapshot()` shim stays until readers move, then is deleted |
+| Q26 | Quote ratings stay in the user as an optimistic action; #7717 closed |
 | Q27 | One `getUser()` read: reactive in components, synchronous elsewhere |
 | Q28 | Same one-getter pattern for tags, presets and custom themes (replaces their live-query hooks); results stay async. `__nonReactive` goes by rewriting its old-style callers, then deleting it |
 | Q29 | Auth bus deleted entirely; the user-data load is state (loading/loaded/failed) plus `reloadUserData()` beside the auth signal, read by the router |
+| Q30 | The user is one Solid store in `states/user.ts`, not a collection: no sync source, the collection needed a mirror store anyway, TanStack optimistic transactions hide concurrent direct writes. Same API (`getUser()`, named writes, hand-rolled optimistic actions with field-level rollback) |
 
 EventLog (grilling, 2026-10-26):
 
@@ -339,7 +347,7 @@ EventLog (grilling, 2026-10-26):
 ## Further Notes
 
 - Current state (2026-10-24, master @ 34efffaa6): all pages, modals, commandline UI, layout and routing are Solid. About 68 DOM-wrapper query calls remain across 23 files, mostly in the test. The mutable config has about 539 references in 58 files; there are 11 config-bus subscribers; about 37 files import the user snapshot modules. 52 bundled themes target `#words`, `.word`, `letter`, `#caret` and similar.
-- Open PRs: #8507 (Words owns its layout) is current and is the first step on the critical path. #8031 is superseded by master and can be closed. #7373 (snapshot store) and #7717 (quote-rating collection) are superseded by the single-row user collection and can be closed. #7787 (word direction) should be redone on the render store. #8490 (app-shell test speed-up) is low-risk and helps the harness seam.
+- Open PRs: #8507 (Words owns its layout) is current and is the first step on the critical path. #8031 is superseded by master and can be closed. #7373 (snapshot store) and #7717 (quote-rating collection) are superseded by the user store (U1) and can be closed. #7787 (word direction) should be redone on the render store. #8490 (app-shell test speed-up) is low-risk and helps the harness seam.
 - The `newtribemerge` branch (about 14k lines) depends on deleted modules (old router, page controller, mount).
 - Related memory/decisions: input detached from render (buffer plus shared rAF flush), event-log replay constraint, Words letter display deviations, tribe migration decisions.
 - Glossary terms used: page, test page, page fade, loading page/bar/step, blocking vs background data, typo hint, merged typo hint, line jump, tape mode, tape scroll. Added to the glossary: **test mode**, **funbox**, **finish**, **fail**, **result**, **active tags**, **pace caret**, **focus mode**, **test settings**, **restart-required setting**, **theme attributes**. Test engine, render store and layout pass are code-structure terms defined in this spec, not glossary terms.

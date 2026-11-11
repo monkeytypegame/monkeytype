@@ -1,3 +1,4 @@
+import { getUserData } from "./states/user";
 // Import sorting is disabled for this file (.oxfmtrc.json): many imports run
 // side effects on load, so their order matters.
 
@@ -11,7 +12,6 @@ import "./event-handlers/global";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
-import * as DB from "./db";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
@@ -81,7 +81,7 @@ void init(onAuthStateChanged).then(() => {
 });
 
 addToGlobal({
-  snapshot: DB.getUserData,
+  userData: getUserData,
   config: Config,
   glarsesMode: () => {
     console.log("Moved to settings > danger zone > the rest");
