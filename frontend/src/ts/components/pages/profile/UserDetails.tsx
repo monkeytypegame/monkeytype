@@ -26,6 +26,7 @@ import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
+import { DeepReadonly } from "../../../utils/types";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -38,7 +39,7 @@ import { EditProfile } from "../../modals/EditProfileModal";
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
 export function UserDetails(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   isAccountPage?: true;
 }): JSXElement {
   const variant = () => {
@@ -104,7 +105,7 @@ export function UserDetails(props: {
 }
 
 function ActionButtons(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   isAccountPage?: true;
 }): JSXElement {
   const isUsersProfile = () =>
@@ -197,7 +198,7 @@ function ActionButtons(props: {
 }
 
 function AvatarAndName(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   variant: Variant;
   isAccountPage?: true;
 }): JSXElement {

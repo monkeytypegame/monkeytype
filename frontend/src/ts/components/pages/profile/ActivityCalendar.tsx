@@ -19,6 +19,7 @@ import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { showErrorNotification } from "../../../states/notifications";
 import { getUserData } from "../../../states/user";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
+import { DeepReadonly } from "../../../utils/types";
 import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -76,7 +77,7 @@ async function getTestActivityCalendar(
 
 export function ActivityCalendar(props: {
   isAccountPage?: true;
-  testActivity?: TestActivity;
+  testActivity?: DeepReadonly<TestActivity>;
 }): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [elementRef, element] = useRefWithUtils<HTMLElement>();
