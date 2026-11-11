@@ -23,11 +23,6 @@ import {
   wordsHaveNewline,
 } from "../../../states/test";
 import {
-  getLineBreakElements,
-  getWordElement as getRenderedWordElement,
-  LETTER_SELECTOR,
-} from "../../../states/word-elements";
-import {
   firstMountedIndex,
   getPendingWordInput,
   invalidateTypoHintsLayout,
@@ -44,6 +39,8 @@ import { ElementWithUtils } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
 import * as Strings from "../../../utils/strings";
 import { Caret, getTapeLetterShift } from "./caret";
+import { LETTER_SELECTOR } from "./selectors";
+import type { WordRegistry } from "./word-registry";
 
 type WordChange = "forward" | "back" | "initial";
 
@@ -64,14 +61,8 @@ function isLineBreak(item: LayoutItem): item is LineBreakItem {
   return item.kind === "lineBreak";
 }
 
-function getWordElement(index: number): ElementWithUtils | null {
-  const el = getRenderedWordElement(index);
-  return el === undefined ? null : new ElementWithUtils(el);
-}
-
-function getActiveWordElement(): ElementWithUtils | null {
-  return getWordElement(getActiveWordIndex());
-}
+/** The registry of the mounted Words, for the overflow check. */
+let mountedRegistry: WordRegistry | undefined;
 
 /**
  * Typed input of word `index` as rendered (the last flush), with its IME
@@ -89,16 +80,18 @@ function getRenderedInput(index: number): {
  * The rendered words and line breaks in #words' order, as of the last
  * flush. Words hidden by tape scroll keep only their line break.
  */
-function getLayoutItems(): LayoutItem[] {
+function getLayoutItemsOf(registry: WordRegistry): LayoutItem[] {
   const items: LayoutItem[] = [];
   const renderedWords = wordsRenderState.words;
   for (let i = firstMountedIndex(); i < renderedWords.length; i++) {
     if (isWordRendered(i)) {
-      const el = getWordElement(i);
-      if (el !== null) items.push({ kind: "word", index: i, el });
+      const el = registry.getWord(i);
+      if (el !== undefined) {
+        items.push({ kind: "word", index: i, el: new ElementWithUtils(el) });
+      }
     }
     if (renderedWords[i]?.endsLine !== true) continue;
-    const lineBreak = getLineBreakElements(i);
+    const lineBreak = registry.getLineBreak(i);
     if (lineBreak === undefined) continue;
     items.push({
       kind: "lineBreak",
@@ -130,6 +123,7 @@ function isTimedTest(): boolean {
  * first rendered line.
  */
 function getLineAboveTop(
+  registry: WordRegistry,
   wordIndex: number,
   wordTop: number,
 ): number | undefined {
@@ -138,7 +132,7 @@ function getLineAboveTop(
     i >= wordsRenderState.firstRenderedWordIndex;
     i--
   ) {
-    const top = getRenderedWordElement(i)?.offsetTop;
+    const top = registry.getWord(i)?.offsetTop;
     if (top !== undefined && top < wordTop) return top;
   }
   return undefined;
@@ -231,9 +225,11 @@ export function wouldActiveWordOverflow(
   inputValue: string,
   data: string,
 ): boolean {
-  const activeWord = getActiveWordElement();
+  const activeWordEl = mountedRegistry?.getWord(getActiveWordIndex());
+  const activeWord =
+    activeWordEl === undefined ? null : new ElementWithUtils(activeWordEl);
   // Active word not rendered yet (word change and append in the same frame),
-  // or no words mounted. Rendering here would put a reactive render on the
+  // or no Words mounted. Rendering here would put a reactive render on the
   // input path, so assume the worst: this guard only runs for extra letters,
   // blocking one is cheap, letting it wrap the word is not.
   if (activeWord === null) return true;
@@ -261,6 +257,8 @@ export function wouldActiveWordOverflow(
  * its owner (the Words component) is disposed.
  */
 export function createWordsLayout(options: {
+  /** the Words' word and line break elements */
+  registry: WordRegistry;
   words: () => HTMLElement | undefined;
   wordsWrapper: () => HTMLElement | undefined;
   caret: () => HTMLElement | undefined;
@@ -269,6 +267,25 @@ export function createWordsLayout(options: {
   /** focused, test not over, not resizing */
   isCaretShown: Accessor<boolean>;
 } {
+  const { registry } = options;
+  mountedRegistry = registry;
+  onCleanup(() => {
+    if (mountedRegistry === registry) mountedRegistry = undefined;
+  });
+
+  function getWordElement(index: number): ElementWithUtils | null {
+    const el = registry.getWord(index);
+    return el === undefined ? null : new ElementWithUtils(el);
+  }
+
+  function getActiveWordElement(): ElementWithUtils | null {
+    return getWordElement(getActiveWordIndex());
+  }
+
+  function getLayoutItems(): LayoutItem[] {
+    return getLayoutItemsOf(registry);
+  }
+
   function wordsEl(): ElementWithUtils {
     const el = options.words();
     if (el === undefined) throw new Error("#words not mounted");
@@ -326,6 +343,7 @@ export function createWordsLayout(options: {
     const testDirection = getTestDirection();
     caret()?.goTo({
       wordIndex,
+      wordEl: registry.getWord(wordIndex),
       letterIndex: typed.length,
       testDirection,
       ...(Config.mode === "zen" && {
@@ -350,6 +368,7 @@ export function createWordsLayout(options: {
     if (Config.mode === "zen") return;
     pace.goTo({
       wordIndex: 0,
+      wordEl: registry.getWord(0),
       letterIndex: 0,
       testDirection: getTestDirection(),
       animate: false,
@@ -475,6 +494,7 @@ export function createWordsLayout(options: {
           // jump to the line right above the active word, hiding all lines
           // before it
           const lineAboveTop = getLineAboveTop(
+            registry,
             newActiveWordIndex,
             activeWordTop,
           );
@@ -526,6 +546,7 @@ export function createWordsLayout(options: {
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) return;
     const lineAboveTop = getLineAboveTop(
+      registry,
       getActiveWordIndex(),
       activeWordEl.getOffsetTop(),
     );
@@ -1050,6 +1071,7 @@ export function createWordsLayout(options: {
         try {
           paceCaret()?.goTo({
             wordIndex: target.wordIndex,
+            wordEl: registry.getWord(target.wordIndex),
             letterIndex: target.letterIndex,
             testDirection: getTestDirection(),
             animate: true,

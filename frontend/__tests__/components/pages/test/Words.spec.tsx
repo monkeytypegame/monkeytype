@@ -1,6 +1,7 @@
 import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LETTER_SELECTOR } from "../../../../src/ts/components/pages/test/selectors";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
@@ -8,11 +9,6 @@ import {
   setJoiningScript,
   setTestFocusState,
 } from "../../../../src/ts/states/test";
-import {
-  getLineBreakElements,
-  getWordElement,
-  LETTER_SELECTOR,
-} from "../../../../src/ts/states/word-elements";
 import {
   appendRenderedWord,
   firstMountedIndex,
@@ -413,43 +409,6 @@ describe("Words", () => {
       expect(hints?.childNodes).toHaveLength(0);
     });
 
-    it("registers rendered word elements by index", () => {
-      const container = renderWords();
-      appendRenderedWord({ display: "a" });
-      appendRenderedWord({ display: "b" });
-      flush();
-      expect(getWordElement(1)).toBe(wordEls(container)[1]);
-
-      setFirstRenderedWordIndex(1);
-      expect(getWordElement(0)).toBeUndefined();
-      expect(getWordElement(1)).toBe(wordEls(container)[0]);
-
-      resetWordsRender();
-      expect(getWordElement(1)).toBeUndefined();
-    });
-
-    it("registers line break elements by the index of the word ending the line", () => {
-      const container = renderWords();
-      appendRenderedWord({ display: "a\n" });
-      appendRenderedWord({ display: "b\n" });
-      appendRenderedWord({ display: "c" });
-      flush();
-      expect(getLineBreakElements(1)).toEqual({
-        before: container.querySelectorAll(".beforeNewline")[1],
-        after: container.querySelectorAll(".afterNewline")[1],
-      });
-      expect(getLineBreakElements(2)).toBeUndefined();
-
-      setFirstRenderedLine(1);
-      expect(getLineBreakElements(0)).toBeUndefined();
-      expect(getLineBreakElements(1)?.after).toBe(
-        container.querySelector(".afterNewline"),
-      );
-
-      resetWordsRender();
-      expect(getLineBreakElements(1)).toBeUndefined();
-    });
-
     it("does not render lines below the first rendered line, line breaks included", () => {
       const container = renderWords();
       appendRenderedWord({ display: "a\n" });
@@ -481,7 +440,6 @@ describe("Words", () => {
         "afterNewline",
         "word2",
       ]);
-      expect(getWordElement(1)).toBeUndefined();
     });
 
     it("tracks words ending a line: from the text, in zen from the input", () => {
