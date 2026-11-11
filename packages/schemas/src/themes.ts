@@ -84,6 +84,7 @@ export const ThemeNameSchema = z.enum(
     "iv_clover",
     "iv_spade",
     "joker",
+    "klein_blue",
     "laser",
     "lavender",
     "leather",
