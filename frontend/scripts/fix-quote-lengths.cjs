@@ -1,4 +1,4 @@
-// oxlint-disable no-require-imports
+// oxlint-disable no-require-imports, no-var-requires
 const fs = require("fs");
 
 function fixQuoteLengths() {

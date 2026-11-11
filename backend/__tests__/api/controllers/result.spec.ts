@@ -664,6 +664,44 @@ describe("result controller test", () => {
         15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
     });
+    it("should add first result finished before signup within the grace", async () => {
+      //GIVEN
+      resultGetLastTimestampMock.mockRejectedValue(
+        new Error("No results found"),
+      );
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        addedAt: Date.now(),
+      } as any);
+
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({ result: buildCompletedEvent({ testDuration: 9 * 60 }) })
+        .expect(200);
+    });
+    it("should fail first result longer than account age plus grace", async () => {
+      //GIVEN
+      resultGetLastTimestampMock.mockRejectedValue(
+        new Error("No results found"),
+      );
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        addedAt: Date.now(),
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({ result: buildCompletedEvent({ testDuration: 11 * 60 }) })
+        .expect(462);
+
+      //THEN
+      expect(body.message).toEqual("Invalid result spacing");
+      expect(resultAddMock).not.toHaveBeenCalled();
+    });
     it("should fail if result saving is disabled", async () => {
       //GIVEN
       await enableResultsSaving(false);
@@ -717,6 +755,76 @@ describe("result controller test", () => {
           "Unrecognized key(s) in object: 'extra'",
         ],
       });
+    });
+
+    it("should fail with out of range durations and char stats", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            mode2: "604801",
+            testDuration: 604801,
+            charStats: [527272232241202700, 0, 0, 0],
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.charStats.0" Number must be less than or equal to 9007199254740991`,
+        `"result.testDuration" Number must be less than or equal to 604800`,
+        `"result.mode2" Time mode can't exceed 604800 seconds`,
+      ]);
+    });
+
+    it("should fail with time mode2 over the max duration", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            mode2: "23434321432942344",
+            testDuration: 600,
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.mode2" Time mode can't exceed 604800 seconds`,
+      ]);
+    });
+
+    it("should fail with toolong data on short tests", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            testDuration: 122,
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.chartData" Only allowed for tests longer than 122 seconds`,
+        `"result.keySpacing" Only allowed for tests longer than 122 seconds`,
+        `"result.keyDuration" Only allowed for tests longer than 122 seconds`,
+      ]);
     });
 
     it("should fail wit duplicate funboxes", async () => {

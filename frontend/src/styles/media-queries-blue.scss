@@ -4,29 +4,4 @@
   .content-grid {
     --content-max-width: 640px;
   }
-  .pageTest {
-    #result .wrapper {
-      grid-template-columns: 1fr;
-      grid-template-areas:
-        "stats" "chart"
-        "morestats";
-      .stats {
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas: "wpm acc";
-        justify-items: center;
-      }
-      .stats.morestats {
-        gap: 1rem;
-        justify-items: start;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
-      }
-    }
-  }
-}
-@media (pointer: coarse) and (max-width: 778px) {
-  #restartTestButton {
-    display: block !important;
-  }
 }

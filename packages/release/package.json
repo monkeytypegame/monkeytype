@@ -10,7 +10,6 @@
     "dev-hotfix": "nodemon --watch src --exec \"node ./src/index.js --dry --hotfix\"",
     "dev-changelog": "nodemon ./src/buildChangelog.js",
     "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint .",
     "purge-cf-cache": "./bin/purgeCfCache.sh"
   },
   "dependencies": {
@@ -20,7 +19,7 @@
   },
   "devDependencies": {
     "nodemon": "3.1.14",
-    "oxlint": "1.77.0",
-    "oxlint-tsgolint": "7.0.2001"
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004"
   }
 }

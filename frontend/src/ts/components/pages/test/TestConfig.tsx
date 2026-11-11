@@ -3,20 +3,20 @@ import { ComponentProps, For, JSXElement, Show } from "solid-js";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import {
-  getResultVisible,
-  getFocus,
+  isTestFinished,
+  isFocusMode,
   isTestRestarting,
 } from "../../../states/test";
+import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
-import { Anime, AnimeShow } from "../../common/anime";
+import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
 const variables = cn(
@@ -38,7 +38,7 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || getResultVisible()
+          isFocusMode() || isTestFinished()
             ? "pointer-events-none opacity-0"
             : "",
         )}
@@ -84,7 +84,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={getFocus() || getResultVisible() || props.disabled}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }
@@ -101,26 +101,22 @@ function PuncAndNum(): JSXElement {
         duration: durationMs,
       }}
     >
-      <AnimeShow when={getConfig.mode !== "zen"} duration={durationMs}>
-        <div class={cardClass}>
-          <For each={buttons}>
-            {(configKey) => (
-              <TCButton
-                fa={configMetadata[configKey].fa}
-                text={configMetadata[configKey].displayString ?? configKey}
-                active={getConfig[configKey]}
-                disabled={
-                  getConfig.mode === "zen" || getConfig.mode === "quote"
-                }
-                onClick={() => {
-                  setConfig(configKey, !getConfig[configKey]);
-                  restartTestEvent.dispatch();
-                }}
-              />
-            )}
-          </For>
-        </div>
-      </AnimeShow>
+      <div class={cardClass}>
+        <For each={buttons}>
+          {(configKey) => (
+            <TCButton
+              fa={configMetadata[configKey].fa}
+              text={configMetadata[configKey].displayString ?? configKey}
+              active={getConfig[configKey]}
+              disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
+              onClick={() => {
+                setConfig(configKey, !getConfig[configKey]);
+                void restartTest();
+              }}
+            />
+          )}
+        </For>
+      </div>
     </Anime>
   );
 }
@@ -144,7 +140,7 @@ function Mode(): JSXElement {
             active={getConfig.mode === modeOption}
             onClick={() => {
               setConfig("mode", modeOption);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -259,7 +255,7 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
             active={getConfig.time === time}
             onClick={() => {
               setConfig("time", time);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -289,7 +285,7 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
             active={getConfig.words === count}
             onClick={() => {
               setConfig("words", count);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -324,7 +320,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         active={areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3])}
         onClick={() => {
           setQuoteLengthAll();
-          restartTestEvent.dispatch();
+          void restartTest();
         }}
       />
       <For each={quoteLengths}>
@@ -334,7 +330,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
             active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
             onClick={() => {
               setConfig("quoteLength", [length]);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -347,7 +343,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           active={areUnsortedArraysEqual(getConfig.quoteLength, [-3])}
           onClick={() => {
             setConfig("quoteLength", [-3]);
-            restartTestEvent.dispatch();
+            void restartTest();
           }}
         />
       </Show>

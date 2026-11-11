@@ -203,8 +203,11 @@ export async function show(): Promise<void> {
   });
 }
 
-authEvent.subscribe((event) => {
-  if (event.type === "authStateChanged") {
-    void show();
-  }
-});
+/** Shows the PSAs on every auth state change. */
+export function init(): void {
+  authEvent.subscribe((event) => {
+    if (event.type === "authStateChanged") {
+      void show();
+    }
+  });
+}

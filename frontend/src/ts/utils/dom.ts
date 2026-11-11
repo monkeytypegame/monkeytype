@@ -128,6 +128,19 @@ export function qsr<T extends HTMLElement = HTMLElement>(
 }
 
 /**
+ * Lazy Query Selector Required
+ *
+ * Like qsr, but defers the query until the first call and caches the result.
+ * Use for module-level refs to elements that may not exist at import time.
+ */
+export function lazyQsr<T extends HTMLElement = HTMLElement>(
+  selector: string,
+): () => ElementWithUtils<T> {
+  let el: ElementWithUtils<T> | undefined;
+  return () => (el ??= qsr<T>(selector));
+}
+
+/**
  * Creates an ElementWithUtils wrapping a newly created element.
  * @param tagName The tag name of the element to create.
  * @param options Optional options to set on the element.

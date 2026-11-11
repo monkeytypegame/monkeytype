@@ -13,7 +13,7 @@ const list: Command[] = [
     sticky: true,
     exec: (): void => {
       if (Funbox.setFunbox([])) {
-        void TestLogic.restart();
+        void TestLogic.restartTest();
       }
     },
   },
@@ -34,7 +34,7 @@ for (const funbox of getAllFunboxes()) {
     configValueMode: "include",
     exec: (): void => {
       Funbox.toggleFunbox(funbox.name);
-      void TestLogic.restart();
+      void TestLogic.restartTest();
     },
   });
 }
@@ -50,7 +50,7 @@ const commands: Command[] = [
     id: "changeFunbox",
     display: "Funbox...",
     alias: "fun box",
-    icon: "fa-gamepad",
+    fa: { icon: "fa-gamepad" },
     subgroup,
   },
 ];

@@ -1,23 +1,19 @@
 /* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-import { configEvent } from "../events/config";
 import { Config } from "../config/store";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
-import { onDOMReady, qs } from "../utils/dom";
+import { adSlotMediaQueries } from "../components/common/Advertisement";
 import { isTestActive } from "../states/test";
+import {
+  getAdBlock,
+  getCookieBlocker,
+  setAdBlock,
+  setCookieBlocker,
+} from "../states/ads";
 // import { createEffect } from "solid-js";
 
-const breakpoint = 900;
-let widerThanBreakpoint = true;
-
-const breakpoint2 = 1330;
-let widerThanBreakpoint2 = true;
-
 let initialised = false;
-
-export let adBlock: boolean;
-export let cookieBlocker: boolean;
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
 const choice: "eg" | "pw" = "pw";
@@ -54,72 +50,6 @@ function init(): void {
   initialised = true;
 }
 
-function removeAll(): void {
-  removeSellout();
-  removeOn();
-  removeResult();
-}
-
-function removeSellout(): void {
-  qs("#ad-footer-wrapper")?.remove();
-  qs("#ad-footer-small-wrapper")?.remove();
-  qs("#ad-settings-1-wrapper")?.remove();
-  qs("#ad-settings-1-small-wrapper")?.remove();
-  qs("#ad-settings-2-wrapper")?.remove();
-  qs("#ad-settings-2-small-wrapper")?.remove();
-  qs("#ad-settings-3-wrapper")?.remove();
-  qs("#ad-settings-3-small-wrapper")?.remove();
-  qs("#ad-account-1-wrapper")?.remove();
-  qs("#ad-account-1-small-wrapper")?.remove();
-  qs("#ad-account-2-wrapper")?.remove();
-  qs("#ad-account-2-small-wrapper")?.remove();
-}
-
-function removeOn(): void {
-  qs("#ad-vertical-right-wrapper")?.remove();
-  qs("#ad-vertical-left-wrapper")?.remove();
-}
-
-function removeResult(): void {
-  qs("#ad-result-wrapper")?.remove();
-  qs("#ad-result-small-wrapper")?.remove();
-}
-
-function updateBreakpoint(noReinstate = false): void {
-  const beforeUpdate = widerThanBreakpoint;
-
-  if (window.innerWidth > breakpoint) {
-    widerThanBreakpoint = true;
-  } else {
-    widerThanBreakpoint = false;
-  }
-  if (noReinstate) return;
-  if (Config.ads === "off" || !initialised) return;
-  if (beforeUpdate !== widerThanBreakpoint) {
-    if (choice === "eg") {
-      EG.reinstate();
-    } else {
-      PW.reinstate();
-    }
-  }
-}
-
-function updateBreakpoint2(noReinstate = false): void {
-  if (choice !== "pw") return;
-  const beforeUpdate = widerThanBreakpoint2;
-
-  if (window.innerWidth > breakpoint2) {
-    widerThanBreakpoint2 = true;
-  } else {
-    widerThanBreakpoint2 = false;
-  }
-  if (noReinstate) return;
-  if (Config.ads === "off" || !initialised) return;
-  if (beforeUpdate !== widerThanBreakpoint2) {
-    PW.reinstate();
-  }
-}
-
 async function _refreshVisible(): Promise<void> {
   if (choice === "eg") {
     await EG.refreshVisible();
@@ -131,18 +61,14 @@ async function _refreshVisible(): Promise<void> {
 export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
     if (choice === "eg") {
-      if (adBlock === undefined) {
+      if (getAdBlock() === undefined) {
         //@ts-expect-error 3rd party ad code
-        if (window.egAdPack === undefined) {
-          adBlock = true;
-        } else {
-          adBlock = false;
-        }
+        setAdBlock(window.egAdPack === undefined);
       }
     } else if (choice === "pw") {
       //@ts-expect-error 3rd party ad code
       if (window.ramp === undefined) {
-        adBlock = true;
+        setAdBlock(true);
       }
     }
     resolve();
@@ -151,31 +77,25 @@ export async function checkAdblock(): Promise<void> {
 
 export async function checkCookieblocker(): Promise<void> {
   return new Promise((resolve) => {
-    if (cookieBlocker === undefined) {
+    if (getCookieBlocker() === undefined) {
       if (choice === "pw") {
-        cookieBlocker = false;
+        setCookieBlocker(false);
         resolve();
         return;
       }
 
       //@ts-expect-error 3rd party ad code
       if (window.__tcfapi === undefined) {
-        cookieBlocker = true;
+        setCookieBlocker(true);
         resolve();
         return;
       }
       //@ts-expect-error 3rd party ad code
       // oxlint-disable-next-line no-unsafe-call
       window.__tcfapi("getTCData", 2, (tcData, success) => {
-        if (success as boolean) {
-          if (tcData.eventStatus === "cmpuishown") {
-            cookieBlocker = true;
-          } else {
-            cookieBlocker = false;
-          }
-        } else {
-          cookieBlocker = true;
-        }
+        setCookieBlocker(
+          !(success as boolean) || tcData.eventStatus === "cmpuishown",
+        );
       });
     }
     resolve();
@@ -190,7 +110,7 @@ export async function reinstate(): Promise<boolean> {
   }
   await checkAdblock();
   await checkCookieblocker();
-  if (adBlock || cookieBlocker) return false;
+  if (getAdBlock() || getCookieBlocker()) return false;
 
   if (choice === "eg") {
     return EG.reinstate();
@@ -207,52 +127,13 @@ export async function renderResult(): Promise<void> {
   await checkAdblock();
   await checkCookieblocker();
 
-  if (adBlock) {
-    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
-    Using an ad blocker? No worries
-    <div class="smalltext">
-      We understand ads can be annoying
-      <br />
-      You can
-      <i>disable all ads</i>
-      in the settings
-    </div>
-    `);
-    return;
-  }
-
-  if (cookieBlocker) {
-    qs("#ad-result-wrapper .iconAndText .text")?.setHtml(`
-    Ads not working? Ooops
-    <div class="smalltext">
-      You may have a cookie popup blocker enabled - ads will not show without your consent
-      <br />
-      You can also 
-      <i>disable all ads</i>
-      in the settings if you wish
-    </div>
-    `);
-    return;
-  }
+  // the result ad shows a message instead (see ResultAds)
+  if (getAdBlock() || getCookieBlocker()) return;
 
   if (choice === "eg") {
-    EG.renderResult(widerThanBreakpoint);
+    EG.renderResult(window.innerWidth > 900);
   } else {
     void PW.renderResult();
-  }
-}
-
-export function updateFooterAndVerticalAds(visible: boolean): void {
-  if (visible) {
-    qs("#ad-vertical-left-wrapper")?.removeClass("testPage");
-    qs("#ad-vertical-right-wrapper")?.removeClass("testPage");
-    qs("#ad-footer-wrapper")?.removeClass("testPage");
-    qs("#ad-footer-small-wrapper")?.removeClass("testPage");
-  } else {
-    qs("#ad-vertical-left-wrapper")?.addClass("testPage");
-    qs("#ad-vertical-right-wrapper")?.addClass("testPage");
-    qs("#ad-footer-wrapper")?.addClass("testPage");
-    qs("#ad-footer-small-wrapper")?.addClass("testPage");
   }
 }
 
@@ -278,26 +159,14 @@ export function destroyResult(): void {
   // $("#ad-result-small-wrapper").empty();
 }
 
-const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
-const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
-
-window.addEventListener("resize", () => {
-  debouncedBreakpointUpdate();
-  debouncedBreakpoint2Update();
+// a slot shown or hidden at a breakpoint: PW only fills the visible slots
+const onSlotBreakpoint = debounce(500, () => {
+  if (Config.ads === "off" || !initialised) return;
+  void PW.reinstate();
 });
-
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "ads") {
-    if (newValue === "off") {
-      removeAll();
-    } else if (newValue === "result") {
-      removeSellout();
-      removeOn();
-    } else if (newValue === "on") {
-      removeSellout();
-    }
-  }
-});
+for (const query of adSlotMediaQueries) {
+  window.matchMedia(query).addEventListener("change", onSlotBreakpoint);
+}
 
 // createEffect(() => {
 //   qs("#ad-vertical-left-wrapper")?.setStyle({
@@ -307,17 +176,3 @@ configEvent.subscribe(({ key, newValue }) => {
 //     marginTop: getGlobalOffsetTop() + "px",
 //   });
 // });
-
-onDOMReady(() => {
-  updateBreakpoint(true);
-  updateBreakpoint2();
-});
-
-window.onerror = function (error): void {
-  //@ts-expect-error ---
-  if (choice === "eg") {
-    if (typeof error === "string" && error.startsWith("EG APS")) {
-      qs("#ad-result-wrapper .iconAndText")?.addClass("withLeft");
-    }
-  }
-};

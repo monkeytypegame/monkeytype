@@ -1,11 +1,7 @@
-#words {
+[data-ui-element="words"] {
   direction: rtl;
 }
 
-#words.rightToLeftTest {
+[data-ui-element="words"][data-ui-rtl] {
   direction: ltr;
-}
-
-#words.joiningScript .word {
-  unicode-bidi: bidi-override;
 }

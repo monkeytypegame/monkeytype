@@ -35,12 +35,20 @@ if (import.meta.env.DEV) {
   );
 
   DevComponents = () => (
-    <Suspense>
-      <LazyTanstackDevtools />
-      <LazyDevOptionsModal />
-      <LazyEventLogViewerModal />
-      <LazySolidDevtoolsOverlay />
-    </Suspense>
+    <>
+      <div class="fixed top-8 left-8 -z-1 text-[3rem] text-sub opacity-25">
+        local
+      </div>
+      <div class="fixed right-8 bottom-8 -z-1 text-[3rem] text-sub opacity-25">
+        local
+      </div>
+      <Suspense>
+        <LazyTanstackDevtools />
+        <LazyDevOptionsModal />
+        <LazyEventLogViewerModal />
+        <LazySolidDevtoolsOverlay />
+      </Suspense>
+    </>
   );
 }
 

@@ -3,22 +3,17 @@ import {
   moveInputElementCaretToTheEnd,
 } from "../input-element";
 
-const inputEl = getInputElement();
-
-inputEl.addEventListener("focus", () => {
+export function onFocus(): void {
   moveInputElementCaretToTheEnd();
-});
+}
 
-inputEl.addEventListener("copy paste", (event) => {
+/** copy, paste, select, selectstart */
+export function preventDefault(event: Event): void {
   event.preventDefault();
-});
+}
 
-//this might not do anything
-inputEl.addEventListener("select selectstart", (event) => {
-  event.preventDefault();
-});
-
-inputEl.addEventListener("selectionchange", (event) => {
+export function onSelectionChange(event: Event): void {
+  const inputEl = getInputElement();
   const selection = window.getSelection();
 
   console.debug("wordsInput event selectionchange", {
@@ -34,4 +29,4 @@ inputEl.addEventListener("selectionchange", (event) => {
   if (hasSelectedText || !isCursorAtEnd) {
     moveInputElementCaretToTheEnd();
   }
-});
+}

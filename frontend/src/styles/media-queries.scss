@@ -23,18 +23,6 @@ body {
 @import "media-queries-brown";
 @import "media-queries-gray";
 
-@media only screen and (max-width: 1875px) {
-  .ad.ad-v {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 355px) {
-  .ad.ad-h-s {
-    display: none;
-  }
-}
-
 @media (hover: none) and (pointer: coarse) {
   #commandLineMobileButton {
     display: block !important;

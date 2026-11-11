@@ -1,3 +1,4 @@
+import { createRoot } from "solid-js";
 import {
   and,
   createCollection,
@@ -10,24 +11,31 @@ import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
 
 import {
   configurationPromise,
   get as getServerConfiguration,
 } from "../ape/server-configuration";
-import { getSnapshot } from "../states/snapshot";
+import { getUserData } from "../states/user";
 import { Connection } from "@monkeytype/schemas/connections";
 import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";
+import {
+  blockingDownloadOptions,
+  isDownloaded,
+  waitForDownload,
+} from "./utils/blocking-download";
 
 const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
 };
 
-const connectionsCollection = createCollection(
-  queryCollectionOptions({
+const connectionsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
+    ...blockingDownloadOptions,
     staleTime: 5 * 60 * 1000,
     queryKey: queryKeys.root(),
     queryClient,
@@ -41,15 +49,18 @@ const connectionsCollection = createCollection(
         throw new Error(`Error fetching connections:${response.body.message}`);
       }
 
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
   }),
-);
+  ...keepForever,
+});
 
-const connectionsQuery = useLiveQuery((q) =>
-  isAuthenticated()
-    ? q.from({ connections: connectionsCollection })
-    : undefined,
+const connectionsQuery = createRoot(() =>
+  useLiveQuery((q) =>
+    isAuthenticated()
+      ? q.from({ connections: connectionsCollection })
+      : undefined,
+  ),
 );
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
@@ -116,7 +127,7 @@ const actions = {
           `Failed to accept connection: ${response.body.message}`,
         );
       }
-      connectionsCollection.utils.writeUpdate({
+      await connectionsCollection.utils.writeUpdate({
         _id: id,
         status: "accepted",
       });
@@ -136,7 +147,7 @@ const actions = {
       if (response.status !== 200) {
         throw new Error(`Failed to block connection: ${response.body.message}`);
       }
-      connectionsCollection.utils.writeUpdate({
+      await connectionsCollection.utils.writeUpdate({
         _id: id,
         status: "blocked",
       });
@@ -153,7 +164,7 @@ const actions = {
           `Failed to reject connection: ${response.body.message}`,
         );
       }
-      connectionsCollection.utils.writeDelete(id);
+      await connectionsCollection.utils.writeDelete(id);
 
       await invalidateFriendsList();
     },
@@ -165,8 +176,8 @@ const actions = {
         status: "pending",
         receiverName,
         receiverUid: receiverUid ?? tempId(),
-        initiatorName: getSnapshot()?.name ?? "",
-        initiatorUid: getSnapshot()?.uid ?? "",
+        initiatorName: getUserData()?.name ?? "",
+        initiatorUid: getUserData()?.uid ?? "",
         lastModified: Date.now(),
       });
     },
@@ -174,7 +185,7 @@ const actions = {
       const response = await Ape.connections.create({ body: { receiverName } });
 
       if (response.status === 200) {
-        connectionsCollection.utils.writeInsert(response.body.data);
+        await connectionsCollection.utils.writeInsert(response.body.data);
         showNoticeNotification(`Request sent to ${receiverName}`);
       } else {
         throw new Error(`Failed to add connection: ${response.body.message}`);
@@ -184,40 +195,42 @@ const actions = {
 };
 
 // -- Public API ---
+/** Whether the connections downloaded (a failed download isn't ready). */
 export function isConnectionsReady(): boolean {
-  return connectionsCollection.isReady();
+  return isDownloaded(connectionsCollection);
 }
 
+/** Waits for the connections download, throws if it failed (retries a failed one). */
 export async function waitForConnectionsReady(): Promise<void> {
-  await connectionsCollection.stateWhenReady();
+  await waitForDownload(connectionsCollection);
 }
 
 export async function acceptConnection(
   params: ActionType["acceptConnection"],
 ): Promise<void> {
   const transaction = actions.acceptConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function rejectConnection(
   params: ActionType["rejectConnection"],
 ): Promise<void> {
   const transaction = actions.rejectConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function blockConnection(
   params: ActionType["blockConnection"],
 ): Promise<void> {
   const transaction = actions.blockConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function addConnection(
   params: ActionType["addConnection"],
 ): Promise<void> {
   const transaction = actions.addConnection(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export function hasConnection(

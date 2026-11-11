@@ -1,7 +1,6 @@
 import { Config } from "../config/store";
 import * as JSONData from "../utils/json-data";
 import { configEvent } from "../events/config";
-import { ttsEvent } from "../events/tts";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
@@ -42,8 +41,4 @@ configEvent.subscribe(({ key, newValue }) => {
   if (key === "language" && Config.funbox.includes("tts")) {
     void setLanguage();
   }
-});
-
-ttsEvent.subscribe((text) => {
-  void speak(text);
 });

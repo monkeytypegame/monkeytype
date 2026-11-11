@@ -177,7 +177,10 @@ function Key(
     }
 
     const entry = props.flashEntry();
-    return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
+    return {
+      tick: entry?.tick ?? 0,
+      correct: getConfig.blindMode || (entry?.correct ?? true),
+    };
   });
 
   const isNext = createMemo(
@@ -288,7 +291,9 @@ function Key(
       }}
     >
       <Show
-        when={props.isLayoutIndicator}
+        when={
+          props.isLayoutIndicator && getConfig.keymapLegendStyle !== "blank"
+        }
         fallback={
           <>
             {props.label}

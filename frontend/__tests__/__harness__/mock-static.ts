@@ -18,5 +18,8 @@ vi.mock("../../src/ts/utils/json-data", async (importOriginal) => {
   return {
     ...original,
     getLayout: async (name: string) => readJson(`/layouts/${name}.json`),
+    getLanguage: async (name: string) => readJson(`/languages/${name}.json`),
+    getCurrentLanguage: async (name: string) =>
+      readJson(`/languages/${name}.json`),
   };
 });

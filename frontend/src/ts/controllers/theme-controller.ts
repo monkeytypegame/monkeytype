@@ -1,20 +1,25 @@
+import { createMemo, createRoot } from "solid-js";
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
 
 import { Config, getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
 import * as CustomThemes from "../collections/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { Theme, themes, ThemesList } from "../constants/themes";
-import fileStorage from "../utils/file-storage";
-import { qs } from "../utils/dom";
 import { setThemeIndicator } from "../states/core";
-import { setTheme, ThemeIdentifier } from "../states/theme";
+import {
+  cacheThemeColors,
+  getRandomTheme,
+  getTheme,
+  setRandomTheme,
+  setTheme,
+  ThemeIdentifier,
+} from "../states/theme";
 
-export let randomTheme: ThemeIdentifier | null = null;
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
 
@@ -72,18 +77,13 @@ async function apply(
   setTheme({ ...themeColors, name: themeName });
 
   updateThemeIndicator(isPreview ? themeName : undefined);
-
-  if (isColorDark(themeColors.bg)) {
-    qs("body")?.addClass("darkMode");
-  } else {
-    qs("body")?.removeClass("darkMode");
-  }
 }
 
 function updateThemeIndicator(nameOverride?: string): void {
+  const randomTheme = getRandomTheme()?.name;
+
   //text
-  let str: string = Config.theme;
-  if (randomTheme !== null) str = randomTheme;
+  let str: string = randomTheme ?? Config.theme;
 
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
@@ -143,11 +143,7 @@ async function set(
     isAutoSwitch,
   });
   await apply(themeIdentifier, undefined, isAutoSwitch);
-
-  if (!isAutoSwitch && Config.autoSwitchTheme) {
-    setConfig("autoSwitchTheme", false);
-    showNoticeNotification("Auto switch theme disabled");
-  }
+  cacheThemeColors(getTheme());
 }
 
 export async function clearPreview(applyTheme = true): Promise<void> {
@@ -156,8 +152,9 @@ export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     if (applyTheme) {
+      const randomTheme = getRandomTheme();
       if (randomTheme !== null) {
-        await apply(randomTheme);
+        await apply(randomTheme.name, randomTheme.colors);
       } else if (Config.customTheme) {
         await apply("custom");
       } else {
@@ -196,11 +193,19 @@ export async function randomizeTheme(): Promise<void> {
     if (themesList.length === 0) return;
   }
 
+  // before picking: the configured theme effect clears the random theme
+  if (Config.customTheme) {
+    setConfig("customTheme", false, {
+      nosave: true,
+    });
+  }
+
   let filter = (_: string): boolean => true;
   if (Config.randomTheme === "auto") {
     filter = prefersColorSchemeDark() ? isColorDark : isColorLight;
   }
 
+  let randomTheme: ThemeIdentifier;
   let nextTheme = null;
   do {
     randomTheme = themesList[randomThemeIndex] as ThemeIdentifier;
@@ -220,10 +225,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  setConfig("customTheme", false, {
-    nosave: true,
-  });
-  await apply(randomTheme, colorsOverride);
+  setRandomTheme({ name: randomTheme, colors: colorsOverride });
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -234,108 +236,6 @@ export async function randomizeTheme(): Promise<void> {
     }
     showNoticeNotification(name);
   }
-}
-
-async function clearRandom(): Promise<void> {
-  if (randomTheme === null) return;
-  randomTheme = null;
-  if (Config.customTheme) {
-    await apply("custom");
-  } else {
-    await apply(Config.theme);
-  }
-}
-
-function applyCustomBackgroundSize(): void {
-  if (Config.customBackgroundSize === "max") {
-    qs(".customBackground img")?.setStyle({
-      objectFit: "",
-    });
-  } else {
-    qs(".customBackground img")?.setStyle({
-      objectFit: Config.customBackgroundSize,
-    });
-  }
-}
-
-export async function applyCustomBackground(): Promise<void> {
-  let backgroundUrl = Config.customBackground;
-
-  //if there is a localBackgroundFile available, use it.
-  const localBackgroundFile = await fileStorage.getFile("LocalBackgroundFile");
-
-  if (localBackgroundFile !== undefined) {
-    backgroundUrl = localBackgroundFile;
-  }
-
-  // hide the filter section initially and always
-  qs(
-    ".pageSettings .section[data-config-name='customBackgroundFilter']",
-  )?.hide();
-
-  if (backgroundUrl === "") {
-    qs("#words")?.removeClass("noErrorBorder");
-    qs("#resultWordsHistory")?.removeClass("noErrorBorder");
-    qs(".customBackground img")?.remove();
-  } else {
-    qs("#words")?.addClass("noErrorBorder");
-    qs("#resultWordsHistory")?.addClass("noErrorBorder");
-
-    //use setAttribute for possible unsafe customBackground value
-    const container = document.querySelector(".customBackground");
-    const img = document.createElement("img");
-
-    img.setAttribute("src", backgroundUrl);
-    img.setAttribute(
-      "onError",
-      "javascript:this.style.display='none'; window.dispatchEvent(new Event('customBackgroundFailed'))",
-    );
-    img.onload = () => {
-      // show the filter section only if the image loads successfully
-      qs(
-        ".pageSettings .section[data-config-name='customBackgroundFilter']",
-      )?.show();
-    };
-
-    container?.replaceChildren(img);
-
-    applyCustomBackgroundFilters();
-    applyCustomBackgroundSize();
-  }
-}
-
-export function applyCustomBackgroundFilters(
-  values?: [number, number, number, number],
-): void {
-  const valuesToApply = values ?? getConfig.customBackgroundFilter;
-
-  let filterCSS = "";
-  //blur
-  if (valuesToApply[0] !== 0) {
-    filterCSS += `blur(${valuesToApply[0]}rem) `;
-  }
-  //brightness
-  if (valuesToApply[1] !== 1) {
-    filterCSS += `brightness(${valuesToApply[1]}) `;
-  }
-  //saturate
-  if (valuesToApply[2] !== 1) {
-    filterCSS += `saturate(${valuesToApply[2]}) `;
-  }
-  //opacity
-  if (valuesToApply[3] !== 1) {
-    filterCSS += `opacity(${valuesToApply[3]}) `;
-  }
-
-  const css = {
-    filter: filterCSS,
-    width: `calc(100% + ${valuesToApply[0] * 8}rem)`,
-    height: `calc(100% + ${valuesToApply[0] * 8}rem)`,
-    transform: `scale(${1 + valuesToApply[0] / 100})`,
-    top: `-${valuesToApply[0] * 4}rem`,
-    position: "absolute",
-  };
-  qs(".customBackground img")?.setStyle(css);
 }
 
 window
@@ -349,100 +249,60 @@ window
     }
   });
 
-let ignoreConfigEvent = false;
-
-configEvent.subscribe(async ({ key, newValue, nosave }) => {
-  if (key === "fullConfigChange") {
-    ignoreConfigEvent = true;
-  }
-  if (key === "fullConfigChangeFinished") {
-    ignoreConfigEvent = false;
-
-    await clearRandom();
-    await clearPreview(false);
-
-    if (Config.autoSwitchTheme) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
-      } else {
-        await set(Config.themeLight, true);
-      }
-    } else {
-      if (Config.customTheme) {
-        await set("custom");
-      } else {
-        await set(Config.theme);
-      }
+// a root so the effects are owned, they live as long as the page
+createRoot(() => {
+  const getConfiguredTheme = createMemo((): ThemeIdentifier => {
+    if (getConfig.autoSwitchTheme) {
+      return prefersColorSchemeDark()
+        ? getConfig.themeDark
+        : getConfig.themeLight;
     }
-    await applyCustomBackground();
-  }
+    return getConfig.customTheme ? "custom" : getConfig.theme;
+  });
 
-  // this is here to prevent calling set / preview multiple times during a full config loading
-  // once the full config is loaded, we can apply everything once
-  if (ignoreConfigEvent) return;
+  createEffectOn(
+    [getConfiguredTheme, () => [...getConfig.customThemeColors]] as const,
+    ([theme]) => {
+      // not awaited: they apply synchronously, so randomizeTheme applying
+      // right after its customTheme write is not overwritten a tick later
+      setRandomTheme(null);
+      void clearPreview(false);
+      void set(theme, getConfig.autoSwitchTheme);
+    },
+    { defer: true },
+  );
 
-  if (key === "randomTheme") {
-    void changeThemeList();
-  }
-  if (key === "customTheme") {
-    newValue ? await set("custom") : await set(Config.theme);
-  }
-  if (key === "customThemeColors") {
-    nosave ? preview("custom") : await set("custom");
-  }
-  if (key === "theme") {
-    await clearRandom();
-    await clearPreview(false);
-    await set(newValue);
-  }
-  if (key === "randomTheme" && newValue === "off") await clearRandom();
-  if (key === "customBackground") await applyCustomBackground();
-
-  if (key === "customBackgroundSize") applyCustomBackgroundSize();
-  if (key === "autoSwitchTheme") {
-    if (newValue) {
-      if (prefersColorSchemeDark()) {
-        await set(Config.themeDark, true);
+  createEffectOn(
+    getRandomTheme,
+    (randomTheme) => {
+      if (randomTheme !== null) {
+        void apply(randomTheme.name, randomTheme.colors);
       } else {
-        await set(Config.themeLight, true);
+        void set(getConfiguredTheme(), getConfig.autoSwitchTheme);
       }
-    } else {
-      await set(Config.theme);
-    }
-  }
-  if (
-    key === "themeLight" &&
-    Config.autoSwitchTheme &&
-    !prefersColorSchemeDark() &&
-    !nosave
-  ) {
-    await set(Config.themeLight, true);
-  }
-  if (
-    key === "themeDark" &&
-    Config.autoSwitchTheme &&
-    window.matchMedia?.("(prefers-color-scheme: dark)")?.matches &&
-    !nosave
-  ) {
-    await set(Config.themeDark, true);
-  }
-  if (
+    },
+    { defer: true },
+  );
+
+  createEffectOn(
+    () => getConfig.randomTheme,
+    (value) => {
+      void changeThemeList();
+      if (value === "off") setRandomTheme(null);
+    },
+    { defer: true },
+  );
+
+  createEffectOn(
     [
-      "theme",
-      "customTheme",
-      "customThemeColors",
-      "randomTheme",
-      "favThemes",
-    ].includes(key)
-  ) {
-    updateThemeIndicator();
-  }
-});
-
-window.addEventListener("customBackgroundFailed", () => {
-  showNoticeNotification(
-    "Custom background link is either temporarily unavailable or expired. Please make sure the URL is correct or change it",
-    { durationMs: 5000 },
+      () => getConfig.theme,
+      () => getConfig.customTheme,
+      () => [...getConfig.customThemeColors],
+      () => getConfig.randomTheme,
+      () => [...getConfig.favThemes],
+    ],
+    () => updateThemeIndicator(),
+    { defer: true },
   );
 });
 

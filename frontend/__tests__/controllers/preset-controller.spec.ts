@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
-import * as DB from "../../src/ts/db";
+import * as UserState from "../../src/ts/states/user";
 import { setConfig } from "../../src/ts/config/setters";
 import { Config } from "../../src/ts/config/store";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
@@ -15,12 +15,12 @@ import * as Presets from "../../src/ts/collections/presets";
 describe("PresetController", () => {
   describe("apply", () => {
     vi.mock("../../src/ts/test/test-logic", () => ({
-      restart: vi.fn(),
+      restartTest: vi.fn(),
     }));
     vi.mock("../../src/ts/test/pace-caret", () => ({
       //
     }));
-    const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
+    const getUserMock = vi.spyOn(UserState, "getUserData");
     const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
@@ -35,14 +35,14 @@ describe("PresetController", () => {
       Notifications,
       "showSuccessNotification",
     );
-    const testRestartMock = vi.spyOn(TestLogic, "restart");
+    const testRestartMock = vi.spyOn(TestLogic, "restartTest");
     const tagsClearMock = vi.spyOn(Tags, "clearActiveTags");
     const tagsSetMock = vi.spyOn(Tags, "setTagActive");
     const tagsSaveActiveMock = vi.spyOn(Tags, "saveActiveToLocalStorage");
 
     beforeEach(() => {
       [
-        dbGetSnapshotMock,
+        getUserMock,
         getPresetMock,
         configApplyMock,
         configSaveFullConfigMock,
@@ -54,7 +54,7 @@ describe("PresetController", () => {
         tagsSaveActiveMock,
       ].forEach((it) => it.mockClear());
 
-      dbGetSnapshotMock.mockReturnValue({} as any);
+      getUserMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
       tagsClearMock.mockResolvedValue();
     });
@@ -163,7 +163,7 @@ describe("PresetController", () => {
         _id: "1",
         ...partialPreset,
       } as any;
-      dbGetSnapshotMock.mockReturnValue({} as any);
+      getUserMock.mockReturnValue({} as any);
       getPresetMock.mockReturnValue(preset);
       return preset;
     };

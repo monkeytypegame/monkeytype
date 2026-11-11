@@ -8,6 +8,7 @@ import {
   JSXElement,
   Match,
   Show,
+  Suspense,
   Switch,
 } from "solid-js";
 
@@ -76,7 +77,38 @@ export type Props<T extends Record<string, unknown>> = BaseProps &
   Source<T> &
   Children<T>;
 
+const defaultLoader = (): JSXElement => (
+  <LoadingCircle class="p-4 text-center text-2xl" />
+);
+
+// Reading query data suspends the nearest Suspense boundary (the router makes
+// every route one), so AsyncContent brings its own: only this section shows its
+// loader. It wraps the whole component, not its JSX: the memos in
+// AsyncContentInner read the data in the component body.
 function AsyncContent<T extends Record<string, unknown>>(
+  props: Props<T>,
+): JSXElement {
+  const fallback = (): JSXElement => {
+    if (props.alwaysShowContent !== true) {
+      return props.loader ?? defaultLoader();
+    }
+    // content without data, like AsyncContentInner shows while pending
+    const source = "queries" in props ? props.queries : props.collections;
+    const emptyAccessorMap = Object.fromEntries(
+      typedKeys(source).map((key) => [`${String(key)}Data`, () => undefined]),
+    );
+    // oxlint-disable-next-line typescript/no-explicit-any
+    return (props.children as (data: any) => JSXElement)(emptyAccessorMap);
+  };
+
+  return (
+    <Suspense fallback={fallback()}>
+      <AsyncContentInner {...props} />
+    </Suspense>
+  );
+}
+
+function AsyncContentInner<T extends Record<string, unknown>>(
   props: Props<T>,
 ): JSXElement {
   const source = createMemo<AsyncMap<T>>(() => {
@@ -169,8 +201,7 @@ function AsyncContent<T extends Record<string, unknown>>(
   ) as unknown as AccessorMap<DataKeys<{ [K in keyof T]: T[K] }>>;
   // oxlint-enable solid/reactivity
 
-  const loader = (): JSXElement =>
-    props.loader ?? <LoadingCircle class="p-4 text-center text-2xl" />;
+  const loader = (): JSXElement => props.loader ?? defaultLoader();
 
   const errorText = (err: unknown): JSXElement | undefined =>
     props.ignoreError ? undefined : (

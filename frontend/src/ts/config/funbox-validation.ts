@@ -60,6 +60,30 @@ export function canSetConfigWithCurrentFunboxes(
   return true;
 }
 
+// Workaround for https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+function isOldSafari(userAgent: string): boolean {
+  if (!/^((?!chrome|android).)*safari/i.test(userAgent)) return false;
+  const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(userAgent);
+  const mainVersion =
+    versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
+  const minorVersion =
+    versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
+  return mainVersion <= 16 && minorVersion <= 5;
+}
+
+/**
+ * Message to show when the browser can't run the funbox, undefined when it can.
+ */
+export function getFunboxUnsupportedReason(
+  funbox: FunboxName,
+  userAgent = navigator.userAgent,
+): string | undefined {
+  if (funbox === "crt" && isOldSafari(userAgent)) {
+    return "CRT is not available on Safari 16.5 or earlier.";
+  }
+  return undefined;
+}
+
 export type FunboxConfigError = {
   key: string;
   value: ConfigValue;

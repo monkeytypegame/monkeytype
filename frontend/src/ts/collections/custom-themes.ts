@@ -5,10 +5,12 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
+import { createRoot } from "solid-js";
 import Ape from "../ape";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { applyIdWorkaround, tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
 
 export type CustomThemeItem = CustomTheme;
@@ -26,10 +28,10 @@ export function useCustomThemesLiveQuery() {
   });
 }
 
-const customThemesCollection = createCollection(
-  queryCollectionOptions({
+const customThemesCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     startSync: true,
     queryKey: queryKeys.root(),
     queryClient,
@@ -43,8 +45,20 @@ const customThemesCollection = createCollection(
           `Error fetching custom themes: ${response.body.message}`,
         );
       }
-      return response.body.data.map(applyIdWorkaround);
+      return response.body.data;
     },
+  }),
+  ...keepForever,
+});
+
+// Its query is created disabled: startSync runs at module load, before the
+// auth state resolves, and the query never re-evaluates `enabled` on its own.
+// Kick the download when the user signs in, like the other user collections.
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (hasUser) {
+      void customThemesCollection.utils.refetch();
+    }
   }),
 );
 
@@ -84,7 +98,7 @@ const actions = {
         throw new Error("Failed to add custom theme: No data returned");
       }
 
-      customThemesCollection.utils.writeInsert({
+      await customThemesCollection.utils.writeInsert({
         _id: response.body.data._id,
         name,
         colors,
@@ -108,7 +122,7 @@ const actions = {
         );
       }
 
-      customThemesCollection.utils.writeUpdate({
+      await customThemesCollection.utils.writeUpdate({
         _id: themeId,
         name,
         colors,
@@ -128,7 +142,7 @@ const actions = {
           `Failed to delete custom theme: ${response.body.message}`,
         );
       }
-      customThemesCollection.utils.writeDelete(themeId);
+      await customThemesCollection.utils.writeDelete(themeId);
     },
   }),
 };
@@ -149,21 +163,21 @@ export async function addCustomTheme(
   params: ActionType["addCustomTheme"],
 ): Promise<void> {
   const transaction = actions.addCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function editCustomTheme(
   params: ActionType["editCustomTheme"],
 ): Promise<void> {
   const transaction = actions.editCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function deleteCustomTheme(
   params: ActionType["deleteCustomTheme"],
 ): Promise<void> {
   const transaction = actions.deleteCustomTheme(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 /**

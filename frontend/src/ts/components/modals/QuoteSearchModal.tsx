@@ -13,7 +13,7 @@ import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import * as DB from "../../db";
+import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -29,6 +29,7 @@ import {
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import { setSelectedQuoteId } from "../../states/test";
+import { getUserData } from "../../states/user";
 import * as TestLogic from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
@@ -218,7 +219,7 @@ export function QuoteSearchModal(): JSXElement {
     matchedTerms: string[];
   }>({ quotes: [], matchedTerms: [] });
   const [isRtl, setIsRtl] = createSignal(false);
-  const [favVersion, setFavVersion] = createSignal(0);
+  const [trackFavorites, refreshFavorites] = createTrigger();
 
   const [searchText, setSearchText] = createSignal("");
   createDebouncedEffectOn(
@@ -234,7 +235,7 @@ export function QuoteSearchModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
   const isQuoteMod = (): boolean => {
-    const quoteMod = DB.getSnapshot()?.quoteMod;
+    const quoteMod = getUserData()?.quoteMod;
     return (
       quoteMod !== undefined &&
       (quoteMod === true || (quoteMod as string) !== "")
@@ -301,7 +302,7 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const filteredQuotes = (): Quote[] => {
-    favVersion();
+    trackFavorites();
 
     let result = searchResults().quotes;
 
@@ -406,29 +407,30 @@ export function QuoteSearchModal(): JSXElement {
     }
     setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    void TestLogic.restart();
+    void TestLogic.restartTest();
     hideModalAndClearChain("QuoteSearch");
   };
 
   const toggleFavorite = async (quote: Quote): Promise<boolean> => {
     const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-    try {
-      showLoaderBar();
-      await QuotesController.setQuoteFavorite(quote, !alreadyFavorited);
-      hideLoaderBar();
-      setFavVersion((v) => v + 1);
-      return true;
-    } catch (e) {
-      hideLoaderBar();
+    showLoaderBar();
+    const { error } = await QuotesController.setQuoteFavorite(
+      quote,
+      !alreadyFavorited,
+    );
+    hideLoaderBar();
+    if (error !== null) {
       showErrorNotification(
         alreadyFavorited
           ? "Failed to remove quote from favorites"
           : "Failed to add quote to favorites",
-        { error: e },
+        { error },
       );
       return false;
     }
+    refreshFavorites();
+    return true;
   };
 
   const handleSubmitClick = async (): Promise<void> => {

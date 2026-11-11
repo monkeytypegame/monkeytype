@@ -1,7 +1,6 @@
 import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
-import { applyCustomBackground } from "../../controllers/theme-controller";
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
@@ -11,7 +10,7 @@ const fromMeta = buildCommandForConfigKey("customBackground");
 const customBackgroundCommand: Command = {
   id: "customBackground",
   display: "Custom background...",
-  icon: "fa-image",
+  fa: { icon: "fa-image" },
   subgroup: {
     title: "Custom background...",
     list: [
@@ -19,7 +18,7 @@ const customBackgroundCommand: Command = {
       {
         id: "customLocalBackground",
         display: "Local background...",
-        icon: "fa-file-import fa-fw",
+        fa: { icon: "fa-file-import" },
         alias: "upload background",
         available: async (): Promise<boolean> => {
           return !(await FileStorage.hasFile("LocalBackgroundFile"));
@@ -54,7 +53,6 @@ const customBackgroundCommand: Command = {
               const dataUrl = readerEvent.target?.result as string;
               try {
                 await FileStorage.storeFile("LocalBackgroundFile", dataUrl);
-                await applyCustomBackground();
               } catch (e) {
                 showNoticeNotification(
                   `Error uploading background: ${(e as Error).message}`,
@@ -71,7 +69,7 @@ const customBackgroundCommand: Command = {
       {
         id: "removeCustomBackground",
         display: "Remove custom background",
-        icon: "fa-trash",
+        fa: { icon: "fa-trash" },
         available: async (): Promise<boolean> => {
           return (
             (await FileStorage.hasFile("LocalBackgroundFile")) ||
@@ -82,7 +80,6 @@ const customBackgroundCommand: Command = {
           try {
             await FileStorage.deleteFile("LocalBackgroundFile");
             setConfig("customBackground", "");
-            await applyCustomBackground();
           } catch (e) {
             showNoticeNotification(
               `Error removing background: ${(e as Error).message}`,

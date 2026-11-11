@@ -1,7 +1,7 @@
 import { Config } from "../../config/store";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue } from "../input-element";
-import * as TestUI from "../../test/test-ui";
+import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/events/data";
 import {
@@ -39,9 +39,8 @@ export function onBeforeDelete(event: InputEvent): void {
       return;
     }
 
-    // this is nested because we only wanna pull the element from the dom if needed
-    const previousWordElement = TestUI.getWordElement(getActiveWordIndex() - 1);
-    if (previousWordElement === null) {
+    // previous word scrolled off (line jump / tape), can't go back to it
+    if (!isWordRendered(getActiveWordIndex() - 1)) {
       event.preventDefault();
       return;
     }

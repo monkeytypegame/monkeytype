@@ -16,7 +16,7 @@ import {
   getXpBarData,
   setAnimatedLevel,
 } from "../../../states/header";
-import { getFocus } from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
 import { getXpDetails } from "../../../utils/levels";
 import { sleep } from "../../../utils/misc";
 import { Anime, AnimePresence, AnimeShow } from "../../common/anime";
@@ -309,7 +309,7 @@ export function AccountXpBar(): JSXElement {
   };
 
   const XPBar = () => (
-    <AnimeShow when={getShowBar() && !getFocus()}>
+    <AnimeShow when={getShowBar() && !isFocusMode()}>
       <div class="absolute top-full right-0 mt-1 w-full">
         <div class="text-[0.5em]">
           <Bar
@@ -325,7 +325,7 @@ export function AccountXpBar(): JSXElement {
   );
 
   const Total = () => (
-    <AnimeShow when={getShowBar() && !getFocus()}>
+    <AnimeShow when={getShowBar() && !isFocusMode()}>
       <Anime
         animation={flashAnimation()}
         class="w-max justify-self-end p-2 text-base font-bold text-main"
@@ -336,7 +336,7 @@ export function AccountXpBar(): JSXElement {
   );
 
   const Breakdown = () => (
-    <AnimeShow when={getShowBreakdown() && !getFocus()} class="mb-2">
+    <AnimeShow when={getShowBreakdown() && !isFocusMode()} class="mb-2">
       <AnimePresence mode="list">
         <For each={getBreakdownItems()} fallback={null}>
           {(item) => (

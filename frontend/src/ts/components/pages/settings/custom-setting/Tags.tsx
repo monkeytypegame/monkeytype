@@ -1,5 +1,5 @@
 import { TagNameSchema } from "@monkeytype/schemas/users";
-import { For, JSXElement } from "solid-js";
+import { For, JSXElement, Suspense } from "solid-js";
 import { z } from "zod";
 
 import { deleteLocalTag } from "../../../../collections/results";
@@ -29,91 +29,93 @@ export function Tags(): JSXElement {
       }}
       inputs={
         <div class="grid gap-2">
-          <For each={tags()}>
-            {(tag) => (
-              <div class="grid grid-cols-[1fr_auto_auto_auto] gap-2">
-                <Button
-                  text={tag.name}
-                  active={tag.active}
-                  onClick={() => {
-                    void toggleTagActive({ tagId: tag._id });
-                  }}
-                />
-                <Button
-                  fa={{
-                    icon: "fa-crown",
-                  }}
-                  onClick={() => {
-                    showSimpleModal({
-                      title: "Clear personal bests",
-                      text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
-                      buttonText: "clear",
-                      execFn: async () => {
-                        await clearTagPBs({ tagId: tag._id });
+          <Suspense>
+            <For each={tags()}>
+              {(tag) => (
+                <div class="grid grid-cols-[1fr_auto_auto_auto] gap-2">
+                  <Button
+                    text={tag.name}
+                    active={tag.active}
+                    onClick={() => {
+                      void toggleTagActive({ tagId: tag._id });
+                    }}
+                  />
+                  <Button
+                    fa={{
+                      icon: "fa-crown",
+                    }}
+                    onClick={() => {
+                      showSimpleModal({
+                        title: "Clear personal bests",
+                        text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
+                        buttonText: "clear",
+                        execFn: async () => {
+                          await clearTagPBs({ tagId: tag._id });
 
-                        return {
-                          status: "success",
-                          message: "Personal bests cleared",
-                        };
-                      },
-                    });
-                  }}
-                />
-                <Button
-                  fa={{
-                    icon: "fa-pen",
-                  }}
-                  onClick={() => {
-                    showSimpleModal({
-                      title: "Edit tag name",
-                      buttonText: "save",
-                      focusFirstInput: "focusAndSelect",
-                      schema: z.object({ tagName: TagNameSchema }),
-                      inputs: {
-                        tagName: {
-                          type: "text",
-                          initVal: tag.name,
-                          preprocess: normalizeName,
+                          return {
+                            status: "success",
+                            message: "Personal bests cleared",
+                          };
                         },
-                      },
-                      execFn: async ({ tagName }) => {
-                        await updateTagName({
-                          tagId: tag._id,
-                          newName: tagName,
-                        });
+                      });
+                    }}
+                  />
+                  <Button
+                    fa={{
+                      icon: "fa-pen",
+                    }}
+                    onClick={() => {
+                      showSimpleModal({
+                        title: "Edit tag name",
+                        buttonText: "save",
+                        focusFirstInput: "focusAndSelect",
+                        schema: z.object({ tagName: TagNameSchema }),
+                        inputs: {
+                          tagName: {
+                            type: "text",
+                            initVal: tag.name,
+                            preprocess: normalizeName,
+                          },
+                        },
+                        execFn: async ({ tagName }) => {
+                          await updateTagName({
+                            tagId: tag._id,
+                            newName: tagName,
+                          });
 
-                        return {
-                          status: "success",
-                          message: "Tag name updated",
-                        };
-                      },
-                    });
-                  }}
-                />
-                <Button
-                  fa={{
-                    icon: "fa-trash",
-                  }}
-                  onClick={() => {
-                    showSimpleModal({
-                      title: "Delete tag",
-                      text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
-                      buttonText: "delete",
-                      execFn: async () => {
-                        await deleteTag({ tagId: tag._id });
-                        await deleteLocalTag({ tagId: tag._id });
+                          return {
+                            status: "success",
+                            message: "Tag name updated",
+                          };
+                        },
+                      });
+                    }}
+                  />
+                  <Button
+                    fa={{
+                      icon: "fa-trash",
+                    }}
+                    onClick={() => {
+                      showSimpleModal({
+                        title: "Delete tag",
+                        text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
+                        buttonText: "delete",
+                        execFn: async () => {
+                          await deleteTag({ tagId: tag._id });
+                          await deleteLocalTag({ tagId: tag._id });
 
-                        return {
-                          status: "success",
-                          message: "Tag deleted",
-                        };
-                      },
-                    });
-                  }}
-                />
-              </div>
-            )}
-          </For>
+                          return {
+                            status: "success",
+                            message: "Tag deleted",
+                          };
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </For>
+          </Suspense>
           <Button
             text="add tag"
             onClick={() => {

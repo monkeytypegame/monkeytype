@@ -3,9 +3,10 @@
 // oxlint-disable ban-ts-comment
 //@ts-nocheck too many errors from 3rd party ad code
 
+import { getAdSlotWrapper } from "../components/common/Advertisement";
 import { Config } from "../config/store";
-import { getActivePage } from "../states/core";
-import { getResultVisible } from "../states/test";
+import { getRoutePage } from "../states/router";
+import { isTestFinished } from "../states/test";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -137,13 +138,11 @@ export function init(): void {
     },
   };
 
-  const headOfDocument = document.getElementsByTagName("head")[0];
-
   // Step 2: Creates the Ramp Scripts
   const rampScript = document.createElement("script");
   rampScript.setAttribute("async", true);
   rampScript.src = `//cdn.intergient.com/${pubId}/${websiteId}/ramp.js`;
-  headOfDocument.appendChild(rampScript);
+  document.head.appendChild(rampScript);
 
   window._pwGA4PageviewId = "".concat(Date.now());
   // oxlint-disable-next-line strict-boolean-expressions, no-unsafe-assignment, typescript/prefer-nullish-coalescing
@@ -180,7 +179,7 @@ function getUnits(): unknown {
   for (const unit of units) {
     // const isSky = unit.type === "sky_btf";
 
-    const element = document.querySelector(`#${unit.selectorId}`);
+    const element = getAdSlotWrapper(unit.selectorId);
 
     if (
       element &&
@@ -207,7 +206,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (getActivePage() === "test" && !getResultVisible()) {
+  if (getRoutePage() === "test" && !isTestFinished()) {
     ramp.destroyUnits("all");
     return;
   }

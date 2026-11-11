@@ -2,11 +2,14 @@ import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
 import { signOut } from "../../../auth";
-import { getSnapshot } from "../../../states/snapshot";
+import { getUserData } from "../../../states/user";
+import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 
 type Props = {
+  /** classes for the menu's outer element, eg. when to show it */
+  class?: string;
   showFriendsNotificationBubble?: boolean;
 };
 
@@ -16,7 +19,10 @@ export function AccountMenu(props: Props): JSXElement {
 
   return (
     <div
-      class="pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125"
+      class={cn(
+        "pointer-events-none absolute right-0 z-1000 w-auto text-xs opacity-0 transition-opacity duration-125",
+        props.class,
+      )}
       data-ui-element="accountMenu"
     >
       <div class="h-3"></div>
@@ -31,8 +37,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-chart-line",
             fixedWidth: true,
           }}
-          href="/account"
-          router-link
+          to="/account"
         />
         <Show when={getServerConfiguration()?.connections.enabled}>
           <Button
@@ -42,8 +47,7 @@ export function AccountMenu(props: Props): JSXElement {
               icon: "fa-user-friends",
               fixedWidth: true,
             }}
-            href="/friends"
-            router-link
+            to="/friends"
           >
             <NotificationBubble
               show={props.showFriendsNotificationBubble ?? false}
@@ -59,8 +63,8 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-globe-americas",
             fixedWidth: true,
           }}
-          href={`/profile/${getSnapshot()?.name ?? ""}`}
-          router-link
+          to="/profile/$uidOrName"
+          params={{ uidOrName: getUserData()?.name ?? "" }}
         />
         <Button
           text="Account settings"
@@ -69,8 +73,7 @@ export function AccountMenu(props: Props): JSXElement {
             icon: "fa-cog",
             fixedWidth: true,
           }}
-          href="/account-settings"
-          router-link
+          to="/account-settings"
         />
         <Button
           text="Sign out"
