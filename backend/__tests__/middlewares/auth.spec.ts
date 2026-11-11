@@ -26,7 +26,8 @@ const mockDecodedToken: DecodedIdToken = {
   iat: 0,
 } as DecodedIdToken;
 
-vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
+verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
 
 const mockApeKey = {
   _id: new ObjectId(),
@@ -39,7 +40,8 @@ const mockApeKey = {
   useCount: 0,
   enabled: true,
 };
-vi.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);
+const getApeKeyMock = vi.spyOn(ApeKeys, "getApeKey");
+getApeKeyMock.mockResolvedValue(mockApeKey);
 vi.spyOn(ApeKeys, "updateLastUsedOn").mockResolvedValue();
 const isDevModeMock = vi.spyOn(Misc, "isDevEnvironment");
 let mockRequest: Partial<TsRestRequestWithContext>;
@@ -174,16 +176,44 @@ describe("middlewares/auth", () => {
 
       //THEN
     });
-    it("should allow the request with authentation on public endpoint", async () => {
+    it("should ignore the auth header on public endpoint", async () => {
+      verifyIdTokenMock.mockClear();
+
       //WHEN
       const result = await authenticate({}, { isPublic: true });
 
       //THEN
       const decodedToken = result.decodedToken;
-      expect(decodedToken?.type).toBe("Bearer");
-      expect(decodedToken?.email).toBe(mockDecodedToken.email);
-      expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(decodedToken?.type).toBe("None");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("");
       expect(nextFunction).toHaveBeenCalledTimes(1);
+      expect(verifyIdTokenMock).not.toHaveBeenCalled();
+
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("None");
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
+    });
+    it("should succeed on public endpoint even if the token is invalid", async () => {
+      verifyIdTokenMock
+        .mockClear()
+        .mockRejectedValue(new Error("auth/id-token-expired"));
+
+      try {
+        //WHEN
+        const result = await authenticate(
+          { headers: { authorization: "Bearer invalid-token" } },
+          { isPublic: true },
+        );
+
+        //THEN
+        const decodedToken = result.decodedToken;
+        expect(decodedToken?.type).toBe("None");
+        expect(decodedToken?.uid).toBe("");
+        expect(nextFunction).toHaveBeenCalledTimes(1);
+        expect(verifyIdTokenMock).not.toHaveBeenCalled();
+      } finally {
+        verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+      }
     });
     it("should allow the request without authentication on public endpoint", async () => {
       //WHEN
@@ -199,7 +229,9 @@ describe("middlewares/auth", () => {
       expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("None");
       expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
     });
-    it("should allow the request with apeKey on public endpoint", async () => {
+    it("should ignore the apeKey on public endpoint", async () => {
+      getApeKeyMock.mockClear();
+
       //WHEN
       const result = await authenticate(
         { headers: { authorization: "ApeKey aWQua2V5" } },
@@ -208,12 +240,13 @@ describe("middlewares/auth", () => {
 
       //THEN
       const decodedToken = result.decodedToken;
-      expect(decodedToken?.type).toBe("ApeKey");
+      expect(decodedToken?.type).toBe("None");
       expect(decodedToken?.email).toBe("");
-      expect(decodedToken?.uid).toBe("123");
+      expect(decodedToken?.uid).toBe("");
       expect(nextFunction).toHaveBeenCalledTimes(1);
+      expect(getApeKeyMock).not.toHaveBeenCalled();
 
-      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("ApeKey");
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("None");
       expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
     });
     it("should allow request with Uid on dev", async () => {

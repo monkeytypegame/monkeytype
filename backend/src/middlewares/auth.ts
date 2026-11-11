@@ -38,6 +38,9 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
 /**
  * Authenticate request based on the auth settings of the route.
  * By default a Bearer token with user authentication is required.
+ * Public endpoints (isPublic: true) always skip authentication: any
+ * authentication header is ignored, so a broken or expired token can't
+ * fail the request.
  * @returns
  */
 export function authenticateTsRestRequest<
@@ -67,15 +70,31 @@ export function authenticateTsRestRequest<
     } = req.headers;
 
     try {
-      if (options.isGithubWebhook) {
+      if (options.isPublic === true) {
+        console.log(
+          "### bypass authentication for public endpoint ",
+          options.openApiTags,
+        );
+        token = {
+          type: "None",
+          uid: "",
+          email: "",
+        };
+      } else if (options.isGithubWebhook) {
         token = authenticateGithubWebhook(req, githubWebhookHeader);
       } else if (authHeader !== undefined && authHeader !== "") {
+        console.log("### authenticating request with auth header");
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options,
         );
       } else if (isPublic === true) {
+        //only reached for isPublicOnDev endpoints in dev, isPublic was handled above
+        console.log(
+          "### bypass authentication for public endpoint ",
+          options.openApiTags,
+        );
         token = {
           type: "None",
           uid: "",
