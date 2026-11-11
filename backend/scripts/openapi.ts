@@ -173,17 +173,25 @@ function addAuth(
 ): void {
   const auth = metadata?.authenticationOptions ?? {};
   const permissions = getRequiredPermissions(metadata) ?? [];
-  const security: SecurityRequirementObject[] = [];
-  if (
-    auth.isPublic !== true &&
-    auth.isPublic !== "optionalUser" &&
-    !auth.isPublicOnDev
-  ) {
-    security.push({ BearerAuth: permissions });
 
-    if (auth.acceptApeKeys === true) {
-      security.push({ ApeKey: permissions });
-    }
+  const schemes: SecurityRequirementObject[] = [{ BearerAuth: permissions }];
+  if (auth.acceptApeKeys === true) {
+    schemes.push({ ApeKey: permissions });
+  }
+
+  // OpenAPI cannot express optional authentication: a listed scheme is
+  // required, an empty array means no authentication. `optionalUser`
+  // endpoints require no authentication, but a provided token is verified
+  // and used - document that with an extension and a note.
+  if (auth.isPublic === true || auth.isPublicOnDev) {
+    operation.security = [];
+  } else if (auth.isPublic === "optionalUser") {
+    operation.security = [];
+    operation["x-optional-auth"] = schemes;
+    operation.description +=
+      "**Authentication is optional.** If a valid token is provided, user-specific data is included.\n\n";
+  } else {
+    operation.security = schemes;
   }
 
   const includeInPublic =
@@ -191,7 +199,6 @@ function addAuth(
     auth.isPublic === "optionalUser" ||
     auth.acceptApeKeys === true;
   operation["x-public"] = includeInPublic ? "yes" : "no";
-  operation.security = security;
 
   if (permissions.length !== 0) {
     operation.description += `**Required permissions:** ${permissions.join(
