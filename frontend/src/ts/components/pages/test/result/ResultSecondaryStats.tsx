@@ -10,13 +10,11 @@ import {
   Suspense,
 } from "solid-js";
 
-import Ape from "../../../../ape";
 import { getTags } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import * as DB from "../../../../db";
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
@@ -29,8 +27,8 @@ import {
 } from "../../../../states/quote-rate";
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
-import { getUserData } from "../../../../states/snapshot";
 import { CompletedResult } from "../../../../states/test";
+import { getUserData, setQuoteFavorite } from "../../../../states/user";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -281,7 +279,7 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the non-reactive DB snapshot, refreshed after each toggle
+  // favorites live in the user store, refreshed after each toggle
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();
@@ -306,33 +304,23 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
 
   const toggleFavorite = async (): Promise<void> => {
-    const dbSnapshot = DB.getUserData();
-    if (!dbSnapshot) return;
-    const language = props.quote.language;
-    const quoteId = props.quote.id.toString();
+    if (getUserData() === undefined) return;
     const remove = isFavorite();
 
     showLoaderBar();
-    const response = remove
-      ? await Ape.users.removeQuoteFromFavorites({
-          body: { language, quoteId },
-        })
-      : await Ape.users.addQuoteToFavorites({ body: { language, quoteId } });
+    const { error } = await setQuoteFavorite({
+      language: props.quote.language,
+      quoteId: props.quote.id.toString(),
+      favorite: !remove,
+    });
     hideLoaderBar();
-
-    addNotificationWithLevel(
-      response.body.message,
-      response.status === 200 ? "success" : "error",
-    );
-    if (response.status !== 200) return;
-
-    if (remove) {
-      const list = dbSnapshot.favoriteQuotes?.[language];
-      list?.splice(list.indexOf(quoteId), 1);
+    if (error !== null) {
+      addNotificationWithLevel(error.message, "error");
     } else {
-      dbSnapshot.favoriteQuotes ??= {};
-      dbSnapshot.favoriteQuotes[language] ??= [];
-      dbSnapshot.favoriteQuotes[language]?.push(quoteId);
+      addNotificationWithLevel(
+        remove ? "Quote removed from favorites" : "Quote added to favorites",
+        "success",
+      );
     }
     refreshFavorites();
   };

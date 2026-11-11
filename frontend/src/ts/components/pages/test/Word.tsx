@@ -6,6 +6,7 @@ import {
   unregisterWordElement,
 } from "../../../states/word-elements";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
+import { cn } from "../../../utils/cn";
 import { createLetters, createZenLetters } from "./letters";
 import { TypoHints } from "./TypoHints";
 import { WordLetter } from "./WordLetter";
@@ -51,22 +52,18 @@ export function Word(props: {
   return (
     <div
       ref={(el) => (wordRef = el)}
-      class="word"
       data-wordindex={props.word.index}
       data-ui-element="word"
       dir={props.word.direction}
       data-ui-state={status()}
       data-ui-active={props.isActive(props.word.index) ? "" : undefined}
-      // per-class toggles: classes and styles added imperatively
-      // (break-joining, caret) must survive re-renders
-      // oxlint-disable-next-line monkeytype-rules/no-classlist
-      classList={{
+      class={cn("word", {
         active: props.isActive(props.word.index),
         typed: props.word.isTyped,
         error: isIncorrect(),
         // letters run in the word's direction, so the caret can rely on it
         "[unicode-bidi:bidi-override]": props.word.direction !== undefined,
-      }}
+      })}
     >
       <Index each={letters()}>
         {(letter) => <WordLetter letter={letter()} />}

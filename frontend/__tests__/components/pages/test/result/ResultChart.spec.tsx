@@ -15,7 +15,8 @@ vi.mock("../../../../../src/ts/collections/tags", async () => {
     getTag: (id: string) => names[id],
   };
 });
-vi.mock("../../../../../src/ts/db", () => ({
+vi.mock("../../../../../src/ts/states/user", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   getLocalPB: () => undefined,
 }));
 // no canvas in jsdom - show the pb line labels instead

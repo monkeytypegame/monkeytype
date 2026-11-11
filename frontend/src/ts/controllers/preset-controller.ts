@@ -1,6 +1,6 @@
+import { getUserData } from "../states/user";
 import { Config } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
-import * as DB from "../db";
 import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import {
@@ -12,8 +12,8 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { getPreset, type PresetItem } from "../collections/presets";
 
 export async function apply(_id: string): Promise<void> {
-  const snapshot = DB.getUserData();
-  if (!snapshot) return;
+  const userData = getUserData();
+  if (!userData) return;
 
   const presetToApply = getPreset(_id);
   if (presetToApply === undefined) {

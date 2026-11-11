@@ -6,7 +6,7 @@ import {
   getLocalTagPB,
   saveLocalTagPB,
 } from "../collections/tags";
-import * as DB from "../db";
+import { getLocalPB } from "../states/user";
 import Format from "../singletons/format";
 import { hideCrown, ResultTag, resultState, showCrown } from "../states/result";
 import { CompletedResult } from "../states/test";
@@ -51,7 +51,7 @@ export function updateCrown(
 
   console.debug("Result can get PB:", canGet.value, canGet.reason ?? "");
 
-  const localPb = DB.getLocalPB(
+  const localPb = getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation,

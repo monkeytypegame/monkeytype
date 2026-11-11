@@ -4,7 +4,7 @@ import Ape from "../../../ape";
 import { showLoaderBar } from "../../../states/loader-bar";
 import { showModal } from "../../../states/modals";
 import { showErrorNotification } from "../../../states/notifications";
-import { getUserData } from "../../../states/snapshot";
+import { getUserData } from "../../../states/user";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import {

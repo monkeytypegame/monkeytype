@@ -18,8 +18,8 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
-import { getUserData } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
+import { getUserData } from "../../../states/user";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
@@ -52,12 +52,12 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUserData, (snapshot) => {
-    if (snapshot === undefined) {
+  createEffectOn(getUserData, (userData) => {
+    if (userData === undefined) {
       setAnimatedLevel(0);
       return;
     }
-    setAnimatedLevel(getLevelFromTotalXp(snapshot.xp ?? 0));
+    setAnimatedLevel(getLevelFromTotalXp(userData.xp ?? 0));
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
@@ -65,10 +65,10 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const snapshot = getUserData();
-    if (snapshot === undefined) return false;
+    const userData = getUserData();
+    if (userData === undefined) return false;
 
-    return snapshot.inboxUnreadSize > 0;
+    return userData.inboxUnreadSize > 0;
   });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
