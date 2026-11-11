@@ -80,7 +80,7 @@ export function Table<M extends Mode>(props: {
           scrollToActiveRow: props.scrollToSelectedRow,
           class: cn(
             "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
-            "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+            "[&_[data-ui-element=button]]:[--themable-button-text:var(--text-main)]",
           ),
         }}
       />
