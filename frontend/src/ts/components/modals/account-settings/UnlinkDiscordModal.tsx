@@ -7,9 +7,8 @@ export function showUnlinkDiscordModal(): void {
     text: "Are you sure you want to unlink your Discord account?",
     buttonText: "unlink",
     execFn: async () => {
-      try {
-        await unlinkDiscord();
-      } catch (error) {
+      const { error } = await unlinkDiscord();
+      if (error !== null) {
         return {
           status: "error",
           message: "Failed to unlink Discord",

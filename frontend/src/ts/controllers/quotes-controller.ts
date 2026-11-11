@@ -5,7 +5,7 @@ import { createRoot } from "solid-js";
 import { getConfig } from "../config/store";
 import { createEffectOn } from "../hooks/effects";
 import { getUserData, setQuoteFavorite } from "../states/user";
-import { tryCatch } from "@monkeytype/util/trycatch";
+import { Result, tryCatch } from "@monkeytype/util/trycatch";
 import { Language } from "@monkeytype/schemas/languages";
 import { QuoteData } from "@monkeytype/schemas/quotes";
 import {
@@ -204,8 +204,11 @@ class QuotesController {
     return matchedLanguage !== undefined;
   }
 
-  async setQuoteFavorite(quote: Quote, isFavorite: boolean): Promise<void> {
-    await setQuoteFavorite({
+  async setQuoteFavorite(
+    quote: Quote,
+    isFavorite: boolean,
+  ): Promise<Result<void>> {
+    return setQuoteFavorite({
       language: quote.language,
       quoteId: `${quote.id}`,
       favorite: isFavorite,

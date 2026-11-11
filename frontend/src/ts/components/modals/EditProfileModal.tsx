@@ -53,12 +53,11 @@ export function EditProfile() {
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
-      try {
-        await updateProfile({
-          details: updates,
-          selectedBadgeId: value.badgeId,
-        });
-      } catch (error) {
+      const { error } = await updateProfile({
+        details: updates,
+        selectedBadgeId: value.badgeId,
+      });
+      if (error !== null) {
         showErrorNotification("Failed to update profile", { error });
         return;
       }

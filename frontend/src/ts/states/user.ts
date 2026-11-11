@@ -3,6 +3,7 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { XpBreakdown } from "@monkeytype/schemas/results";
+import { Result, tryCatch } from "@monkeytype/util/trycatch";
 import {
   Mode,
   Mode2,
@@ -251,15 +252,18 @@ export async function updateLbMemory<M extends Mode>(
  * the values to keep (the server may change them); the recipe is applied
  * again with those. On failure the fields the recipe changed are rolled back,
  * except those changed again since (by a direct write or another action),
- * which keep the newer value. The recipe must be idempotent.
+ * which keep the newer value. The recipe must be idempotent. Failure is
+ * returned as `error`, never thrown, so callers see it in the type.
  */
 async function optimisticUpdate<T>(
   vars: T,
   recipe: (user: UserData, vars: T) => void,
   request: () => Promise<T>,
-): Promise<void> {
+): Promise<Result<void>> {
   const before = copyUserData();
-  if (before === undefined) throw new Error("Not signed in");
+  if (before === undefined) {
+    return { data: null, error: new Error("Not signed in") };
+  }
   update((user) => recipe(user, vars));
   const written = copyUserData() ?? before;
   const same = (a: unknown, b: unknown): boolean =>
@@ -268,19 +272,18 @@ async function optimisticUpdate<T>(
     Object.keys({ ...before, ...written }) as (keyof UserData)[]
   ).filter((key) => !same(before[key], written[key]));
 
-  let kept: T;
-  try {
-    kept = await request();
-  } catch (e) {
+  const { data: kept, error } = await tryCatch(request());
+  if (error !== null) {
     update((user) => {
       for (const key of changed) {
         if (!same(user[key], written[key])) continue;
         (user as Record<string, unknown>)[key] = before[key];
       }
     });
-    throw e;
+    return { data: null, error };
   }
   update((user) => recipe(user, kept));
+  return { data: undefined, error: null };
 }
 
 function throwIfFailed(response: {
@@ -290,8 +293,8 @@ function throwIfFailed(response: {
   if (response.status !== 200) throw new Error(response.body.message);
 }
 
-export async function updateName(name: string): Promise<void> {
-  await optimisticUpdate(
+export async function updateName(name: string): Promise<Result<void>> {
+  return optimisticUpdate(
     name,
     (user, name) => {
       user.name = name;
@@ -303,8 +306,8 @@ export async function updateName(name: string): Promise<void> {
   );
 }
 
-export async function unlinkDiscord(): Promise<void> {
-  await optimisticUpdate(
+export async function unlinkDiscord(): Promise<Result<void>> {
+  return optimisticUpdate(
     undefined,
     (user) => {
       user.discordId = undefined;
@@ -317,8 +320,10 @@ export async function unlinkDiscord(): Promise<void> {
   );
 }
 
-export async function setStreakHourOffset(hourOffset: number): Promise<void> {
-  await optimisticUpdate(
+export async function setStreakHourOffset(
+  hourOffset: number,
+): Promise<Result<void>> {
+  return optimisticUpdate(
     hourOffset,
     (user, hourOffset) => {
       user.streakHourOffset = hourOffset;
@@ -334,8 +339,8 @@ export async function setStreakHourOffset(hourOffset: number): Promise<void> {
 
 type QuoteRating = { language: Language; quoteId: number; rating: number };
 
-export async function rateQuote(rating: QuoteRating): Promise<void> {
-  await optimisticUpdate(
+export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
+  return optimisticUpdate(
     rating,
     (user, { language, quoteId, rating }) => {
       user.quoteRatings ??= {};
@@ -351,8 +356,10 @@ export async function rateQuote(rating: QuoteRating): Promise<void> {
 
 type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
-export async function setQuoteFavorite(favorite: QuoteFavorite): Promise<void> {
-  await optimisticUpdate(
+export async function setQuoteFavorite(
+  favorite: QuoteFavorite,
+): Promise<Result<void>> {
+  return optimisticUpdate(
     favorite,
     (user, { language, quoteId, favorite }) => {
       const list = user.favoriteQuotes?.[language] ?? [];
@@ -379,8 +386,10 @@ type ProfileUpdate = {
   selectedBadgeId: number;
 };
 
-export async function updateProfile(profile: ProfileUpdate): Promise<void> {
-  await optimisticUpdate(
+export async function updateProfile(
+  profile: ProfileUpdate,
+): Promise<Result<void>> {
+  return optimisticUpdate(
     profile,
     (user, { details, selectedBadgeId }) => {
       user.details = details;

@@ -309,23 +309,20 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
     const remove = isFavorite();
 
     showLoaderBar();
-    try {
-      await setQuoteFavorite({
-        language: props.quote.language,
-        quoteId: props.quote.id.toString(),
-        favorite: !remove,
-      });
+    const { error } = await setQuoteFavorite({
+      language: props.quote.language,
+      quoteId: props.quote.id.toString(),
+      favorite: !remove,
+    });
+    hideLoaderBar();
+    if (error !== null) {
+      addNotificationWithLevel(error.message, "error");
+    } else {
       addNotificationWithLevel(
         remove ? "Quote removed from favorites" : "Quote added to favorites",
         "success",
       );
-    } catch (error) {
-      addNotificationWithLevel(
-        error instanceof Error ? error.message : String(error),
-        "error",
-      );
     }
-    hideLoaderBar();
     refreshFavorites();
   };
 

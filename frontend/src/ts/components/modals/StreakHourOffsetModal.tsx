@@ -32,15 +32,13 @@ export function StreakHourOffsetModal() {
 
       showLoaderBar();
 
-      try {
-        await setStreakHourOffset(hourOffset);
-      } catch (error) {
-        hideLoaderBar();
+      const { error } = await setStreakHourOffset(hourOffset);
+      hideLoaderBar();
+      if (error !== null) {
         showErrorNotification("Failed to set streak hour offset", { error });
         hideModal("StreakHourOffset");
         return;
       }
-      hideLoaderBar();
       showSuccessNotification("Streak hour offset set");
       hideModal("StreakHourOffset");
     },

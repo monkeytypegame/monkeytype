@@ -64,18 +64,16 @@ export function QuoteRateModal(): JSXElement {
     const oldRating = getUserData()?.quoteRatings?.[quote.language]?.[quote.id];
 
     showLoaderBar();
-    try {
-      await rateQuote({
-        language: quote.language,
-        quoteId: quote.id,
-        rating: rating(),
-      });
-    } catch (error) {
-      hideLoaderBar();
+    const { error } = await rateQuote({
+      language: quote.language,
+      quoteId: quote.id,
+      rating: rating(),
+    });
+    hideLoaderBar();
+    if (error !== null) {
       showErrorNotification("Failed to submit quote rating", { error });
       return;
     }
-    hideLoaderBar();
 
     const stats = quoteStats() ?? {};
 

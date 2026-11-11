@@ -57,9 +57,8 @@ export function showUpdateNameModal(): void {
         };
       }
 
-      try {
-        await updateName(newName);
-      } catch (error) {
+      const { error } = await updateName(newName);
+      if (error !== null) {
         return {
           status: "error",
           message: "Failed to update name",

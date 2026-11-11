@@ -253,10 +253,10 @@ describe("optimistic actions", () => {
     expect(getUserData()?.name).toBe("carl");
   });
 
-  it("rolls back and rejects on failure", async () => {
+  it("rolls back and returns the error on failure", async () => {
     vi.spyOn(Ape.users, "updateName").mockResolvedValue(fail("taken"));
 
-    await expect(updateName("carl")).rejects.toThrow("taken");
+    expect((await updateName("carl")).error?.message).toBe("taken");
     expect(getUserData()?.name).toBe("bob");
   });
 
@@ -283,7 +283,7 @@ describe("optimistic actions", () => {
     const done = updateName("carl");
     addXp(5);
     respond(fail("taken"));
-    await expect(done).rejects.toThrow("taken");
+    expect((await done).error?.message).toBe("taken");
 
     expect(getUserData()).toMatchObject({ name: "bob", xp: 5 });
   });
@@ -311,7 +311,7 @@ describe("optimistic actions", () => {
     const first = updateName("carl");
     const second = updateName("dave");
     responses[0]?.(fail("taken"));
-    await expect(first).rejects.toThrow("taken");
+    expect((await first).error?.message).toBe("taken");
     expect(getUserData()?.name).toBe("dave");
 
     responses[1]?.(ok());
@@ -336,7 +336,7 @@ describe("optimistic actions", () => {
       favorite: true,
     });
     responses[0]?.(fail("nope"));
-    await expect(first).rejects.toThrow("nope");
+    expect((await first).error?.message).toBe("nope");
     responses[1]?.(ok());
     await second;
 
