@@ -1,14 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
+  "globalPassThroughEnv": ["TMPDIR"],
   "tasks": {
     "parallel": {
       "dependsOn": ["^parallel"]
     },
     "lint": {
-      "dependsOn": ["^parallel", "^build"]
-    },
-    "lint-fast": {
       "dependsOn": ["^parallel", "^build"]
     },
     "ts-check": {

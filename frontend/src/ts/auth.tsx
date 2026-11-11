@@ -17,14 +17,13 @@ import {
   User,
   User as UserType,
 } from "firebase/auth";
-import { createMemo } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
-import { updateFromServer as updateConfigFromServer } from "./config/remote";
-import * as DB from "./db";
+import * as RemoteConfig from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
@@ -45,11 +44,12 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
+import { clearUserData, loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
+import { UserDataLoadError } from "./utils/user-data-load-error";
 
 type AuthMethodInfo = {
   display: string;
@@ -122,26 +122,34 @@ const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
   });
 export { getAuthenticatedUser };
 
-createEffectOn(getUserId, () => {
-  updateAuthenticatedUser();
-});
-
-const authenticationMemos = Object.fromEntries(
-  typedKeys(authMethods).map((authMethod) => {
-    const memo = createMemo(() => {
-      const providerId = getProviderId(authMethod);
-
-      const user = getAuthenticatedUserReactive();
-      if (user === null) return undefined;
-      const result = {
-        isInUse: user.providerData.some((p) => p.providerId === providerId),
-        hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
-      };
-
-      return result;
-    });
-    return [authMethod, memo];
+createRoot(() =>
+  createEffectOn(getUserId, () => {
+    updateAuthenticatedUser();
   }),
+);
+
+const authenticationMemos = createRoot(() =>
+  Object.fromEntries(
+    typedKeys(authMethods).map((authMethod) => {
+      const memo = createMemo(() => {
+        const providerId = getProviderId(authMethod);
+
+        const user = getAuthenticatedUserReactive();
+        if (user === null) return undefined;
+        const provider = user.providerData.find(
+          (p) => p.providerId === providerId,
+        );
+        const result = {
+          isInUse: provider !== undefined,
+          email: provider?.email ?? undefined,
+          hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
+        };
+
+        return result;
+      });
+      return [authMethod, memo];
+    }),
+  ),
 );
 
 export async function sendVerificationEmail(): Promise<void> {
@@ -164,24 +172,22 @@ export async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    const snapshot = await DB.initSnapshot();
-    //TODO: preload collections for now, remove when __nonReactive is removed from collections
-    await waitForPresetsReady();
-    await waitForTagsReady();
+    // fetch everything in parallel, apply in order below
+    const [userData, , , remoteConfig] = await Promise.all([
+      loadUserData(),
+      //TODO: preload collections for now, remove when __nonReactive is removed from collections
+      waitForPresetsReady(),
+      waitForTagsReady(),
+      RemoteConfig.fetchFromServer(),
+    ]);
 
-    if (snapshot === false) {
-      throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
-      );
-    }
+    void Sentry.setUser(userData.uid, userData.name);
 
-    void Sentry.setUser(snapshot.uid, snapshot.name);
-
-    await updateConfigFromServer();
+    await RemoteConfig.applyFromServer(remoteConfig);
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof SnapshotInitError) {
+    if (error instanceof UserDataLoadError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -210,7 +216,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
@@ -228,7 +234,7 @@ export async function onAuthStateChanged(
       userPromise = loadUser(user);
     } else {
       setUserId(null);
-      DB.setSnapshot(undefined);
+      clearUserData();
     }
   }
 
@@ -236,9 +242,26 @@ export async function onAuthStateChanged(
     void Sentry.clearUser();
   }
 
+  dispatchAuthStateChanged(user, userPromise);
+}
+
+/**
+ * Announces a new auth state: `user` signed in (null: signed out), with
+ * `loadPromise` downloading their user data.
+ */
+export function dispatchAuthStateChanged(
+  user: UserType | null,
+  loadPromise: Promise<void>,
+): void {
   authEvent.dispatch({
     type: "authStateChanged",
-    data: { isUserSignedIn: user !== null, loadPromise: userPromise },
+    data: {
+      isUserSignedIn: user !== null,
+      loadPromise,
+      reloadUserData: async () => {
+        if (user !== null) await loadUser(user);
+      },
+    },
   });
 }
 
@@ -366,7 +389,6 @@ async function addPopupProvider(
   }
 
   await linkWithPopup(user, provider);
-  authEvent.dispatch({ type: "authConfigUpdated" });
 }
 
 export async function removeAuthProvider(
@@ -601,6 +623,12 @@ export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
   return typedKeys(authMethods).some(
     (it) => it !== authMethod && isUsingAuthentication(it),
   );
+}
+
+export function getAuthMethodEmailReactive(
+  authMethod: AuthMethod,
+): string | undefined {
+  return authenticationMemos[authMethod]?.()?.email;
 }
 
 export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {

@@ -7,10 +7,10 @@ import {
   reauthenticate,
 } from "../../../auth";
 import { resetConfig } from "../../../config/lifecycle";
-import { getSnapshot } from "../../../db";
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
+import { resetPersonalBests } from "../../../states/user";
 import FileStorage from "../../../utils/file-storage";
 import { reloadAfter } from "../../../utils/misc";
 
@@ -112,21 +112,7 @@ export function showResetPersonalBestsModal(): void {
         };
       }
 
-      const snapshot = getSnapshot();
-      if (!snapshot) {
-        return {
-          status: "error",
-          message: "Failed to reset personal bests: no snapshot",
-        };
-      }
-
-      snapshot.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
+      resetPersonalBests();
 
       return {
         status: "success",

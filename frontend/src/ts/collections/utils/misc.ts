@@ -9,10 +9,11 @@ export function isTempId(id: string): boolean {
 }
 
 /**
- * temp. workaround for  https://github.com/TanStack/db/issues/1524
+ * Never garbage collect user data. Spread into both `queryCollectionOptions`
+ * (query cache gcTime: dropping the query deletes its rows from the
+ * collection) and `createCollection` (collection gcTime: not passed through by
+ * `queryCollectionOptions`). User data is small, needed all session and
+ * cleared on sign out, so GC would only cause refetches or, for non-reactive
+ * readers like the commandline, an empty list.
  */
-export function applyIdWorkaround<T extends { _id: string }>(item: T): T {
-  //@ts-expect-error this is fine
-  item.id = item._id;
-  return item;
-}
+export const keepForever = { gcTime: Infinity } as const;

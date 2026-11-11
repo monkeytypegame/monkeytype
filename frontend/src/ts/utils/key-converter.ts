@@ -21,12 +21,12 @@ export function layoutKeyToKeycode(
   const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
   const row = rows[rowIndex];
   if (row === undefined) {
-    return;
+    return undefined;
   }
 
   const keyIndex = row.findIndex((k) => k.includes(key));
   if (keyIndex === -1) {
-    return;
+    return undefined;
   }
 
   let keycode = qwertyKeycodeKeymap[rowIndex]?.[keyIndex];

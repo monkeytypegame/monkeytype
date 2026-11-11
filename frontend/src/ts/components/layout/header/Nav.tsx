@@ -8,23 +8,19 @@ import {
 } from "solid-js";
 
 import { usePendingConnectionsQuery } from "../../../collections/connections";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import {
-  prefetchAboutPage,
-  prefetchLeaderboardPage,
-} from "../../../queries/prefetch";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
-import { getActivePage } from "../../../states/core";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
   setAnimatedLevel,
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
-import { getSnapshot } from "../../../states/snapshot";
-import { getFocus } from "../../../states/test";
+import { getRoutePage } from "../../../states/router";
+import { isFocusMode } from "../../../states/test";
+import { getUserData } from "../../../states/user";
+import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";
 import { Anime } from "../../common/anime";
@@ -53,15 +49,15 @@ export function Nav(): JSXElement {
 
   const buttonClass = () =>
     cn("aspect-square", {
-      "opacity-(--nav-focus-opacity)": getFocus(),
+      "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getSnapshot, (snapshot) => {
-    if (snapshot === undefined) {
+  createEffectOn(getUserData, (userData) => {
+    if (userData === undefined) {
       setAnimatedLevel(0);
       return;
     }
-    setAnimatedLevel(getLevelFromTotalXp(snapshot.xp ?? 0));
+    setAnimatedLevel(getLevelFromTotalXp(userData.xp ?? 0));
   });
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
@@ -69,10 +65,10 @@ export function Nav(): JSXElement {
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const snapshot = getSnapshot();
-    if (snapshot === undefined) return false;
+    const userData = getUserData();
+    if (userData === undefined) return false;
 
-    return snapshot.inboxUnreadSize > 0;
+    return userData.inboxUnreadSize > 0;
   });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());
@@ -87,14 +83,13 @@ export function Nav(): JSXElement {
           icon: "fa-keyboard",
           fixedWidth: true,
         }}
-        router-link
-        href="/"
+        to="/"
         class={buttonClass()}
         dataset={{
           "data-nav-item": "test",
         }}
         onClick={() => {
-          if (getActivePage() === "test") restartTestEvent.dispatch();
+          if (getRoutePage() === "test") void restartTest();
         }}
       />
       <Button
@@ -103,15 +98,11 @@ export function Nav(): JSXElement {
           icon: "fa-crown",
           fixedWidth: true,
         }}
-        router-link
         dataset={{
           "data-nav-item": "leaderboards",
         }}
         class={buttonClass()}
-        href="/leaderboards"
-        onMouseEnter={() => {
-          prefetchLeaderboardPage();
-        }}
+        to="/leaderboards"
       />
       <Button
         variant="text"
@@ -123,11 +114,7 @@ export function Nav(): JSXElement {
         dataset={{
           "data-nav-item": "about",
         }}
-        href="/about"
-        router-link
-        onMouseEnter={() => {
-          prefetchAboutPage();
-        }}
+        to="/about"
       />
       <Button
         variant="text"
@@ -136,11 +123,10 @@ export function Nav(): JSXElement {
           fixedWidth: true,
         }}
         class={buttonClass()}
-        href="/settings"
+        to="/settings"
         dataset={{
           "data-nav-item": "settings",
         }}
-        router-link
       />
       <div class="grow"></div>
       <Button
@@ -164,7 +150,7 @@ export function Nav(): JSXElement {
       </Button>
       <AnimePresence exitBeforeEnter>
         <Show
-          when={getSnapshot()}
+          when={getUserData()}
           fallback={
             <Anime
               initial={{ opacity: 0 }}
@@ -174,7 +160,7 @@ export function Nav(): JSXElement {
               <Show when={showLoginButton()}>
                 <Button
                   variant="text"
-                  href="/login"
+                  to="/login"
                   dataset={{
                     "data-nav-item": "login",
                   }}
@@ -183,7 +169,6 @@ export function Nav(): JSXElement {
                     variant: "regular",
                     fixedWidth: true,
                   }}
-                  router-link
                   class={buttonClass()}
                 />
               </Show>
@@ -198,14 +183,7 @@ export function Nav(): JSXElement {
             >
               <div
                 ref={accountMenuRef}
-                class={cn(
-                  "relative",
-                  !getFocus() &&
-                    "hover:**:data-[ui-element='accountMenu']:pointer-events-auto hover:**:data-[ui-element='accountMenu']:opacity-100",
-                  "has-focus-visible:**:data-[ui-element='accountMenu']:pointer-events-auto has-focus-visible:**:data-[ui-element='accountMenu']:opacity-100",
-                  getAccountMenuOpen() &&
-                    "**:data-[ui-element='accountMenu']:pointer-events-auto **:data-[ui-element='accountMenu']:opacity-100",
-                )}
+                class="group/account-menu relative"
                 // oxlint-disable-next-line react/no-unknown-property
                 on:click={(e: MouseEvent) => {
                   if (isCoarse()) {
@@ -223,11 +201,14 @@ export function Nav(): JSXElement {
                   variant="text"
                   class={cn(
                     "h-full",
-                    "hover:**:data-[ui-element='userLevel']:bg-(--themable-button-hover-text)",
-                    { "opacity-(--nav-focus-opacity)": getFocus() },
+                    // the level badge's background reads this var: swap it
+                    // on hover instead of targeting the badge with a
+                    // descendant selector, which every element would be tested
+                    // against on each style recalc
+                    "hover:[--themable-button-text:var(--themable-button-hover-text)]",
+                    { "opacity-(--nav-focus-opacity)": isFocusMode() },
                   )}
-                  href="/account"
-                  router-link
+                  to="/account"
                   dataset={{
                     "data-nav-item": "account",
                   }}
@@ -244,6 +225,14 @@ export function Nav(): JSXElement {
                   />
                 </Button>
                 <AccountMenu
+                  class={cn(
+                    // group variants: only the menu is tested against these
+                    // selectors, unlike descendant (`**:`) variants
+                    !isFocusMode() &&
+                      "group-hover/account-menu:pointer-events-auto group-hover/account-menu:opacity-100",
+                    "group-has-focus-visible/account-menu:pointer-events-auto group-has-focus-visible/account-menu:opacity-100",
+                    getAccountMenuOpen() && "pointer-events-auto opacity-100",
+                  )}
                   showFriendsNotificationBubble={showFriendsNotificationBubble()}
                 />
               </div>

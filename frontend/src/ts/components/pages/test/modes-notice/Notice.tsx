@@ -1,7 +1,7 @@
 import { ParentProps, Show } from "solid-js";
 
 import { CommandlineSubgroupKey } from "../../../../commandline/types";
-import { showCommandLineForConfig } from "../../../../states/core";
+import { showCommandline } from "../../../../states/commandline";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import { cn } from "../../../../utils/cn";
 import { OneOf } from "../../../../utils/types";
@@ -27,9 +27,9 @@ export function Notice(
       onClick={
         props.onClick ??
         (() =>
-          showCommandLineForConfig(
-            props.openCommandline as CommandlineSubgroupKey,
-          ))
+          showCommandline({
+            subgroupOverride: props.openCommandline as CommandlineSubgroupKey,
+          }))
       }
       fa={props.icon !== undefined ? { icon: props.icon } : undefined}
     >

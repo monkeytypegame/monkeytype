@@ -2,9 +2,7 @@ import { AnyFieldApi } from "@tanstack/solid-form";
 import { Accessor, onMount } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
-import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { showErrorNotification } from "../../../states/notifications";
-import { ElementWithUtils } from "../../../utils/dom";
 
 const errorText =
   "Captcha is not available. This could happen due to a blocked or failed network request. Please refresh the page or contact support if this issue persists.";
@@ -23,16 +21,16 @@ export function Captcha(props: {
   class?: string;
   onSuccess?: (responseToken: string) => void;
 }) {
-  const [captchaRef, captchaEl] = useRefWithUtils<HTMLDivElement>();
+  let captchaRef: HTMLDivElement | undefined;
 
   onMount(() => {
-    const el = captchaEl() as ElementWithUtils<HTMLDivElement>;
+    if (captchaRef === undefined) return;
 
     const grecaptcha = getGrecaptcha();
     if (grecaptcha === undefined) {
-      el.setText(errorText);
+      captchaRef.textContent = errorText;
     }
-    getGrecaptcha()?.render(el.native, {
+    getGrecaptcha()?.render(captchaRef, {
       sitekey: envConfig.recaptchaSiteKey,
       callback: (token) => {
         props.field().setValue(token);
@@ -40,7 +38,7 @@ export function Captcha(props: {
       },
     });
   });
-  return <div ref={captchaRef} class={props.class}></div>;
+  return <div ref={(el) => (captchaRef = el)} class={props.class}></div>;
 }
 
 function getGrecaptcha(): Grecaptcha | undefined {

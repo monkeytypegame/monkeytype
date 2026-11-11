@@ -6,13 +6,14 @@ import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../helpers/input-type";
 import { getCurrentInput, logTestEvent } from "../../test/events/data";
-import { activeWordIndex } from "../../test/test-state";
+import { getActiveWordIndex } from "../../states/test";
+import { setWordInput } from "../../states/words-render";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {
   const { realInputValue } = getInputElementValue();
 
   const inputBeforeDelete = getCurrentInput();
-  const activeWordIndexBeforeDelete = activeWordIndex;
+  const activeWordIndexBeforeDelete = getActiveWordIndex();
 
   const inputAfterDelete = getInputElementValue().inputValue;
 
@@ -44,7 +45,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     const postNavInputValue = getInputElementValue().inputValue;
     logTestEvent("input", now, {
       inputType: "deleteContentBackward",
-      wordIndex: activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       charIndex: postNavInputValue.length,
       inputValue: postNavInputValue,
     });
@@ -59,11 +60,16 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     // which means we need to force update the current word element when we move back
     goToPreviousWord(inputType);
 
+    // the word we left is untyped now, even if it had leftover input.
+    // must run after goToPreviousWord: it renders the word with its stale
+    // input, and the last write wins
+    setWordInput(activeWordIndexBeforeDelete, "", "");
+
     // Record the resulting state of the destination word
     const postNavInputValue = getInputElementValue().inputValue;
     logTestEvent("input", now, {
       inputType: inputType,
-      wordIndex: activeWordIndex,
+      wordIndex: getActiveWordIndex(),
       charIndex: postNavInputValue.length,
       inputValue: postNavInputValue,
       ...(inputBeforeDelete !== "" ? { clearedNextWord: true } : {}),

@@ -4,14 +4,18 @@ import { format as formatDate } from "date-fns/format";
 import { createMemo, createSignal, JSXElement } from "solid-js";
 
 import { getConfig } from "../../config/store";
-import * as DB from "../../db";
 import { pbTablesMode } from "../../states/pb-tables-modal";
+import { getUserData } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
-import { DataTable, DataTableColumnDef } from "../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../ui/table/DataTable";
 
 type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;
@@ -22,7 +26,7 @@ type PBRow = PBWithMode2 & {
 };
 
 function buildRows(mode: Mode): PBRow[] {
-  const allmode2 = DB.getSnapshot()?.personalBests?.[mode] as
+  const allmode2 = getUserData()?.personalBests?.[mode] as
     | Record<Mode2<Mode>, PBWithMode2[]>
     | undefined;
   if (allmode2 === undefined) return [];
@@ -52,7 +56,7 @@ function getColumns(options: {
   format: Formatting;
   mode: Mode;
 }): DataTableColumnDef<PBRow>[] {
-  const defineColumn = createColumnHelper<PBRow>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, PBRow>().accessor;
   const { format: f, mode: m } = options;
 
   const columns = [

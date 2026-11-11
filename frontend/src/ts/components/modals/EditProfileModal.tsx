@@ -7,14 +7,13 @@ import {
 import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
-import Ape from "../../ape";
-import { getSnapshot, setSnapshot } from "../../db";
 import { invalidateMyProfile } from "../../queries/profile";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import { getUserData, updateProfile } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -26,20 +25,20 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
-  const snapshot = getSnapshot();
-  if (snapshot === undefined) {
-    throw new Error("missing snapshot in EditProfile");
+  const userData = getUserData();
+  if (userData === undefined) {
+    throw new Error("missing user in EditProfile");
   }
-  const badges = snapshot.inventory?.badges ?? [];
+  const badges = userData.inventory?.badges ?? [];
   const form = createForm(() => ({
     defaultValues: {
-      bio: snapshot.details?.bio ?? "",
-      keyboard: snapshot.details?.keyboard ?? "",
-      github: snapshot.details?.socialProfiles?.github ?? "",
-      twitter: snapshot.details?.socialProfiles?.twitter ?? "",
-      website: snapshot.details?.socialProfiles?.website ?? "",
+      bio: userData.details?.bio ?? "",
+      keyboard: userData.details?.keyboard ?? "",
+      github: userData.details?.socialProfiles?.github ?? "",
+      twitter: userData.details?.socialProfiles?.twitter ?? "",
+      website: userData.details?.socialProfiles?.website ?? "",
       showActivityOnPublicProfile:
-        snapshot.details?.showActivityOnPublicProfile ?? true,
+        userData.details?.showActivityOnPublicProfile ?? true,
       badgeId: badges.find((b) => b.selected)?.id ?? -1,
     },
     onSubmit: async ({ value }) => {
@@ -47,38 +46,24 @@ export function EditProfile() {
         bio: value.bio,
         keyboard: value.keyboard,
         socialProfiles: {
-          twitter: value.twitter,
-          github: value.github,
-          website: value.website,
+          twitter: value.twitter ?? "",
+          github: value.github ?? "",
+          website: value.website ?? "",
         },
         showActivityOnPublicProfile: value.showActivityOnPublicProfile,
       };
 
-      const response = await Ape.users.updateProfile({
-        body: {
-          ...updates,
-          selectedBadgeId: value.badgeId,
-        },
+      const { error } = await updateProfile({
+        details: updates,
+        selectedBadgeId: value.badgeId,
       });
-
-      if (response.status !== 200) {
-        showErrorNotification("Failed to update profile", { response });
+      if (error !== null) {
+        showErrorNotification("Failed to update profile", { error });
         return;
       }
 
-      const newBadges =
-        snapshot.inventory?.badges?.map((it) => ({
-          ...it,
-          selected: it.id === value.badgeId,
-        })) ?? [];
-
       form.reset(value);
       hideModal("EditProfile");
-      setSnapshot({
-        ...snapshot,
-        details: response.body.data ?? updates,
-        inventory: { ...snapshot.inventory, badges: newBadges },
-      });
       void invalidateMyProfile();
       showSuccessNotification("Profile updated");
     },

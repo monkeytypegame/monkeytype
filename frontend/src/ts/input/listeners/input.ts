@@ -10,15 +10,16 @@ import * as TestUI from "../../test/test-ui";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
-import * as CompositionState from "../../legacy-states/composition";
-import * as TestState from "../../test/test-state";
-import { activeWordIndex } from "../../test/test-state";
+import {
+  isTestRestarting,
+  getActiveWordIndex,
+  isResultCalculating,
+  getCompositionData,
+} from "../../states/test";
 import { getCurrentInput } from "../../test/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
-const inputEl = getInputElement();
-
-inputEl.addEventListener("beforeinput", async (event) => {
+export async function onBeforeInput(event: InputEvent): Promise<void> {
   if (!(event instanceof InputEvent)) {
     //beforeinput is typed as inputevent but input is not?
     //@ts-expect-error just doing this as a sanity check
@@ -70,9 +71,9 @@ inputEl.addEventListener("beforeinput", async (event) => {
   } else {
     throw new Error(`Unhandled beforeinput type: ${inputType}`);
   }
-});
+}
 
-inputEl.addEventListener("input", async (event) => {
+export async function onInput(event: InputEvent): Promise<void> {
   if (!(event instanceof InputEvent)) {
     //since the listener is on an input element, this should never trigger
     //but its here to narrow the type of "event"
@@ -96,7 +97,7 @@ inputEl.addEventListener("input", async (event) => {
   }
 
   // just in case before input doesn't catch this
-  if (TestState.resultCalculating || TestState.testRestarting) return;
+  if (isResultCalculating() || isTestRestarting()) return;
 
   const now = performance.now();
 
@@ -125,9 +126,9 @@ inputEl.addEventListener("input", async (event) => {
     inputType === "insertCompositionText" ||
     inputType === "insertFromComposition"
   ) {
-    const allWordsTyped = activeWordIndex >= TestWords.words.length - 1;
+    const allWordsTyped = getActiveWordIndex() >= TestWords.words.length - 1;
     const inputPlusComposition =
-      getCurrentInput() + (CompositionState.getData() ?? "");
+      getCurrentInput() + (getCompositionData() ?? "");
     const inputPlusCompositionIsCorrect =
       TestWords.words.getCurrent()?.textWithCommit === inputPlusComposition;
 
@@ -153,4 +154,4 @@ inputEl.addEventListener("input", async (event) => {
   } else {
     throw new Error(`Unhandled input type: ${inputType}`);
   }
-});
+}

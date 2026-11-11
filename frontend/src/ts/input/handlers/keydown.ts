@@ -2,7 +2,6 @@ import { Config } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
 import { emulateInsertText } from "./insert-text";
-import * as TestState from "../../test/test-state";
 import {
   showNoticeNotification,
   showErrorNotification,
@@ -18,10 +17,14 @@ import {
 } from "../state";
 import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { __nonReactive, wordsHaveTab } from "../../states/test";
+import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
 
 import { getCustomTextIndicator } from "../../states/core";
-import { logTestEvent } from "../../test/events/data";
+import {
+  getCurrentInput,
+  getInputForWord,
+  logTestEvent,
+} from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
@@ -64,7 +67,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        TestState.setBailedOut(true);
+        setBailedOut(true);
         void TestLogic.finish();
         return;
       }
@@ -102,7 +105,10 @@ async function handleFunboxes(
   now: number,
 ): Promise<boolean> {
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
+    void fb.functions.handleKeydown(event, {
+      current: getCurrentInput,
+      forWord: getInputForWord,
+    });
   }
 
   for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {

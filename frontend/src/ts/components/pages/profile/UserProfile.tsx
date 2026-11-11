@@ -9,12 +9,13 @@ import { createMemo, For, JSXElement, Show } from "solid-js";
 import { getFormatting } from "../../../states/core";
 import { showPbTablesModal } from "../../../states/pb-tables-modal";
 import { formatTopPercentage } from "../../../utils/misc";
+import { DeepReadonly } from "../../../utils/types";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
 import { UserDetails } from "./UserDetails";
 
 export function UserProfile(props: {
-  profile: UserProfileType;
+  profile: DeepReadonly<UserProfileType>;
   isAccountPage?: true;
 }): JSXElement {
   return (
@@ -68,40 +69,42 @@ function LeaderboardPosition(props: {
   const format = getFormatting;
 
   return (
-    <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
-      <span class="text-center md:col-span-2 lg:col-span-1">
-        All-Time English Leaderboards
-      </span>
-      <Show when={props.top15 !== undefined}>
-        <div class="grid grid-cols-2 gap-x-4">
-          <div class="justify-self-end">15 seconds</div>
-          <div class="row-span-2 text-3xl text-text">
-            {format().rank(props.top15?.rank)}
+    <Show when={props.top15 !== undefined || props.top60 !== undefined}>
+      <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
+        <span class="text-center md:col-span-2 lg:col-span-1">
+          All-Time English Leaderboards
+        </span>
+        <Show when={props.top15 !== undefined}>
+          <div class="grid grid-cols-2 gap-x-4">
+            <div class="justify-self-end">15 seconds</div>
+            <div class="row-span-2 text-3xl text-text">
+              {format().rank(props.top15?.rank)}
+            </div>
+            <div class="justify-self-end text-xs">
+              {formatTopPercentage(props.top15)}
+            </div>
           </div>
-          <div class="justify-self-end text-xs">
-            {formatTopPercentage(props.top15)}
+        </Show>
+        <Show when={props.top60 !== undefined}>
+          <div class="grid grid-cols-2 gap-x-4">
+            <div class="justify-self-end">60 seconds</div>
+            <div class="row-span-2 text-3xl text-text">
+              {format().rank(props.top60?.rank)}
+            </div>
+            <div class="justify-self-end text-xs">
+              {formatTopPercentage(props.top60)}
+            </div>
           </div>
-        </div>
-      </Show>
-      <Show when={props.top60 !== undefined}>
-        <div class="grid grid-cols-2 gap-x-4">
-          <div class="justify-self-end">60 seconds</div>
-          <div class="row-span-2 text-3xl text-text">
-            {format().rank(props.top60?.rank)}
-          </div>
-          <div class="justify-self-end text-xs">
-            {formatTopPercentage(props.top60)}
-          </div>
-        </div>
-      </Show>
-    </div>
+        </Show>
+      </div>
+    </Show>
   );
 }
 
 function PbCard<M extends "time" | "words">(props: {
   mode: M;
   mode2: string[];
-  pbs: PersonalBests[M];
+  pbs: DeepReadonly<PersonalBests[M]>;
   isAccountPage?: true;
 }): JSXElement {
   const format = getFormatting;
@@ -110,7 +113,7 @@ function PbCard<M extends "time" | "words">(props: {
     props.mode2.map((mode) => {
       const pbArray = props.pbs[mode] ?? [];
 
-      const best = pbArray.reduce<PersonalBest | undefined>(
+      const best = pbArray.reduce<DeepReadonly<PersonalBest> | undefined>(
         (max, current) => (current.wpm > (max?.wpm ?? 0) ? current : max),
         undefined,
       );

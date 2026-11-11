@@ -13,7 +13,7 @@ import Ape from "../../ape";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
-import * as DB from "../../db";
+import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -28,8 +28,9 @@ import {
 } from "../../states/notifications";
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
+import { setSelectedQuoteId } from "../../states/test";
+import { getUserData } from "../../states/user";
 import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
@@ -129,7 +130,10 @@ function Item(props: {
         class="text-text [&_.highlight]:text-main"
         dir="auto"
         // oxlint-disable-next-line solid/no-innerhtml
-        innerHTML={highlightMatches(props.quote.text, props.matchedTerms)}
+        innerHTML={highlightMatches(
+          Misc.escapeHTML(props.quote.text),
+          props.matchedTerms,
+        )}
       ></div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_3fr]">
         <div class="text-xs text-sub">
@@ -138,7 +142,7 @@ function Item(props: {
             class="[&_.highlight]:text-main"
             // oxlint-disable-next-line solid/no-innerhtml
             innerHTML={highlightMatches(
-              props.quote.id.toString(),
+              Misc.escapeHTML(props.quote.id.toString()),
               props.matchedTerms,
             )}
           ></span>
@@ -154,7 +158,7 @@ function Item(props: {
               class="[&_.highlight]:text-main"
               // oxlint-disable-next-line solid/no-innerhtml
               innerHTML={highlightMatches(
-                props.quote.source,
+                Misc.escapeHTML(props.quote.source),
                 props.matchedTerms,
               )}
             ></span>
@@ -215,7 +219,7 @@ export function QuoteSearchModal(): JSXElement {
     matchedTerms: string[];
   }>({ quotes: [], matchedTerms: [] });
   const [isRtl, setIsRtl] = createSignal(false);
-  const [favVersion, setFavVersion] = createSignal(0);
+  const [trackFavorites, refreshFavorites] = createTrigger();
 
   const [searchText, setSearchText] = createSignal("");
   createDebouncedEffectOn(
@@ -231,7 +235,7 @@ export function QuoteSearchModal(): JSXElement {
   const isOpen = (): boolean => isModalOpen("QuoteSearch");
 
   const isQuoteMod = (): boolean => {
-    const quoteMod = DB.getSnapshot()?.quoteMod;
+    const quoteMod = getUserData()?.quoteMod;
     return (
       quoteMod !== undefined &&
       (quoteMod === true || (quoteMod as string) !== "")
@@ -291,11 +295,14 @@ export function QuoteSearchModal(): JSXElement {
       ];
     }
 
-    setSearchResults({ quotes: matches, matchedTerms: matchedQueryTerms });
+    setSearchResults({
+      quotes: matches,
+      matchedTerms: matchedQueryTerms.map(Misc.escapeHTML),
+    });
   };
 
   const filteredQuotes = (): Quote[] => {
-    favVersion();
+    trackFavorites();
 
     let result = searchResults().quotes;
 
@@ -398,31 +405,32 @@ export function QuoteSearchModal(): JSXElement {
       showNoticeNotification("Quote ID must be at least 1");
       return;
     }
-    TestState.setSelectedQuoteId(quoteId);
+    setSelectedQuoteId(quoteId);
     setConfig("quoteLength", [-2]);
-    TestLogic.restart();
+    void TestLogic.restartTest();
     hideModalAndClearChain("QuoteSearch");
   };
 
   const toggleFavorite = async (quote: Quote): Promise<boolean> => {
     const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
-    try {
-      showLoaderBar();
-      await QuotesController.setQuoteFavorite(quote, !alreadyFavorited);
-      hideLoaderBar();
-      setFavVersion((v) => v + 1);
-      return true;
-    } catch (e) {
-      hideLoaderBar();
+    showLoaderBar();
+    const { error } = await QuotesController.setQuoteFavorite(
+      quote,
+      !alreadyFavorited,
+    );
+    hideLoaderBar();
+    if (error !== null) {
       showErrorNotification(
         alreadyFavorited
           ? "Failed to remove quote from favorites"
           : "Failed to add quote to favorites",
-        { error: e },
+        { error },
       );
       return false;
     }
+    refreshFavorites();
+    return true;
   };
 
   const handleSubmitClick = async (): Promise<void> => {

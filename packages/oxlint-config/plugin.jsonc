@@ -1,14 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
-  "categories": {
-    "correctness": "off",
-    "suspicious": "off",
-    "pedantic": "off",
-    "perf": "off",
-    "style": "off",
-    "restriction": "off",
-    "nursery": "off",
-  },
   "jsPlugins": ["./plugins/monkeytype-rules.js"],
   "rules": {
     "monkeytype-rules/no-testing-access": "error",
@@ -28,6 +19,7 @@
         "monkeytype-rules/prefer-arrow-in-component": "error",
         "monkeytype-rules/one-component-per-file": "error",
         "monkeytype-rules/component-pascal-case": "error",
+        "monkeytype-rules/no-classlist": "error",
       },
     },
   ],

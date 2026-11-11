@@ -88,6 +88,11 @@ export type AnimeProps = ParentProps<{
   as?: keyof HTMLElementTagNameMap;
 
   /**
+   * id of the wrapper element.
+   */
+  id?: string;
+
+  /**
    * CSS class name for the wrapper element.
    */
   class?: string;
@@ -179,6 +184,8 @@ export function Anime(props: AnimeProps): JSXElement {
   let exitAnimation: JSAnimation | undefined;
   let exitAnimationResolve: (() => void) | undefined;
   let hasInitialized = false;
+  // the enter animation waiting for its frame
+  let enterFrame: number | undefined;
   // Get presence context if available
   const presenceContext = useContext(AnimePresenceContext);
 
@@ -241,6 +248,7 @@ export function Anime(props: AnimeProps): JSXElement {
         exit: local.exit,
         playExitAnimation,
         cancelExitAnimation,
+        playEnterAnimation,
       });
     }
   });
@@ -309,26 +317,38 @@ export function Anime(props: AnimeProps): JSXElement {
     });
   };
 
+  // Applies the initial state, then animates to the target state on the
+  // next frame: the element can still be detached here (an animation started
+  // on a detached element never runs), and content mounting right after
+  // insertion (eg. a page) would otherwise block the main thread through the
+  // animation
+  const playEnterAnimation = (): void => {
+    if (!element) return;
+    if (enterFrame !== undefined) cancelAnimationFrame(enterFrame);
+
+    if (local.initial) {
+      applyInitialState(local.initial);
+    }
+
+    enterFrame = requestAnimationFrame(() => {
+      enterFrame = undefined;
+      if (local.animate) {
+        applyAnimation(local.animate);
+      } else if (local.animation) {
+        applyAnimation(local.animation);
+      }
+      hasInitialized = true;
+    });
+  };
+
   // Handle initial state and mounting animation
   createEffect(() => {
     // If under AnimePresence with exitBeforeEnter, wait for mount signal
     if (presenceContext && !presenceContext.mount()) return;
 
-    if (!element || hasInitialized) return;
+    if (!element || hasInitialized || enterFrame !== undefined) return;
 
-    // Apply initial state if provided
-    if (local.initial) {
-      applyInitialState(local.initial);
-    }
-
-    // Animate to target state
-    if (local.animate) {
-      applyAnimation(local.animate);
-    } else if (local.animation) {
-      applyAnimation(local.animation);
-    }
-
-    hasInitialized = true;
+    playEnterAnimation();
   });
 
   // Handle reactive animation updates
@@ -343,6 +363,7 @@ export function Anime(props: AnimeProps): JSXElement {
 
   // Cleanup on unmount — always pause enter animation; AnimePresence handles exit timing
   onCleanup(() => {
+    if (enterFrame !== undefined) cancelAnimationFrame(enterFrame);
     if (currentAnimation) {
       currentAnimation.pause();
       currentAnimation = undefined;

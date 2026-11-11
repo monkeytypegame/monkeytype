@@ -90,8 +90,7 @@ async function getLatest(): Promise<PSA[] | null> {
       if (
         maintenanceData !== undefined &&
         maintenanceData.length > 0 &&
-        maintenanceData[0] !== undefined &&
-        maintenanceData[0].status === "INPROGRESS"
+        maintenanceData[0]?.status === "INPROGRESS"
       ) {
         addBanner({
           level: "error",
@@ -204,8 +203,11 @@ export async function show(): Promise<void> {
   });
 }
 
-authEvent.subscribe((event) => {
-  if (event.type === "authStateChanged") {
-    void show();
-  }
-});
+/** Shows the PSAs on every auth state change. */
+export function init(): void {
+  authEvent.subscribe((event) => {
+    if (event.type === "authStateChanged") {
+      void show();
+    }
+  });
+}

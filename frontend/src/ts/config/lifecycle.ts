@@ -17,6 +17,7 @@ import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
 import { typedKeys } from "@monkeytype/util/objects";
+import { batch } from "solid-js";
 
 export async function applyConfigFromJson(json: string): Promise<void> {
   try {
@@ -66,6 +67,7 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "numbers",
   "punctuation",
   "funbox",
+  "autoSwitchTheme", // theme, customTheme and customThemeColors disable it
 ]);
 
 export async function applyConfig(
@@ -78,37 +80,37 @@ export async function applyConfig(
 
   configEvent.dispatch({ key: "fullConfigChange" });
 
-  const defaultConfig = getDefaultConfig();
-  for (const key of typedKeys(fullConfig)) {
-    //@ts-expect-error this is fine, both are of type config
-    Config[key] = defaultConfig[key];
-  }
-
   const configKeysToReset: (keyof ConfigSchemas.Config)[] = [];
 
-  const firstKeys = typedKeys(fullConfig).filter(
-    (key) => !lastConfigsToApply.has(key),
-  );
-
-  for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
-    const configValue = fullConfig[configKey];
-
-    const set = setConfig(configKey, configValue, {
-      nosave: true,
-      partOfFullConfigChange: true,
-    });
-
-    if (!set) {
-      configKeysToReset.push(configKey);
+  // batch so store effects run once, after the whole config is applied
+  batch(() => {
+    const defaultConfig = getDefaultConfig();
+    for (const key of typedKeys(fullConfig)) {
+      //@ts-expect-error this is fine, both are of type config
+      Config[key] = defaultConfig[key];
     }
-  }
+    setFullConfigStore(defaultConfig);
+
+    const firstKeys = typedKeys(fullConfig).filter(
+      (key) => !lastConfigsToApply.has(key),
+    );
+
+    for (const configKey of [...firstKeys, ...lastConfigsToApply]) {
+      const configValue = fullConfig[configKey];
+
+      const set = setConfig(configKey, configValue, { nosave: true });
+
+      if (!set) {
+        configKeysToReset.push(configKey);
+      }
+    }
+  });
 
   for (const key of configKeysToReset) {
     saveToLocalStorage(key);
   }
 
   configEvent.dispatch({ key: "fullConfigChangeFinished" });
-  setFullConfigStore(fullConfig);
 }
 
 export async function resetConfig(): Promise<void> {

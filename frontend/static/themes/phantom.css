@@ -49,11 +49,6 @@
   }
 }
 
-#words {
-  --correct-letter-color: var(--text-color);
-  --untyped-letter-color: #565f89;
-}
-
 header:not([data-focused]) [data-ui-element="logoText"] {
   color: var(--text-color);
   animation: phantom-glow 3s infinite alternate;
@@ -81,7 +76,7 @@ footer button:hover {
 }
 
 [data-ui-element="logoSubtext"],
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {
   animation: phantom-glow 3s linear infinite;
@@ -113,10 +108,6 @@ button.text:hover,
   animation: phantom-glow 5s linear infinite;
 }
 
-.word .active {
-  animation: phantom-glow 5s linear infinite;
-}
-
 .scrollToTopButton:hover {
   background: var(--caret-color);
   color: var(--bg-color);
@@ -135,26 +126,62 @@ button.text:hover,
   animation: phantom-glow 3s linear infinite;
 }
 
-#words.highlight-off .word letter,
-#words.highlight-off .word.typed letter {
+[data-ui-element="resultStatSubValue"] {
   animation: phantom-glow 5s linear infinite;
 }
 
-.afk,
-.timeToday,
-#words .word letter.correct,
-#words .word.typed letter.correct,
-#words.highlight-word .word.typed letter,
-#words.highlight-next-word .word.typed letter,
-#words.highlight-next-two-words .word.typed letter,
-#words.highlight-next-three-words .word.typed letter {
-  animation: phantom-glow 5s linear infinite;
-}
+[data-ui-element="words"] {
+  --correct-letter-color: var(--text-color);
+  --untyped-letter-color: #565f89;
 
-#words.flipped .word.typed letter {
-  animation: none;
-}
+  &
+    [data-ui-element="letter"]:is(
+      [data-ui-state="incorrect"],
+      [data-ui-state="extra"]
+    ) {
+    animation: phantom-glow-incorrect 5s linear infinite;
+  }
 
-.incorrect {
-  animation: phantom-glow-incorrect 5s linear infinite;
+  &[data-ui-word-highlight="off"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"],
+  &
+    [data-ui-element="word"]
+    [data-ui-element="letter"]:is(
+      [data-ui-state="correct"],
+      [data-ui-state="deadCorrect"]
+    ),
+  &
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"]:is(
+      [data-ui-state="correct"],
+      [data-ui-state="deadCorrect"]
+    ),
+  &:is(
+      [data-ui-blind],
+      [data-ui-word-highlight="word"],
+      [data-ui-word-highlight="next-word"],
+      [data-ui-word-highlight="next-two-words"],
+      [data-ui-word-highlight="next-three-words"],
+      [data-ui-word-highlight="off"]
+    )
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: phantom-glow 5s linear infinite;
+  }
+
+  &[data-ui-flipped]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: none;
+  }
 }

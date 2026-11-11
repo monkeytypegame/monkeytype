@@ -1,19 +1,28 @@
-const el = document.querySelector("#wordsInput") as HTMLTextAreaElement;
+// #wordsInput is rendered by WordsInput and registered here on every mount
+let el: HTMLTextAreaElement | undefined;
 
-if (el === null) {
-  throw new Error("Words input element not found");
+/** Returns the unregister. */
+export function registerInputElement(element: HTMLTextAreaElement): () => void {
+  el = element;
+  return () => {
+    // a remount may have registered a new element already
+    if (el === element) el = undefined;
+  };
 }
 
 export function getInputElement(): HTMLTextAreaElement {
+  if (el === undefined) {
+    throw new Error("Words input element not mounted");
+  }
   return el;
 }
 
 export function setInputElementValue(value: string): void {
-  el.value = ` ${value}`;
+  getInputElement().value = ` ${value}`;
 }
 
 export function appendToInputElementValue(value: string): void {
-  el.value += value;
+  getInputElement().value += value;
 }
 
 export function getInputElementValue(): {
@@ -21,12 +30,13 @@ export function getInputElementValue(): {
   realInputValue: string;
 } {
   return {
-    inputValue: el.value.slice(1),
-    realInputValue: el.value,
+    inputValue: getInputElement().value.slice(1),
+    realInputValue: getInputElement().value,
   };
 }
 
 export function moveInputElementCaretToTheEnd(): void {
+  const el = getInputElement();
   el.setSelectionRange(el.value.length, el.value.length);
 }
 
@@ -36,15 +46,17 @@ export function replaceInputElementLastValueChar(char: string): void {
 }
 
 export function isInputElementFocused(): boolean {
-  return document.activeElement === el;
+  return el !== undefined && document.activeElement === el;
 }
 
 export function focusInputElement(preventScroll = false): void {
-  el.focus({
+  getInputElement().focus({
     preventScroll,
   });
 }
 
+// no-op once unmounted: TestPage's cleanup blurs after WordsInput unregistered
+// its input
 export function blurInputElement(): void {
-  el.blur();
+  el?.blur();
 }

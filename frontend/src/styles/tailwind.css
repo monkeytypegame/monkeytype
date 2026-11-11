@@ -61,6 +61,25 @@
   border-radius: calc(var(--roundness) / 2);
 }
 
+/* a theme's bg pill with its main, sub and text color bubbles, in one
+   element (rendered for every theme: settings, commandline) */
+@utility theme-bubbles {
+  width: calc(3em + 1rem);
+  height: calc(1em + 0.5rem);
+  border-radius: 9999px;
+  background-color: var(--bubble-bg);
+  background-image:
+    radial-gradient(circle closest-side, var(--bubble-main) 97%, transparent),
+    radial-gradient(circle closest-side, var(--bubble-sub) 97%, transparent),
+    radial-gradient(circle closest-side, var(--bubble-text) 97%, transparent);
+  background-size: 1em 1em;
+  background-repeat: no-repeat;
+  background-position:
+    0.25rem 50%,
+    calc(0.5rem + 1em) 50%,
+    calc(0.75rem + 2em) 50%;
+}
+
 @utility debug {
   border: 1px dashed hotpink !important;
 }

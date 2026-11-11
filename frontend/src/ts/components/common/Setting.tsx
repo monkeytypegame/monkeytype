@@ -1,11 +1,19 @@
-import { JSXElement, ParentProps, Show } from "solid-js";
-import { z } from "zod";
-import { serialize } from "zod-urlsearchparams";
+import {
+  children,
+  createSignal,
+  JSXElement,
+  onCleanup,
+  onMount,
+  ParentProps,
+  Show,
+} from "solid-js";
 
+import { useRouteSearch } from "../../router/search-params";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
+import { linkToSetting } from "../../states/settings-highlight";
 import { cn } from "../../utils/cn";
 import { Button } from "./Button";
 import { FaProps } from "./Fa";
@@ -45,13 +53,39 @@ export type SettingProps = {
   );
 
 export function Setting(props: SettingProps): JSXElement {
+  const { search } = useRouteSearch("/settings");
   const breakpoints = () => props.breakpoints ?? "normal";
+  // JSX props are getters that build new DOM on every read - resolve each once
+  const description = children(() => props.description);
+  const inputs = children(() => props.inputs);
+  const fullWidthInputs = children(() => props.fullWidthInputs);
+  const content = children(() => props.children);
+
+  // deep link highlight from the `?highlight=` param
+  let ref: HTMLDivElement | undefined;
+  const [highlighted, setHighlighted] = createSignal(false);
+  onMount(() => {
+    const key = search().highlight;
+    if (props.key === undefined || key !== props.key) {
+      return;
+    }
+
+    // wait for the page fade in
+    const timeout = setTimeout(() => {
+      ref?.scrollIntoView({ block: "center", behavior: "auto" });
+      setHighlighted(true);
+    }, 250);
+    onCleanup(() => clearTimeout(timeout));
+  });
+
   return (
     <div
+      ref={(el) => (ref = el)}
       class={cn(
         "group grid gap-2",
         "-m-4 rounded-double p-4",
         // "animate-[ring-flash_4s_ease-in_forwards]",
+        highlighted() && "settings-highlight",
         props.class,
       )}
       {...("key" in props && props.key !== undefined
@@ -78,23 +112,23 @@ export function Setting(props: SettingProps): JSXElement {
             breakpoints() === "narrow" &&
               "md:gap-x-8 lg:grid lg:grid-cols-2 xl:grid-cols-[2fr_1fr]",
 
-            props.inputs === undefined &&
+            inputs() === undefined &&
               breakpoints() === "normal" &&
               "grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1",
           )}
         >
-          <Show when={props.description !== ""}>
-            <div>{props.description}</div>
+          <Show when={description() !== ""}>
+            <div>{description()}</div>
           </Show>
-          <Show when={props.inputs !== undefined}>
-            <div>{props.inputs}</div>
+          <Show when={inputs() !== undefined}>
+            <div>{inputs()}</div>
           </Show>
-          <Show when={props.children}>
-            <div>{props.children}</div>
+          <Show when={content()}>
+            <div>{content()}</div>
           </Show>
         </div>
 
-        <Show when={props.fullWidthInputs}>{props.fullWidthInputs}</Show>
+        <Show when={fullWidthInputs()}>{fullWidthInputs()}</Show>
       </Show>
     </div>
   );
@@ -107,19 +141,8 @@ function DeepLinkButton(props: { key: string }) {
       variant="text"
       fa={{ icon: "fa-link" }}
       onClick={() => {
-        const urlParams = serialize({
-          schema: z.object({
-            highlight: z.string(),
-          }),
-          data: {
-            highlight: props.key,
-          },
-        });
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.replaceState({}, "", newUrl);
-
         navigator.clipboard
-          .writeText(window.location.toString())
+          .writeText(linkToSetting(props.key))
           .then(() => {
             showSuccessNotification("Link copied to clipboard");
           })

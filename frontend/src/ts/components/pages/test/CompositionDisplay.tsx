@@ -1,10 +1,11 @@
 import { Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getCompositionText, isOutOfFocus } from "../../../states/test";
+import { getCompositionData, testFocusState } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 
 export function CompositionDisplay() {
+  const isOutOfFocus = () => testFocusState() !== "focused";
   return (
     <Show when={getConfig.compositionDisplay === "below"}>
       <div
@@ -17,7 +18,8 @@ export function CompositionDisplay() {
           transition: isOutOfFocus() ? "0.25s" : "none",
         }}
       >
-        {getCompositionText()}
+        {/* a placeholder keeps the line's height while not composing */}
+        {getCompositionData() || " "}
       </div>
     </Show>
   );

@@ -19,7 +19,8 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as BadgeController from "../controllers/badge-controller";
-import { addBadge, addXp } from "../db";
+import { addBadge, addXp } from "../states/user";
+import { keepForever } from "./utils/misc";
 
 const flushStrategy = flushDebounceStrategy({ maxWait: 1000 * 60 * 5 });
 export function applyPendingInboxActions(): void {
@@ -36,8 +37,9 @@ export { maxMailboxSize };
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
-const inboxCollection = createCollection(
-  queryCollectionOptions({
+const inboxCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: 1000 * 60 * 5,
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
@@ -65,7 +67,8 @@ const inboxCollection = createCollection(
     queryClient,
     getKey: (it) => it.id,
   }),
-);
+  ...keepForever,
+});
 
 export async function refetchInboxCollection(): Promise<void> {
   await inboxCollection.utils.refetch();
@@ -163,12 +166,12 @@ async function flushPendingChanges({
     throw new Error(`Error updating user inbox: ${response.body.message}`);
   }
 
-  inboxCollection.utils.writeBatch(() => {
-    updatedStatus.deleted?.forEach((deleted) =>
-      inboxCollection.utils.writeDelete(deleted.id),
+  await inboxCollection.utils.writeBatch(() => {
+    updatedStatus.deleted?.forEach(
+      (deleted) => void inboxCollection.utils.writeDelete(deleted.id),
     );
     updatedStatus.read?.forEach((read) => {
-      inboxCollection.utils.writeUpdate(read);
+      void inboxCollection.utils.writeUpdate(read);
     });
   });
 

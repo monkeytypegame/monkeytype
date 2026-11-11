@@ -1,17 +1,20 @@
 import * as TestLogic from "../../test/test-logic";
-import * as TestUI from "../../test/test-ui";
-import * as PractiseWordsModal from "../../modals/practise-words";
+import { toggleResultWords } from "../../test/words-history";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestState from "../../test/test-state";
 import * as TestWords from "../../test/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import * as TestScreenshot from "../../test/test-screenshot";
 import { getInputHistory } from "../../test/events/stats";
+import { getLastEventLog, isTestFinished } from "../../states/test";
+import { showModal } from "../../states/modals";
+import {
+  captureAndCopyToClipboard,
+  captureAndDownload,
+} from "../../test/screenshot";
 
 const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
@@ -21,7 +24,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "missed",
       exec: (): void => {
         PractiseWords.init("words", false);
-        TestLogic.restart({
+        void TestLogic.restartTest({
           practiseMissed: true,
         });
       },
@@ -31,7 +34,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "slow",
       exec: (): void => {
         PractiseWords.init("off", true);
-        TestLogic.restart({
+        void TestLogic.restartTest({
           practiseMissed: true,
         });
       },
@@ -41,7 +44,7 @@ const practiceSubgroup: CommandsSubgroup = {
       display: "both",
       exec: (): void => {
         PractiseWords.init("words", true);
-        TestLogic.restart({
+        void TestLogic.restartTest({
           practiseMissed: true,
         });
       },
@@ -50,11 +53,8 @@ const practiceSubgroup: CommandsSubgroup = {
       id: "practiseWordsCustom",
       display: "custom...",
       opensModal: true,
-      exec: (options): void => {
-        PractiseWordsModal.show({
-          animationMode: "modalOnly",
-          modalChain: options.commandlineModal,
-        });
+      exec: (): void => {
+        showModal("PractiseWords");
       },
     },
   ],
@@ -65,86 +65,87 @@ const commands: Command[] = [
     id: "nextTest",
     display: "Next test",
     alias: "restart start begin type test typing",
-    icon: "fa-chevron-right",
+    fa: { icon: "fa-chevron-right" },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
     exec: (): void => {
-      TestLogic.restart();
+      void TestLogic.restartTest();
     },
   },
   {
     id: "repeatTest",
     display: "Repeat test",
-    icon: "fa-sync-alt",
+    fa: { icon: "fa-sync-alt" },
     exec: (): void => {
-      TestLogic.restart({
+      void TestLogic.restartTest({
         withSameWordset: true,
       });
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
   {
     id: "practiseWords",
     display: "Practice words...",
-    icon: "fa-exclamation-triangle",
+    fa: { icon: "fa-exclamation-triangle" },
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
   {
     id: "toggleWordHistory",
     display: "Toggle word history",
-    icon: "fa-align-left",
+    fa: { icon: "fa-align-left" },
     exec: (): void => {
-      void TestUI.toggleResultWords();
+      toggleResultWords();
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
   {
     id: "copyScreenshot",
     display: "Copy screenshot to clipboard",
-    icon: "fa-copy",
+    fa: { icon: "fa-copy" },
     alias: "copy image clipboard",
     exec: (): void => {
       setTimeout(() => {
-        void TestScreenshot.copyToClipboard();
+        void captureAndCopyToClipboard();
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
   {
     id: "downloadScreenshot",
     display: "Download screenshot",
-    icon: "fa-download",
+    fa: { icon: "fa-download" },
     alias: "save image download file",
     exec: (): void => {
       setTimeout(async () => {
-        void TestScreenshot.download();
+        void captureAndDownload();
       }, 500);
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
   {
     id: "copyWordsToClipboard",
     display: "Copy words to clipboard",
-    icon: "fa-copy",
+    fa: { icon: "fa-copy" },
     exec: (): void => {
-      if (TestState.lastEventLog === null) {
+      const eventLog = getLastEventLog();
+      if (eventLog === null) {
         showErrorNotification("No event log found!");
         return;
       }
 
-      const inputHistory = getInputHistory(TestState.lastEventLog);
+      const inputHistory = getInputHistory(eventLog);
       const words =
         Config.mode === "zen"
           ? inputHistory.join("")
@@ -164,7 +165,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return TestState.resultVisible;
+      return isTestFinished();
     },
   },
 ];

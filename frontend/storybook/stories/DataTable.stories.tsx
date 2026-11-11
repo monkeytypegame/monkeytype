@@ -48,7 +48,7 @@ const columns: DataTableColumnDef<Person>[] = [
 
 const meta = preview.meta({
   title: "UI/DataTable",
-  component: DataTable,
+  component: DataTable<Person>,
   parameters: {
     layout: "padded",
   },

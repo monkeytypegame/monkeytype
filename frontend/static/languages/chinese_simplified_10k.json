@@ -1,6 +1,7 @@
 {
   "name": "chinese_simplified_10k",
   "_comment": "Sourced from https://gist.github.com/indiejoseph/eae09c673460aa0b56db",
+  "noLazyMode": true,
   "bcp47": "zh-CN",
   "words": [
     "我们",

@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 const FILENAME = fileURLToPath(import.meta.url);
 const DIRNAME = dirname(FILENAME);
 
-dotenv.config();
+dotenv.config({ path: path.resolve(DIRNAME, "../.env") });
 
 const args = new Set(process.argv.slice(2));
 const isFrontend = args.has("--fe");

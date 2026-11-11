@@ -52,7 +52,7 @@ type SimpleModalValidators = {
 function getDefaultValues(
   // oxlint-disable-next-line typescript/no-explicit-any
   inputs: InputsFromSchema<any> | undefined,
-): Object {
+): object {
   if (inputs === undefined || Object.keys(inputs).length === 0) {
     return {};
   }

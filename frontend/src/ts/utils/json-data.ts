@@ -41,14 +41,14 @@ async function fetchJson<T>(url: string): Promise<T> {
  * @param getKey Optional function to compute a cache key from the function arguments. If omitted, the first argument is used as the key.
  * @returns A memoized version of the async function with the same signature.
  */
-export function memoizeAsync<P, Args extends unknown[], R>(
+export function memoizeAsync<Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
-  getKey?: (...args: Args) => P,
+  getKey?: (...args: Args) => unknown,
 ): (...args: Args) => Promise<R> {
-  const cache = new Map<P, Promise<R>>();
+  const cache = new Map<unknown, Promise<R>>();
 
   return async (...args: Args): Promise<R> => {
-    const key = getKey ? getKey(...args) : (args[0] as P);
+    const key = getKey ? getKey(...args) : args[0];
 
     const cached = cache.get(key);
     if (cached !== undefined) {
@@ -225,7 +225,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
   const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1",
   );
-  if (releases[0] === undefined || releases[0].name === undefined) {
+  if (releases[0]?.name === undefined) {
     throw new Error("No release found");
   }
   return releases[0].name;

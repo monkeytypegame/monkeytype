@@ -40,7 +40,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
     name: "virtual-language-hashes",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
@@ -53,7 +53,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
           export const languageHashes = ${JSON.stringify(hashes)};
         `;
       }
-      return;
+      return undefined;
     },
   };
 }

@@ -28,7 +28,6 @@ export async function activateSentry(): Promise<void> {
       Sentry.browserTracingIntegration(),
       // // Sentry.replayIntegration({
       // //   unmask: ["#notificationCenter"],
-      // //   block: ["#commandLine .modal .suggestions"],
       // //   // ignore: ["#wordsInput"],
       // }),
       Sentry.thirdPartyErrorFilterIntegration({

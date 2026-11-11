@@ -1,4 +1,4 @@
-import { createMemo, JSXElement } from "solid-js";
+import { children, createMemo, JSXElement } from "solid-js";
 
 import {
   registerSearchable,
@@ -26,9 +26,13 @@ function textOf(node: string | JSXElement): string {
 // on each keypress; the hidden class stays on the Setting root so the section
 // auto-collapse selector keeps working.
 export function SearchableSetting(props: SearchableSettingProps): JSXElement {
+  // resolved once and shared with <Setting> - a JSX description would otherwise
+  // be built twice (once here for its text, once to render it)
+  const description = children(() => props.description);
+
   // static per setting — only the query changes as the user types, so build once
   const haystack = createMemo(() =>
-    [props.title, textOf(props.description), props.extraSearchKeywords ?? ""]
+    [props.title, textOf(description()), props.extraSearchKeywords ?? ""]
       .join(" ")
       .toLowerCase(),
   );
@@ -41,6 +45,7 @@ export function SearchableSetting(props: SearchableSettingProps): JSXElement {
   return (
     <Setting
       {...props}
+      description={description()}
       class={cn(props.class, !settingMatchesSearch(haystack()) && "hidden")}
     />
   );

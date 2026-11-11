@@ -12,6 +12,11 @@ import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema } from "./configs";
 import { ChallengeNameSchema } from "./challenges";
 
+// 7 days, enough for multi-day challenge runs
+export const MAX_TEST_DURATION_SECONDS = 7 * 24 * 60 * 60;
+// tests longer than this send "toolong" instead of chart and key data
+export const TOOLONG_MIN_TEST_DURATION_SECONDS = 122;
+
 export const IncompleteTestSchema = z.object({
   acc: PercentageSchema,
   seconds: z.number().nonnegative(),
@@ -148,8 +153,39 @@ export const CompletedEventSchema = ResultBaseSchema.required({
     wpmConsistency: PercentageSchema,
     stopOnLetter: z.boolean(),
     incompleteTests: z.array(IncompleteTestSchema),
+    testDuration: z.number().min(1).max(MAX_TEST_DURATION_SECONDS),
+    charStats: z.tuple([
+      z.number().int().safe().nonnegative(),
+      z.number().int().safe().nonnegative(),
+      z.number().int().safe().nonnegative(),
+      z.number().int().safe().nonnegative(),
+    ]),
   })
-  .strict();
+  .strict()
+  .superRefine((result, ctx) => {
+    if (
+      result.mode === "time" &&
+      parseInt(result.mode2) > MAX_TEST_DURATION_SECONDS
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["mode2"],
+        message: `Time mode can't exceed ${MAX_TEST_DURATION_SECONDS} seconds`,
+      });
+    }
+    // the client only drops key and chart data on long tests
+    if (result.testDuration <= TOOLONG_MIN_TEST_DURATION_SECONDS) {
+      for (const key of ["chartData", "keySpacing", "keyDuration"] as const) {
+        if (result[key] === "toolong") {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [key],
+            message: `Only allowed for tests longer than ${TOOLONG_MIN_TEST_DURATION_SECONDS} seconds`,
+          });
+        }
+      }
+    }
+  });
 
 export type CompletedEvent = z.infer<typeof CompletedEventSchema>;
 

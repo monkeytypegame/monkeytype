@@ -21,7 +21,7 @@ const commands: Command[] = [
   {
     id: "changeTags",
     display: "Tags...",
-    icon: "fa-tag",
+    fa: { icon: "fa-tag" },
     subgroup,
     available: (): boolean => {
       return isAuthenticated();
@@ -37,7 +37,7 @@ function update(): void {
     subgroup.list.push({
       id: "clearTags",
       display: `Clear tags`,
-      icon: "fa-times",
+      fa: { icon: "fa-times" },
       sticky: true,
       exec: async (): Promise<void> => {
         await clearActiveTags();
@@ -76,7 +76,7 @@ function update(): void {
   subgroup.list.push({
     id: "createTag",
     display: "Create tag",
-    icon: "fa-plus",
+    fa: { icon: "fa-plus" },
     shouldFocusTestUI: false,
     opensModal: true,
     exec: (): void => {

@@ -66,7 +66,7 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
   const convert = (options: RateLimitOptions): RateLimitRequestHandler => {
     return rateLimit({
       windowMs: convertWindowToMs(options.window),
-      max: options.max * REQUEST_MULTIPLIER,
+      limit: options.max * REQUEST_MULTIPLIER,
       handler: customHandler,
       keyGenerator: getKeyWithUid,
     });
@@ -78,6 +78,7 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
   }, {}) as Record<RateLimiterId, RateLimitRequestHandler>;
 }
 
+// oxlint-disable-next-line typescript/consistent-return all the cases are covered
 function convertWindowToMs(window: Window): number {
   if (typeof window === "number") return window;
   switch (window) {
@@ -140,7 +141,7 @@ export function rateLimitRequest<
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
   windowMs: 60 * 1000 * 60,
-  max: 1000 * REQUEST_MULTIPLIER,
+  limit: 1000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
@@ -206,7 +207,7 @@ export async function incrementBadAuth(
 
 export const webhookLimit = rateLimit({
   windowMs: 1000,
-  max: 1 * REQUEST_MULTIPLIER,
+  limit: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
