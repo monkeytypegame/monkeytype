@@ -1,3 +1,4 @@
+import { getLocalPB, getUserData } from "../states/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,
@@ -22,7 +23,7 @@ import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
-import * as DB from "../db";
+import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
 import { __nonReactive } from "../collections/tags";
 import * as TodayTracker from "./today-tracker";
@@ -107,7 +108,7 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotResult } from "../constants/default-snapshot";
+import type { NormalizedLocalResult } from "../collections/results";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
@@ -992,9 +993,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
-    (!DB.getUserData()?.lbOptOut &&
+    (!getUserData()?.lbOptOut &&
       (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (DB.getUserData()?.lbOptOut === true &&
+    (getUserData()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");
@@ -1260,7 +1261,7 @@ async function saveResult(
   const data = response.body.data;
   setResultState("resultId", data.insertedId);
 
-  const localDataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
@@ -1276,20 +1277,20 @@ async function saveResult(
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
-    // into a snapshot result - might not cuase issues but worth investigating
-    const snapshotResult = structuredClone(
+    // into a NormalizedLocalResult - might not cuase issues but worth investigating
+    const userResult = structuredClone(
       result,
-    ) as unknown as SnapshotResult<Mode>;
-    snapshotResult._id = data.insertedId;
+    ) as unknown as NormalizedLocalResult<Mode>;
+    userResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
-      snapshotResult.isPb = true;
+      userResult.isPb = true;
     }
-    localDataToSave.result = snapshotResult;
+    localDataToSave.result = userResult;
   }
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
-    const localPb = DB.getLocalPB(
+    const localPb = getLocalPB(
       result.mode,
       result.mode2,
       result.punctuation,
@@ -1317,7 +1318,7 @@ async function saveResult(
   if (isRetrying) {
     showSuccessNotification("Result saved", { important: true });
   }
-  DB.saveLocalResult(localDataToSave);
+  saveLocalResult(localDataToSave);
   return response;
 }
 

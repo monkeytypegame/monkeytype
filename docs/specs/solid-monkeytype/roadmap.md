@@ -12,7 +12,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 
 - [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, EP4, L4–L11.
 - [ ] 2. **TH1** test-page harness, then **T1** `data-ui-*` on words and letters. Alongside: U2, U3, U4 (after U1), C2, C3.
-- [ ] 3. **T2** break joining. Alongside: EP3.
+- [x] 3. **T2** joining-script dots. Alongside: EP3.
 - [ ] 4. **T3** caret boundary. Then L3 and L12 can start.
 - [ ] 5. **T4** word registry private.
 - [ ] 6. **T5** delete test-ui (needs EP1, EP2, L1, L2 from step 1).
@@ -25,7 +25,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 
 ```
  T: test page (CRITICAL PATH, serial)
-   T0 #8507 ─► T1 words/letters data-ui-* ─► T2 break-joining ─► T3 caret boundary ─► T4 registry private ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
+   T0 #8507 ─► T1 words/letters data-ui-* ─► T2 joining dots ─► T3 caret boundary ─► T4 registry private ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
    TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
@@ -44,7 +44,7 @@ Every track can start now. These are the only steps that wait on another track:
 | Step | Waits on | Why |
 |---|---|---|
 | **TH1** test-page harness | T0 | Builds on Words owning its layout |
-| **T2** break joining | TH1 | The harness is the safety net from here on |
+| **T2** joining-script dots | TH1 | The harness is the safety net from here on |
 | **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event and funbox; they need new homes first (focus mode is already a plain `setFocusMode` call) |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
@@ -66,7 +66,7 @@ Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, 
 |---|---|---|---|---|---|
 | [x] | H1 | XS · merge | Merge **#8490** (app-shell test speed-up) | none | Done in [#8490](https://github.com/monkeytypegame/monkeytype/pull/8490). Faster harness for every later step; merge before TH1 if TH1 extends the app-shell harness |
 | [x] | H2 | XS · close | Close **#8031** | none | Done: [#8031](https://github.com/monkeytypegame/monkeytype/pull/8031) closed. Superseded by master's PractiseWordsModal |
-| [ ] | H3 | XS · close | Close **#7373** and **#7717** | none | Superseded by the single-row user collection (U1) |
+| [ ] | H3 | XS · close | Close **#7373** and **#7717** | none | Superseded by the user store (U1) |
 | [ ] | H4 | XS · comment | Comment on **#7787** | none | To be redone as EP3 on top of the render store |
 | [x] | H5 | S · commit | Add glossary terms: test settings, restart-required setting, theme attributes, test mode, funbox, finish, fail, result, active tags, pace caret, focus mode | none | Test engine, render store and layout pass are code structure: defined in the spec, not the glossary |
 
@@ -84,7 +84,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 |---|---|---|---|---|---|
 | [x] | T0 | M · PR #8507 | Merge **#8507**: Words triggers its own layout (flush subscription, config/font/resize effects). Done in [#8507](https://github.com/monkeytypegame/monkeytype/pull/8507) | none | test-ui's layout calls |
 | [x] | T1 | L · PR | **Theme attributes on the test and result words**: words (one attribute per mode: `data-ui-word-highlight`, `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script`, `data-ui-rtl`), word (`WordStatus`, `data-ui-active`), letter (`LetterStatus`, tab/newline variant), typo hint; result `wordsHistory`/`replayWords`, word (`WordStatus`, typed = committed), letter (`ResultLetterStatus`, `data-ui-corrected`, `data-ui-extra-corrected`). `<letter>`/`<hint>` keep their tags and classes so old selectors keep working (spans in CL3); code finds letters by `LETTER_SELECTOR`. Bundled theme and funbox CSS moved over (computed styles unchanged across highlight/blind/flipped/colorful), adding the words `data-ui-rtl` and `wordsWrapper`; left: funbox `read_ahead_disabled`/`#wordsInput` (L2). Harness reads `data-ui-*` (`state` + `isActive`). Keystroke benchmark: no change | T0, TH1 | The made-up element; proves the theme attribute approach before the caret measures letters |
-| [ ] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes | T1, TH1 | The only outside writes into Word elements |
+| [x] | T2 | M · PR | **Break joining** computed in the layout pass, rendered as reactive class/style on Word; delete the break-joining module's DOM writes. Done in [#8562](https://github.com/monkeytypegame/monkeytype/pull/8562): replaced instead of moved. Joining-script letters stay inline under the dots typed effect and draw their own dot (CSS only, a `::before` copy from `data-char` runs the shrink), so nothing is measured; the break-joining module, its layout calls and config effects are deleted, and Word uses `cn` (no outside class writes left). Deviations in the spec | T1, TH1 | The only outside writes into Word elements |
 | [ ] | T3 | L · PR | **Caret boundary**: Words is the only thing that drives the caret and pace caret; line-jump/tape-scroll handoff becomes internal to Words; pace-caret timing moves to a DOM-free module outputting a word/letter target; caret and pace caret get `data-ui-element`. Caret and words layout read the typed input from the render store (input writes it alongside the EventLog), not the engine's `getCurrentInput()`. Decide the caret internals here (reactive, imperative handle, or a mix). Fix the tape offset for a word whose direction differs from the test's: after EP3 the caret is still up to ~105px off its letter (measured; ~194px seen in word tape), mixed custom text and polyglot only | T2 | Outside caret callers (test-ui, timer, focus, WordsInput) |
 | [ ] | T4 | S · commit | **Word registry private** to Words; only the synchronous overflow check stays exported | T3 | The public word-elements bridge |
 | [ ] | T5 | L · PR | **Delete test-ui**: sound/keymap/monkey-power triggers become effects or input-layer calls; autofocus moves to WordsInput; fades move to TestPage, as does the pre-test scroll to the test block (the focus flow keeps requesting Words' active-line recenter during a test). Add the **input-layer lint rule** (no component/UI imports) | T4, EP1, EP2, L1, L2 | The glue module test-logic and input call |
@@ -108,11 +108,11 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 | Done | ID | Size | Step | Blocked by | Notes |
 |---|---|---|---|---|---|
-| [ ] | U1 | L · PR | Single-row user collection with `getUser()` and named writes (direct writes for server-side effects, optimistic actions for user changes, incl. quote ratings); convert **all writers** (result save, xp, badges, inbox count, lb memory, streak offset, quote rate, favourite quotes, edit profile, update name, unlink Discord, Discord OAuth, auth); delete the reactive mirror; `DB.getSnapshot()` becomes a read-only shim over the row | none | Writers must move in the same PR: there's no mutable object left |
-| [ ] | U2 | M · PR | Activity calendar: plain activity data in the user row; the calendar becomes a Solid component; delete the imperative test-activity modules | U1 (data shape) | Can share a PR with U1 |
-| [ ] | U3 | M · PR | Remove the snapshot-updated auth event (PSA, last-signed-out-result modal read `getUser()`); PSA's `authEvent` subscription (`Psa.init`, started by boot) follows the auth signal; auth becomes a signal the router reads, with the user-data load as state (loading/loaded/failed) plus `reloadUserData()` replacing the event's promise; delete the auth bus | U1 | |
-| [ ] | U4 | S · commit per area | Readers move from the `DB.getSnapshot()` shim to `getUser()`, by area; the last PR deletes the shim and the snapshot code in `db.ts` | U1 | Parallel by area |
-| [ ] | U5 | M · PR | Tags, presets and custom themes get the `getUser()` pattern: plain getters backed by a module-level reactive mirror, replacing their live-query hooks (keep `gcTime: Infinity`). Rewrite the non-test `__nonReactive` callers as Solid code reading the getters: commandline tag/preset lists, the custom-themes check in config metadata, the tag PB helpers in `db.ts` (or they go with U4) | none | Test-page callers go with T6a/T6c |
+| [x] | U1 | L · PR | User store with `getUser()` and named writes (direct writes for server-side effects, optimistic actions for user changes, incl. quote ratings); convert **all writers** (result save, xp, badges, inbox count, lb memory, streak offset, quote rate, favourite quotes, edit profile, update name, unlink Discord, Discord OAuth, auth); delete the reactive mirror; `DB.getSnapshot()` becomes a read-only shim over the store | none | Done: `states/user.ts` (one Solid store, no collection, spec Q30; `loadUserData`/`clearUser` for auth); `DB.getSnapshot = getUser` (deleted in U4); last-result signal in `states/last-result.ts` |
+| [ ] | U2 | M · PR | Activity calendar (user store already holds plain activity data; the per-year cache already sits in `ActivityCalendar.tsx`): the calendar becomes a Solid component; delete the imperative test-activity modules | U1 (data shape) | Can share a PR with U1 |
+| [ ] | U3 | M · PR | Remove the `userLoaded` auth event (was snapshot-updated) (PSA, last-signed-out-result modal read `getUser()`); PSA's `authEvent` subscription (`Psa.init`, started by boot) follows the auth signal; auth becomes a signal the router reads, with the user-data load as state (loading/loaded/failed) plus `reloadUserData()` (reruns `loadUserData()`) replacing the event's promise; delete the auth bus | U1 | |
+| [x] | U4 | S · commit per area | Readers move from the `DB.getSnapshot()` shim to `getUser()`, by area; the last PR deletes the shim and the snapshot code in `db.ts` | U1 | Done in 0012c6f0f: shim deleted, readers import `getUser()`; also renamed `Snapshot`→`UserData`, `SnapshotResult`→`NormalizedLocalResult` (now in `collections/results.ts`), `SnapshotInitError`→`UserDataLoadError`, `snapshotUpdated`→`userLoaded`, `window.snapshot`→`window.userData` |
+| [ ] | U5 | M · PR | Tags, presets and custom themes get the `getUser()` pattern: plain getters backed by a module-level reactive mirror, replacing their live-query hooks (keep `gcTime: Infinity`). Rewrite the non-test `__nonReactive` callers as Solid code reading the getters: commandline tag/preset lists, the custom-themes check in config metadata, the tag PB helpers in `collections/tags.ts` (`getLocalTagPB`, `saveLocalTagPB`) | none | Test-page callers go with T6a/T6c |
 | [ ] | U6 | S · commit | Delete `__nonReactive` from every module once no caller is left | U5, T6a, T6c | Pure deletion: a caller still left means a step missed it |
 
 ## Track EP: engine prep (small, parallel)

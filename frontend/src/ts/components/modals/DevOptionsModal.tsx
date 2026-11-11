@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
-import { addXp } from "../../db";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
@@ -19,6 +18,7 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
+import { addXp } from "../../states/user";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";

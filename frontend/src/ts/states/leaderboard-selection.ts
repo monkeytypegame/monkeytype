@@ -6,7 +6,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { SearchFlagSchema } from "../router/search-params";
-import { getUserData } from "./snapshot";
+import { getUserData } from "./user";
 
 export const pageSize = 50;
 

@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/solid-query";
 import { baseKey } from "./utils/keys";
 import Ape from "../ape";
 import { queryClient } from ".";
-import { getUserData } from "../states/snapshot";
+import { getUserData } from "../states/user";
 
 const queryKeys = {
   root: () => baseKey("profiles"),

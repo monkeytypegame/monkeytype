@@ -1,6 +1,6 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import * as DB from "../db";
+import { getLocalPB } from "../states/user";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
@@ -84,7 +84,7 @@ export async function init(): Promise<void> {
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =
-      DB.getLocalPB(
+      getLocalPB(
         Config.mode,
         mode2,
         Config.punctuation,

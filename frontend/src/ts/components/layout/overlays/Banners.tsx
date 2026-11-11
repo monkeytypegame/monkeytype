@@ -10,8 +10,8 @@ import {
   removeBanner,
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
-import { getUserData } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
+import { getUserData } from "../../../states/user";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";
 import { Fa } from "../../common/Fa";
