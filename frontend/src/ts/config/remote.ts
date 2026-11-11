@@ -8,9 +8,9 @@ import { SnapshotInitError } from "../utils/snapshot-init-error";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";
 
-export async function updateFromServer(): Promise<void> {
-  const remoteConfig = await getRemoteConfig();
-
+export async function applyFromServer(
+  remoteConfig: ConfigSchemas.Config,
+): Promise<void> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(remoteConfig);
 
@@ -23,7 +23,7 @@ export async function updateFromServer(): Promise<void> {
   }
 }
 
-async function getRemoteConfig(): Promise<ConfigSchemas.Config> {
+export async function fetchFromServer(): Promise<ConfigSchemas.Config> {
   const response = await Ape.configs.get();
 
   if (response.status !== 200) {

@@ -23,7 +23,7 @@ import { z, ZodString } from "zod";
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
-import { updateFromServer as updateConfigFromServer } from "./config/remote";
+import * as RemoteConfig from "./config/remote";
 import * as DB from "./db";
 import { authEvent } from "./events/auth";
 import {
@@ -172,10 +172,14 @@ export async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    const snapshot = await DB.initSnapshot();
-    //TODO: preload collections for now, remove when __nonReactive is removed from collections
-    await waitForPresetsReady();
-    await waitForTagsReady();
+    // fetch everything in parallel, apply in order below
+    const [snapshot, , , remoteConfig] = await Promise.all([
+      DB.initSnapshot(),
+      //TODO: preload collections for now, remove when __nonReactive is removed from collections
+      waitForPresetsReady(),
+      waitForTagsReady(),
+      RemoteConfig.fetchFromServer(),
+    ]);
 
     if (snapshot === false) {
       throw new Error(
@@ -185,7 +189,7 @@ async function getDataAndInit(): Promise<boolean> {
 
     void Sentry.setUser(snapshot.uid, snapshot.name);
 
-    await updateConfigFromServer();
+    await RemoteConfig.applyFromServer(remoteConfig);
     return true;
   } catch (error) {
     console.error(error);
