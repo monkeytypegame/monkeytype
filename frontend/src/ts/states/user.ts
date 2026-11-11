@@ -3,7 +3,7 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { Result, tryCatch } from "@monkeytype/util/trycatch";
+import { Result } from "@monkeytype/util/trycatch";
 import {
   Mode,
   Mode2,
@@ -253,12 +253,13 @@ export async function updateLbMemory<M extends Mode>(
  * again with those. On failure the fields the recipe changed are rolled back,
  * except those changed again since (by a direct write or another action),
  * which keep the newer value. The recipe must be idempotent. Failure is
- * returned as `error`, never thrown, so callers see it in the type.
+ * returned as `error`, never thrown, so callers see it in the type; `request`
+ * returns one the same way (Ape never throws).
  */
 async function optimisticUpdate<T>(
   vars: T,
   recipe: (user: UserData, vars: T) => void,
-  request: () => Promise<T>,
+  request: () => Promise<Result<T>>,
 ): Promise<Result<void>> {
   const before = copyUserData();
   if (before === undefined) {
@@ -272,7 +273,7 @@ async function optimisticUpdate<T>(
     Object.keys({ ...before, ...written }) as (keyof UserData)[]
   ).filter((key) => !same(before[key], written[key]));
 
-  const { data: kept, error } = await tryCatch(request());
+  const { data: kept, error } = await request();
   if (error !== null) {
     update((user) => {
       for (const key of changed) {
@@ -286,11 +287,14 @@ async function optimisticUpdate<T>(
   return { data: undefined, error: null };
 }
 
-function throwIfFailed(response: {
-  status: number;
-  body: { message: string };
-}): void {
-  if (response.status !== 200) throw new Error(response.body.message);
+/** `kept` on a 200, else the server message as the error. */
+function resultOf<T>(
+  response: { status: number; body: { message: string } },
+  kept: T,
+): Result<T> {
+  return response.status === 200
+    ? { data: kept, error: null }
+    : { data: null, error: new Error(response.body.message) };
 }
 
 export async function updateName(name: string): Promise<Result<void>> {
@@ -300,8 +304,7 @@ export async function updateName(name: string): Promise<Result<void>> {
       user.name = name;
     },
     async () => {
-      throwIfFailed(await Ape.users.updateName({ body: { name } }));
-      return name;
+      return resultOf(await Ape.users.updateName({ body: { name } }), name);
     },
   );
 }
@@ -314,8 +317,7 @@ export async function unlinkDiscord(): Promise<Result<void>> {
       user.discordAvatar = undefined;
     },
     async () => {
-      throwIfFailed(await Ape.users.unlinkDiscord());
-      return undefined;
+      return resultOf(await Ape.users.unlinkDiscord(), undefined);
     },
   );
 }
@@ -329,10 +331,10 @@ export async function setStreakHourOffset(
       user.streakHourOffset = hourOffset;
     },
     async () => {
-      throwIfFailed(
+      return resultOf(
         await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
+        hourOffset,
       );
-      return hourOffset;
     },
   );
 }
@@ -348,8 +350,7 @@ export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
       user.quoteRatings[language][quoteId] = rating;
     },
     async () => {
-      throwIfFailed(await Ape.quotes.addRating({ body: rating }));
-      return rating;
+      return resultOf(await Ape.quotes.addRating({ body: rating }), rating);
     },
   );
 }
@@ -371,12 +372,12 @@ export async function setQuoteFavorite(
     },
     async () => {
       const body = { language: favorite.language, quoteId: favorite.quoteId };
-      throwIfFailed(
+      return resultOf(
         favorite.favorite
           ? await Ape.users.addQuoteToFavorites({ body })
           : await Ape.users.removeQuoteFromFavorites({ body }),
+        favorite,
       );
-      return favorite;
     },
   );
 }
@@ -401,9 +402,12 @@ export async function updateProfile(
       const response = await Ape.users.updateProfile({
         body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
       });
-      if (response.status !== 200) throw new Error(response.body.message);
+      if (response.status !== 200) return resultOf(response, profile);
       // the server sanitizes the details
-      return { ...profile, details: response.body.data ?? profile.details };
+      return {
+        data: { ...profile, details: response.body.data ?? profile.details },
+        error: null,
+      };
     },
   );
 }
