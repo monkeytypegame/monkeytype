@@ -4,7 +4,7 @@ import { migrateConfig } from "./utils";
 import { applyConfig } from "./lifecycle";
 import { saveFullConfigToLocalStorage } from "./persistence";
 import Ape from "../ape";
-import { SnapshotInitError } from "../utils/snapshot-init-error";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import { getDefaultConfig } from "../constants/default-config";
 import { Config } from "./store";
 
@@ -27,7 +27,7 @@ export async function fetchFromServer(): Promise<ConfigSchemas.Config> {
   const response = await Ape.configs.get();
 
   if (response.status !== 200) {
-    throw new SnapshotInitError(
+    throw new UserDataLoadError(
       `${response.body.message} (config)`,
       response.status,
     );

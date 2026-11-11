@@ -16,7 +16,7 @@ import {
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getUserData } from "../../../states/snapshot";
+import { getUserData } from "../../../states/user";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";

@@ -18,7 +18,7 @@ import {
   configurationPromise,
   get as getServerConfiguration,
 } from "../ape/server-configuration";
-import { getUserData } from "../states/snapshot";
+import { getUserData } from "../states/user";
 import { Connection } from "@monkeytype/schemas/connections";
 import { showNoticeNotification } from "../states/notifications";
 import { invalidateFriendsList } from "../queries/friends";

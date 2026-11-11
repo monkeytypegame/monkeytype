@@ -24,7 +24,6 @@ import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
 import * as RemoteConfig from "./config/remote";
-import * as DB from "./db";
 import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
@@ -45,11 +44,12 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
+import { clearUserData, loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
+import { UserDataLoadError } from "./utils/user-data-load-error";
 
 type AuthMethodInfo = {
   display: string;
@@ -173,27 +173,21 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     // fetch everything in parallel, apply in order below
-    const [snapshot, , , remoteConfig] = await Promise.all([
-      DB.initSnapshot(),
+    const [userData, , , remoteConfig] = await Promise.all([
+      loadUserData(),
       //TODO: preload collections for now, remove when __nonReactive is removed from collections
       waitForPresetsReady(),
       waitForTagsReady(),
       RemoteConfig.fetchFromServer(),
     ]);
 
-    if (snapshot === false) {
-      throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
-      );
-    }
-
-    void Sentry.setUser(snapshot.uid, snapshot.name);
+    void Sentry.setUser(userData.uid, userData.name);
 
     await RemoteConfig.applyFromServer(remoteConfig);
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof SnapshotInitError) {
+    if (error instanceof UserDataLoadError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -222,7 +216,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
@@ -240,7 +234,7 @@ export async function onAuthStateChanged(
       userPromise = loadUser(user);
     } else {
       setUserId(null);
-      DB.setSnapshot(undefined);
+      clearUserData();
     }
   }
 
