@@ -259,13 +259,11 @@ describe("user controller test", () => {
 
       expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
     });
-    it("ignores the auth header for authenticated requests", async () => {
+    it("returns ok if name is our own", async () => {
       //GIVEN
       userIsNameAvailableMock.mockResolvedValue(true);
 
       //WHEN
-      //the endpoint is public, authentication is skipped, so the token is
-      //ignored and the uid is empty
       const { body } = await mockApp
         .get("/users/checkName/bob")
         .set("Authorization", `Bearer ${uid}`)
@@ -276,7 +274,7 @@ describe("user controller test", () => {
         message: "Check username",
         data: { available: true },
       });
-      expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", "");
+      expect(userIsNameAvailableMock).toHaveBeenCalledWith("bob", uid);
     });
     it("returns 422 if username contains disallowed word", async () => {
       await mockApp

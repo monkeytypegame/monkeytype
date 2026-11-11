@@ -174,7 +174,11 @@ function addAuth(
   const auth = metadata?.authenticationOptions ?? {};
   const permissions = getRequiredPermissions(metadata) ?? [];
   const security: SecurityRequirementObject[] = [];
-  if (!auth.isPublic && !auth.isPublicOnDev) {
+  if (
+    auth.isPublic !== true &&
+    auth.isPublic !== "optionalUser" &&
+    !auth.isPublicOnDev
+  ) {
     security.push({ BearerAuth: permissions });
 
     if (auth.acceptApeKeys === true) {
@@ -182,7 +186,10 @@ function addAuth(
     }
   }
 
-  const includeInPublic = auth.isPublic === true || auth.acceptApeKeys === true;
+  const includeInPublic =
+    auth.isPublic === true ||
+    auth.isPublic === "optionalUser" ||
+    auth.acceptApeKeys === true;
   operation["x-public"] = includeInPublic ? "yes" : "no";
   operation.security = security;
 

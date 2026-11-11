@@ -41,6 +41,9 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
  * Public endpoints (isPublic: true) always skip authentication: any
  * authentication header is ignored, so a broken or expired token can't
  * fail the request.
+ * `isPublic: "optionalUser"` endpoints skip authentication only if no
+ * authentication header is provided, otherwise the token is verified and
+ * the user is used for user-specific data.
  * @returns
  */
 export function authenticateTsRestRequest<
@@ -62,6 +65,7 @@ export function authenticateTsRestRequest<
 
     const isPublic =
       options.isPublic === true ||
+      options.isPublic === "optionalUser" ||
       (options.isPublicOnDev && isDevEnvironment());
 
     const {
@@ -71,10 +75,6 @@ export function authenticateTsRestRequest<
 
     try {
       if (options.isPublic === true) {
-        console.log(
-          "### bypass authentication for public endpoint ",
-          options.openApiTags,
-        );
         token = {
           type: "None",
           uid: "",
@@ -83,18 +83,13 @@ export function authenticateTsRestRequest<
       } else if (options.isGithubWebhook) {
         token = authenticateGithubWebhook(req, githubWebhookHeader);
       } else if (authHeader !== undefined && authHeader !== "") {
-        console.log("### authenticating request with auth header");
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options,
         );
-      } else if (isPublic === true) {
-        //only reached for isPublicOnDev endpoints in dev, isPublic was handled above
-        console.log(
-          "### bypass authentication for public endpoint ",
-          options.openApiTags,
-        );
+      } else if (isPublic) {
+        //`optionalUser` or `isPublicOnDev` in dev, without authentication header
         token = {
           type: "None",
           uid: "",
@@ -259,7 +254,9 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const isPublic =
-    options.isPublic === true || (options.isPublicOnDev && isDevEnvironment());
+    options.isPublic === true ||
+    options.isPublic === "optionalUser" ||
+    (options.isPublicOnDev && isDevEnvironment());
 
   if (!isPublic) {
     if (!configuration.apeKeys.acceptKeys) {

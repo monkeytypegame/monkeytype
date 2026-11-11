@@ -147,18 +147,54 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("should ignore friendsOnly for authenticated requests", async () => {
+    it("should get for friendsOnly", async () => {
       //GIVEN
       await enableConnectionsFeature(true);
       getLeaderboardMock.mockResolvedValue([]);
       getLeaderboardCountMock.mockResolvedValue(2);
 
       //WHEN
-      //the endpoint is public, authentication is skipped, so the token is
-      //ignored and the friendsOnly filter is not applied
       const { body } = await mockApp
         .get("/leaderboards")
         .set("Authorization", `Bearer ${uid}`)
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body.data.count).toEqual(2);
+
+      expect(getLeaderboardMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        0,
+        50,
+        false,
+        uid,
+      );
+      expect(getLeaderboardCountMock).toHaveBeenCalledWith(
+        "time",
+        "60",
+        "english",
+        uid,
+      );
+    });
+
+    it("should ignore friendsOnly for unauthenticated requests", async () => {
+      //GIVEN
+      await enableConnectionsFeature(true);
+      getLeaderboardMock.mockResolvedValue([]);
+      getLeaderboardCountMock.mockResolvedValue(2);
+
+      //WHEN
+      //no authentication header, so the friendsOnly filter is not applied
+      const { body } = await mockApp
+        .get("/leaderboards")
         .query({
           language: "english",
           mode: "time",
@@ -677,18 +713,58 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("should ignore friendsOnly for authenticated requests", async () => {
+    it("should get for friends", async () => {
+      //GIVEN
+      const lbConf = (await configuration).dailyLeaderboards;
+      const premiumEnabled = (await configuration).users.premium.enabled;
+      await enableConnectionsFeature(true);
+      const friends = [
+        new ObjectId().toHexString(),
+        new ObjectId().toHexString(),
+      ];
+      getFriendsUidsMock.mockResolvedValue(friends);
+
+      //WHEN
+      await mockApp
+        .get("/leaderboards/daily")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+
+      expect(getDailyLeaderboardMock).toHaveBeenCalledWith(
+        "english",
+        "time",
+        "60",
+        lbConf,
+        -1,
+      );
+
+      expect(getResultMock).toHaveBeenCalledWith(
+        0,
+        50,
+        lbConf,
+        premiumEnabled,
+        friends,
+      );
+    });
+
+    it("should ignore friendsOnly for unauthenticated requests", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
       await enableConnectionsFeature(true);
 
       //WHEN
-      //the endpoint is public, authentication is skipped, so the token is
-      //ignored and the friendsOnly filter is not applied
+      //no authentication header, so the friendsOnly filter is not applied
       await mockApp
         .get("/leaderboards/daily")
-        .set("Authorization", `Bearer ${uid}`)
         .query({
           language: "english",
           mode: "time",
@@ -1196,7 +1272,43 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("should ignore friendsOnly for authenticated requests", async () => {
+    it("should get for friends", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+      await enableConnectionsFeature(true);
+      const page = 2;
+      const pageSize = 25;
+      const friends = [
+        new ObjectId().toHexString(),
+        new ObjectId().toHexString(),
+      ];
+      getFriendsUidsMock.mockResolvedValue(friends);
+
+      //WHEN
+      await mockApp
+        .get("/leaderboards/xp/weekly")
+        .set("Authorization", `Bearer ${uid}`)
+        .query({
+          page,
+          pageSize,
+          friendsOnly: true,
+        })
+        .expect(200);
+
+      //THEN
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getResultMock).toHaveBeenCalledWith(
+        page,
+        pageSize,
+        lbConf,
+        false,
+        friends,
+      );
+    });
+
+    it("should ignore friendsOnly for unauthenticated requests", async () => {
       //GIVEN
       const lbConf = (await configuration).leaderboards.weeklyXp;
       await enableConnectionsFeature(true);
@@ -1204,11 +1316,9 @@ describe("Loaderboard Controller", () => {
       const pageSize = 25;
 
       //WHEN
-      //the endpoint is public, authentication is skipped, so the token is
-      //ignored and the friendsOnly filter is not applied
+      //no authentication header, so the friendsOnly filter is not applied
       await mockApp
         .get("/leaderboards/xp/weekly")
-        .set("Authorization", `Bearer ${uid}`)
         .query({
           page,
           pageSize,
