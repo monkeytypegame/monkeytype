@@ -63,11 +63,6 @@ export function authenticateTsRestRequest<
     let token: DecodedToken;
     let authType = "None";
 
-    const isPublic =
-      options.isPublic === true ||
-      options.isPublic === "optionalUser" ||
-      (options.isPublicOnDev && isDevEnvironment());
-
     const {
       authorization: authHeader,
       "x-hub-signature-256": githubWebhookHeader,
@@ -89,7 +84,10 @@ export function authenticateTsRestRequest<
           req.ctx.configuration,
           options,
         );
-      } else if (isPublic) {
+      } else if (
+        options.isPublic === "optionalUser" ||
+        (options.isPublicOnDev && isDevEnvironment())
+      ) {
         //`optionalUser` or `isPublicOnDev` in dev, without authentication header
         token = {
           type: "None",
