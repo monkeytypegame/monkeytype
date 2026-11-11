@@ -378,12 +378,14 @@ function OppositeShift() {
 }
 
 function Tags() {
+  // getActiveTags sorts on every call
+  const activeTags = createMemo(getActiveTags);
   return (
     <Notice
-      when={getActiveTags().length > 0}
-      icon={getActiveTags().length === 1 ? "fa-tag" : "fa-tags"}
+      when={activeTags().length > 0}
+      icon={activeTags().length === 1 ? "fa-tag" : "fa-tags"}
       openCommandline="tags"
-      text={getActiveTags()
+      text={activeTags()
         .map((tag) => tag.name)
         .join(", ")}
     />

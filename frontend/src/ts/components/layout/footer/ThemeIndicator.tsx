@@ -1,6 +1,9 @@
 import { JSXElement, Show } from "solid-js";
 
-import { getCustomThemes } from "../../../collections/custom-themes";
+import {
+  getCustomThemes,
+  getCustomThemesStatus,
+} from "../../../collections/custom-themes";
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
 import { showCommandline } from "../../../states/commandline";
@@ -13,6 +16,10 @@ export function ThemeIndicator(): JSXElement {
     if (e.shiftKey) {
       if (Config.customTheme) {
         setConfig("customTheme", false);
+        return;
+      }
+      if (isAuthenticated() && getCustomThemesStatus() !== "loaded") {
+        showNoticeNotification("Custom themes aren't loaded yet");
         return;
       }
       if (isAuthenticated() && getCustomThemes().length < 1) {

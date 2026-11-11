@@ -212,6 +212,11 @@ export function Theme(): JSXElement {
           <Button
             text="save as new"
             onClick={() => {
+              // the limit check needs every theme loaded
+              if (getCustomThemesStatus() !== "loaded") {
+                showNoticeNotification("Custom themes aren't loaded yet");
+                return;
+              }
               if (getCustomThemes().length >= 20) {
                 showNoticeNotification("Custom themes limit reached");
                 return;
