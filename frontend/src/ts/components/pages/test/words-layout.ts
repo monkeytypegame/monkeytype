@@ -1054,7 +1054,8 @@ export function createWordsLayout(options: {
             testDirection: getTestDirection(),
             animate: true,
             animationOptions: {
-              duration: target.stepEnd - performance.now(),
+              // a late frame can be past the step end: snap instead
+              duration: Math.max(0, target.stepEnd - performance.now()),
               easing: "linear",
             },
           });
