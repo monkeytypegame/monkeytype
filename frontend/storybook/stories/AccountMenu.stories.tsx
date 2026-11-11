@@ -16,22 +16,22 @@ const meta = preview.meta({
 
 export const Default = meta.story({
   render: () => (
-    <div
-      style={{ position: "relative", "pointer-events": "auto", opacity: 1 }}
-      class="**:data-[ui-element='accountMenu']:pointer-events-auto **:data-[ui-element='accountMenu']:opacity-100"
-    >
-      <AccountMenu showFriendsNotificationBubble={false} />
+    <div style={{ position: "relative", "pointer-events": "auto", opacity: 1 }}>
+      <AccountMenu
+        class="pointer-events-auto opacity-100"
+        showFriendsNotificationBubble={false}
+      />
     </div>
   ),
 });
 
 export const WithNotification = meta.story({
   render: () => (
-    <div
-      style={{ position: "relative", "pointer-events": "auto", opacity: 1 }}
-      class="**:data-[ui-element='accountMenu']:pointer-events-auto **:data-[ui-element='accountMenu']:opacity-100"
-    >
-      <AccountMenu showFriendsNotificationBubble />
+    <div style={{ position: "relative", "pointer-events": "auto", opacity: 1 }}>
+      <AccountMenu
+        class="pointer-events-auto opacity-100"
+        showFriendsNotificationBubble
+      />
     </div>
   ),
 });
