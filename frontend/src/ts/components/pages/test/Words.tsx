@@ -173,6 +173,8 @@ function Caret(props: {
       id={props.id}
       ref={props.ref}
       data-ui-element={props.id}
+      data-ui-variant={props.caretStyle}
+      // the style class stays for legacy theme selectors (#caret.banana)
       // not cn: tailwind-merge drops a style class like block next to hidden
       class={clsx("full-width", props.caretStyle, {
         hidden: props.hidden,

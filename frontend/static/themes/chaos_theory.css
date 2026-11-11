@@ -19,7 +19,7 @@
   direction: rtl;
 }
 
-#caret {
+[data-ui-element="caret"] {
   background-image: url("/images/themes/chaos_theory/caret.webp") !important;
   background-color: transparent !important;
   background-size: 1rem !important;
@@ -27,7 +27,7 @@
   background-repeat: no-repeat !important;
 }
 
-#caret.default {
+[data-ui-element="caret"][data-ui-variant="default"] {
   width: 4px !important;
 }
 
@@ -176,7 +176,7 @@ body.crtmode {
       0 0 3px;
   }
 
-  & #caret {
+  & [data-ui-element="caret"] {
     box-shadow: none !important;
     filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
       drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
