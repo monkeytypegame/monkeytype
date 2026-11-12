@@ -7,7 +7,7 @@ import type { DeepReadonly } from "../utils/types";
 import { quickLogin as devQuickLogin } from "./quick-login";
 
 /**
- * Polls the user store every 20ms until `matches` holds, throwing after
+ * Polls the cached user every 20ms until `matches` holds, throwing after
  * `timeoutMs`. `undefined` confirms a sign out, an object confirms loaded
  * account data.
  */
@@ -16,7 +16,7 @@ async function waitForUser(
   description: string,
   timeoutMs = 10_000,
 ): Promise<void> {
-  // lazy: the user store pulls in the api client, and the debug handle loads
+  // lazy: the user query pulls in the api client, and the debug handle loads
   // in jsdom tests
   const { getUserData: getUser } = await import("../queries/user");
   const start = Date.now();

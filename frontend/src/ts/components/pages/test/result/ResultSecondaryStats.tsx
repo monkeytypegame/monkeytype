@@ -280,7 +280,7 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the user store, refreshed after each toggle
+  // favorites live in the cached user, refreshed after each toggle
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();
