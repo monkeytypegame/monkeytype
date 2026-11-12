@@ -52,6 +52,8 @@ export function createSessionQuery<T>(options: {
     staleTime: Infinity,
     gcTime: Infinity,
     retry: false,
+    // offline, fail at once (the sign in shows the error) instead of pausing
+    networkMode: "always",
   });
 
   const peek = (): Cached | undefined => queryClient.getQueryData<Cached>(key);

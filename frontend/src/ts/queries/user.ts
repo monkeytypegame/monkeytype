@@ -44,7 +44,7 @@ export type CachedUser = DeepReadonly<UserData>;
  * actions call the API and roll back on failure.
  */
 const userQuery = createSessionQuery<UserData>({
-  key: baseKey("data", { isUserSpecific: true }),
+  key: baseKey("user", { isUserSpecific: true }),
   fetch: fetchUser,
 });
 

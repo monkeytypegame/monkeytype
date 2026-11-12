@@ -52,13 +52,17 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUserData, (userData) => {
-    if (userData === undefined) {
-      setAnimatedLevel(0);
-      return;
-    }
-    setAnimatedLevel(getLevelFromTotalXp(userData.xp ?? 0));
-  });
+  // on sign in and out only: XP gains animate the level through the XP bar
+  createEffectOn(
+    () => getUserData()?.uid,
+    (uid) => {
+      if (uid === undefined) {
+        setAnimatedLevel(0);
+        return;
+      }
+      setAnimatedLevel(getLevelFromTotalXp(getUserData()?.xp ?? 0));
+    },
+  );
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
     return pendingConnections().length > 0;

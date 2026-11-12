@@ -1,4 +1,5 @@
 import { createEffect, createRoot } from "solid-js";
+import { onlineManager } from "@tanstack/solid-query";
 import { describe, expect, it, vi } from "vitest";
 
 import { queryClient } from "../../../src/ts/queries";
@@ -93,5 +94,19 @@ describe("createSessionQuery", () => {
     await vi.waitFor(() => expect(result.isPending).toBe(true));
     expect(fetch).not.toHaveBeenCalled();
     dispose();
+  });
+
+  it("fails a download at once while offline, instead of pausing", async () => {
+    const { query } = setup(
+      vi.fn(async (): Promise<Data> => {
+        throw new Error("network");
+      }),
+    );
+    onlineManager.setOnline(false);
+    try {
+      await expect(query.download()).rejects.toThrow("network");
+    } finally {
+      onlineManager.setOnline(true);
+    }
   });
 });

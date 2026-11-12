@@ -1,6 +1,12 @@
 import { TestActivity } from "@monkeytype/schemas/users";
 import * as Dates from "date-fns";
-import { createEffect, createSignal, JSXElement, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  JSXElement,
+  Show,
+} from "solid-js";
 
 import Ape from "../../../ape";
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
@@ -84,10 +90,13 @@ export function ActivityCalendar(props: {
 
   let calendar: TestActivityCalendar | undefined;
 
+  // a memo: the effect re-runs when the activity changes, not on any user write
+  const accountActivity = createMemo(() => getUserData()?.testActivity);
+
   createEffect(() =>
     (() => {
       const testActivity = props.isAccountPage
-        ? getUserData()?.testActivity
+        ? accountActivity()
         : props.testActivity;
       if (testActivity === undefined || element() === undefined) {
         calendar = undefined;

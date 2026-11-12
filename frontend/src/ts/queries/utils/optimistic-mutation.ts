@@ -42,6 +42,8 @@ export function optimisticMutation<T extends object, V>(options: {
   return {
     mutationKey: [...query.key, options.name],
     mutationFn: options.request,
+    // offline, fail and roll back at once instead of pausing until online
+    networkMode: "always",
     onMutate: (vars) => {
       const before = query.copy();
       if (before === undefined) throw new Error("Not signed in");

@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { onlineManager } from "@tanstack/solid-query";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   createSessionQuery,
@@ -60,6 +61,8 @@ function rename(
 }
 
 describe("optimisticMutation", () => {
+  afterEach(() => onlineManager.setOnline(true));
+
   it("keys the mutation under its query", () => {
     const { query } = setup();
     expect(rename(query, async (n) => n).mutationKey).toEqual([
@@ -189,5 +192,20 @@ describe("optimisticMutation", () => {
     expect(result.error?.message).toBe("Not signed in");
     expect(request).not.toHaveBeenCalled();
     expect(query.get()).toBeUndefined();
+  });
+
+  it("fails and rolls back at once while offline, instead of pausing", async () => {
+    const { query } = setup();
+    onlineManager.setOnline(false);
+
+    const result = await runMutation(
+      rename(query, async () => {
+        throw new Error("network");
+      }),
+      "b",
+    );
+
+    expect(result.error?.message).toBe("network");
+    expect(query.get()?.name).toBe("a");
   });
 });
