@@ -320,6 +320,8 @@ describe("optimistic actions", () => {
 
     const first = updateName("carl");
     const second = updateName("dave");
+    // mutations send their request a few microtasks after the call
+    await vi.waitFor(() => expect(responses).toHaveLength(2));
     responses[0]?.(fail("taken"));
     expect((await first).error?.message).toBe("taken");
     expect(getUserData()?.name).toBe("dave");
@@ -345,6 +347,8 @@ describe("optimistic actions", () => {
       quoteId: "6",
       favorite: true,
     });
+    // mutations send their request a few microtasks after the call
+    await vi.waitFor(() => expect(responses).toHaveLength(2));
     responses[0]?.(fail("nope"));
     expect((await first).error?.message).toBe("nope");
     responses[1]?.(ok());

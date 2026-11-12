@@ -23,7 +23,11 @@ import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
-import { hashKey } from "@tanstack/solid-query";
+import {
+  hashKey,
+  MutationObserver,
+  type MutationObserverOptions,
+} from "@tanstack/solid-query";
 import { queryClient } from "../queries";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
@@ -297,139 +301,173 @@ export async function updateLbMemory<M extends Mode>(
 
 // --- Optimistic actions: user changes, rolled back if the request fails ---
 
-/**
- * Applies `recipe` with `vars` at once and sends `request`, which resolves to
- * the values to keep (the server may change them); the recipe is applied
- * again with those. On failure the fields the recipe changed are rolled back,
- * except those changed again since (by a direct write or another action),
- * which keep the newer value. The recipe must be idempotent. Failure is
- * returned as `error`, never thrown, so callers see it in the type; `request`
- * returns one the same way (Ape never throws).
- */
-async function optimisticUpdate<T>(
-  vars: T,
-  recipe: (user: UserData, vars: T) => void,
-  request: () => Promise<Result<T>>,
-): Promise<Result<void>> {
-  const before = copyUserData();
-  if (before === undefined) {
-    return { data: null, error: new Error("Not signed in") };
-  }
-  update((user) => recipe(user, vars));
-  const written = copyUserData() ?? before;
-  const same = (a: unknown, b: unknown): boolean =>
-    JSON.stringify(a) === JSON.stringify(b);
-  const changed = (
-    Object.keys({ ...before, ...written }) as (keyof UserData)[]
-  ).filter((key) => !same(before[key], written[key]));
+/** What `onMutate` saw and wrote, for the rollback. */
+type Rollback = {
+  before: UserData;
+  written: UserData;
+  changed: (keyof UserData)[];
+};
 
-  const { data: kept, error } = await request();
-  if (error !== null) {
-    update((user) => {
-      for (const key of changed) {
-        if (!same(user[key], written[key])) continue;
-        (user as Record<string, unknown>)[key] = before[key];
-      }
-    });
-    return { data: null, error };
-  }
-  update((user) => recipe(user, kept));
-  return { data: undefined, error: null };
+const same = (a: unknown, b: unknown): boolean =>
+  JSON.stringify(a) === JSON.stringify(b);
+
+/**
+ * A TanStack mutation that applies `recipe` with its variables at once and
+ * sends `request`, which resolves to the values to keep (the server may change
+ * them) or throws; the recipe is applied again with those. On failure the
+ * fields the recipe changed are rolled back, except those changed again since
+ * (by a direct write or another action), which keep the newer value. The
+ * recipe must be idempotent.
+ */
+function userMutation<T>(
+  name: string,
+  recipe: (user: UserData, vars: T) => void,
+  request: (vars: T) => Promise<T>,
+): MutationObserverOptions<T, Error, T, Rollback> {
+  return {
+    mutationKey: [...userQueryKey, name],
+    mutationFn: request,
+    onMutate: (vars) => {
+      const before = copyUserData();
+      if (before === undefined) throw new Error("Not signed in");
+      update((user) => recipe(user, vars));
+      const written = copyUserData() ?? before;
+      const changed = (
+        Object.keys({ ...before, ...written }) as (keyof UserData)[]
+      ).filter((key) => !same(before[key], written[key]));
+      return { before, written, changed };
+    },
+    onError: (_error, _vars, rollback) => {
+      if (rollback === undefined) return;
+      const { before, written, changed } = rollback;
+      update((user) => {
+        for (const key of changed) {
+          if (!same(user[key], written[key])) continue;
+          (user as Record<string, unknown>)[key] = before[key];
+        }
+      });
+    },
+    onSuccess: (kept) => {
+      update((user) => recipe(user, kept));
+    },
+  };
 }
 
-/** `kept` on a 200, else the server message as the error. */
-function resultOf<T>(
+/**
+ * Runs a mutation outside a component (`useMutation` takes the same options
+ * inside one). Failure is returned as `error`, never thrown, so callers see it
+ * in the type.
+ */
+async function runMutation<T>(
+  options: MutationObserverOptions<T, Error, T, Rollback>,
+  vars: T,
+): Promise<Result<void>> {
+  try {
+    await new MutationObserver(queryClient, options).mutate(vars);
+    return { data: undefined, error: null };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
+}
+
+/** `kept` on a 200, else throws the server message. */
+function keptOrThrow<T>(
   response: { status: number; body: { message: string } },
   kept: T,
-): Result<T> {
-  return response.status === 200
-    ? { data: kept, error: null }
-    : { data: null, error: new Error(response.body.message) };
+): T {
+  if (response.status !== 200) throw new Error(response.body.message);
+  return kept;
 }
+
+const updateNameMutation = userMutation<string>(
+  "updateName",
+  (user, name) => {
+    user.name = name;
+  },
+  async (name) =>
+    keptOrThrow(await Ape.users.updateName({ body: { name } }), name),
+);
 
 export async function updateName(name: string): Promise<Result<void>> {
-  return optimisticUpdate(
-    name,
-    (user, name) => {
-      user.name = name;
-    },
-    async () => {
-      return resultOf(await Ape.users.updateName({ body: { name } }), name);
-    },
-  );
+  return runMutation(updateNameMutation, name);
 }
 
+const unlinkDiscordMutation = userMutation<undefined>(
+  "unlinkDiscord",
+  (user) => {
+    user.discordId = undefined;
+    user.discordAvatar = undefined;
+  },
+  async () => keptOrThrow(await Ape.users.unlinkDiscord(), undefined),
+);
+
 export async function unlinkDiscord(): Promise<Result<void>> {
-  return optimisticUpdate(
-    undefined,
-    (user) => {
-      user.discordId = undefined;
-      user.discordAvatar = undefined;
-    },
-    async () => {
-      return resultOf(await Ape.users.unlinkDiscord(), undefined);
-    },
-  );
+  return runMutation(unlinkDiscordMutation, undefined);
 }
+
+const setStreakHourOffsetMutation = userMutation<number>(
+  "setStreakHourOffset",
+  (user, hourOffset) => {
+    user.streakHourOffset = hourOffset;
+  },
+  async (hourOffset) =>
+    keptOrThrow(
+      await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
+      hourOffset,
+    ),
+);
 
 export async function setStreakHourOffset(
   hourOffset: number,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    hourOffset,
-    (user, hourOffset) => {
-      user.streakHourOffset = hourOffset;
-    },
-    async () => {
-      return resultOf(
-        await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
-        hourOffset,
-      );
-    },
-  );
+  return runMutation(setStreakHourOffsetMutation, hourOffset);
 }
 
 type QuoteRating = { language: Language; quoteId: number; rating: number };
 
+const rateQuoteMutation = userMutation<QuoteRating>(
+  "rateQuote",
+  (user, { language, quoteId, rating }) => {
+    user.quoteRatings ??= {};
+    user.quoteRatings[language] ??= {};
+    user.quoteRatings[language][quoteId] = rating;
+  },
+  async (rating) =>
+    keptOrThrow(await Ape.quotes.addRating({ body: rating }), rating),
+);
+
 export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
-  return optimisticUpdate(
-    rating,
-    (user, { language, quoteId, rating }) => {
-      user.quoteRatings ??= {};
-      user.quoteRatings[language] ??= {};
-      user.quoteRatings[language][quoteId] = rating;
-    },
-    async () => {
-      return resultOf(await Ape.quotes.addRating({ body: rating }), rating);
-    },
-  );
+  return runMutation(rateQuoteMutation, rating);
 }
 
 type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
+const setQuoteFavoriteMutation = userMutation<QuoteFavorite>(
+  "setQuoteFavorite",
+  (user, { language, quoteId, favorite }) => {
+    const list = user.favoriteQuotes?.[language] ?? [];
+    const without = list.filter((id) => id !== quoteId);
+    user.favoriteQuotes ??= {};
+    user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
+  },
+  async (favorite) => {
+    const body = { language: favorite.language, quoteId: favorite.quoteId };
+    return keptOrThrow(
+      favorite.favorite
+        ? await Ape.users.addQuoteToFavorites({ body })
+        : await Ape.users.removeQuoteFromFavorites({ body }),
+      favorite,
+    );
+  },
+);
+
 export async function setQuoteFavorite(
   favorite: QuoteFavorite,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    favorite,
-    (user, { language, quoteId, favorite }) => {
-      const list = user.favoriteQuotes?.[language] ?? [];
-      const without = list.filter((id) => id !== quoteId);
-      user.favoriteQuotes ??= {};
-      user.favoriteQuotes[language] = favorite
-        ? [...without, quoteId]
-        : without;
-    },
-    async () => {
-      const body = { language: favorite.language, quoteId: favorite.quoteId };
-      return resultOf(
-        favorite.favorite
-          ? await Ape.users.addQuoteToFavorites({ body })
-          : await Ape.users.removeQuoteFromFavorites({ body }),
-        favorite,
-      );
-    },
-  );
+  return runMutation(setQuoteFavoriteMutation, favorite);
 }
 
 type ProfileUpdate = {
@@ -437,29 +475,28 @@ type ProfileUpdate = {
   selectedBadgeId: number;
 };
 
+const updateProfileMutation = userMutation<ProfileUpdate>(
+  "updateProfile",
+  (user, { details, selectedBadgeId }) => {
+    user.details = details;
+    for (const badge of user.inventory?.badges ?? []) {
+      badge.selected = badge.id === selectedBadgeId;
+    }
+  },
+  async (profile) => {
+    const response = await Ape.users.updateProfile({
+      body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
+    });
+    if (response.status !== 200) throw new Error(response.body.message);
+    // the server sanitizes the details
+    return { ...profile, details: response.body.data ?? profile.details };
+  },
+);
+
 export async function updateProfile(
   profile: ProfileUpdate,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    profile,
-    (user, { details, selectedBadgeId }) => {
-      user.details = details;
-      for (const badge of user.inventory?.badges ?? []) {
-        badge.selected = badge.id === selectedBadgeId;
-      }
-    },
-    async () => {
-      const response = await Ape.users.updateProfile({
-        body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
-      });
-      if (response.status !== 200) return resultOf(response, profile);
-      // the server sanitizes the details
-      return {
-        data: { ...profile, details: response.body.data ?? profile.details },
-        error: null,
-      };
-    },
-  );
+  return runMutation(updateProfileMutation, profile);
 }
 
 // --- Reads ---
