@@ -1,6 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
-import { getUserData } from "../../../states/user";
+import { getUserData } from "../../../queries/user";
 import { UserProfile } from "../profile/UserProfile";
 
 export function MyProfile(): JSXElement {

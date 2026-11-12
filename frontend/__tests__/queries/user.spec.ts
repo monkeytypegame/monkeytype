@@ -14,8 +14,6 @@ import {
   setInboxUnreadSize,
   setStreak,
   updateLbMemory,
-} from "../../src/ts/states/user";
-import {
   setQuoteFavorite,
   updateName,
   updateProfile,

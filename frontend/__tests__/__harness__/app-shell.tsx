@@ -90,6 +90,7 @@ import { vi } from "vitest";
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultUserData } from "../../src/ts/constants/user-data";
+import { __testing as userTesting } from "../../src/ts/queries/user";
 import {
   AppRouter,
   createAppRouter,
@@ -109,7 +110,6 @@ import {
   setResultCalculating,
   setTestActive,
 } from "../../src/ts/states/test";
-import { __testing as userTesting } from "../../src/ts/states/user";
 import { canStartTest } from "../../src/ts/test/test-page-state";
 
 /** A page's content mounting, and whether it was in the document by then. */

@@ -36,6 +36,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
@@ -44,7 +45,6 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
-import { loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";

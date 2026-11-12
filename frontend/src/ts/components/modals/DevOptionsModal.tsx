@@ -7,6 +7,7 @@ import { refetchInboxCollection } from "../../collections/inbox";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
+import { addXp } from "../../queries/user";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -18,7 +19,6 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
-import { addXp } from "../../states/user";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";

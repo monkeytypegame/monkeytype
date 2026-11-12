@@ -4,8 +4,8 @@ import { format as formatDate } from "date-fns/format";
 import { createMemo, createSignal, JSXElement } from "solid-js";
 
 import { getConfig } from "../../config/store";
+import { getUserData } from "../../queries/user";
 import { pbTablesMode } from "../../states/pb-tables-modal";
-import { getUserData } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { Formatting } from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";

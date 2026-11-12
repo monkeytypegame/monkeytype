@@ -26,7 +26,7 @@ vi.mock("../../../../../src/ts/collections/tags", async () => {
     },
   };
 });
-vi.mock("../../../../../src/ts/states/user", async (importOriginal) => ({
+vi.mock("../../../../../src/ts/queries/user", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   getLocalPB: () => undefined,
 }));

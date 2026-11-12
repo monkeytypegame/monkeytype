@@ -8,13 +8,12 @@ import { createForm } from "@tanstack/solid-form";
 import { For } from "solid-js";
 
 import { invalidateMyProfile } from "../../queries/profile";
-import { updateProfile } from "../../queries/user";
+import { updateProfile, getUserData } from "../../queries/user";
 import { hideModal } from "../../states/modals";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { getUserData } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";

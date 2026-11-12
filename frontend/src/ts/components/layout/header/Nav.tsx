@@ -11,6 +11,7 @@ import { usePendingConnectionsQuery } from "../../../collections/connections";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
+import { getUserData } from "../../../queries/user";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -19,7 +20,6 @@ import {
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
 import { isFocusMode } from "../../../states/test";
-import { getUserData } from "../../../states/user";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
 import { getLevelFromTotalXp } from "../../../utils/levels";

@@ -1,7 +1,7 @@
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { JSXElement, createSignal, For } from "solid-js";
 
-import { rateQuote } from "../../queries/user";
+import { rateQuote, getUserData } from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
@@ -16,7 +16,6 @@ import {
   updateQuoteStats,
   getRatingAverage,
 } from "../../states/quote-rate";
-import { getUserData } from "../../states/user";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";

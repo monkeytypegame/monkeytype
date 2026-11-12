@@ -1,4 +1,4 @@
-import { getUserData } from "../states/user";
+import { getUserData } from "../queries/user";
 import { Config } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
 import { showSuccessNotification } from "../states/notifications";
