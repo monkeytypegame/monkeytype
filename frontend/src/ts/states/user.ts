@@ -19,94 +19,30 @@ import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
-import { fetchUserFromApi } from "../ape/user";
 import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
 import {
-  hashKey,
-  MutationObserver,
-  replaceEqualDeep,
-  type MutationObserverOptions,
-  useQuery,
-  type UseQueryResult,
-} from "@tanstack/solid-query";
-import { createTrigger } from "../hooks/createTrigger";
-import { queryClient } from "../queries";
-import { UserDataLoadError } from "../utils/user-data-load-error";
+  type CachedUser,
+  downloadUser,
+  getCachedUser,
+  replaceCachedUser,
+  resetCachedUser,
+  runMutation,
+  updateCachedUser,
+  userMutation,
+} from "../queries/user";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
 import { setXpBarData } from "./header";
 
 /**
- * The signed-in user's data lives in the TanStack Query cache under this key:
- * the auth flow fetches it, sign-out resets it (with every `["user", ...]`
- * query). Written only through the named functions below.
- */
-const userQueryKey = ["user", "data"] as const;
-
-queryClient.setQueryDefaults(userQueryKey, {
-  // session data: never stale, never collected; only the auth flow fetches
-  staleTime: Infinity,
-  gcTime: Infinity,
-  retry: false,
-});
-
-/** The cached user. Readonly: writes go through `update`, never in place. */
-type CachedUser = DeepReadonly<UserData>;
-
-function getCached(): CachedUser | undefined {
-  return queryClient.getQueryData<CachedUser>(userQueryKey);
-}
-
-/**
- * Re-runs `getUserData()` readers when the cached user changes: at once after
- * this module's writes, and from the cache listener for other changes (fetch,
- * reset), which Query notifies a tick later. Readers re-run on any change;
- * structural sharing keeps the unchanged parts' identity, so memos and `For`
- * over a part that didn't change don't re-render.
- */
-const [trackUser, triggerUser] = createTrigger();
-let lastSeen: CachedUser | undefined;
-
-function notifyIfChanged(): void {
-  const user = getCached();
-  if (user === lastSeen) return;
-  lastSeen = user;
-  triggerUser();
-}
-
-const userQueryHash = hashKey(userQueryKey);
-queryClient.getQueryCache().subscribe((event) => {
-  if (event.query.queryHash === userQueryHash) notifyIfChanged();
-});
-
-/** A mutable copy of the user, detached from the cache. */
-function copyUserData(): UserData | undefined {
-  const user = getCached();
-  return user === undefined ? undefined : (structuredClone(user) as UserData);
-}
-
-/**
- * The signed-in user, `undefined` while signed out, loading or after a failed
- * load. Reactive inside components and effects, a plain read elsewhere.
+ * The signed-in user, cached by the user query (`queries/user`): the auth flow
+ * loads it, sign-out clears it, and only the named functions below write it.
+ * `undefined` while signed out, loading or after a failed load. Reactive
+ * inside components and effects, a plain read elsewhere.
  */
 export function getUserData(): CachedUser | undefined {
-  trackUser();
-  return getCached();
-}
-
-/**
- * The user query for components that need its status (pending, error), eg.
- * with `AsyncContent`. Read-only: it never fetches (the auth flow does, so
- * the sign-out reset can't refetch it). Reading `data` while the sign-in
- * download runs suspends the nearest `Suspense`; check the status first, or
- * use `getUserData()` for plain reads.
- */
-export function useUser(): UseQueryResult<CachedUser> {
-  return useQuery<CachedUser>(
-    () => ({ queryKey: userQueryKey, enabled: false }),
-    () => queryClient,
-  );
+  return getCachedUser();
 }
 
 // --- Loading ---
@@ -125,98 +61,22 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   }
 
   try {
-    await queryClient.query({
-      queryKey: userQueryKey,
-      queryFn: fetchUser,
-      // the sign in (or retry) always downloads
-      staleTime: 0,
-    });
-    notifyIfChanged();
+    await downloadUser();
   } catch (e) {
-    clearUserData();
+    resetCachedUser();
     throw e;
   }
 
   return getUserData() as DeepReadonly<UserData>;
 }
 
-/** Downloads the user and maps the API shape. */
-async function fetchUser(): Promise<UserData> {
-  const userData = await fetchUserFromApi();
-
-  if (userData === null || userData === undefined) {
-    throw new UserDataLoadError(
-      `Request was successful but user data is null/undefined`,
-      200,
-    );
-  }
-
-  const personalBests = userData.personalBests ?? {};
-  for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
-    personalBests[mode] ??= {};
-  }
-
-  const row: UserData = {
-    uid: userData.uid,
-    email: userData.email,
-    name: userData.name,
-    addedAt: userData.addedAt,
-    personalBests,
-    banned: userData.banned,
-    lbOptOut: userData.lbOptOut,
-    verified: userData.verified,
-    discordId: userData.discordId,
-    discordAvatar: userData.discordAvatar,
-    needsToChangeName: userData.needsToChangeName,
-    typingStats: {
-      timeTyping: userData.timeTyping ?? 0,
-      startedTests: userData.startedTests ?? 0,
-      completedTests: userData.completedTests ?? 0,
-    },
-    quoteMod: userData.quoteMod,
-    favoriteQuotes: userData.favoriteQuotes ?? {},
-    quoteRatings: userData.quoteRatings,
-    details: userData.profileDetails,
-    inventory: userData.inventory,
-    xp: userData.xp ?? 0,
-    inboxUnreadSize: userData.inboxUnreadSize ?? 0,
-    streak: userData.streak?.length ?? 0,
-    maxStreak: userData.streak?.maxLength ?? 0,
-    streakHourOffset: userData.streak?.hourOffset ?? undefined,
-    isPremium: userData.isPremium ?? false,
-    allTimeLbs: userData.allTimeLbs,
-    testActivity: userData.testActivity,
-    lbMemory: userData.lbMemory,
-  };
-
-  return row;
-}
-
-function clearUserData(): void {
-  void queryClient.resetQueries({ queryKey: userQueryKey, exact: true });
-  notifyIfChanged();
-}
-
 // --- Direct writes: mirror what the server already did ---
-
-function update(recipe: (user: UserData) => void): void {
-  if (getCached() === undefined) return;
-  queryClient.setQueryData<CachedUser>(userQueryKey, (user) => {
-    if (user === undefined) return user;
-    const next = structuredClone(user) as UserData;
-    recipe(next);
-    // keeps the unchanged parts' identity (and the whole user's, when nothing
-    // changed); done here, since `useQuery` turns the query's own off
-    return replaceEqualDeep(user, next);
-  });
-  notifyIfChanged();
-}
 
 export function recordResult(
   result: NormalizedLocalResult<Mode>,
   options: { isPb: boolean },
 ): void {
-  update((user) => {
+  updateCachedUser((user) => {
     if (user.testActivity !== undefined) {
       incrementTestActivity(user.testActivity, result.timestamp);
     }
@@ -234,7 +94,7 @@ export function recordResult(
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
   if (getUserData() === undefined) return;
-  update((user) => {
+  updateCachedUser((user) => {
     user.xp += xp;
   });
   setXpBarData({
@@ -245,27 +105,27 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function setStreak(streak: number): void {
-  update((user) => {
+  updateCachedUser((user) => {
     user.streak = streak;
     if (streak > user.maxStreak) user.maxStreak = streak;
   });
 }
 
 export function setInboxUnreadSize(size: number): void {
-  update((user) => {
+  updateCachedUser((user) => {
     user.inboxUnreadSize = size;
   });
 }
 
 export function addBadge(badge: Badge): void {
-  update((user) => {
+  updateCachedUser((user) => {
     user.inventory ??= { badges: [] };
     user.inventory.badges.push(badge);
   });
 }
 
 export function resetPersonalBests(): void {
-  update((user) => {
+  updateCachedUser((user) => {
     user.personalBests = {
       time: {},
       words: {},
@@ -280,7 +140,7 @@ export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  update((user) => {
+  updateCachedUser((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
@@ -305,7 +165,7 @@ export async function updateLbMemory<M extends Mode>(
   if (userData === undefined) return;
 
   const current = userData.lbMemory?.time?.[timeMode2]?.[language];
-  update((user) => {
+  updateCachedUser((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };
     user.lbMemory.time[timeMode2] ??= {};
@@ -320,78 +180,6 @@ export async function updateLbMemory<M extends Mode>(
 }
 
 // --- Optimistic actions: user changes, rolled back if the request fails ---
-
-/** What `onMutate` saw and wrote, for the rollback. */
-type Rollback = {
-  before: UserData;
-  written: UserData;
-  changed: (keyof UserData)[];
-};
-
-const same = (a: unknown, b: unknown): boolean =>
-  JSON.stringify(a) === JSON.stringify(b);
-
-/**
- * A TanStack mutation that applies `recipe` with its variables at once and
- * sends `request`, which resolves to the values to keep (the server may change
- * them) or throws; the recipe is applied again with those. On failure the
- * fields the recipe changed are rolled back, except those changed again since
- * (by a direct write or another action), which keep the newer value. The
- * recipe must be idempotent.
- */
-function userMutation<T>(
-  name: string,
-  recipe: (user: UserData, vars: T) => void,
-  request: (vars: T) => Promise<T>,
-): MutationObserverOptions<T, Error, T, Rollback> {
-  return {
-    mutationKey: [...userQueryKey, name],
-    mutationFn: request,
-    onMutate: (vars) => {
-      const before = copyUserData();
-      if (before === undefined) throw new Error("Not signed in");
-      update((user) => recipe(user, vars));
-      const written = copyUserData() ?? before;
-      const changed = (
-        Object.keys({ ...before, ...written }) as (keyof UserData)[]
-      ).filter((key) => !same(before[key], written[key]));
-      return { before, written, changed };
-    },
-    onError: (_error, _vars, rollback) => {
-      if (rollback === undefined) return;
-      const { before, written, changed } = rollback;
-      update((user) => {
-        for (const key of changed) {
-          if (!same(user[key], written[key])) continue;
-          (user as Record<string, unknown>)[key] = before[key];
-        }
-      });
-    },
-    onSuccess: (kept) => {
-      update((user) => recipe(user, kept));
-    },
-  };
-}
-
-/**
- * Runs a mutation outside a component (`useMutation` takes the same options
- * inside one). Failure is returned as `error`, never thrown, so callers see it
- * in the type.
- */
-async function runMutation<T>(
-  options: MutationObserverOptions<T, Error, T, Rollback>,
-  vars: T,
-): Promise<Result<void>> {
-  try {
-    await new MutationObserver(queryClient, options).mutate(vars);
-    return { data: undefined, error: null };
-  } catch (error) {
-    return {
-      data: null,
-      error: error instanceof Error ? error : new Error(String(error)),
-    };
-  }
-}
 
 /** `kept` on a 200, else throws the server message. */
 function keptOrThrow<T>(
@@ -611,11 +399,6 @@ function matchesPb(
 export const __testing = {
   /** Replaces the user without a download, for tests. */
   setUser(user: UserData | undefined): void {
-    if (user === undefined) {
-      clearUserData();
-      return;
-    }
-    queryClient.setQueryData<CachedUser>(userQueryKey, structuredClone(user));
-    notifyIfChanged();
+    replaceCachedUser(user);
   },
 };
