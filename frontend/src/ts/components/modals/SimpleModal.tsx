@@ -15,6 +15,7 @@ import { z, ZodFirstPartyTypeKind } from "zod";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   addNotificationWithLevel,
+  removeNotification,
   showErrorNotification,
   showNoticeNotification,
 } from "../../states/notifications";
@@ -183,6 +184,7 @@ function FieldInput(props: {
 
 export function SimpleModal(): JSXElement {
   const config = simpleModalConfig;
+  let lastSubmissionErrorId: number | undefined = undefined;
 
   // untrack prevents tanstack's internal createComputed from
   // re-running api.update() when config changes, which would
@@ -190,6 +192,10 @@ export function SimpleModal(): JSXElement {
   const form = createForm(() => ({
     defaultValues: untrack(() => getDefaultValues(config()?.inputs)),
     onSubmit: async ({ value }) => {
+      if (lastSubmissionErrorId !== undefined) {
+        removeNotification(lastSubmissionErrorId);
+        lastSubmissionErrorId = undefined;
+      }
       const schema = config()?.schema as z.Schema;
       // oxlint-disable-next-line typescript/no-explicit-any
       const inputs = config()?.inputs as InputsFromSchema<any>;
@@ -211,11 +217,14 @@ export function SimpleModal(): JSXElement {
         hideLoaderBar();
 
         if (res.showNotification !== false) {
-          addNotificationWithLevel(
+          const notifId = addNotificationWithLevel(
             res.message,
             res.status,
             res.notificationOptions,
           );
+          if (res.status === "error") {
+            lastSubmissionErrorId = notifId;
+          }
         }
 
         if (res.status === "success" || res.alwaysHide) {
@@ -236,6 +245,7 @@ export function SimpleModal(): JSXElement {
   }));
 
   const resetForm = (): void => {
+    lastSubmissionErrorId = undefined;
     const defaults = getDefaultValues(config()?.inputs);
     form.update({ ...form.options, defaultValues: defaults });
     form.reset();
