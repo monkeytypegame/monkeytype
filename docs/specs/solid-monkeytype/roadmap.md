@@ -10,7 +10,7 @@ Companion to `spec.md`. Every step is one small change, behaviour-preserving apa
 
 Each step can start once the previous step's **bold** items are done. Everything listed on one step can run in parallel.
 
-- [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5, C5, EP4, L4–L11.
+- [ ] 1. **H1–H5** housekeeping, then start all at once: **T0** (merge #8507), **C1**, **EP1**, **EP2**, **L1**, **L2**, plus any of U1, U5a, C5, EP4, L4–L11.
 - [ ] 2. **TH1** test-page harness, then **T1** `data-ui-*` on words and letters. Alongside: U2, U3, U4 (after U1), C2, C3.
 - [x] 3. **T2** joining-script dots. Alongside: EP3.
 - [ ] 4. **T3** caret boundary. Then L3 and L12 can start.
@@ -29,7 +29,7 @@ Each step can start once the previous step's **bold** items are done. Everything
    TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
- U: user data         U1 ─► U2, U3, U4 (parallel);  U5 anytime ─────────────────► U6 delete __nonReactive (needs T6a, T6c)
+ U: user data         U1 ─► U2, U3, U4 (parallel);  U7 ─► U5a ─► U5b, U5c, U5d ────► U6 delete __nonReactive (needs T6a, T6c)
  EP: engine prep      EP1, EP2 (parallel, before T5);  EP3 after T1;  EP4 anytime
  L: leaves            L1 L2 before T5;  L3 after T3;  L12 after T1+T3;  L4–L11 anytime
  CL: final cleanup (needs everything)  ─►  TR: tribe (after CL)
@@ -58,7 +58,7 @@ Every track can start now. These are the only steps that wait on another track:
 | **CL3** remove legacy theme selectors | T1, L11, L12 | Bundled themes must be moved over first |
 | **TR1** tribe | CL | Lands after everything else |
 
-Fully independent from start to finish: H, U1–U5, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
+Fully independent from start to finish: H, U1–U5d, U7, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
 
 ## Track H: housekeeping (now, minutes)
 
@@ -112,8 +112,12 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | U2 | M · PR | Activity calendar (user store already holds plain activity data; the per-year cache already sits in `ActivityCalendar.tsx`): the calendar becomes a Solid component; delete the imperative test-activity modules | U1 (data shape) | Can share a PR with U1 |
 | [ ] | U3 | M · PR | Remove the `userLoaded` auth event (was snapshot-updated) (PSA, last-signed-out-result modal read `getUser()`); PSA's `authEvent` subscription (`Psa.init`, started by boot) follows the auth signal; auth becomes a signal the router reads, with the user-data load as state (loading/loaded/failed) plus `reloadUserData()` (reruns `loadUserData()`) replacing the event's promise; delete the auth bus | U1 | Since U7 the load state can come from the user query's status (pending/error, as `useUser()` exposes) |
 | [x] | U4 | S · commit per area | Readers move from the `DB.getSnapshot()` shim to `getUser()`, by area; the last PR deletes the shim and the snapshot code in `db.ts` | U1 | Done in 0012c6f0f: shim deleted, readers import `getUser()`; also renamed `Snapshot`→`UserData`, `SnapshotResult`→`NormalizedLocalResult` (now in `collections/results.ts`), `SnapshotInitError`→`UserDataLoadError`, `snapshotUpdated`→`userLoaded`, `window.snapshot`→`window.userData` |
-| [ ] | U5 | M · PR | Tags, presets and custom themes get the `getUser()` pattern: plain getters backed by a module-level reactive mirror, replacing their live-query hooks (keep `gcTime: Infinity`). Rewrite the non-test `__nonReactive` callers as Solid code reading the getters: commandline tag/preset lists, the custom-themes check in config metadata, the tag PB helpers in `collections/tags.ts` (`getLocalTagPB`, `saveLocalTagPB`) | none | Test-page callers go with T6a/T6c |
-| [ ] | U6 | S · commit | Delete `__nonReactive` from every module once no caller is left | U5, T6a, T6c | Pure deletion: a caller still left means a step missed it |
+| [-] | U5 | M · PR | ~~Tags, presets and custom themes get the `getUser()` pattern: plain getters backed by a module-level reactive mirror of each collection~~ | none | Superseded by U5a–U5d (spec Q32): they become session queries like the user (U7) instead. #8564 closed |
+| [ ] | U5a | S · PR | `optimisticMutation` gets a rollback by id for list data (tags, presets, custom themes): on failure only the items the recipe changed roll back, except items changed again since | U7 | The field rollback stays for the user's own fields |
+| [ ] | U5b | M · PR | Tags move into the user query (same endpoint): mapped in `fetchUser`, read through `getTags()` / `getActiveTags()` over `getUserData()`, actions as by-id optimistic mutations; `active` stays a local signal backed by localStorage. Result filter presets read the user query too, then the raw-response cache in `ape/user.ts` is deleted. Rewrite the non-test `__nonReactive` tag callers (commandline tag list, the tag PB helpers `getLocalTagPB`/`saveLocalTagPB`) against the getters; delete the tags collection | U5a | Test-page callers (test-logic, result PB) go with T6a/T6c |
+| [ ] | U5c | M · PR | Presets become a session query (`createSessionQuery`), downloaded in the blocking user-data step; actions as by-id optimistic mutations; rewrite the commandline preset list against the getter; delete the presets collection | U5a | |
+| [ ] | U5d | M · PR | Custom themes become a session query, downloaded on sign in; actions as by-id optimistic mutations; the custom-themes check in config metadata reads the getter; delete the custom-themes collection and `createSessionDownload` | U5a | Decide then whether custom themes join the blocking user-data step |
+| [ ] | U6 | S · commit | Delete `__nonReactive` from every module once no caller is left | U5b, U5c, U5d, T6a, T6c | Pure deletion: a caller still left means a step missed it |
 | [x] | U7 | M · PR | The user moves from the Solid store to a TanStack Query (spec Q31): `queries/user.ts` replaces `states/user.ts`; `getUserData()` reads the cache, `useUser()` gives its status, actions become TanStack mutations; sign-out clears it through the `["user"]` reset | U1 | Done in [#8568](https://github.com/monkeytypegame/monkeytype/pull/8568): `createSessionQuery` (user-scoped key from a name, never stale, `networkMode: "always"`) and `optimisticMutation`/`runMutation` (field-level rollback) in `queries/utils/`, for later session queries. `ape/user.ts` still caches the raw user response for tags and filter presets. Effects needing one user field key on it (Nav level on `uid`, the calendar on a `testActivity` memo) |
 
 ## Track EP: engine prep (small, parallel)
@@ -160,7 +164,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 ## Suggested sequencing for 2–3 people
 
 - **Person 1 (critical path):** T0 → TH1 → T1 → T2 → T3 → T4 → T5 → T6a → T6b → T6c → T7.
-- **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → C3 areas → U4 → U5 → then C4, U6 once T6 lands.
+- **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → C3 areas → U4 → U7 → U5a → U5b–U5d → then C4, U6 once T6 lands.
 - **Person 3 / agents (leaves):** EP1, EP2, L1, L2 first (they gate T5), then L8, L7, L9, L10, L4, L5, L6, C5, L11, EP4; L3 and L12 once T3 lands; EP3 after T1.
 - **Converge:** C4, U6, then CL, then TR1.
 
