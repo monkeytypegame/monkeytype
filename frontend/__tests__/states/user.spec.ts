@@ -21,6 +21,7 @@ import {
 } from "../../src/ts/states/user";
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
+import { queryClient } from "../../src/ts/queries";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
@@ -148,6 +149,15 @@ describe("loadUserData", () => {
 
     await expect(loadUserData()).rejects.toBeInstanceOf(UserDataLoadError);
     expect(getUserData()).toBeUndefined();
+  });
+});
+
+describe("query cache", () => {
+  it("clears the user when the user-scoped queries reset (sign out)", async () => {
+    expect(getUserData()?.name).toBe("bob");
+
+    await queryClient.resetQueries({ queryKey: ["user"] });
+    await vi.waitFor(() => expect(getUserData()).toBeUndefined());
   });
 });
 

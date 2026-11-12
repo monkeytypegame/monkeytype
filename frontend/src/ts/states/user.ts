@@ -16,29 +16,65 @@ import {
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
-import { createStore, produce, reconcile, unwrap } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
+import { hashKey } from "@tanstack/solid-query";
+import { queryClient } from "../queries";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
 import { setXpBarData } from "./header";
 
 /**
- * The signed-in user's data. The auth flow loads it, sign-out clears it.
- * Written only through the named functions below.
+ * The signed-in user's data lives in the TanStack Query cache under this key:
+ * the auth flow fetches it, sign-out resets it (with every `["user", ...]`
+ * query). Written only through the named functions below.
  */
-const [store, setStore] = createStore<{ value: UserData | undefined }>({
+const userQueryKey = ["user", "data"] as const;
+
+queryClient.setQueryDefaults(userQueryKey, {
+  // session data: never stale, never collected; only the auth flow fetches
+  staleTime: Infinity,
+  gcTime: Infinity,
+  retry: false,
+});
+
+function getCached(): UserData | undefined {
+  return queryClient.getQueryData<UserData>(userQueryKey);
+}
+
+/**
+ * Reactive view of the cached user, so reads track per field. Synced at once
+ * after this module's writes, and on any other cache change (fetch, reset)
+ * from the cache listener, which Query notifies a tick later.
+ */
+const [view, setView] = createStore<{ value: UserData | undefined }>({
   value: undefined,
 });
 
-/** A plain copy of the user, detached from the store. */
+function syncView(): void {
+  const user = getCached();
+  setView(
+    "value",
+    user === undefined
+      ? undefined
+      : reconcile(structuredClone(user), { merge: true }),
+  );
+}
+
+const userQueryHash = hashKey(userQueryKey);
+queryClient.getQueryCache().subscribe((event) => {
+  if (event.query.queryHash === userQueryHash) syncView();
+});
+
+/** A plain copy of the user, detached from the cache. */
 function copyUserData(): UserData | undefined {
-  const user = unwrap(store).value;
+  const user = getCached();
   return user === undefined ? undefined : structuredClone(user);
 }
 
@@ -47,7 +83,7 @@ function copyUserData(): UserData | undefined {
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
 export function getUserData(): DeepReadonly<UserData> | undefined {
-  return store.value;
+  return view.value;
 }
 
 // --- Loading ---
@@ -66,54 +102,13 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   }
 
   try {
-    const userData = await fetchUserFromApi();
-
-    if (userData === null || userData === undefined) {
-      throw new UserDataLoadError(
-        `Request was successful but user data is null/undefined`,
-        200,
-      );
-    }
-
-    const personalBests = userData.personalBests ?? {};
-    for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
-      personalBests[mode] ??= {};
-    }
-
-    const row: UserData = {
-      uid: userData.uid,
-      email: userData.email,
-      name: userData.name,
-      addedAt: userData.addedAt,
-      personalBests,
-      banned: userData.banned,
-      lbOptOut: userData.lbOptOut,
-      verified: userData.verified,
-      discordId: userData.discordId,
-      discordAvatar: userData.discordAvatar,
-      needsToChangeName: userData.needsToChangeName,
-      typingStats: {
-        timeTyping: userData.timeTyping ?? 0,
-        startedTests: userData.startedTests ?? 0,
-        completedTests: userData.completedTests ?? 0,
-      },
-      quoteMod: userData.quoteMod,
-      favoriteQuotes: userData.favoriteQuotes ?? {},
-      quoteRatings: userData.quoteRatings,
-      details: userData.profileDetails,
-      inventory: userData.inventory,
-      xp: userData.xp ?? 0,
-      inboxUnreadSize: userData.inboxUnreadSize ?? 0,
-      streak: userData.streak?.length ?? 0,
-      maxStreak: userData.streak?.maxLength ?? 0,
-      streakHourOffset: userData.streak?.hourOffset ?? undefined,
-      isPremium: userData.isPremium ?? false,
-      allTimeLbs: userData.allTimeLbs,
-      testActivity: userData.testActivity,
-      lbMemory: userData.lbMemory,
-    };
-
-    setStore("value", reconcile(row, { merge: true }));
+    await queryClient.query({
+      queryKey: userQueryKey,
+      queryFn: fetchUser,
+      // the sign in (or retry) always downloads
+      staleTime: 0,
+    });
+    syncView();
   } catch (e) {
     clearUserData();
     throw e;
@@ -122,20 +117,75 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   return getUserData() as DeepReadonly<UserData>;
 }
 
+/** Downloads the user and maps the API shape. */
+async function fetchUser(): Promise<UserData> {
+  const userData = await fetchUserFromApi();
+
+  if (userData === null || userData === undefined) {
+    throw new UserDataLoadError(
+      `Request was successful but user data is null/undefined`,
+      200,
+    );
+  }
+
+  const personalBests = userData.personalBests ?? {};
+  for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
+    personalBests[mode] ??= {};
+  }
+
+  const row: UserData = {
+    uid: userData.uid,
+    email: userData.email,
+    name: userData.name,
+    addedAt: userData.addedAt,
+    personalBests,
+    banned: userData.banned,
+    lbOptOut: userData.lbOptOut,
+    verified: userData.verified,
+    discordId: userData.discordId,
+    discordAvatar: userData.discordAvatar,
+    needsToChangeName: userData.needsToChangeName,
+    typingStats: {
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
+    },
+    quoteMod: userData.quoteMod,
+    favoriteQuotes: userData.favoriteQuotes ?? {},
+    quoteRatings: userData.quoteRatings,
+    details: userData.profileDetails,
+    inventory: userData.inventory,
+    xp: userData.xp ?? 0,
+    inboxUnreadSize: userData.inboxUnreadSize ?? 0,
+    streak: userData.streak?.length ?? 0,
+    maxStreak: userData.streak?.maxLength ?? 0,
+    streakHourOffset: userData.streak?.hourOffset ?? undefined,
+    isPremium: userData.isPremium ?? false,
+    allTimeLbs: userData.allTimeLbs,
+    testActivity: userData.testActivity,
+    lbMemory: userData.lbMemory,
+  };
+
+  return row;
+}
+
 export function clearUserData(): void {
-  setStore("value", undefined);
+  void queryClient.resetQueries({ queryKey: userQueryKey, exact: true });
+  syncView();
 }
 
 // --- Direct writes: mirror what the server already did ---
 
 function update(recipe: (user: UserData) => void): void {
-  if (store.value === undefined) return;
-  setStore(
-    "value",
-    produce((user) => {
-      if (user !== undefined) recipe(user);
-    }),
-  );
+  if (getCached() === undefined) return;
+  queryClient.setQueryData<UserData>(userQueryKey, (user) => {
+    if (user === undefined) return user;
+    // a fresh copy: structural sharing keeps the unchanged parts' identity
+    const next = structuredClone(user);
+    recipe(next);
+    return next;
+  });
+  syncView();
 }
 
 export function recordResult(
@@ -504,6 +554,11 @@ function matchesPb(
 export const __testing = {
   /** Replaces the user without a download, for tests. */
   setUser(user: UserData | undefined): void {
-    setStore("value", user === undefined ? undefined : structuredClone(user));
+    if (user === undefined) {
+      clearUserData();
+      return;
+    }
+    queryClient.setQueryData(userQueryKey, structuredClone(user));
+    syncView();
   },
 };
