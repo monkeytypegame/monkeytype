@@ -17,6 +17,7 @@ import {
   updateLbMemory,
   updateName,
   updateProfile,
+  useUser,
 } from "../../src/ts/states/user";
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
@@ -157,6 +158,43 @@ describe("query cache", () => {
 
     await queryClient.resetQueries({ queryKey: ["user"] });
     await vi.waitFor(() => expect(getUserData()).toBeUndefined());
+  });
+});
+
+describe("useUser", () => {
+  it("shows the cached user and its updates, and never fetches", async () => {
+    const get = vi.spyOn(Ape.users, "get");
+    const { user, dispose } = createRoot((dispose) => ({
+      user: useUser(),
+      dispose,
+    }));
+
+    expect(user.isSuccess).toBe(true);
+    expect(user.data?.name).toBe("bob");
+
+    addXp(5);
+    await vi.waitFor(() => expect(user.data?.xp).toBe(5));
+
+    // the sign-out reset doesn't refetch it
+    await queryClient.resetQueries({ queryKey: ["user"] });
+    await vi.waitFor(() => expect(user.isPending).toBe(true));
+    expect(get).not.toHaveBeenCalled();
+
+    dispose();
+  });
+
+  it("keeps the unchanged parts' identity while mounted", () => {
+    const dispose = createRoot((dispose) => {
+      useUser();
+      return dispose;
+    });
+    const before = getUserData();
+
+    addXp(5);
+
+    expect(getUserData()).not.toBe(before);
+    expect(getUserData()?.personalBests).toBe(before?.personalBests);
+    dispose();
   });
 });
 

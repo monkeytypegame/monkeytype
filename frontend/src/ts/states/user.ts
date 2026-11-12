@@ -25,7 +25,10 @@ import type { NormalizedLocalResult } from "../collections/results";
 import {
   hashKey,
   MutationObserver,
+  replaceEqualDeep,
   type MutationObserverOptions,
+  useQuery,
+  type UseQueryResult,
 } from "@tanstack/solid-query";
 import { createTrigger } from "../hooks/createTrigger";
 import { queryClient } from "../queries";
@@ -90,6 +93,20 @@ function copyUserData(): UserData | undefined {
 export function getUserData(): CachedUser | undefined {
   trackUser();
   return getCached();
+}
+
+/**
+ * The user query for components that need its status (pending, error), eg.
+ * with `AsyncContent`. Read-only: it never fetches (the auth flow does, so
+ * the sign-out reset can't refetch it). Reading `data` while the sign-in
+ * download runs suspends the nearest `Suspense`; check the status first, or
+ * use `getUserData()` for plain reads.
+ */
+export function useUser(): UseQueryResult<CachedUser> {
+  return useQuery<CachedUser>(
+    () => ({ queryKey: userQueryKey, enabled: false }),
+    () => queryClient,
+  );
 }
 
 // --- Loading ---
@@ -186,10 +203,11 @@ function update(recipe: (user: UserData) => void): void {
   if (getCached() === undefined) return;
   queryClient.setQueryData<CachedUser>(userQueryKey, (user) => {
     if (user === undefined) return user;
-    // a fresh copy: structural sharing keeps the unchanged parts' identity
     const next = structuredClone(user) as UserData;
     recipe(next);
-    return next;
+    // keeps the unchanged parts' identity (and the whole user's, when nothing
+    // changed); done here, since `useQuery` turns the query's own off
+    return replaceEqualDeep(user, next);
   });
   notifyIfChanged();
 }
