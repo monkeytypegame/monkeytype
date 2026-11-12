@@ -10,6 +10,7 @@ import {
 import { z } from "zod";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
@@ -58,6 +59,12 @@ const tagsCollection = createCollection({
     },
   }),
   ...keepForever,
+});
+
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: tagsCollection,
+  queryKey: queryKeys.root(),
 });
 
 // oxlint-disable-next-line typescript/explicit-function-return-type

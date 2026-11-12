@@ -11,6 +11,7 @@ import {
 import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
@@ -68,6 +69,12 @@ const inboxCollection = createCollection({
     getKey: (it) => it.id,
   }),
   ...keepForever,
+});
+
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: inboxCollection,
+  queryKey: queryKeys.root(),
 });
 
 export async function refetchInboxCollection(): Promise<void> {

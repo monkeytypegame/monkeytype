@@ -10,6 +10,7 @@ import {
 import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import Ape from "../ape";
 import { tempId, keepForever } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
@@ -53,6 +54,12 @@ const connectionsCollection = createCollection({
     },
   }),
   ...keepForever,
+});
+
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: connectionsCollection,
+  queryKey: queryKeys.root(),
 });
 
 const connectionsQuery = createRoot(() =>

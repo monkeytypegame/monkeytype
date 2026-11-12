@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/solid-query";
 import { baseKey } from "./utils/keys";
 import Ape from "../ape";
 import { queryClient } from ".";
+import { isAuthenticated } from "../states/core";
 
 const queryKeys = {
   root: () => baseKey("friendsList", { isUserSpecific: true }),
@@ -11,6 +12,9 @@ const queryKeys = {
 export const getFriendsListQuery = () =>
   queryOptions({
     queryKey: queryKeys.root(),
+    // The friends page is auth-gated; don't fetch for a signed-out user
+    // (a sign out reset would otherwise refetch into a 401).
+    enabled: isAuthenticated,
     queryFn: async () => {
       const response = await Ape.users.getFriends();
       if (response.status !== 200) {

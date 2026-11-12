@@ -7,6 +7,7 @@ import {
 } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId, keepForever } from "./utils/misc";
@@ -51,6 +52,12 @@ const presetsCollection = createCollection({
     },
   }),
   ...keepForever,
+});
+
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: presetsCollection,
+  queryKey: queryKeys.root(),
 });
 
 type ActionType = {

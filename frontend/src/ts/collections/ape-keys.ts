@@ -6,6 +6,7 @@ import {
 } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import {
@@ -72,6 +73,12 @@ const apeKeysCollection = createCollection({
     },
   }),
   ...keepForever,
+});
+
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: apeKeysCollection,
+  queryKey: queryKeys.root(),
 });
 
 type ActionType = {

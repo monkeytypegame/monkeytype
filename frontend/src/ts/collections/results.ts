@@ -27,10 +27,10 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo, createRoot } from "solid-js";
+import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
-import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/last-result";
@@ -785,13 +785,11 @@ export async function waitForResultsReady(): Promise<void> {
 /**
  *
  */
-createRoot(() =>
-  createEffectOn(isAuthenticated, (hasUser) => {
-    if (hasUser) {
-      void resultsCollection.utils.refetch();
-    }
-  }),
-);
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: resultsCollection,
+  queryKey: queryKeys.root(),
+});
 
 function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];

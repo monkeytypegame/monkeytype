@@ -5,10 +5,9 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { createRoot } from "solid-js";
 import Ape from "../ape";
-import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
+import { registerSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import {
   replaceSpacesWithUnderscores,
@@ -44,16 +43,11 @@ const resultFilterPresetsCollection = createCollection({
   ...keepForever,
 });
 
-// Its query is created disabled: startSync runs at module load, before the
-// auth state resolves, and the query never re-evaluates `enabled` on its own.
-// Kick the download when the user signs in, like the other user collections.
-createRoot(() =>
-  createEffectOn(isAuthenticated, (hasUser) => {
-    if (hasUser) {
-      void resultFilterPresetsCollection.utils.refetch();
-    }
-  }),
-);
+// Registered for the sign in / sign out cleanup in `queries/index.ts`.
+registerSessionCollection({
+  collection: resultFilterPresetsCollection,
+  queryKey: queryKeys.root(),
+});
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultFilterPresetsLiveQuery() {
