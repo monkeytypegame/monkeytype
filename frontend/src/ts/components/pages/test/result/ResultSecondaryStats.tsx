@@ -16,6 +16,7 @@ import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
 import { createTrigger } from "../../../../hooks/createTrigger";
+import { setQuoteFavorite } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -28,7 +29,7 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
-import { getUserData, setQuoteFavorite } from "../../../../states/user";
+import { getUserData } from "../../../../states/user";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";

@@ -3,18 +3,13 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { Result } from "@monkeytype/util/trycatch";
 import {
   Mode,
   Mode2,
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/schemas/shared";
-import {
-  Badge,
-  TestActivity,
-  UserProfileDetails,
-} from "@monkeytype/schemas/users";
+import { Badge, TestActivity } from "@monkeytype/schemas/users";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
 import Ape from "../ape";
@@ -22,18 +17,14 @@ import { configurationPromise } from "../ape/server-configuration";
 import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
 import { type CachedUser, userQuery } from "../queries/user";
-import {
-  type OptimisticMutation,
-  optimisticMutation,
-  runMutation,
-} from "../queries/utils/optimistic-mutation";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
 import { setXpBarData } from "./header";
 
 /**
  * The signed-in user, cached by the user query (`queries/user`): the auth flow
- * loads it, sign-out clears it, and only the named functions below write it.
+ * loads it, sign-out clears it. Written only by the direct writes below and
+ * the optimistic actions in `queries/user`.
  * `undefined` while signed out, loading or after a failed load. Reactive
  * inside components and effects, a plain read elsewhere.
  */
@@ -173,143 +164,6 @@ export async function updateLbMemory<M extends Mode>(
       body: { mode, mode2, language, rank },
     });
   }
-}
-
-// --- Optimistic actions: user changes, rolled back if the request fails ---
-
-/** An optimistic mutation on the user: see `optimisticMutation`. */
-function userMutation<V>(
-  name: string,
-  recipe: (user: UserData, vars: V) => void,
-  request: (vars: V) => Promise<V>,
-): OptimisticMutation<UserData, V> {
-  return optimisticMutation({ query: userQuery, name, recipe, request });
-}
-
-/** `kept` on a 200, else throws the server message. */
-function keptOrThrow<T>(
-  response: { status: number; body: { message: string } },
-  kept: T,
-): T {
-  if (response.status !== 200) throw new Error(response.body.message);
-  return kept;
-}
-
-const updateNameMutation = userMutation<string>(
-  "updateName",
-  (user, name) => {
-    user.name = name;
-  },
-  async (name) =>
-    keptOrThrow(await Ape.users.updateName({ body: { name } }), name),
-);
-
-export async function updateName(name: string): Promise<Result<void>> {
-  return runMutation(updateNameMutation, name);
-}
-
-const unlinkDiscordMutation = userMutation<undefined>(
-  "unlinkDiscord",
-  (user) => {
-    user.discordId = undefined;
-    user.discordAvatar = undefined;
-  },
-  async () => keptOrThrow(await Ape.users.unlinkDiscord(), undefined),
-);
-
-export async function unlinkDiscord(): Promise<Result<void>> {
-  return runMutation(unlinkDiscordMutation, undefined);
-}
-
-const setStreakHourOffsetMutation = userMutation<number>(
-  "setStreakHourOffset",
-  (user, hourOffset) => {
-    user.streakHourOffset = hourOffset;
-  },
-  async (hourOffset) =>
-    keptOrThrow(
-      await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
-      hourOffset,
-    ),
-);
-
-export async function setStreakHourOffset(
-  hourOffset: number,
-): Promise<Result<void>> {
-  return runMutation(setStreakHourOffsetMutation, hourOffset);
-}
-
-type QuoteRating = { language: Language; quoteId: number; rating: number };
-
-const rateQuoteMutation = userMutation<QuoteRating>(
-  "rateQuote",
-  (user, { language, quoteId, rating }) => {
-    user.quoteRatings ??= {};
-    user.quoteRatings[language] ??= {};
-    user.quoteRatings[language][quoteId] = rating;
-  },
-  async (rating) =>
-    keptOrThrow(await Ape.quotes.addRating({ body: rating }), rating),
-);
-
-export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
-  return runMutation(rateQuoteMutation, rating);
-}
-
-type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
-
-const setQuoteFavoriteMutation = userMutation<QuoteFavorite>(
-  "setQuoteFavorite",
-  (user, { language, quoteId, favorite }) => {
-    const list = user.favoriteQuotes?.[language] ?? [];
-    const without = list.filter((id) => id !== quoteId);
-    user.favoriteQuotes ??= {};
-    user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
-  },
-  async (favorite) => {
-    const body = { language: favorite.language, quoteId: favorite.quoteId };
-    return keptOrThrow(
-      favorite.favorite
-        ? await Ape.users.addQuoteToFavorites({ body })
-        : await Ape.users.removeQuoteFromFavorites({ body }),
-      favorite,
-    );
-  },
-);
-
-export async function setQuoteFavorite(
-  favorite: QuoteFavorite,
-): Promise<Result<void>> {
-  return runMutation(setQuoteFavoriteMutation, favorite);
-}
-
-type ProfileUpdate = {
-  details: UserProfileDetails;
-  selectedBadgeId: number;
-};
-
-const updateProfileMutation = userMutation<ProfileUpdate>(
-  "updateProfile",
-  (user, { details, selectedBadgeId }) => {
-    user.details = details;
-    for (const badge of user.inventory?.badges ?? []) {
-      badge.selected = badge.id === selectedBadgeId;
-    }
-  },
-  async (profile) => {
-    const response = await Ape.users.updateProfile({
-      body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
-    });
-    if (response.status !== 200) throw new Error(response.body.message);
-    // the server sanitizes the details
-    return { ...profile, details: response.body.data ?? profile.details };
-  },
-);
-
-export async function updateProfile(
-  profile: ProfileUpdate,
-): Promise<Result<void>> {
-  return runMutation(updateProfileMutation, profile);
 }
 
 // --- Reads ---

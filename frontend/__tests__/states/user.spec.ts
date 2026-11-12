@@ -12,13 +12,15 @@ import {
   resetPersonalBests,
   setDiscordLink,
   setInboxUnreadSize,
-  setQuoteFavorite,
   setStreak,
   updateLbMemory,
+} from "../../src/ts/states/user";
+import {
+  setQuoteFavorite,
   updateName,
   updateProfile,
-} from "../../src/ts/states/user";
-import { useUser } from "../../src/ts/queries/user";
+  useUser,
+} from "../../src/ts/queries/user";
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
 import { queryClient } from "../../src/ts/queries";
