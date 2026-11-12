@@ -67,7 +67,7 @@
   animation: rgb-bg 5s linear infinite;
 }
 
-#caret {
+[data-ui-element="caret"] {
   animation: rgb-bg 5s linear infinite !important;
 }
 

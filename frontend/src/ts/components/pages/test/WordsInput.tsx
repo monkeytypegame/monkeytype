@@ -3,10 +3,7 @@
 import { JSXElement, onCleanup, onMount } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import {
-  isInputElementFocused,
-  registerInputElement,
-} from "../../../input/input-element";
+import { registerInputElement } from "../../../input/input-element";
 import {
   onCompositionEnd,
   onCompositionStart,
@@ -23,9 +20,9 @@ import {
   isRealWordsInputShown,
   isTestFinished,
   setTestFocusState,
+  setWordsInputFocused,
   wordsInputPosition,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
 import { cn } from "../../../utils/cn";
 
 /**
@@ -39,6 +36,7 @@ export function WordsInput(): JSXElement {
   onMount(() => {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
     onCleanup(registerInputElement(inputRef));
+    onCleanup(() => setWordsInputFocused(false));
   });
 
   const px = (value: number | undefined): string | undefined =>
@@ -83,19 +81,15 @@ export function WordsInput(): JSXElement {
             : `${wordsInputPosition().maxWidth}%`,
       }}
       on:focus={() => {
-        if (isInputElementFocused()) {
-          if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
-            setTestFocusState("focused");
-          }
-          Caret.show(true);
+        if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
+          setTestFocusState("focused");
         }
+        setWordsInputFocused(true);
         onFocus();
       }}
       on:blur={() => {
-        if (!isInputElementFocused()) {
-          setTestFocusState("unfocused");
-        }
-        Caret.hide();
+        setWordsInputFocused(false);
+        setTestFocusState("unfocused");
       }}
       on:compositionstart={onCompositionStart}
       on:compositionupdate={onCompositionUpdate}

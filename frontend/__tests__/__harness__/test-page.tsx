@@ -35,11 +35,12 @@
  *   keyup per char; "\b" is backspace, "\n" Enter), `compose(updates)` like
  *   an IME. Both end with a frame, so the words are rendered: pass
  *   `{ flush: false }` to check before it (input never renders synchronously).
- * - Reading: `word(i).letters()` / `word(i).state`, `phase()`, `liveStats()`.
+ * - Reading: `word(i).letters()` / `word(i).state`, `phase()`, `liveStats()`,
+ *   `caret()` / `paceCaret()` (shown, and the pace caret's target letter).
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
  * - Mocked: firebase (signed out, so a finished test isn't saved), the theme
- *   controller (indexedDB), the chart (canvas). Stubbed in jsdom: matchMedia
+ *   controller (indexedDB), the chart and confetti (canvas). Stubbed in jsdom: matchMedia
  *   (nothing matches), scrolling. The engine's debug logs are muted.
  * - The page mounts in a router with only the test page, so it reads as the
  *   test page (typing starts a test only there) and the result's links work.
@@ -75,6 +76,7 @@ import {
 } from "../../src/ts/states/test";
 import { LETTER_SELECTOR } from "../../src/ts/states/word-elements";
 import * as CustomText from "../../src/ts/test/custom-text";
+import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 
 // fake timers, then jsdom gaps: matchMedia (ad controller, on import; no
 // query matches) and scrolling (the test keeps itself in view)
@@ -127,6 +129,8 @@ vi.mock("../../src/ts/components/common/ChartJs", () => ({
 vi.mock("../../src/ts/controllers/theme-controller", () => ({
   randomizeTheme: vi.fn(),
 }));
+// draws on a canvas, which jsdom lacks
+vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
 
 export type TestPhase = "ready" | "active" | "finished";
 
@@ -153,6 +157,12 @@ export type TestPageHarness = {
     isActive: boolean;
   };
   phase: () => TestPhase;
+  caret: () => { shown: boolean };
+  paceCaret: () => {
+    shown: boolean;
+    /** the letter it's heading for */
+    target?: { wordIndex: number; letterIndex: number };
+  };
   liveStats: () => {
     wpm?: number;
     raw?: number;
@@ -213,6 +223,12 @@ export async function renderTestPage(
     return el;
   };
 
+  const isShown = (uiElement: string): boolean => {
+    const el = container.querySelector(`[data-ui-element="${uiElement}"]`);
+    if (el === null) throw new Error(`No ${uiElement} rendered`);
+    return !el.classList.contains("hidden");
+  };
+
   return {
     async type(text, { flush = true } = {}) {
       await typeText(text);
@@ -251,6 +267,19 @@ export async function renderTestPage(
     }),
     phase: () =>
       isTestFinished() ? "finished" : isTestActive() ? "active" : "ready",
+    caret: () => ({ shown: isShown("caret") }),
+    paceCaret: () => {
+      const target = paceCaretTarget();
+      return {
+        shown: isShown("paceCaret"),
+        ...(target !== undefined && {
+          target: {
+            wordIndex: target.wordIndex,
+            letterIndex: target.letterIndex,
+          },
+        }),
+      };
+    },
     liveStats: () => ({
       wpm: currentLiveStats.wpm,
       raw: currentLiveStats.raw,

@@ -23,7 +23,7 @@
 }
 
 .button.discord::after,
-#caret,
+[data-ui-element="caret"],
 .pageSettings .section .buttons button.active,
 .pageSettings .section.languages .buttons .language.active,
 .pageAccount .group.filterButtons .buttons button.active {

@@ -19,9 +19,7 @@ import {
   resetIncompleteTests,
   setTestFocusState,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
-import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
   onRestartButtonClick,
@@ -66,8 +64,6 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let caretRef: HTMLDivElement | undefined;
-  let paceCaretRef: HTMLDivElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -75,24 +71,9 @@ export function TestPage(): JSXElement {
     onCleanup(() => controller.abort());
     const { signal } = controller;
 
-    if (
-      typingTestRef === undefined ||
-      wordsWrapperRef === undefined ||
-      caretRef === undefined ||
-      paceCaretRef === undefined
-    ) {
+    if (typingTestRef === undefined) {
       throw new Error("TestPage refs not set");
     }
-
-    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
-    Caret.initElement(
-      { caret: new ElementWithUtils(caretRef), wordsWrapper },
-      signal,
-    );
-    PaceCaret.initElement(
-      { caret: new ElementWithUtils(paceCaretRef), wordsWrapper },
-      signal,
-    );
 
     TestUI.init(
       {
@@ -216,18 +197,6 @@ export function TestPage(): JSXElement {
           <div class="contents">
             <OutOfFocusWarning />
           </div>
-          <div
-            id="paceCaret"
-            ref={(el) => (paceCaretRef = el)}
-            class="full-width default hidden"
-            style={{ "font-size": fontSize() }}
-          ></div>
-          <div
-            id="caret"
-            ref={(el) => (caretRef = el)}
-            class="full-width default"
-            style={{ "font-size": fontSize() }}
-          ></div>
           <Words wordsWrapperRef={() => wordsWrapperRef} />
         </div>
 

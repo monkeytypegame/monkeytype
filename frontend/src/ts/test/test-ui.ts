@@ -3,18 +3,13 @@ import { Config } from "../config/store";
 import * as TestWords from "./test-words";
 import { getCurrentInput } from "./events/data";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import * as Caret from "./caret";
 import * as Misc from "../utils/misc";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { isDevEnvironment } from "../utils/env";
 import * as SoundController from "../controllers/sound-controller";
 import * as Numbers from "@monkeytype/util/numbers";
-import {
-  blurInputElement,
-  focusInputElement,
-  isInputElementFocused,
-} from "../input/input-element";
+import { blurInputElement, focusInputElement } from "../input/input-element";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as AdController from "../controllers/ad-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -42,6 +37,7 @@ import {
   setWordsInputPosition,
   triggerScrollWindowToActiveWord,
   setFocusMode,
+  isWordsInputFocused,
 } from "../states/test";
 import { untrack } from "solid-js";
 import { setResultShown } from "../states/result";
@@ -124,7 +120,6 @@ function afterAnyTestInput(
   }
 
   setFocusMode(true);
-  Caret.stopAnimation();
 }
 
 export function afterTestTextInput(
@@ -252,7 +247,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   setLayoutfluidTimerVisible(false);
   ResultWordHighlight.destroy();
   MonkeyPower.reset();
-  Caret.resetPosition();
   setTestInitFailed(false);
   setTestInitError(null);
   focusWords(true);
@@ -280,7 +274,6 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
 }
 
 export function onTestFinish(): void {
-  Caret.hide();
   setTestFocusState("focused");
   if (Config.playSoundOnClick === "16") {
     void SoundController.playFartReverb();
@@ -321,7 +314,7 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 
-  if (isTestFinished() || isInputElementFocused()) return;
+  if (isTestFinished() || isWordsInputFocused()) return;
   // checked last, isAnyPopupVisible is a bit expensive
   if (
     ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||

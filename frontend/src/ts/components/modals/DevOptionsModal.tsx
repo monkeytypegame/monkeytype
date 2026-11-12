@@ -5,7 +5,6 @@ import { z } from "zod";
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
 import { quickLogin } from "../../dev/quick-login";
-import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { addXp } from "../../queries/user";
 import { hideModal, showModal } from "../../states/modals";
@@ -25,6 +24,7 @@ import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { toggleCaretDebug } from "../pages/test/caret";
 import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
 const [mediaQueryDebugLevel, setMediaQueryDebugLevel] = createSignal(0);

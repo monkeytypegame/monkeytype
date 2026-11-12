@@ -113,7 +113,7 @@ button.text:hover,
   color: var(--bg-color);
 }
 
-#caret {
+[data-ui-element="caret"] {
   animation: phantom-bg 3s linear infinite;
 }
 
