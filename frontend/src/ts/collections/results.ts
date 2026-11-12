@@ -50,7 +50,7 @@ import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
-import { addXp, getUserData, recordResult, setStreak } from "../states/user";
+import { addXp, getUserData, recordResult, setStreak } from "../queries/user";
 import { removeLanguageSize } from "../utils/strings";
 
 export type NormalizedLocalResult<M extends Mode> = Omit<

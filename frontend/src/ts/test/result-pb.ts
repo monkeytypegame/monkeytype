@@ -6,7 +6,7 @@ import {
   getLocalTagPB,
   saveLocalTagPB,
 } from "../collections/tags";
-import { getLocalPB } from "../states/user";
+import { getLocalPB } from "../queries/user";
 import Format from "../singletons/format";
 import { hideCrown, ResultTag, resultState, showCrown } from "../states/result";
 import { CompletedResult } from "../states/test";

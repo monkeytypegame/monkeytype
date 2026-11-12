@@ -16,6 +16,7 @@ import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
 import { createTrigger } from "../../../../hooks/createTrigger";
+import { setQuoteFavorite, getUserData } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -28,7 +29,6 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
-import { getUserData, setQuoteFavorite } from "../../../../states/user";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -280,7 +280,7 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the user store, refreshed after each toggle
+  // favorites live in the cached user, refreshed after each toggle
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();

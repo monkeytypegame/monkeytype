@@ -3,7 +3,6 @@ import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { XpBreakdown } from "@monkeytype/schemas/results";
-import { Result } from "@monkeytype/util/trycatch";
 import {
   Mode,
   Mode2,
@@ -15,48 +14,107 @@ import {
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
+import { Result } from "@monkeytype/util/trycatch";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
-import { createStore, produce, reconcile, unwrap } from "solid-js/store";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
-import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
+import { UserData } from "../constants/user-data";
+import { isAuthenticated } from "../states/core";
+import { setXpBarData } from "../states/header";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
-import { isAuthenticated } from "./core";
-import { setXpBarData } from "./header";
+import {
+  type OptimisticMutation,
+  optimisticMutation,
+  runMutation,
+} from "./utils/optimistic-mutation";
+import { createSessionQuery } from "./utils/session-query";
+
+/** The cached user. Readonly: writes go through `userQuery.update`. */
+export type CachedUser = DeepReadonly<UserData>;
 
 /**
- * The signed-in user's data. The auth flow loads it, sign-out clears it.
- * Written only through the named functions below.
+ * The signed-in user's query: the auth flow downloads it, sign-out resets it
+ * (with every `["user", ...]` query). Written only through the functions in
+ * this module: direct writes mirror what the server already did, optimistic
+ * actions call the API and roll back on failure.
  */
-const [store, setStore] = createStore<{ value: UserData | undefined }>({
-  value: undefined,
+const userQuery = createSessionQuery<UserData>({
+  name: "user",
+  fetch: fetchUser,
 });
 
-/** A plain copy of the user, detached from the store. */
-function copyUserData(): UserData | undefined {
-  const user = unwrap(store).value;
-  return user === undefined ? undefined : structuredClone(user);
+/** The user query for components that need its status: see `use`. */
+export const useUser = userQuery.use;
+
+/** Downloads the user and maps the API shape. */
+async function fetchUser(): Promise<UserData> {
+  const userData = await fetchUserFromApi();
+
+  if (userData === null || userData === undefined) {
+    throw new UserDataLoadError(
+      `Request was successful but user data is null/undefined`,
+      200,
+    );
+  }
+
+  const personalBests = userData.personalBests ?? {};
+  for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
+    personalBests[mode] ??= {};
+  }
+
+  return {
+    uid: userData.uid,
+    email: userData.email,
+    name: userData.name,
+    addedAt: userData.addedAt,
+    personalBests,
+    banned: userData.banned,
+    lbOptOut: userData.lbOptOut,
+    verified: userData.verified,
+    discordId: userData.discordId,
+    discordAvatar: userData.discordAvatar,
+    needsToChangeName: userData.needsToChangeName,
+    typingStats: {
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
+    },
+    quoteMod: userData.quoteMod,
+    favoriteQuotes: userData.favoriteQuotes ?? {},
+    quoteRatings: userData.quoteRatings,
+    details: userData.profileDetails,
+    inventory: userData.inventory,
+    xp: userData.xp ?? 0,
+    inboxUnreadSize: userData.inboxUnreadSize ?? 0,
+    streak: userData.streak?.length ?? 0,
+    maxStreak: userData.streak?.maxLength ?? 0,
+    streakHourOffset: userData.streak?.hourOffset ?? undefined,
+    isPremium: userData.isPremium ?? false,
+    allTimeLbs: userData.allTimeLbs,
+    testActivity: userData.testActivity,
+    lbMemory: userData.lbMemory,
+  };
 }
 
 /**
  * The signed-in user, `undefined` while signed out, loading or after a failed
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
-export function getUserData(): DeepReadonly<UserData> | undefined {
-  return store.value;
+export function getUserData(): CachedUser | undefined {
+  return userQuery.get();
 }
 
 // --- Loading ---
 
 /**
- * Downloads the user and replaces the stored one. Throws `UserDataLoadError` if the
- * request fails, leaving no user.
+ * Downloads the user into the cache. Throws `UserDataLoadError` if the request
+ * fails, leaving no user.
  */
-export async function loadUserData(): Promise<DeepReadonly<UserData>> {
+export async function loadUserData(): Promise<CachedUser> {
   await configurationPromise;
 
   if (!isAuthenticated()) {
@@ -66,83 +124,22 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   }
 
   try {
-    const userData = await fetchUserFromApi();
-
-    if (userData === null || userData === undefined) {
-      throw new UserDataLoadError(
-        `Request was successful but user data is null/undefined`,
-        200,
-      );
-    }
-
-    const personalBests = userData.personalBests ?? {};
-    for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
-      personalBests[mode] ??= {};
-    }
-
-    const row: UserData = {
-      uid: userData.uid,
-      email: userData.email,
-      name: userData.name,
-      addedAt: userData.addedAt,
-      personalBests,
-      banned: userData.banned,
-      lbOptOut: userData.lbOptOut,
-      verified: userData.verified,
-      discordId: userData.discordId,
-      discordAvatar: userData.discordAvatar,
-      needsToChangeName: userData.needsToChangeName,
-      typingStats: {
-        timeTyping: userData.timeTyping ?? 0,
-        startedTests: userData.startedTests ?? 0,
-        completedTests: userData.completedTests ?? 0,
-      },
-      quoteMod: userData.quoteMod,
-      favoriteQuotes: userData.favoriteQuotes ?? {},
-      quoteRatings: userData.quoteRatings,
-      details: userData.profileDetails,
-      inventory: userData.inventory,
-      xp: userData.xp ?? 0,
-      inboxUnreadSize: userData.inboxUnreadSize ?? 0,
-      streak: userData.streak?.length ?? 0,
-      maxStreak: userData.streak?.maxLength ?? 0,
-      streakHourOffset: userData.streak?.hourOffset ?? undefined,
-      isPremium: userData.isPremium ?? false,
-      allTimeLbs: userData.allTimeLbs,
-      testActivity: userData.testActivity,
-      lbMemory: userData.lbMemory,
-    };
-
-    setStore("value", reconcile(row, { merge: true }));
+    await userQuery.download();
   } catch (e) {
-    clearUserData();
+    userQuery.reset();
     throw e;
   }
 
-  return getUserData() as DeepReadonly<UserData>;
-}
-
-export function clearUserData(): void {
-  setStore("value", undefined);
+  return getUserData() as CachedUser;
 }
 
 // --- Direct writes: mirror what the server already did ---
-
-function update(recipe: (user: UserData) => void): void {
-  if (store.value === undefined) return;
-  setStore(
-    "value",
-    produce((user) => {
-      if (user !== undefined) recipe(user);
-    }),
-  );
-}
 
 export function recordResult(
   result: NormalizedLocalResult<Mode>,
   options: { isPb: boolean },
 ): void {
-  update((user) => {
+  userQuery.update((user) => {
     if (user.testActivity !== undefined) {
       incrementTestActivity(user.testActivity, result.timestamp);
     }
@@ -160,7 +157,7 @@ export function recordResult(
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
   if (getUserData() === undefined) return;
-  update((user) => {
+  userQuery.update((user) => {
     user.xp += xp;
   });
   setXpBarData({
@@ -171,27 +168,27 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function setStreak(streak: number): void {
-  update((user) => {
+  userQuery.update((user) => {
     user.streak = streak;
     if (streak > user.maxStreak) user.maxStreak = streak;
   });
 }
 
 export function setInboxUnreadSize(size: number): void {
-  update((user) => {
+  userQuery.update((user) => {
     user.inboxUnreadSize = size;
   });
 }
 
 export function addBadge(badge: Badge): void {
-  update((user) => {
+  userQuery.update((user) => {
     user.inventory ??= { badges: [] };
     user.inventory.badges.push(badge);
   });
 }
 
 export function resetPersonalBests(): void {
-  update((user) => {
+  userQuery.update((user) => {
     user.personalBests = {
       time: {},
       words: {},
@@ -206,7 +203,7 @@ export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  update((user) => {
+  userQuery.update((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
@@ -231,7 +228,7 @@ export async function updateLbMemory<M extends Mode>(
   if (userData === undefined) return;
 
   const current = userData.lbMemory?.time?.[timeMode2]?.[language];
-  update((user) => {
+  userQuery.update((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };
     user.lbMemory.time[timeMode2] ??= {};
@@ -247,139 +244,110 @@ export async function updateLbMemory<M extends Mode>(
 
 // --- Optimistic actions: user changes, rolled back if the request fails ---
 
-/**
- * Applies `recipe` with `vars` at once and sends `request`, which resolves to
- * the values to keep (the server may change them); the recipe is applied
- * again with those. On failure the fields the recipe changed are rolled back,
- * except those changed again since (by a direct write or another action),
- * which keep the newer value. The recipe must be idempotent. Failure is
- * returned as `error`, never thrown, so callers see it in the type; `request`
- * returns one the same way (Ape never throws).
- */
-async function optimisticUpdate<T>(
-  vars: T,
-  recipe: (user: UserData, vars: T) => void,
-  request: () => Promise<Result<T>>,
-): Promise<Result<void>> {
-  const before = copyUserData();
-  if (before === undefined) {
-    return { data: null, error: new Error("Not signed in") };
-  }
-  update((user) => recipe(user, vars));
-  const written = copyUserData() ?? before;
-  const same = (a: unknown, b: unknown): boolean =>
-    JSON.stringify(a) === JSON.stringify(b);
-  const changed = (
-    Object.keys({ ...before, ...written }) as (keyof UserData)[]
-  ).filter((key) => !same(before[key], written[key]));
-
-  const { data: kept, error } = await request();
-  if (error !== null) {
-    update((user) => {
-      for (const key of changed) {
-        if (!same(user[key], written[key])) continue;
-        (user as Record<string, unknown>)[key] = before[key];
-      }
-    });
-    return { data: null, error };
-  }
-  update((user) => recipe(user, kept));
-  return { data: undefined, error: null };
+/** An optimistic mutation on the user: see `optimisticMutation`. */
+function userMutation<V>(
+  name: string,
+  recipe: (user: UserData, vars: V) => void,
+  request: (vars: V) => Promise<V>,
+): OptimisticMutation<UserData, V> {
+  return optimisticMutation({ query: userQuery, name, recipe, request });
 }
 
-/** `kept` on a 200, else the server message as the error. */
-function resultOf<T>(
+/** `kept` on a 200, else throws the server message. */
+function keptOrThrow<T>(
   response: { status: number; body: { message: string } },
   kept: T,
-): Result<T> {
-  return response.status === 200
-    ? { data: kept, error: null }
-    : { data: null, error: new Error(response.body.message) };
+): T {
+  if (response.status !== 200) throw new Error(response.body.message);
+  return kept;
 }
+
+const updateNameMutation = userMutation<string>(
+  "updateName",
+  (user, name) => {
+    user.name = name;
+  },
+  async (name) =>
+    keptOrThrow(await Ape.users.updateName({ body: { name } }), name),
+);
 
 export async function updateName(name: string): Promise<Result<void>> {
-  return optimisticUpdate(
-    name,
-    (user, name) => {
-      user.name = name;
-    },
-    async () => {
-      return resultOf(await Ape.users.updateName({ body: { name } }), name);
-    },
-  );
+  return runMutation(updateNameMutation, name);
 }
 
+const unlinkDiscordMutation = userMutation<undefined>(
+  "unlinkDiscord",
+  (user) => {
+    user.discordId = undefined;
+    user.discordAvatar = undefined;
+  },
+  async () => keptOrThrow(await Ape.users.unlinkDiscord(), undefined),
+);
+
 export async function unlinkDiscord(): Promise<Result<void>> {
-  return optimisticUpdate(
-    undefined,
-    (user) => {
-      user.discordId = undefined;
-      user.discordAvatar = undefined;
-    },
-    async () => {
-      return resultOf(await Ape.users.unlinkDiscord(), undefined);
-    },
-  );
+  return runMutation(unlinkDiscordMutation, undefined);
 }
+
+const setStreakHourOffsetMutation = userMutation<number>(
+  "setStreakHourOffset",
+  (user, hourOffset) => {
+    user.streakHourOffset = hourOffset;
+  },
+  async (hourOffset) =>
+    keptOrThrow(
+      await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
+      hourOffset,
+    ),
+);
 
 export async function setStreakHourOffset(
   hourOffset: number,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    hourOffset,
-    (user, hourOffset) => {
-      user.streakHourOffset = hourOffset;
-    },
-    async () => {
-      return resultOf(
-        await Ape.users.setStreakHourOffset({ body: { hourOffset } }),
-        hourOffset,
-      );
-    },
-  );
+  return runMutation(setStreakHourOffsetMutation, hourOffset);
 }
 
 type QuoteRating = { language: Language; quoteId: number; rating: number };
 
+const rateQuoteMutation = userMutation<QuoteRating>(
+  "rateQuote",
+  (user, { language, quoteId, rating }) => {
+    user.quoteRatings ??= {};
+    user.quoteRatings[language] ??= {};
+    user.quoteRatings[language][quoteId] = rating;
+  },
+  async (rating) =>
+    keptOrThrow(await Ape.quotes.addRating({ body: rating }), rating),
+);
+
 export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
-  return optimisticUpdate(
-    rating,
-    (user, { language, quoteId, rating }) => {
-      user.quoteRatings ??= {};
-      user.quoteRatings[language] ??= {};
-      user.quoteRatings[language][quoteId] = rating;
-    },
-    async () => {
-      return resultOf(await Ape.quotes.addRating({ body: rating }), rating);
-    },
-  );
+  return runMutation(rateQuoteMutation, rating);
 }
 
 type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
+const setQuoteFavoriteMutation = userMutation<QuoteFavorite>(
+  "setQuoteFavorite",
+  (user, { language, quoteId, favorite }) => {
+    const list = user.favoriteQuotes?.[language] ?? [];
+    const without = list.filter((id) => id !== quoteId);
+    user.favoriteQuotes ??= {};
+    user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
+  },
+  async (favorite) => {
+    const body = { language: favorite.language, quoteId: favorite.quoteId };
+    return keptOrThrow(
+      favorite.favorite
+        ? await Ape.users.addQuoteToFavorites({ body })
+        : await Ape.users.removeQuoteFromFavorites({ body }),
+      favorite,
+    );
+  },
+);
+
 export async function setQuoteFavorite(
   favorite: QuoteFavorite,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    favorite,
-    (user, { language, quoteId, favorite }) => {
-      const list = user.favoriteQuotes?.[language] ?? [];
-      const without = list.filter((id) => id !== quoteId);
-      user.favoriteQuotes ??= {};
-      user.favoriteQuotes[language] = favorite
-        ? [...without, quoteId]
-        : without;
-    },
-    async () => {
-      const body = { language: favorite.language, quoteId: favorite.quoteId };
-      return resultOf(
-        favorite.favorite
-          ? await Ape.users.addQuoteToFavorites({ body })
-          : await Ape.users.removeQuoteFromFavorites({ body }),
-        favorite,
-      );
-    },
-  );
+  return runMutation(setQuoteFavoriteMutation, favorite);
 }
 
 type ProfileUpdate = {
@@ -387,29 +355,28 @@ type ProfileUpdate = {
   selectedBadgeId: number;
 };
 
+const updateProfileMutation = userMutation<ProfileUpdate>(
+  "updateProfile",
+  (user, { details, selectedBadgeId }) => {
+    user.details = details;
+    for (const badge of user.inventory?.badges ?? []) {
+      badge.selected = badge.id === selectedBadgeId;
+    }
+  },
+  async (profile) => {
+    const response = await Ape.users.updateProfile({
+      body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
+    });
+    if (response.status !== 200) throw new Error(response.body.message);
+    // the server sanitizes the details
+    return { ...profile, details: response.body.data ?? profile.details };
+  },
+);
+
 export async function updateProfile(
   profile: ProfileUpdate,
 ): Promise<Result<void>> {
-  return optimisticUpdate(
-    profile,
-    (user, { details, selectedBadgeId }) => {
-      user.details = details;
-      for (const badge of user.inventory?.badges ?? []) {
-        badge.selected = badge.id === selectedBadgeId;
-      }
-    },
-    async () => {
-      const response = await Ape.users.updateProfile({
-        body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
-      });
-      if (response.status !== 200) return resultOf(response, profile);
-      // the server sanitizes the details
-      return {
-        data: { ...profile, details: response.body.data ?? profile.details },
-        error: null,
-      };
-    },
-  );
+  return runMutation(updateProfileMutation, profile);
 }
 
 // --- Reads ---
@@ -504,6 +471,6 @@ function matchesPb(
 export const __testing = {
   /** Replaces the user without a download, for tests. */
   setUser(user: UserData | undefined): void {
-    setStore("value", user === undefined ? undefined : structuredClone(user));
+    userQuery.replace(user);
   },
 };

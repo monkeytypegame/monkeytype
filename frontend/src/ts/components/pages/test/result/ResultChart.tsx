@@ -29,6 +29,7 @@ import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
 import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { getLocalPB } from "../../../../queries/user";
 import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
@@ -38,7 +39,6 @@ import {
 } from "../../../../states/result";
 import { CompletedResult, getLastEventLog } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
-import { getLocalPB } from "../../../../states/user";
 import {
   getRawHistory,
   getTimerBoundaryLabels,

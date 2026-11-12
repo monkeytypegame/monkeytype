@@ -1,4 +1,4 @@
-import { getUserData } from "./states/user";
+import { getUserData } from "./queries/user";
 // Import sorting is disabled for this file (.oxfmtrc.json): many imports run
 // side effects on load, so their order matters.
 

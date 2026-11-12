@@ -1,6 +1,7 @@
 import { StreakHourOffsetSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 
+import { setStreakHourOffset } from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
 import {
@@ -8,7 +9,6 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { setStreakHourOffset } from "../../states/user";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { InputField } from "../ui/form/InputField";

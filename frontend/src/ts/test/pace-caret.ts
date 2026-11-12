@@ -1,6 +1,6 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import { getLocalPB } from "../states/user";
+import { getLocalPB } from "../queries/user";
 import { getActiveTagsPB } from "../collections/tags";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";

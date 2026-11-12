@@ -1,4 +1,4 @@
-import { getLocalPB, getUserData } from "../states/user";
+import { getLocalPB, getUserData } from "../queries/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,

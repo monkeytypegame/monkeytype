@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
-import * as UserState from "../../src/ts/states/user";
+import * as UserState from "../../src/ts/queries/user";
 import { setConfig } from "../../src/ts/config/setters";
 import { Config } from "../../src/ts/config/store";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
