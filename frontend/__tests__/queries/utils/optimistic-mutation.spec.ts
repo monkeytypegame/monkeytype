@@ -17,7 +17,7 @@ function setup(initial: Data | null = { name: "a", count: 1 }): {
   query: SessionQuery<Data>;
 } {
   const query = createSessionQuery<Data>({
-    key: ["user", `mutation-test-${keyIndex++}`],
+    name: `mutation-test-${keyIndex++}`,
     fetch: async () => ({ name: "fetched", count: 0 }),
   });
   query.replace(initial ?? undefined);

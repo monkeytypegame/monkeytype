@@ -16,7 +16,7 @@ function setup(fetch = vi.fn(async (): Promise<Data> => data())): {
   fetch: typeof fetch;
 } {
   const query = createSessionQuery<Data>({
-    key: ["user", `test-${keyIndex++}`],
+    name: `test-${keyIndex++}`,
     fetch,
   });
   return { query, fetch };

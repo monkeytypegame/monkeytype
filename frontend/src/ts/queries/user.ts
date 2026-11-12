@@ -26,7 +26,6 @@ import { isAuthenticated } from "../states/core";
 import { setXpBarData } from "../states/header";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
-import { baseKey } from "./utils/keys";
 import {
   type OptimisticMutation,
   optimisticMutation,
@@ -44,7 +43,7 @@ export type CachedUser = DeepReadonly<UserData>;
  * actions call the API and roll back on failure.
  */
 const userQuery = createSessionQuery<UserData>({
-  key: baseKey("user", { isUserSpecific: true }),
+  name: "user",
   fetch: fetchUser,
 });
 

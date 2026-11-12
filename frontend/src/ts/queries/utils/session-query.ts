@@ -9,11 +9,12 @@ import {
 import { queryClient } from "..";
 import { createTrigger } from "../../hooks/createTrigger";
 import { DeepReadonly } from "../../utils/types";
+import { baseKey } from "./keys";
 
 /**
  * Server data held for the signed-in session (user, presets…): downloaded by
- * the auth flow, kept until sign out resets it (a key under `["user", ...]`),
- * never refetched by Query on its own. Written only through `update`.
+ * the auth flow, kept until sign out resets it, never refetched by Query on
+ * its own. Written only through `update`.
  */
 export type SessionQuery<T> = {
   key: QueryKey;
@@ -42,10 +43,13 @@ export type SessionQuery<T> = {
 };
 
 export function createSessionQuery<T>(options: {
-  key: QueryKey;
+  /** Unique among the user's queries; the key is `["user", name]`. */
+  name: string;
   fetch: () => Promise<T>;
 }): SessionQuery<T> {
-  const { key } = options;
+  // user-scoped by definition: sign out resets every `["user", ...]` query,
+  // which is what clears the session's data
+  const key = baseKey(options.name, { isUserSpecific: true });
   type Cached = DeepReadonly<T>;
 
   queryClient.setQueryDefaults(key, {
