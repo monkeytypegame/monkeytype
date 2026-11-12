@@ -1,0 +1,130 @@
+import {
+  hashKey,
+  type QueryKey,
+  replaceEqualDeep,
+  useQuery,
+  type UseQueryResult,
+} from "@tanstack/solid-query";
+
+import { queryClient } from "..";
+import { createTrigger } from "../../hooks/createTrigger";
+import { DeepReadonly } from "../../utils/types";
+
+/**
+ * Server data held for the signed-in session (user, presets…): downloaded by
+ * the auth flow, kept until sign out resets it (a key under `["user", ...]`),
+ * never refetched by Query on its own. Written only through `update`.
+ */
+export type SessionQuery<T> = {
+  key: QueryKey;
+  /**
+   * The cached data, `undefined` while signed out, loading or after a failed
+   * download. Reactive inside components and effects, a plain read elsewhere.
+   */
+  get: () => DeepReadonly<T> | undefined;
+  /** A mutable copy of the cached data, detached from the cache. */
+  copy: () => T | undefined;
+  /**
+   * The query for components that need its status (pending, error), eg. with
+   * `AsyncContent`. Read-only: it never fetches, so the sign-out reset can't
+   * refetch it. Reading `data` while a download runs suspends the nearest
+   * `Suspense`; check the status first, or use `get` for plain reads.
+   */
+  use: () => UseQueryResult<DeepReadonly<T>>;
+  /** Downloads into the cache; throws if the request fails. */
+  download: () => Promise<void>;
+  /** Leaves no data. */
+  reset: () => void;
+  /** Applies `recipe` to a copy of the cached data; no-op without data. */
+  update: (recipe: (data: T) => void) => void;
+  /** Replaces the cached data without a download, for tests. */
+  replace: (data: T | undefined) => void;
+};
+
+export function createSessionQuery<T>(options: {
+  key: QueryKey;
+  fetch: () => Promise<T>;
+}): SessionQuery<T> {
+  const { key } = options;
+  type Cached = DeepReadonly<T>;
+
+  queryClient.setQueryDefaults(key, {
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
+
+  const peek = (): Cached | undefined => queryClient.getQueryData<Cached>(key);
+
+  // Re-runs `get()` readers when the cached data changes: at once after this
+  // module's writes, and from the cache listener for other changes (fetch,
+  // reset), which Query notifies a tick later. Readers re-run on any change;
+  // `update` keeps the unchanged parts' identity, so memos and `For` over a
+  // part that didn't change don't re-render.
+  const [track, trigger] = createTrigger();
+  let lastSeen: Cached | undefined;
+  const notifyIfChanged = (): void => {
+    const data = peek();
+    if (data === lastSeen) return;
+    lastSeen = data;
+    trigger();
+  };
+
+  const hash = hashKey(key);
+  queryClient.getQueryCache().subscribe((event) => {
+    if (event.query.queryHash === hash) notifyIfChanged();
+  });
+
+  const reset = (): void => {
+    void queryClient.resetQueries({ queryKey: key, exact: true });
+    notifyIfChanged();
+  };
+
+  return {
+    key,
+    get: () => {
+      track();
+      return peek();
+    },
+    copy: () => {
+      const data = peek();
+      return data === undefined ? undefined : (structuredClone(data) as T);
+    },
+    use: () =>
+      useQuery<Cached>(
+        () => ({ queryKey: key, enabled: false }),
+        () => queryClient,
+      ),
+    download: async () => {
+      await queryClient.query({
+        queryKey: key,
+        queryFn: options.fetch,
+        // the sign in (or retry) always downloads
+        staleTime: 0,
+      });
+      notifyIfChanged();
+    },
+    reset,
+    update: (recipe) => {
+      if (peek() === undefined) return;
+      queryClient.setQueryData<Cached>(key, (data) => {
+        if (data === undefined) return data;
+        const next = structuredClone(data) as T;
+        recipe(next);
+        // keeps the unchanged parts' identity (and the whole value's, when
+        // nothing changed); done here, since `useQuery` turns the query's own
+        // off
+        return replaceEqualDeep(data, next as Cached);
+      });
+      notifyIfChanged();
+    },
+    replace: (data) => {
+      if (data === undefined) {
+        reset();
+        return;
+      }
+      queryClient.setQueryData<Cached>(key, structuredClone(data) as Cached);
+      notifyIfChanged();
+    },
+  };
+}

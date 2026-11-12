@@ -21,16 +21,12 @@ import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import { UserData } from "../constants/user-data";
 import type { NormalizedLocalResult } from "../collections/results";
+import { type CachedUser, userQuery } from "../queries/user";
 import {
-  type CachedUser,
-  downloadUser,
-  getCachedUser,
-  replaceCachedUser,
-  resetCachedUser,
+  type OptimisticMutation,
+  optimisticMutation,
   runMutation,
-  updateCachedUser,
-  userMutation,
-} from "../queries/user";
+} from "../queries/utils/optimistic-mutation";
 import { DeepReadonly } from "../utils/types";
 import { isAuthenticated } from "./core";
 import { setXpBarData } from "./header";
@@ -42,7 +38,7 @@ import { setXpBarData } from "./header";
  * inside components and effects, a plain read elsewhere.
  */
 export function getUserData(): CachedUser | undefined {
-  return getCachedUser();
+  return userQuery.get();
 }
 
 // --- Loading ---
@@ -61,9 +57,9 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
   }
 
   try {
-    await downloadUser();
+    await userQuery.download();
   } catch (e) {
-    resetCachedUser();
+    userQuery.reset();
     throw e;
   }
 
@@ -76,7 +72,7 @@ export function recordResult(
   result: NormalizedLocalResult<Mode>,
   options: { isPb: boolean },
 ): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     if (user.testActivity !== undefined) {
       incrementTestActivity(user.testActivity, result.timestamp);
     }
@@ -94,7 +90,7 @@ export function recordResult(
 
 export function addXp(xp: number, breakdown?: XpBreakdown): void {
   if (getUserData() === undefined) return;
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.xp += xp;
   });
   setXpBarData({
@@ -105,27 +101,27 @@ export function addXp(xp: number, breakdown?: XpBreakdown): void {
 }
 
 export function setStreak(streak: number): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.streak = streak;
     if (streak > user.maxStreak) user.maxStreak = streak;
   });
 }
 
 export function setInboxUnreadSize(size: number): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.inboxUnreadSize = size;
   });
 }
 
 export function addBadge(badge: Badge): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.inventory ??= { badges: [] };
     user.inventory.badges.push(badge);
   });
 }
 
 export function resetPersonalBests(): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.personalBests = {
       time: {},
       words: {},
@@ -140,7 +136,7 @@ export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
 }): void {
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
@@ -165,7 +161,7 @@ export async function updateLbMemory<M extends Mode>(
   if (userData === undefined) return;
 
   const current = userData.lbMemory?.time?.[timeMode2]?.[language];
-  updateCachedUser((user) => {
+  userQuery.update((user) => {
     user.lbMemory ??= { time: { "15": { english: 0 }, "60": { english: 0 } } };
     user.lbMemory.time ??= { "15": { english: 0 }, "60": { english: 0 } };
     user.lbMemory.time[timeMode2] ??= {};
@@ -180,6 +176,15 @@ export async function updateLbMemory<M extends Mode>(
 }
 
 // --- Optimistic actions: user changes, rolled back if the request fails ---
+
+/** An optimistic mutation on the user: see `optimisticMutation`. */
+function userMutation<V>(
+  name: string,
+  recipe: (user: UserData, vars: V) => void,
+  request: (vars: V) => Promise<V>,
+): OptimisticMutation<UserData, V> {
+  return optimisticMutation({ query: userQuery, name, recipe, request });
+}
 
 /** `kept` on a 200, else throws the server message. */
 function keptOrThrow<T>(
@@ -399,6 +404,6 @@ function matchesPb(
 export const __testing = {
   /** Replaces the user without a download, for tests. */
   setUser(user: UserData | undefined): void {
-    replaceCachedUser(user);
+    userQuery.replace(user);
   },
 };
