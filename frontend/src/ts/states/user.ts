@@ -16,7 +16,6 @@ import {
   UserProfileDetails,
 } from "@monkeytype/schemas/users";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
-import { createStore, reconcile } from "solid-js/store";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
@@ -28,6 +27,7 @@ import {
   MutationObserver,
   type MutationObserverOptions,
 } from "@tanstack/solid-query";
+import { createTrigger } from "../hooks/createTrigger";
 import { queryClient } from "../queries";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
@@ -48,46 +48,48 @@ queryClient.setQueryDefaults(userQueryKey, {
   retry: false,
 });
 
-function getCached(): UserData | undefined {
-  return queryClient.getQueryData<UserData>(userQueryKey);
+/** The cached user. Readonly: writes go through `update`, never in place. */
+type CachedUser = DeepReadonly<UserData>;
+
+function getCached(): CachedUser | undefined {
+  return queryClient.getQueryData<CachedUser>(userQueryKey);
 }
 
 /**
- * Reactive view of the cached user, so reads track per field. Synced at once
- * after this module's writes, and on any other cache change (fetch, reset)
- * from the cache listener, which Query notifies a tick later.
+ * Re-runs `getUserData()` readers when the cached user changes: at once after
+ * this module's writes, and from the cache listener for other changes (fetch,
+ * reset), which Query notifies a tick later. Readers re-run on any change;
+ * structural sharing keeps the unchanged parts' identity, so memos and `For`
+ * over a part that didn't change don't re-render.
  */
-const [view, setView] = createStore<{ value: UserData | undefined }>({
-  value: undefined,
-});
+const [trackUser, triggerUser] = createTrigger();
+let lastSeen: CachedUser | undefined;
 
-function syncView(): void {
+function notifyIfChanged(): void {
   const user = getCached();
-  setView(
-    "value",
-    user === undefined
-      ? undefined
-      : reconcile(structuredClone(user), { merge: true }),
-  );
+  if (user === lastSeen) return;
+  lastSeen = user;
+  triggerUser();
 }
 
 const userQueryHash = hashKey(userQueryKey);
 queryClient.getQueryCache().subscribe((event) => {
-  if (event.query.queryHash === userQueryHash) syncView();
+  if (event.query.queryHash === userQueryHash) notifyIfChanged();
 });
 
-/** A plain copy of the user, detached from the cache. */
+/** A mutable copy of the user, detached from the cache. */
 function copyUserData(): UserData | undefined {
   const user = getCached();
-  return user === undefined ? undefined : structuredClone(user);
+  return user === undefined ? undefined : (structuredClone(user) as UserData);
 }
 
 /**
  * The signed-in user, `undefined` while signed out, loading or after a failed
  * load. Reactive inside components and effects, a plain read elsewhere.
  */
-export function getUserData(): DeepReadonly<UserData> | undefined {
-  return view.value;
+export function getUserData(): CachedUser | undefined {
+  trackUser();
+  return getCached();
 }
 
 // --- Loading ---
@@ -112,7 +114,7 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
       // the sign in (or retry) always downloads
       staleTime: 0,
     });
-    syncView();
+    notifyIfChanged();
   } catch (e) {
     clearUserData();
     throw e;
@@ -175,21 +177,21 @@ async function fetchUser(): Promise<UserData> {
 
 function clearUserData(): void {
   void queryClient.resetQueries({ queryKey: userQueryKey, exact: true });
-  syncView();
+  notifyIfChanged();
 }
 
 // --- Direct writes: mirror what the server already did ---
 
 function update(recipe: (user: UserData) => void): void {
   if (getCached() === undefined) return;
-  queryClient.setQueryData<UserData>(userQueryKey, (user) => {
+  queryClient.setQueryData<CachedUser>(userQueryKey, (user) => {
     if (user === undefined) return user;
     // a fresh copy: structural sharing keeps the unchanged parts' identity
-    const next = structuredClone(user);
+    const next = structuredClone(user) as UserData;
     recipe(next);
     return next;
   });
-  syncView();
+  notifyIfChanged();
 }
 
 export function recordResult(
@@ -595,7 +597,7 @@ export const __testing = {
       clearUserData();
       return;
     }
-    queryClient.setQueryData(userQueryKey, structuredClone(user));
-    syncView();
+    queryClient.setQueryData<CachedUser>(userQueryKey, structuredClone(user));
+    notifyIfChanged();
   },
 };
