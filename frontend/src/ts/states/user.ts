@@ -173,7 +173,7 @@ async function fetchUser(): Promise<UserData> {
   return row;
 }
 
-export function clearUserData(): void {
+function clearUserData(): void {
   void queryClient.resetQueries({ queryKey: userQueryKey, exact: true });
   syncView();
 }

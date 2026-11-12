@@ -44,7 +44,7 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
-import { clearUserData, loadUserData } from "./states/user";
+import { loadUserData } from "./states/user";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
@@ -233,8 +233,8 @@ export async function onAuthStateChanged(
       setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
+      // signing out resets the user-scoped queries, the user among them
       setUserId(null);
-      clearUserData();
     }
   }
 

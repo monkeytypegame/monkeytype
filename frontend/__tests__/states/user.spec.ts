@@ -6,7 +6,6 @@ import {
   __testing,
   addBadge,
   addXp,
-  clearUserData,
   getUserData,
   loadUserData,
   recordResult,
@@ -96,7 +95,7 @@ afterEach(() => {
 
 describe("getUserData", () => {
   it("is undefined without a user", () => {
-    clearUserData();
+    __testing.setUser(undefined);
     expect(getUserData()).toBeUndefined();
   });
 });
@@ -105,7 +104,7 @@ describe("loadUserData", () => {
   afterEach(() => setUserId(null));
 
   it("downloads the user into the store", async () => {
-    clearUserData();
+    __testing.setUser(undefined);
     setUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(
       ok({
@@ -228,7 +227,7 @@ describe("direct writes", () => {
   });
 
   it("does nothing without a user", () => {
-    clearUserData();
+    __testing.setUser(undefined);
     addXp(5);
     setStreak(5);
     expect(getUserData()).toBeUndefined();
