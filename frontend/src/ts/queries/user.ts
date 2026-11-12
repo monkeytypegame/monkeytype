@@ -111,10 +111,10 @@ export function getUserData(): CachedUser | undefined {
 // --- Loading ---
 
 /**
- * Downloads the user and replaces the stored one. Throws `UserDataLoadError` if the
- * request fails, leaving no user.
+ * Downloads the user into the cache. Throws `UserDataLoadError` if the request
+ * fails, leaving no user.
  */
-export async function loadUserData(): Promise<DeepReadonly<UserData>> {
+export async function loadUserData(): Promise<CachedUser> {
   await configurationPromise;
 
   if (!isAuthenticated()) {
@@ -130,7 +130,7 @@ export async function loadUserData(): Promise<DeepReadonly<UserData>> {
     throw e;
   }
 
-  return getUserData() as DeepReadonly<UserData>;
+  return getUserData() as CachedUser;
 }
 
 // --- Direct writes: mirror what the server already did ---
