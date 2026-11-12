@@ -1,6 +1,7 @@
 import {
   MutationObserver,
   type MutationObserverOptions,
+  replaceEqualDeep,
 } from "@tanstack/solid-query";
 import { Result } from "@monkeytype/util/trycatch";
 
@@ -21,8 +22,9 @@ export type OptimisticMutation<T, V> = MutationObserverOptions<
   FieldRollback<T>
 >;
 
-const same = (a: unknown, b: unknown): boolean =>
-  JSON.stringify(a) === JSON.stringify(b);
+/** Deep equality of plain data (key order doesn't matter). */
+const deepEqual = (a: unknown, b: unknown): boolean =>
+  replaceEqualDeep(a, b) === a;
 
 /**
  * A TanStack mutation on a session query's data (an object): applies `recipe`
@@ -51,7 +53,7 @@ export function optimisticMutation<T extends object, V>(options: {
       const written = query.copy() ?? before;
       const changed = (
         Object.keys({ ...before, ...written }) as (keyof T)[]
-      ).filter((key) => !same(before[key], written[key]));
+      ).filter((key) => !deepEqual(before[key], written[key]));
       return { before, written, changed };
     },
     onError: (_error, _vars, rollback) => {
@@ -59,7 +61,7 @@ export function optimisticMutation<T extends object, V>(options: {
       const { before, written, changed } = rollback;
       query.update((data) => {
         for (const key of changed) {
-          if (!same(data[key], written[key])) continue;
+          if (!deepEqual(data[key], written[key])) continue;
           data[key] = before[key];
         }
       });
