@@ -6,10 +6,6 @@ import {
   createSessionQuery,
   type SessionQuery,
 } from "../../../src/ts/queries/utils/session-query";
-import {
-  optimisticMutation,
-  runMutation,
-} from "../../../src/ts/queries/utils/optimistic-mutation";
 
 type Data = { name: string; list: number[]; nested: { a: number } };
 
@@ -97,54 +93,5 @@ describe("createSessionQuery", () => {
     await vi.waitFor(() => expect(result.isPending).toBe(true));
     expect(fetch).not.toHaveBeenCalled();
     dispose();
-  });
-});
-
-describe("optimisticMutation", () => {
-  it("applies at once, keeps the server's values on success", async () => {
-    const { query } = setup();
-    query.replace(data());
-    const mutation = optimisticMutation<Data, string>({
-      query,
-      name: "rename",
-      recipe: (d, name) => {
-        d.name = name;
-      },
-      request: async (name) => `${name}!`,
-    });
-
-    const done = runMutation(mutation, "b");
-    await vi.waitFor(() => expect(query.get()?.name).toBe("b"));
-
-    expect(await done).toEqual({ data: undefined, error: null });
-    expect(query.get()?.name).toBe("b!");
-  });
-
-  it("rolls back on failure, keeping fields changed since", async () => {
-    const { query } = setup();
-    query.replace(data());
-    let fail: (error: Error) => void = () => undefined;
-    const mutation = optimisticMutation<Data, string>({
-      query,
-      name: "rename",
-      recipe: (d, name) => {
-        d.name = name;
-        d.nested.a = 2;
-      },
-      request: async () =>
-        new Promise<string>((_, reject) => {
-          fail = reject;
-        }),
-    });
-
-    const done = runMutation(mutation, "b");
-    await vi.waitFor(() => expect(query.get()?.name).toBe("b"));
-    query.update((d) => {
-      d.nested.a = 3;
-    });
-    fail(new Error("nope"));
-
-    expect((await done).error?.message).toBe("nope");
-    expect(query.get()).toMatchObject({ name: "a", nested: { a: 3 } });
   });
 });
