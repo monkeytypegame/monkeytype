@@ -33,6 +33,47 @@ function getLetterStatus(
   return "incorrect";
 }
 
+const graphemeSegmenter = new Intl.Segmenter(undefined, {
+  granularity: "grapheme",
+});
+
+/**
+ * Number of code points in each user-perceived character (grapheme cluster) of
+ * `chars`. A cluster like Tamil சோ (consonant + vowel sign) is rendered as one
+ * glyph but typed as several code points.
+ */
+function getClusterSizes(chars: string[]): number[] {
+  // plain ASCII never combines, skip the segmenter on this hot path
+  if (!chars.some((char) => (char.codePointAt(0) as number) > 0x7f)) {
+    return chars.map(() => 1);
+  }
+  return Array.from(
+    graphemeSegmenter.segment(chars.join("")),
+    ({ segment }) => splitIntoCharacters(segment).length,
+  );
+}
+
+/**
+ * Mark the typed letters of a character as incorrect if any of its parts is,
+ * so a glyph is never shown half correct and half incorrect.
+ */
+function propagateIncorrectToCluster(
+  letters: RenderedLetter[],
+  wordChars: string[],
+): void {
+  let start = 0;
+  for (const size of getClusterSizes(wordChars)) {
+    const cluster = letters.slice(
+      start,
+      Math.min(start + size, letters.length),
+    );
+    if (cluster.some((letter) => letter.status === "incorrect")) {
+      for (const letter of cluster) letter.status = "incorrect";
+    }
+    start += size;
+  }
+}
+
 /** zen: letters come from the input only */
 export function createZenLetters(
   input: string,
@@ -85,6 +126,9 @@ export function createLetters(
 
     letters.push({ text, status });
   }
+
+  // typed letters beyond the word are extra, they are not part of a cluster
+  propagateIncorrectToCluster(letters.slice(0, wordChars.length), wordChars);
 
   // composition
   for (let i = 0; i < compositionChars.length; i++) {
