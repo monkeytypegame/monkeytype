@@ -5,24 +5,27 @@ import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import { setActiveTags } from "../queries/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import { __nonReactive, type PresetItem } from "../collections/presets";
+import { type PartialConfig } from "@monkeytype/schemas/configs";
+import { getPreset, type Preset } from "../queries/presets";
 
 export async function apply(_id: string): Promise<void> {
   const userData = getUserData();
   if (!userData) return;
 
-  const presetToApply = __nonReactive.getPreset(_id);
+  const presetToApply = getPreset(_id);
   if (presetToApply === undefined) {
     return;
   }
 
+  // applyConfig doesn't mutate its input
+  const config = presetToApply.config as PartialConfig;
   if (isPartialPreset(presetToApply)) {
     await applyConfig({
       ...structuredClone(Config),
-      ...presetToApply.config,
+      ...config,
     });
   } else {
-    await applyConfig(presetToApply.config);
+    await applyConfig(config);
   }
 
   if (
@@ -36,6 +39,6 @@ export async function apply(_id: string): Promise<void> {
   saveFullConfigToLocalStorage();
 }
 
-function isPartialPreset(preset: PresetItem): boolean {
+function isPartialPreset(preset: Preset): boolean {
   return preset.settingGroups !== undefined && preset.settingGroups !== null;
 }
