@@ -51,7 +51,7 @@ function defineSetting<T extends SettingValue>(definition: {
   schema?: z.ZodType<T>;
 }): SettingDefinition {
   return {
-    ...(definition ?? {}),
+    ...definition,
     set: (value) => definition.set(value as T),
   };
 }

@@ -1,12 +1,11 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import { Config } from "../config/store";
 import { getTotalInlineMargin } from "../utils/misc";
-import { isWordRightToLeft } from "../utils/strings";
+import type { Direction } from "../utils/strings";
 import { EasingParam, JSAnimation } from "animejs";
 import { ElementWithUtils } from "../utils/dom";
 import * as TestWords from "../test/test-words";
-import { getWordElement } from "../states/word-elements";
-import { isRtlCheckedByLetter } from "../states/test";
+import { getWordElement, LETTER_SELECTOR } from "../states/word-elements";
 
 let lockedMainCaretInTape = true;
 let caretDebug = false;
@@ -14,13 +13,13 @@ let caretDebug = false;
 export function toggleCaretDebug(): void {
   caretDebug = !caretDebug;
   if (!caretDebug) {
-    for (const l of document.querySelectorAll(".word letter")) {
+    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
       l.classList.remove("debugCaret");
       l.classList.remove("debugCaretTarget");
       l.classList.remove("debugCaretTarget2");
     }
   } else {
-    for (const l of document.querySelectorAll(".word letter")) {
+    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
       l.classList.add("debugCaret");
     }
   }
@@ -278,8 +277,9 @@ export class Caret {
   public goTo(options: {
     wordIndex: number;
     letterIndex: number;
-    isLanguageRightToLeft: boolean;
-    isDirectionReversed: boolean;
+    testDirection: Direction;
+    /** zen words have no direction of their own, it comes from the input */
+    zenWordDirection?: Direction;
     animate?: boolean;
     animationOptions?: {
       duration?: number;
@@ -289,8 +289,8 @@ export class Caret {
     if (this.style === "off") return;
     const wordEl = getWordElement(options.wordIndex);
     const word = wordEl === undefined ? null : new ElementWithUtils(wordEl);
-    const wordText = TestWords.words.get(options.wordIndex)?.display ?? "";
-    const wordLength = Array.from(wordText).length;
+    const testWord = TestWords.words.get(options.wordIndex);
+    const wordLength = Array.from(testWord?.display ?? "").length;
 
     // caret can be either on the left side of the target letter or the right
     // we stick to the left side unless we are on the last letter or beyond
@@ -325,10 +325,12 @@ export class Caret {
     const { left, top, width } = this.getTargetPositionAndWidth({
       word,
       letterIndex: options.letterIndex,
-      wordText,
       side,
-      isLanguageRightToLeft: options.isLanguageRightToLeft,
-      isDirectionReversed: options.isDirectionReversed,
+      testDirection: options.testDirection,
+      wordDirection:
+        testWord?.direction ??
+        options.zenWordDirection ??
+        options.testDirection,
     });
 
     // animation uses inline styles, so its fine to read inline here instead
@@ -388,12 +390,11 @@ export class Caret {
   private getTargetPositionAndWidth(options: {
     word: ElementWithUtils;
     letterIndex: number;
-    wordText: string;
     side: "beforeLetter" | "afterLetter";
-    isLanguageRightToLeft: boolean;
-    isDirectionReversed: boolean;
+    testDirection: Direction;
+    wordDirection: Direction;
   }): { left: number; top: number; width: number } {
-    const letters = options.word?.qsa("letter");
+    const letters = options.word?.qsa(LETTER_SELECTOR);
 
     if (letters.length === 0) {
       throw new Error(
@@ -411,7 +412,7 @@ export class Caret {
 
     if (caretDebug) {
       if (this.id === "paceCaret") {
-        for (const l of document.querySelectorAll(".word letter")) {
+        for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
           l.classList.remove("debugCaretTarget");
           l.classList.remove("debugCaretTarget2");
           l.classList.add("debugCaret");
@@ -422,13 +423,6 @@ export class Caret {
     } else {
       this.element.removeClass("debug");
     }
-
-    const checkRtlByLetter = isRtlCheckedByLetter();
-    const [isWordRTL] = isWordRightToLeft(
-      checkRtlByLetter ? (letter.native.textContent ?? "") : options.wordText,
-      options.isLanguageRightToLeft,
-      options.isDirectionReversed,
-    );
 
     //if the letter is not visible, use the closest visible letter
     const isLetterVisible = letter.getOffsetWidth() > 0;
@@ -456,11 +450,15 @@ export class Caret {
     let left = 0;
     let top = 0;
 
+    // the tape is anchored by the test's direction, whatever the word's is
+    const wrapperWidth = this.wordsWrapperEl.getOffsetWidth();
     const tapeOffset =
-      this.wordsWrapperEl.getOffsetWidth() * (Config.tapeMargin / 100);
+      options.testDirection === "rtl"
+        ? wrapperWidth * (1 - Config.tapeMargin / 100)
+        : wrapperWidth * (Config.tapeMargin / 100);
 
     // yes, this is all super verbose, but its easier to maintain and understand
-    if (isWordRTL) {
+    if (options.wordDirection === "rtl") {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
         if (this.isFullWidth()) {
@@ -484,7 +482,7 @@ export class Caret {
         left += letter.getOffsetLeft();
         left += afterLetterCorrection;
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += this.wordsWrapperEl.getOffsetWidth() - tapeOffset;
+          left += tapeOffset;
         } else {
           left += options.word.getOffsetLeft();
           left += options.word.getOffsetWidth();
@@ -494,7 +492,7 @@ export class Caret {
           left += width * -1;
         }
         if (this.isMainCaret && lockedMainCaretInTape) {
-          left += this.wordsWrapperEl.getOffsetWidth() - tapeOffset;
+          left += tapeOffset;
         } else {
           left += letter.getOffsetLeft();
           left += options.word.getOffsetLeft();

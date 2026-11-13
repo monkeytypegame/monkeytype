@@ -1,12 +1,13 @@
 import { Mode } from "@monkeytype/schemas/shared";
 import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../../collections/results";
+
 import {
   createResultsQueryState,
   getResultsQueryOnce,
   useResultsLiveQuery,
 } from "../../../collections/results";
-import { SnapshotResult } from "../../../constants/default-snapshot";
 import { createTrigger } from "../../../hooks/createTrigger";
 import { isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
@@ -26,7 +27,7 @@ export function AccountPage(): JSXElement {
   const [limit, setLimit] = createSignal(10);
 
   const [sorting, setSorting] = createSignal<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>({
     field: "timestamp",

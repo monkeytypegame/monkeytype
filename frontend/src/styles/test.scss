@@ -164,10 +164,6 @@
   &.rightToLeftTest {
     //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
     direction: rtl;
-
-    .wordRtl {
-      unicode-bidi: bidi-override;
-    }
   }
   &.joiningScript {
     .word {
@@ -379,36 +375,27 @@
   &.typed-effect-dots {
     /* transform already typed letters into appropriately colored dots */
 
-    &:not(.joiningScript) .word,
-    &.joiningScript .word.broken-joining {
-      letter {
-        position: relative;
-        display: inline-block;
-        &::after {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 1em;
-          aspect-ratio: 1;
-          border-radius: 50%;
-          opacity: 0;
-        }
+    .word letter {
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1em;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        opacity: 0;
       }
     }
-    // unify dot spacing
-    &.joiningScript .word.broken-joining {
-      letter {
-        width: 0.4em;
-      }
-    }
-    .word.broken-joining:not(.needs-wrap) {
-      white-space: nowrap;
+    &:not(.joiningScript) .word letter {
+      display: inline-block;
     }
 
-    &:not(.joiningScript) .word.typed,
-    &.joiningScript .word.broken-joining.typed {
+    // the letter shrinks into its dot. Joining script letters stay inline
+    // (joined, same width, wrapping) and can't be scaled, so their dot shrinks
+    .word.typed {
       letter {
         color: var(--bg-color);
         animation: typedEffectToDust 200ms ease-out 0ms 1 forwards !important;
@@ -418,19 +405,37 @@
         }
       }
     }
-
-    &:not(.joiningScript):not(.blind) {
-      .word letter.incorrect::after {
-        background: var(--c-dot--error);
+    // the joined letter hides at once; a copy of it shrinks instead, and the
+    // dot with it (`translate` centers them, the keyframes scale them)
+    &.joiningScript .word.typed letter {
+      color: transparent !important;
+      animation: none !important;
+      &::before,
+      &::after {
+        transform: none;
+        translate: -50% -50%;
+      }
+      &::before {
+        content: attr(data-char);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        white-space: pre;
+        animation: typedEffectToDust 200ms ease-out 0ms 1 forwards;
+      }
+      &::after {
+        animation:
+          typedEffectFadeIn 100ms ease-in 100ms 1 forwards,
+          typedEffectToDust 200ms ease-out 0ms 1 forwards;
       }
     }
-    &.joiningScript:not(.blind) .word.broken-joining letter.incorrect::after {
+
+    &:not(.blind) .word letter.incorrect::after {
       background: var(--c-dot--error);
     }
 
     @media (prefers-reduced-motion) {
-      &:not(.joiningScript) .word.typed,
-      &.joiningScript .word.broken-joining.typed {
+      .word.typed {
         letter {
           animation: none !important;
           transform: scale(0.4);
@@ -439,6 +444,14 @@
             animation: none !important;
             opacity: 1;
           }
+        }
+      }
+      &.joiningScript .word.typed letter {
+        &::before {
+          animation: none;
+        }
+        &::after {
+          scale: 0.4;
         }
       }
     }

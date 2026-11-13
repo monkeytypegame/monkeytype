@@ -1,8 +1,7 @@
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { JSXElement, createSignal, For } from "solid-js";
 
-import Ape from "../../ape";
-import * as DB from "../../db";
+import { rateQuote, getUserData } from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
@@ -44,8 +43,8 @@ export function QuoteRateModal(): JSXElement {
     if (!quote) return;
     setRating(0);
     setHoverRating(0);
-    const snapshot = DB.getSnapshot();
-    const alreadyRated = snapshot?.quoteRatings?.[quote.language]?.[quote.id];
+    const userData = getUserData();
+    const alreadyRated = userData?.quoteRatings?.[quote.language]?.[quote.id];
     if (isSafeNumber(alreadyRated)) {
       setRating(alreadyRated);
     }
@@ -62,27 +61,24 @@ export function QuoteRateModal(): JSXElement {
 
     hideModalAndClearChain("QuoteRate");
 
+    const oldRating = getUserData()?.quoteRatings?.[quote.language]?.[quote.id];
+
     showLoaderBar();
-    const response = await Ape.quotes.addRating({
-      body: { quoteId: quote.id, language: quote.language, rating: rating() },
+    const { error } = await rateQuote({
+      language: quote.language,
+      quoteId: quote.id,
+      rating: rating(),
     });
     hideLoaderBar();
-
-    if (response.status !== 200) {
-      showErrorNotification("Failed to submit quote rating", { response });
+    if (error !== null) {
+      showErrorNotification("Failed to submit quote rating", { error });
       return;
     }
 
-    const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
-    const quoteRatings = snapshot.quoteRatings ?? {};
-    const languageRatings = quoteRatings?.[quote.language] ?? {};
     const stats = quoteStats() ?? {};
 
-    if (isSafeNumber(languageRatings?.[quote.id])) {
-      const oldRating = quoteRatings[quote.language]?.[quote.id] as number;
+    if (isSafeNumber(oldRating)) {
       const diff = rating() - oldRating;
-      languageRatings[quote.id] = rating();
       const newStats = {
         ratings: stats?.ratings,
         totalRating: isNaN(stats?.totalRating as number)
@@ -94,7 +90,6 @@ export function QuoteRateModal(): JSXElement {
       updateQuoteStats(newStats);
       showSuccessNotification("Rating updated");
     } else {
-      languageRatings[quote.id] = rating();
       if (isSafeNumber(stats?.ratings) && isSafeNumber(stats.totalRating)) {
         const newStats = {
           ratings: stats.ratings + 1,
@@ -113,9 +108,6 @@ export function QuoteRateModal(): JSXElement {
       }
       showSuccessNotification("Rating submitted");
     }
-
-    snapshot.quoteRatings = quoteRatings;
-    DB.setSnapshot(snapshot);
 
     const currentStats = quoteStats();
     if (currentStats) {

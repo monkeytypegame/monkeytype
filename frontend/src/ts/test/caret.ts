@@ -1,14 +1,17 @@
+import { createRoot } from "solid-js";
 import { Config } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 import { getCurrentInput } from "./events/data";
 import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
   getActiveWordIndex,
+  getTestDirection,
   getCompositionData,
+  isFocusMode,
 } from "../states/test";
 import { configEvent } from "../events/config";
 import { Caret } from "../elements/caret";
 import { ElementWithUtils } from "../utils/dom";
+import { getWordDirection, splitIntoCharacters } from "../utils/strings";
 
 export function stopAnimation(): void {
   caret?.stopBlinking();
@@ -28,18 +31,24 @@ export function resetPosition(): void {
   caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: isLanguageRightToLeft(),
-    isDirectionReversed: isDirectionReversed(),
+    testDirection: getTestDirection(),
     animate: false,
   });
 }
 
 export function updatePosition(noAnim = false): void {
+  const input = getCurrentInput() + getCompositionData();
+  const testDirection = getTestDirection();
   caret?.goTo({
     wordIndex: getActiveWordIndex(),
     letterIndex: getCurrentInput().length + getCompositionData().length,
-    isLanguageRightToLeft: isLanguageRightToLeft(),
-    isDirectionReversed: isDirectionReversed(),
+    testDirection,
+    ...(Config.mode === "zen" && {
+      zenWordDirection: getWordDirection(
+        splitIntoCharacters(input).at(-1),
+        testDirection,
+      ),
+    }),
     animate: Config.smoothCaret !== "off" && !noAnim,
   });
 }
@@ -61,6 +70,15 @@ export function initElement(
     if (caret === created) caret = undefined;
   });
 }
+
+// the caret stops blinking in focus mode
+createRoot(() => {
+  createEffectOn(
+    isFocusMode,
+    (focused) => (focused ? stopAnimation() : startAnimation()),
+    { defer: true },
+  );
+});
 
 configEvent.subscribe(({ key }) => {
   if (key === "caretStyle") {

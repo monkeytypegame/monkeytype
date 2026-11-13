@@ -1,3 +1,4 @@
+import { getUserData } from "./queries/user";
 // Import sorting is disabled for this file (.oxfmtrc.json): many imports run
 // side effects on load, so their order matters.
 
@@ -11,28 +12,23 @@ import "./event-handlers/global";
 
 import { init } from "./firebase";
 import * as Logger from "./utils/logger";
-import * as DB from "./db";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestTimer from "./test/test-timer";
 import { toggleSmoothedBurst } from "./states/result";
 import { onAuthStateChanged } from "./auth";
-import "./elements/no-css";
-import "./states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
-import * as Focus from "./test/focus";
 import { fetchLatestVersion } from "./utils/version";
 import * as Sentry from "./sentry";
 import * as Cookies from "./cookies";
-import "./elements/psa";
 import { applyEngineSettings } from "./anim";
 import { qs, qsa, qsr } from "./utils/dom";
 import { render } from "solid-js/web";
 import { App } from "./components/core/App";
-import "./ready";
 import { setVersion } from "./states/core";
 import { loadFromLocalStorage } from "./config/lifecycle";
+import { boot } from "./boot";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
@@ -65,6 +61,7 @@ if (import.meta.env.DEV) {
 // render before anything that might touch component-rendered DOM (eg. test page).
 // Renders after the static markup in <body> (index.html)
 render(() => <App />, document.body);
+void boot();
 
 applyEngineSettings();
 void loadFromLocalStorage();
@@ -73,7 +70,6 @@ void fetchLatestVersion().then((data) => {
   setVersion(data);
 });
 
-Focus.set(true, true);
 const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   showModal("Cookies");
@@ -85,7 +81,7 @@ void init(onAuthStateChanged).then(() => {
 });
 
 addToGlobal({
-  snapshot: DB.getSnapshot,
+  userData: getUserData,
   config: Config,
   glarsesMode: () => {
     console.log("Moved to settings > danger zone > the rest");

@@ -100,6 +100,24 @@ export const projects: UserWorkspaceConfig[] = [
     resolve,
     ...worktree,
   },
+  {
+    ssr: {
+      noExternal: tanstackSolidNoExternal,
+    },
+    test: {
+      name: { label: "test-page", color: "magenta" },
+      // specs on the test-page harness (__tests__/__harness__/test-page.tsx)
+      include: ["__tests__/**/*.page-spec.tsx"],
+      environment: "jsdom",
+      globalSetup: "__tests__/global-setup.ts",
+      // no mock-dom: the test page's modules query the real DOM
+      setupFiles: ["__tests__/__harness__/setup-jsx.ts"],
+      globals: true,
+    },
+    plugins,
+    resolve,
+    ...worktree,
+  },
 ];
 export default defineConfig({
   test: {

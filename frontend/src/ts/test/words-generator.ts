@@ -601,14 +601,36 @@ let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
-type GenerateWordsReturn = {
-  words: string[];
-  sectionIndexes: number[];
+type TestWordFacts = {
   hasTab: boolean;
   hasNewline: boolean;
-  allRightToLeft?: boolean;
+  hasNumbers: boolean;
+  hasKorean: boolean;
+};
+
+type GenerateWordsReturn = TestWordFacts & {
+  words: string[];
+  sectionIndexes: number[];
   allJoiningScript?: boolean;
 };
+
+const koreanRegex =
+  /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/;
+
+/**
+ * Facts about the whole test. Pass the wordset too, not just the generated
+ * words: only the first words are generated up front, the rest stream in during
+ * the test and the answers have to hold from the start.
+ */
+export function getTestWordFacts(wordLists: string[][]): TestWordFacts {
+  const text = wordLists.flat().join(" ");
+  return {
+    hasTab: text.includes("\t"),
+    hasNewline: text.includes("\n"),
+    hasNumbers: /\p{N}/u.test(text),
+    hasKorean: koreanRegex.test(text),
+  };
+}
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
 
@@ -630,7 +652,8 @@ export async function generateWords(
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
-    allRightToLeft: language.rightToLeft,
+    hasNumbers: false,
+    hasKorean: false,
     allJoiningScript: language.joiningScript ?? false,
   };
 
@@ -718,19 +741,14 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
-  ret.hasTab =
-    ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
-  ret.hasNewline =
-    ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+  const facts = getTestWordFacts([
+    ret.words,
+    currentWordset.words,
+    Config.mode === "quote" ? (quote as QuoteWithTextSplit).textSplit : [],
+  ]);
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
-  return ret;
+  return { ...ret, ...facts };
 }
 
 export let sectionIndex = 0;

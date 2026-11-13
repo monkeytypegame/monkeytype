@@ -44,14 +44,18 @@ function fakeLayout(): void {
 
 function renderWord(text: string): HTMLElement {
   const container = renderWords();
-  appendRenderedWord(text);
+  appendRenderedWord({ display: text });
   setActiveWord(0);
   flush();
   return container;
 }
 
 function hintsOf(container: HTMLElement): HTMLElement[] {
-  return [...container.querySelectorAll<HTMLElement>(".word > .hints > hint")];
+  return [
+    ...container.querySelectorAll<HTMLElement>(
+      '.word > .hints > [data-ui-element="typoHint"]',
+    ),
+  ];
 }
 
 beforeEach(() => {

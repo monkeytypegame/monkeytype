@@ -17,7 +17,7 @@ const commands: Command[] = [
     visible: false,
     id: "applyPreset",
     display: "Presets...",
-    icon: "fa-sliders-h",
+    fa: { icon: "fa-sliders-h" },
     subgroup,
     available: (): boolean => {
       return isAuthenticated();
@@ -41,7 +41,7 @@ function update(): void {
   subgroup.list.push({
     id: "createPreset",
     display: "Create preset",
-    icon: "fa-plus",
+    fa: { icon: "fa-plus" },
     exec: (): void => {
       showModal("AddPresetModal");
     },

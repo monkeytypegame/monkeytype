@@ -25,7 +25,7 @@ import {
 } from "../states/notifications";
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
-import { CommandlineConfigMetadataObject } from "./commandline-metadata";
+import { CommandlineConfigKey } from "../config/metadata";
 import { isAuthAvailable, signOut } from "../firebase";
 import { isAuthenticated } from "../states/core";
 import { ConfigKey } from "@monkeytype/schemas/configs";
@@ -58,7 +58,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "changeCustomModeText",
       display: "Change custom text",
-      icon: "fa-align-left",
+      fa: { icon: "fa-align-left" },
       exec: (): void => {
         showModal("CustomText");
       },
@@ -66,7 +66,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "viewQuoteSearchPopup",
       display: "Search for quotes",
-      icon: "fa-search",
+      fa: { icon: "fa-search" },
       exec: (): void => {
         setConfig("mode", "quote");
         showModal("QuoteSearch");
@@ -78,7 +78,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "shareTestSettings",
       display: "Share test settings",
-      icon: "fa-share",
+      fa: { icon: "fa-share" },
       exec: (): void => {
         showModal("ShareTestSettings");
       },
@@ -188,7 +188,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "randomizeTheme",
       display: "Next random theme",
-      icon: "fa-random",
+      fa: { icon: "fa-random" },
       exec: async (): Promise<void> => randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
@@ -215,7 +215,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "importSettingsJSON",
       display: "Import settings JSON",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       alias: "import config",
       input: true,
       exec: async ({ input }): Promise<void> => {
@@ -226,7 +226,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "exportSettingsJSON",
       display: "Export settings JSON",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       alias: "export config",
       input: true,
       defaultValue: (): string => {
@@ -236,7 +236,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "clearNotifications",
       display: "Clear all notifications",
-      icon: "fa-trash-alt",
+      fa: { icon: "fa-trash-alt" },
       alias: "dismiss",
       exec: async (): Promise<void> => {
         clearAllNotifications();
@@ -245,7 +245,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "clearSwCache",
       display: "Clear SW cache",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       exec: async (): Promise<void> => {
         const clist = await caches.keys();
         for (const name of clist) {
@@ -257,7 +257,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "getSwCache",
       display: "Get SW cache",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       exec: async (): Promise<void> => {
         alert(await caches.keys());
       },
@@ -266,7 +266,7 @@ export const commands: CommandsSubgroup = {
       id: "copyResultStats",
       display: "Copy last event log (result data)",
       alias: "stats events",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       visible: false,
       available: (): boolean => {
         return getLastEventLog() !== null;
@@ -285,7 +285,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "fpsCounter",
       display: "FPS counter...",
-      icon: "fa-cog",
+      fa: { icon: "fa-cog" },
       visible: false,
       subgroup: {
         title: "FPS counter...",
@@ -293,7 +293,7 @@ export const commands: CommandsSubgroup = {
           {
             id: "startFpsCounter",
             display: "show",
-            icon: "fa-cog",
+            fa: { icon: "fa-cog" },
             exec: (): void => {
               showFpsCounter();
             },
@@ -301,7 +301,7 @@ export const commands: CommandsSubgroup = {
           {
             id: "stopFpsCounter",
             display: "hide",
-            icon: "fa-cog",
+            fa: { icon: "fa-cog" },
             exec: (): void => {
               hideFpsCounter();
             },
@@ -312,7 +312,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "fixSkillIssue",
       display: "Fix skill issue",
-      icon: "fa-wrench",
+      fa: { icon: "fa-wrench" },
       visible: false,
       exec: (): void => {
         fixSkillIssue();
@@ -321,7 +321,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "joinDiscord",
       display: "Join the Discord server",
-      icon: "fa-users",
+      fa: { icon: "fa-users" },
       exec: (): void => {
         window.open("https://discord.gg/monkeytype");
       },
@@ -329,7 +329,7 @@ export const commands: CommandsSubgroup = {
     {
       id: "signOut",
       display: "Sign out",
-      icon: "fa-sign-out-alt",
+      fa: { icon: "fa-sign-out-alt" },
       exec: (): void => {
         void signOut();
       },
@@ -462,7 +462,7 @@ function buildSingleListCommands(
         singleListParentDisplay: parentCommandDisplay,
         singleListDisplayNoIcon,
         configKey: parentCommand.subgroup?.configKey,
-        icon: parentCommand.icon,
+        fa: parentCommand.fa,
         alias: newAlias,
         visible: (parentCommand.visible ?? true) && (command.visible ?? true),
         available: async (): Promise<boolean> => {
@@ -481,7 +481,7 @@ function buildSingleListCommands(
 }
 
 function buildCommands(
-  ...commands: (Command | keyof CommandlineConfigMetadataObject)[]
+  ...commands: (Command | CommandlineConfigKey)[]
 ): Command[] {
   return commands.map((it) =>
     typeof it === "string" ? buildCommandForConfigKey(it) : it,

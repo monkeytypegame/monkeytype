@@ -1,12 +1,13 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { createEffect, createSignal, For, JSXElement } from "solid-js";
+import { createSignal, For, JSXElement } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
-import { addXp } from "../../db";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
+import { addXp } from "../../queries/user";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -35,15 +36,10 @@ type DevButton = {
 };
 
 export function DevOptionsModal(): JSXElement {
-  createEffect(() => {
-    const current = mediaQueryDebugLevel();
-    for (const level of [1, 2]) {
-      document.body.classList.toggle(
-        `mediaQueryDebugLevel${level}`,
-        level === current,
-      );
-    }
-  });
+  useBodyClasses(() => ({
+    mediaQueryDebugLevel1: mediaQueryDebugLevel() === 1,
+    mediaQueryDebugLevel2: mediaQueryDebugLevel() === 2,
+  }));
 
   const buttons: DevButton[] = [
     {

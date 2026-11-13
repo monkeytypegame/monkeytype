@@ -6,7 +6,7 @@ import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
 import {
-  getFocus,
+  isFocusMode,
   getLoadedChallenge,
   getPaceCaretWpm,
   isPaceRepeat,
@@ -31,7 +31,7 @@ export function TestModesNotice() {
       class={cn(
         "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
         {
-          "opacity-0": getFocus(),
+          "opacity-0": isFocusMode(),
         },
       )}
     >

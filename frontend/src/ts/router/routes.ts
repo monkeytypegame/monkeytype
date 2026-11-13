@@ -1,6 +1,6 @@
 // The route tree: every page with its guards and loaders
 
-import type { QueryClient } from "@tanstack/solid-query";
+import { noop, type QueryClient } from "@tanstack/solid-query";
 import {
   createRootRouteWithContext,
   createRoute,
@@ -45,7 +45,7 @@ import {
   toSelection,
 } from "../states/leaderboard-selection";
 import { SettingsSearchSchema } from "../states/settings-highlight";
-import { getSnapshot } from "../states/snapshot";
+import { getUserData } from "../queries/user";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth } from "./create-router-auth";
 import {
@@ -240,12 +240,17 @@ const leaderboards = createRoute({
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient, auth }, deps }) => {
     const selection = toSelection(deps);
-    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
-    void queryClient.prefetchQuery(
-      getLeaderboardQueryOptions({ ...selection, page: (deps.page ?? 1) - 1 }),
-    );
+    void queryClient.query(getServerConfigurationQueryOptions()).catch(noop);
+    void queryClient
+      .query(
+        getLeaderboardQueryOptions({
+          ...selection,
+          page: (deps.page ?? 1) - 1,
+        }),
+      )
+      .catch(noop);
     if (auth.isSignedIn()) {
-      void queryClient.prefetchQuery(getRankQueryOptions(selection));
+      void queryClient.query(getRankQueryOptions(selection)).catch(noop);
     }
   },
 });
@@ -257,10 +262,10 @@ const about = createRoute({
   component: createRouterPage(AboutPage),
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
-    void queryClient.prefetchQuery(getContributorsQueryOptions());
-    void queryClient.prefetchQuery(getSupportersQueryOptions());
-    void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-    void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+    void queryClient.query(getContributorsQueryOptions()).catch(noop);
+    void queryClient.query(getSupportersQueryOptions()).catch(noop);
+    void queryClient.query(getTypingStatsQueryOptions()).catch(noop);
+    void queryClient.query(getSpeedHistogramQueryOptions()).catch(noop);
   },
 });
 
@@ -280,7 +285,7 @@ const login = createRoute({
   beforeLoad: ({ context }) => signedOutOnly(context.auth),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
-    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
+    void queryClient.query(getServerConfigurationQueryOptions()).catch(noop);
   },
 });
 
@@ -307,7 +312,7 @@ const account = createRoute({
       return;
     }
     await runRouteLoadingStep(loader, async () => {
-      if (getSnapshot() === null || getSnapshot() === undefined) {
+      if (getUserData() === undefined) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
         );
@@ -341,7 +346,7 @@ const profile = createRoute({
   component: createRouterPage(ProfilePage),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient }, params }) => {
-    void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
+    void queryClient.query(getUserProfile(params.uidOrName)).catch(noop);
   },
 });
 
@@ -368,9 +373,10 @@ const friends = createRoute({
   loader: async (loader) => {
     await runRouteLoadingStep(loader, async () => {
       await Promise.all([
-        loader.context.queryClient.ensureQueryData(
-          getServerConfigurationQueryOptions(),
-        ),
+        loader.context.queryClient.query({
+          ...getServerConfigurationQueryOptions(),
+          staleTime: "static",
+        }),
         waitForConnectionsReady(),
       ]);
     });

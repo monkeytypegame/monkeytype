@@ -9,6 +9,6 @@
   );
 }
 
-.word.error {
+[data-ui-element="word"][data-ui-state="typedIncorrectly"] {
   border-bottom: solid 2px #ff0000;
 }

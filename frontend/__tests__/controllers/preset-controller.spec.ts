@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as PresetController from "../../src/ts/controllers/preset-controller";
 import { Preset } from "@monkeytype/schemas/presets";
-import * as DB from "../../src/ts/db";
+import * as UserState from "../../src/ts/queries/user";
 import { setConfig } from "../../src/ts/config/setters";
 import { Config } from "../../src/ts/config/store";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
@@ -20,7 +20,7 @@ describe("PresetController", () => {
     vi.mock("../../src/ts/test/pace-caret", () => ({
       //
     }));
-    const dbGetSnapshotMock = vi.spyOn(DB, "getSnapshot");
+    const getUserMock = vi.spyOn(UserState, "getUserData");
     const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
@@ -42,7 +42,7 @@ describe("PresetController", () => {
 
     beforeEach(() => {
       [
-        dbGetSnapshotMock,
+        getUserMock,
         getPresetMock,
         configApplyMock,
         configSaveFullConfigMock,
@@ -54,7 +54,7 @@ describe("PresetController", () => {
         tagsSaveActiveMock,
       ].forEach((it) => it.mockClear());
 
-      dbGetSnapshotMock.mockReturnValue({} as any);
+      getUserMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
       tagsClearMock.mockResolvedValue();
     });
@@ -163,7 +163,7 @@ describe("PresetController", () => {
         _id: "1",
         ...partialPreset,
       } as any;
-      dbGetSnapshotMock.mockReturnValue({} as any);
+      getUserMock.mockReturnValue({} as any);
       getPresetMock.mockReturnValue(preset);
       return preset;
     };

@@ -23,8 +23,7 @@ import { z, ZodString } from "zod";
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
 import { waitForTagsReady } from "./collections/tags";
-import { updateFromServer as updateConfigFromServer } from "./config/remote";
-import * as DB from "./db";
+import * as RemoteConfig from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
@@ -37,6 +36,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
@@ -48,8 +48,8 @@ import {
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
+import { UserDataLoadError } from "./utils/user-data-load-error";
 
 type AuthMethodInfo = {
   display: string;
@@ -172,24 +172,22 @@ export async function sendVerificationEmail(): Promise<void> {
 async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    const snapshot = await DB.initSnapshot();
-    //TODO: preload collections for now, remove when __nonReactive is removed from collections
-    await waitForPresetsReady();
-    await waitForTagsReady();
+    // fetch everything in parallel, apply in order below
+    const [userData, , , remoteConfig] = await Promise.all([
+      loadUserData(),
+      //TODO: preload collections for now, remove when __nonReactive is removed from collections
+      waitForPresetsReady(),
+      waitForTagsReady(),
+      RemoteConfig.fetchFromServer(),
+    ]);
 
-    if (snapshot === false) {
-      throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
-      );
-    }
+    void Sentry.setUser(userData.uid, userData.name);
 
-    void Sentry.setUser(snapshot.uid, snapshot.name);
-
-    await updateConfigFromServer();
+    await RemoteConfig.applyFromServer(remoteConfig);
     return true;
   } catch (error) {
     console.error(error);
-    if (error instanceof SnapshotInitError) {
+    if (error instanceof UserDataLoadError) {
       if (error.responseCode === 429) {
         showNoticeNotification(
           "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
@@ -218,7 +216,7 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
-  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
+  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
 }
 
 export async function onAuthStateChanged(
@@ -235,8 +233,8 @@ export async function onAuthStateChanged(
       setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
+      // signing out resets the user-scoped queries, the user among them
       setUserId(null);
-      DB.setSnapshot(undefined);
     }
   }
 

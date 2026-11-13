@@ -139,7 +139,7 @@ export async function swapElements(
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   },
-): Promise<boolean | undefined> {
+): Promise<void> {
   if (el1 === null || el2 === null) {
     return;
   }
@@ -153,7 +153,7 @@ export async function swapElements(
     if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
-      return false;
+      return;
     }
 
     el1.show();
@@ -184,8 +184,6 @@ export async function swapElements(
     await middleCallback();
     await callback();
   }
-
-  return;
 }
 
 export function getMode2<M extends keyof PersonalBests>(

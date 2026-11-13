@@ -26,7 +26,7 @@ const commands: Command[] = [
   {
     id: "loadChallenge",
     display: "Load challenge...",
-    icon: "fa-award",
+    fa: { icon: "fa-award" },
     subgroup,
   },
 ];

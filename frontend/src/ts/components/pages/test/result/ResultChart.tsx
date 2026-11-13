@@ -27,9 +27,9 @@ import { useTagsLiveQuery } from "../../../../collections/tags";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
-import * as DB from "../../../../db";
 import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { getLocalPB } from "../../../../queries/user";
 import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
@@ -167,7 +167,7 @@ function pbLine(
 }
 
 function getLocalPbWpm(result: CompletedResult): number {
-  const localPb = DB.getLocalPB(
+  const localPb = getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation,

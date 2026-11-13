@@ -1,9 +1,8 @@
 import { createMemo } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
-import { getLocalPB } from "../../../../db";
+import { getLocalPB, getUserData } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
-import { getSnapshot } from "../../../../states/snapshot";
 import { getCurrentQuote } from "../../../../states/test";
 import { getActiveFunboxes } from "../../../../test/funbox/list";
 import { getMode2 } from "../../../../utils/misc";
@@ -17,7 +16,7 @@ export function PbNotice() {
     //react on config.funbox
     const _funbox = getConfig.funbox;
     //react on new localPB
-    const _snapshot = getSnapshot();
+    const _userData = getUserData();
 
     const mode2 = getMode2(getConfig, getCurrentQuote());
     const pb = getLocalPB(

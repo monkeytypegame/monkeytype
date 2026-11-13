@@ -1,5 +1,5 @@
 import type { RegisteredRouter } from "@tanstack/solid-router";
-import { createMemo, createRoot } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 
 import { getRouter } from "../router/instance";
 import type { PageName } from "../router/routes";
@@ -24,6 +24,15 @@ export const getRoutePage = createRoot(() =>
     return matches.at(-1)?.staticData.page ?? "loading";
   }),
 );
+
+/**
+ * The page whose element is in the document (one at a time, see
+ * PageSwitcher), set by the page wrapper once it is attached. Unlike the
+ * route page it stays while the page fades out, after the page unmounted.
+ * Starts on the loading page, the first page shown.
+ */
+export const [getVisiblePage, setVisiblePage] =
+  createSignal<PageName>("loading");
 
 /**
  * Whether the router shows a pending route: on first load, and once a

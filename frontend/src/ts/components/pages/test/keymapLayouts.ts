@@ -6,7 +6,8 @@ import {
 } from "@tanstack/solid-hotkeys";
 import { OneOf } from "../../../utils/types";
 
-const options: FormatDisplayOptions = {};
+// `parts?: false` selects the string-returning overload of formatForDisplay
+const options: FormatDisplayOptions & { parts?: false } = {};
 export const Ctrl = formatForDisplay("Ctrl", options);
 export const Shift = formatForDisplay("Shift", { platform: "mac" });
 export const Alt = formatForDisplay("Alt", options);
@@ -509,6 +510,7 @@ function addLayoutKeys(
   count: number,
   options?: { start?: number },
 ): LayoutKey[] {
+  // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type
   return new Array<LayoutKey>(count).fill({}).map((it, index) => {
     return {
       ...it,

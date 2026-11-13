@@ -18,7 +18,11 @@ import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "./input-type";
 import { getWordBurst } from "../../test/events/stats";
-import { buildEventLog, getInputForWord } from "../../test/events/data";
+import {
+  buildEventLog,
+  getCurrentInput,
+  getInputForWord,
+} from "../../test/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -42,7 +46,10 @@ export async function goToNextWord({
   TestUI.beforeTestWordChange("forward");
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
-    fb.functions.handleSpace();
+    fb.functions.handleSpace({
+      current: getCurrentInput,
+      forWord: getInputForWord,
+    });
   }
 
   if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {

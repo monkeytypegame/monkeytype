@@ -75,6 +75,13 @@ export function Words(props: {
     <div
       id="words"
       ref={(el) => (wordsRef = el)}
+      data-ui-element="words"
+      data-ui-word-highlight={getConfig.highlightMode.replaceAll("_", "-")}
+      data-ui-blind={getConfig.blindMode ? "" : undefined}
+      data-ui-flipped={getConfig.flipTestColors ? "" : undefined}
+      data-ui-colorful={getConfig.colorfulMode ? "" : undefined}
+      data-ui-joining-script={isJoiningScript() ? "" : undefined}
+      data-ui-rtl={isLanguageRightToLeft() ? "" : undefined}
       class={cn("full-width", {
         ...wordsModeClasses(),
         flipped: getConfig.flipTestColors,

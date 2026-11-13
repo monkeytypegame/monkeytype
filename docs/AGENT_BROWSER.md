@@ -47,12 +47,14 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 | `hideModal(id)` | hide a modal by `ModalId` |
 | `restartTest()` | restart the typing test |
 | `typeText(text, msPerChar?)` | type through the real input handlers; `"\n"` is a line break, `"\b"` a backspace. Paced with `msPerChar`, else all in one task |
+| `compose(updates)` | IME composition through the real input handlers: each update is the composition so far (eg. `["k", "か"]`), the last one commits |
 | `wordsSnapshot()` | rendered `#words` children as a flat array: word entries `{ index, classes, letters: [{ text, icon?, classes }] }` mixed with sibling entries `{ sibling: className }` (newlines) |
 | `caretOffset()` | `{ dx, dy }` px from the caret to where it should be; a few px is on |
 | `checkLayout()` | test page layout problems, `[]` when right: active word inside the words wrapper, caret and words input on it, 3 full lines (unless all lines show), tape anchor at the tape margin. Run it after any change to the test UI |
 | `runCommand(id, input?)` | run a commandline command through the commandline: opens it, waits for the out of focus blur, executes, closes. `setConfig` skips that blur, so reproduce commandline bugs with this. Ids: `set<ConfigKey>Custom` inputs (`setFontSizeCustom`), `set<ConfigKey><Value>` (booleans `True`/`False`: `setPunctuationFalse`), `applyPreset<presetId>` |
 | `hotUpdates()` | modules hot-updated since the page loaded; must be `[]` before measuring |
-| `quickLogin()` | sign in with the `QUICK_LOGIN_*` account from the frontend `.env` (same as the DevOptions modal button). Use it whenever a check needs an account: presets, tags, results, sync |
+| `quickLogin()` | sign in with the `QUICK_LOGIN_*` account from the frontend `.env` (same as the DevOptions modal button); polls the snapshot at 20ms and resolves once the account data is loaded, rejects after 10s. Use it whenever a check needs an account: presets, tags, results, sync |
+| `signOut()` | sign out the current session; polls the snapshot at 20ms and resolves once the app clears it, rejects after 10s. No-op when there is no session. Pairs with `quickLogin` for checks that span signed-in and signed-out states |
 | `setCustomText(text)` | start a custom test with `text` (newlines become line breaks), as the custom text modal's simple mode |
 | `setPreloading(enabled)` | turn intent preloading (hovered/focused links run the next page's guards and loaders) off or back on, no rebuild; resets on reload. Permanent switch: `INTENT_PRELOADING` in `router/create-router.ts` |
 | `signals(filter?)` | list tracked Solid signals `{name, source, value}`, filter by name/source substring |
@@ -60,7 +62,9 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 
 Read app state through these members or the DOM. Importing app modules from an injected script (`import("/ts/...")`) loads a separate module instance with its own state.
 
-Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `snapshot`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets and tags live in query collections, not `snapshot()`.
+To check auth state, read `__mt.getSignal("getUserId")` (`null` = signed out) and `userData()` presence.
+
+Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `userData`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets and tags live in query collections, not `userData()`.
 
 ## Console
 

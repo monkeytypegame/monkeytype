@@ -45,6 +45,8 @@ export type HistoryWord = {
   // what the user typed, spaces replaced with underscores. Read by result-word-highlight.
   input: string;
   burst?: number;
+  // committed with space or newline
+  typed: boolean;
   error: boolean;
   letters: HistoryLetter[];
 };
@@ -153,6 +155,7 @@ export function buildWordsHistory(eventLog: EventLog): HistoryWord[] {
     words.push({
       input: inputAttribute.replace(/ /g, "_"),
       burst: burstHistory[i],
+      typed: input !== undefined && stripCommit(input) !== input,
       error: input !== target && shouldShowError,
       letters: buildWordLetters(input, corrected, target),
     });

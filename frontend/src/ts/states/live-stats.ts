@@ -10,7 +10,7 @@ import {
   getActiveWordIndex,
   getBailedOut,
   getCurrentQuote,
-  getFocus,
+  isFocusMode,
   isResultCalculating,
   isTestActive,
 } from "./test";
@@ -89,7 +89,7 @@ export function getBarTarget(): {
 }
 
 export const showLiveStats = createRoot(() =>
-  createMemo(() => isTestActive() && getFocus()),
+  createMemo(() => isTestActive() && isFocusMode()),
 );
 export const getLiveSpeedText = createRoot(() =>
   createMemo(() =>

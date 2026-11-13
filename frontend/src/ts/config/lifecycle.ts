@@ -67,6 +67,7 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "numbers",
   "punctuation",
   "funbox",
+  "autoSwitchTheme", // theme, customTheme and customThemeColors disable it
 ]);
 
 export async function applyConfig(

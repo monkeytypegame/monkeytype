@@ -4,8 +4,9 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../../collections/results";
+
 import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
-import { SnapshotResult } from "../../../constants/default-snapshot";
 import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
@@ -15,16 +16,20 @@ import { Formatting } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
-  field: keyof SnapshotResult<Mode>;
+  field: keyof NormalizedLocalResult<Mode>;
   direction: "asc" | "desc";
 };
 
 export function Table<M extends Mode>(props: {
-  data: SnapshotResult<M>[];
+  data: NormalizedLocalResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
   selectedRowId: Accessor<string | null>;
   /** Tracked: each change scrolls the selected row into view */
@@ -59,7 +64,7 @@ export function Table<M extends Mode>(props: {
             props.onSortingChange({ field: "timestamp", direction: "desc" });
           } else {
             props.onSortingChange({
-              field: val[0]?.id as keyof SnapshotResult<Mode>,
+              field: val[0]?.id as keyof NormalizedLocalResult<Mode>,
               direction: val[0]?.desc ? "desc" : "asc",
             });
           }
@@ -76,7 +81,7 @@ export function Table<M extends Mode>(props: {
           scrollToActiveRow: props.scrollToSelectedRow,
           class: cn(
             "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
-            "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+            "[&_[data-ui-element=button]]:[--themable-button-text:var(--text-main)]",
           ),
         }}
       />
@@ -92,8 +97,11 @@ function getColumns<M extends Mode>({
   format: Formatting;
   tags: TagItem[];
   onMiniResultChartSelected(val: string): void;
-}): DataTableColumnDef<SnapshotResult<M>>[] {
-  const defineColumn = createColumnHelper<SnapshotResult<M>>().accessor;
+}): DataTableColumnDef<NormalizedLocalResult<M>>[] {
+  const defineColumn = createColumnHelper<
+    DataTableFeatures,
+    NormalizedLocalResult<M>
+  >().accessor;
   const columns = [
     defineColumn("isPb", {
       header: "",

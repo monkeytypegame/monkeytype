@@ -51,8 +51,10 @@ body.crtmode footer,
 body.crtmode #result,
 body.crtmode #popups,
 body.crtmode [data-ui-element="notifications"],
-body.crtmode #words .word.error,
-body.crtmode #words .word .hints hint,
+body.crtmode
+  [data-ui-element="words"]
+  [data-ui-element="word"][data-ui-state="typedIncorrectly"],
+body.crtmode [data-ui-element="words"] [data-ui-element="typoHint"],
 body.crtmode input,
 body.crtmode button,
 body.crtmode textarea,

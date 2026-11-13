@@ -9,7 +9,7 @@ import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import {
   isTestFinished,
-  getFocus,
+  isFocusMode,
   isTestRestarting,
 } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
@@ -38,7 +38,9 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || isTestFinished() ? "pointer-events-none opacity-0" : "",
+          isFocusMode() || isTestFinished()
+            ? "pointer-events-none opacity-0"
+            : "",
         )}
         data-ui-element="testConfig"
       >
@@ -82,7 +84,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={getFocus() || isTestFinished() || props.disabled}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }

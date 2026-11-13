@@ -1,14 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
+const { isLanguageRightToLeft, isDirectionReversed } = vi.hoisted(() => ({
+  isLanguageRightToLeft: vi.fn(() => false),
+  isDirectionReversed: vi.fn(() => false),
+}));
+
 vi.mock("../../src/ts/states/test", () => ({
   getActiveWordIndex: () => 0,
+  isLanguageRightToLeft,
+  isDirectionReversed,
 }));
 
 import { words } from "../../src/ts/test/test-words";
+import type { Direction } from "../../src/ts/utils/strings";
 
 describe("test-words", () => {
   beforeEach(() => {
     words.reset();
+    isLanguageRightToLeft.mockReturnValue(false);
+    isDirectionReversed.mockReturnValue(false);
   });
 
   describe("push", () => {
@@ -32,6 +42,42 @@ describe("test-words", () => {
       words.push("b", 5);
       expect(words.length).toBe(2);
       expect(words.get().map((w) => w.sectionIndex)).toEqual([3, 5]);
+    });
+  });
+
+  describe("direction", () => {
+    const pushed = (word: string): Direction => words.push(word, 0).direction;
+
+    it("comes from the word's own characters", () => {
+      isLanguageRightToLeft.mockReturnValue(true);
+      expect(pushed("hello ")).toBe("ltr");
+      isLanguageRightToLeft.mockReturnValue(false);
+      expect(pushed("שלום ")).toBe("rtl");
+    });
+
+    it("falls back to the language without directional characters", () => {
+      expect(pushed("!!! ")).toBe("ltr");
+      isLanguageRightToLeft.mockReturnValue(true);
+      expect(pushed("!!! ")).toBe("rtl");
+    });
+
+    it("is reversed, including the fallback", () => {
+      isDirectionReversed.mockReturnValue(true);
+      expect(pushed("hello ")).toBe("rtl");
+      expect(pushed("שלום ")).toBe("ltr");
+      expect(pushed("!!! ")).toBe("rtl");
+    });
+
+    it("is resolved again when a repeated test pushes the same word", () => {
+      expect(pushed("hello ")).toBe("ltr");
+      words.reset();
+      isDirectionReversed.mockReturnValue(true);
+      expect(pushed("hello ")).toBe("rtl");
+    });
+
+    it("is kept by raw words", () => {
+      words.push("שלום ", 0);
+      expect(words.get(0, true)?.direction).toBe("rtl");
     });
   });
 

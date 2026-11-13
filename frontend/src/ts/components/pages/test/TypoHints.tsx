@@ -8,6 +8,7 @@ import {
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import { LETTER_SELECTOR } from "../../../states/word-elements";
 import {
   RenderedWord,
   trackTypoHintsLayout,
@@ -106,10 +107,9 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
       const container = containerRef;
       const singleHints = key.hints;
       if (container === undefined || singleHints.length === 0) return;
-      const letters =
-        container.parentElement?.querySelectorAll<HTMLElement>(
-          ":scope > letter",
-        );
+      const letters = container.parentElement?.querySelectorAll<HTMLElement>(
+        `:scope > ${LETTER_SELECTOR}`,
+      );
       const hintElements = container.children;
       const boxes = singleHints.map((hint, i): TypoHintBox => {
         const letter = letters?.[hint.letterIndex];
@@ -133,6 +133,7 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
       <Index each={displayedHints()}>
         {(hint) => (
           <hint
+            data-ui-element="typoHint"
             class="absolute bottom-[-1.1em] grid -translate-x-1/2 animate-(--correct-letter-animation) justify-center p-px text-center text-[0.75em] leading-[initial] text-(--correct-letter-color) opacity-50 text-shadow-none [.blind_&]:hidden"
             style={{ left: `${hint().left}px` }}
           >

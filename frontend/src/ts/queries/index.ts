@@ -6,10 +6,19 @@ import { isAuthenticated } from "../states/core";
 export const queryClient = new QueryClient();
 
 createRoot(() =>
-  createEffectOn(isAuthenticated, () => {
-    //reset user related queries and collections whenever the state changes.
-    //for legacy access we initialize some user-bound collections without a user being present (e.g. tags, presets).
-    //to avoid empty collections after login, reset the queries on every state change not just logout
-    void queryClient.resetQueries({ queryKey: ["user"] });
+  createEffectOn(isAuthenticated, (isSignedIn) => {
+    // On sign out, drop every user-scoped query/collection so the next user
+    // can't see the previous one's data.
+    //
+    // Do NOT reset on sign in. Each collection already starts its own
+    // initial download once authenticated: live queries fetch on first
+    // subscribe, (presets, tags) are awaited via waitFor...Ready in the login
+    // flow, and the startSync'd ones (filter presets, custom themes)
+    // refetch themselves on sign in. A reset here would race that download
+    // and fetch a second time (the duplicate connections fetch on the test
+    // page).
+    if (!isSignedIn) {
+      void queryClient.resetQueries({ queryKey: ["user"] });
+    }
   }),
 );
