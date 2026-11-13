@@ -23,7 +23,6 @@ import type { NormalizedLocalResult } from "../collections/results";
 import { UserData } from "../constants/user-data";
 import { isAuthenticated } from "../states/core";
 import { setXpBarData } from "../states/header";
-import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import {
@@ -32,6 +31,7 @@ import {
   optimisticMutation,
   runMutation,
 } from "./utils/optimistic-mutation";
+import { fillResultFilterPresets } from "../collections/result-filter-presets";
 import { fillTags } from "./tags";
 import { createSessionQuery } from "./utils/session-query";
 
@@ -75,8 +75,9 @@ async function fetchUser(): Promise<UserData> {
     personalBests[mode] ??= {};
   }
 
-  // tags have their own query, filled from this same download
+  // tags and filter presets are held apart, filled from this same download
   fillTags(userData.tags ?? []);
+  fillResultFilterPresets(userData.resultFilterPresets ?? []);
 
   return {
     uid: userData.uid,
@@ -109,10 +110,6 @@ async function fetchUser(): Promise<UserData> {
     allTimeLbs: userData.allTimeLbs,
     testActivity: userData.testActivity,
     lbMemory: userData.lbMemory,
-    resultFilterPresets: (userData.resultFilterPresets ?? []).map((preset) => ({
-      ...preset,
-      name: replaceUnderscoresWithSpaces(preset.name),
-    })),
   };
 }
 

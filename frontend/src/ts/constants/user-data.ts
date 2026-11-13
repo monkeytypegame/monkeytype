@@ -1,5 +1,4 @@
 import {
-  ResultFilters,
   TestActivity,
   User,
   UserProfileDetails,
@@ -32,8 +31,6 @@ export type UserData = Omit<
   streakHourOffset?: number;
   xp: number;
   testActivity?: TestActivity;
-  /** Names with spaces (the server stores underscores). */
-  resultFilterPresets: ResultFilters[];
 };
 
 const defaultSnap = {
@@ -61,7 +58,6 @@ const defaultSnap = {
   quoteMod: false,
   favoriteQuotes: {},
   addedAt: 0,
-  resultFilterPresets: [],
   xp: 0,
   inboxUnreadSize: 0,
   streak: 0,

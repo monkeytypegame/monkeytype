@@ -140,7 +140,6 @@ describe("loadUserData", () => {
       inboxUnreadSize: 0,
       isPremium: false,
       testActivity: { testsByDays: [1], lastDay: LAST_DAY },
-      resultFilterPresets: [{ _id: "p1", name: "my preset" }],
     });
     // the same download fills the tags query
     expect(getTags().map((tag) => tag.name)).toEqual(["my tag"]);

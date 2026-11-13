@@ -94,6 +94,11 @@ export function getTags(): readonly Tag[] {
   return tags();
 }
 
+/** Whether the user download filled the tags (false while signed out). */
+export function areTagsLoaded(): boolean {
+  return tagsQuery.get() !== undefined;
+}
+
 export function getTag(id: string): Tag | undefined {
   return tags().find((tag) => tag._id === id);
 }

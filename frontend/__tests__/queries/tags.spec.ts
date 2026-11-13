@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Ape from "../../src/ts/ape";
 import { queryClient } from "../../src/ts/queries";
 import {
+  areTagsLoaded,
   deleteTag,
   fillTags,
   getActiveTags,
@@ -63,9 +64,11 @@ describe("reads", () => {
     expect(filters.tags["b"]).toBe(true);
   });
 
-  it("is empty after the sign-out reset", async () => {
+  it("is empty and not loaded after the sign-out reset", async () => {
+    expect(areTagsLoaded()).toBe(true);
     await queryClient.resetQueries({ queryKey: ["user"] });
     await vi.waitFor(() => expect(getTags()).toEqual([]));
+    expect(areTagsLoaded()).toBe(false);
   });
 
   it("reads the active tags from the local active ids, ignoring unknown ones", () => {

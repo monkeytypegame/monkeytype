@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import "../../src/ts/collections/result-filter-presets";
-import { getDefaultUserData } from "../../src/ts/constants/user-data";
+import { fillResultFilterPresets } from "../../src/ts/collections/result-filter-presets";
 import { queryClient } from "../../src/ts/queries/index";
-import { __testing } from "../../src/ts/queries/user";
 import { setUserId } from "../../src/ts/states/core";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
@@ -36,7 +34,7 @@ function downloaded(): string[] | undefined {
 /**
  * The collection starts its sync at module load (`startSync: true`), which in
  * the app is before the auth state resolves, so its query starts disabled.
- * When the user query has the user, the collection still has to read its data:
+ * When the user download fills it, the collection still has to fetch:
  * the account page's filter presets section only shows it once the query
  * fetched, and nothing else starts the download.
  *
@@ -46,23 +44,19 @@ function downloaded(): string[] | undefined {
  */
 describe("resultFilterPresets collection", () => {
   beforeEach(async () => {
-    __testing.setUser(undefined);
     setUserId(null);
     await flush();
   });
 
-  it("does not download without a user", async () => {
+  it("does not download before the user download fills it", async () => {
     setUserId("uid");
     await flush();
     expect(downloaded()).toBeUndefined();
   });
 
-  it("reads the presets from the user query once it has the user", async () => {
+  it("is filled from the user download, names with spaces", async () => {
     setUserId("uid");
-    __testing.setUser({
-      ...getDefaultUserData(),
-      resultFilterPresets: [{ _id: "p1", name: "my preset" } as never],
-    });
+    fillResultFilterPresets([{ _id: "p1", name: "my_preset" } as never]);
     await waitFor(
       () => downloaded() !== undefined,
       "the resultFilterPresets query to fetch",

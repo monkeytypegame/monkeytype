@@ -35,6 +35,7 @@ import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/last-result";
 import {
+  areTagsLoaded,
   getActiveTags,
   getTags,
   reconcileLocalTagPB,
@@ -269,12 +270,11 @@ const resultsCollection = createCollection({
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
-      // drops deleted tags from the results; skipped without a user (not
-      // loaded yet), rather than dropping every tag
-      const knownTagIds =
-        getUserData() === undefined
-          ? undefined
-          : new Set(getTags().map((it) => it._id));
+      // drops deleted tags from the results; skipped until the tags are
+      // loaded, rather than dropping every tag
+      const knownTagIds = areTagsLoaded()
+        ? new Set(getTags().map((it) => it._id))
+        : undefined;
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({

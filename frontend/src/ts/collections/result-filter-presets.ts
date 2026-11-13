@@ -5,19 +5,22 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
-import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { replaceSpacesWithUnderscores } from "../utils/strings";
+import {
+  replaceSpacesWithUnderscores,
+  replaceUnderscoresWithSpaces,
+} from "../utils/strings";
 import { tempId, keepForever } from "./utils/misc";
-import { getUserData } from "../queries/user";
 import { isAuthenticated } from "../states/core";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
 };
+
+/** The presets from the last user download, which fills this collection. */
+let downloaded: ResultFilters[] = [];
 
 const resultFilterPresetsCollection = createCollection({
   ...queryCollectionOptions({
@@ -28,26 +31,25 @@ const resultFilterPresetsCollection = createCollection({
     queryClient,
     enabled: isAuthenticated,
     getKey: (it) => it._id,
-    // read from the user query (same endpoint), names already with spaces
-    queryFn: async () =>
-      structuredClone(
-        getUserData()?.resultFilterPresets ?? [],
-      ) as ResultFilters[],
+    // filled from the user download (same endpoint), see `fillResultFilterPresets`
+    queryFn: async () => structuredClone(downloaded),
   }),
   ...keepForever,
 });
 
-// Its query is created disabled: startSync runs at module load, before the
-// auth state resolves, and the query never re-evaluates `enabled` on its own.
-// Kick the download when the user query has the user.
-createRoot(() => {
-  const hasUser = createMemo(() => getUserData() !== undefined);
-  createEffectOn(hasUser, (loaded) => {
-    if (loaded) {
-      void resultFilterPresetsCollection.utils.refetch();
-    }
-  });
-});
+/**
+ * Fills the presets from the user download (server names, with underscores).
+ * The collection's query is created disabled (startSync runs at module load,
+ * before the auth state resolves) and never re-evaluates `enabled` on its own,
+ * so this kicks it.
+ */
+export function fillResultFilterPresets(presets: ResultFilters[]): void {
+  downloaded = presets.map((it) => ({
+    ...it,
+    name: replaceUnderscoresWithSpaces(it.name),
+  }));
+  void resultFilterPresetsCollection.utils.refetch();
+}
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultFilterPresetsLiveQuery() {
