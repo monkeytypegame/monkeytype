@@ -5,17 +5,14 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { createRoot } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import {
-  replaceSpacesWithUnderscores,
-  replaceUnderscoresWithSpaces,
-} from "../utils/strings";
+import { replaceSpacesWithUnderscores } from "../utils/strings";
 import { tempId, keepForever } from "./utils/misc";
-import { fetchUserFromApi } from "../ape/user";
+import { getUserData } from "../queries/user";
 import { isAuthenticated } from "../states/core";
 
 const queryKeys = {
@@ -31,29 +28,26 @@ const resultFilterPresetsCollection = createCollection({
     queryClient,
     enabled: isAuthenticated,
     getKey: (it) => it._id,
-    queryFn: async () => {
-      const userData = await fetchUserFromApi();
-      if (userData === undefined) return [];
-
-      return (userData.resultFilterPresets ?? []).map((it) => ({
-        ...it,
-        name: replaceUnderscoresWithSpaces(it.name),
-      }));
-    },
+    // read from the user query (same endpoint), names already with spaces
+    queryFn: async () =>
+      structuredClone(
+        getUserData()?.resultFilterPresets ?? [],
+      ) as ResultFilters[],
   }),
   ...keepForever,
 });
 
 // Its query is created disabled: startSync runs at module load, before the
 // auth state resolves, and the query never re-evaluates `enabled` on its own.
-// Kick the download when the user signs in, like the other user collections.
-createRoot(() =>
-  createEffectOn(isAuthenticated, (hasUser) => {
-    if (hasUser) {
+// Kick the download when the user query has the user.
+createRoot(() => {
+  const hasUser = createMemo(() => getUserData() !== undefined);
+  createEffectOn(hasUser, (loaded) => {
+    if (loaded) {
       void resultFilterPresetsCollection.utils.refetch();
     }
-  }),
-);
+  });
+});
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultFilterPresetsLiveQuery() {

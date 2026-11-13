@@ -19,11 +19,11 @@ import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
-import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { UserData } from "../constants/user-data";
 import { isAuthenticated } from "../states/core";
 import { setXpBarData } from "../states/header";
+import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import {
@@ -31,6 +31,7 @@ import {
   optimisticMutation,
   runMutation,
 } from "./utils/optimistic-mutation";
+import { fillTags } from "./tags";
 import { createSessionQuery } from "./utils/session-query";
 
 /** The cached user. Readonly: writes go through `userQuery.update`. */
@@ -52,7 +53,14 @@ export const useUser = userQuery.use;
 
 /** Downloads the user and maps the API shape. */
 async function fetchUser(): Promise<UserData> {
-  const userData = await fetchUserFromApi();
+  const response = await Ape.users.get();
+  if (response.status !== 200) {
+    throw new UserDataLoadError(
+      `${response.body.message} (user)`,
+      response.status,
+    );
+  }
+  const userData = response.body.data;
 
   if (userData === null || userData === undefined) {
     throw new UserDataLoadError(
@@ -65,6 +73,9 @@ async function fetchUser(): Promise<UserData> {
   for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
     personalBests[mode] ??= {};
   }
+
+  // tags have their own query, filled from this same download
+  fillTags(userData.tags ?? []);
 
   return {
     uid: userData.uid,
@@ -97,6 +108,10 @@ async function fetchUser(): Promise<UserData> {
     allTimeLbs: userData.allTimeLbs,
     testActivity: userData.testActivity,
     lbMemory: userData.lbMemory,
+    resultFilterPresets: (userData.resultFilterPresets ?? []).map((preset) => ({
+      ...preset,
+      name: replaceUnderscoresWithSpaces(preset.name),
+    })),
   };
 }
 

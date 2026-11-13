@@ -25,7 +25,7 @@ import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
 import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
-import { __nonReactive } from "../collections/tags";
+import { getActiveTags } from "../queries/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
@@ -732,9 +732,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   const chars = getChars(eventLog);
 
   //tags
-  const activeTagsIds: string[] = __nonReactive
-    .getActiveTags()
-    .map((tag) => tag._id);
+  const activeTagsIds: string[] = getActiveTags().map((tag) => tag._id);
 
   let language = Config.language;
   if (Config.mode === "quote") {

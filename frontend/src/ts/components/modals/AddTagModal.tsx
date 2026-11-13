@@ -1,7 +1,7 @@
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
-import { insertTag } from "../../collections/tags";
+import { insertTag } from "../../queries/tags";
 import { showSimpleModal } from "../../states/simple-modal";
 import { normalizeName } from "../../utils/strings";
 

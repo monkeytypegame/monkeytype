@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For } from "solid-js";
 
 import { updateTags } from "../../collections/results";
-import { useTagsLiveQuery } from "../../collections/tags";
+import { getTags } from "../../queries/tags";
 import { getSelectedResult } from "../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
@@ -20,7 +20,7 @@ export function EditResultTagsModal() {
     new Set([]),
   );
 
-  const tags = useTagsLiveQuery();
+  const tags = getTags;
 
   createEffect(() => {
     const resultTags = getSelectedResult()?.tags ?? [];

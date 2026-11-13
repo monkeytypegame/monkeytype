@@ -6,7 +6,7 @@ import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../../collections/results";
 
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
+import { getTags, type Tag } from "../../../queries/tags";
 import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
@@ -39,7 +39,7 @@ export function Table<M extends Mode>(props: {
     undefined,
   );
 
-  const tags = useTagsLiveQuery();
+  const tags = getTags;
 
   const columns = createMemo(() =>
     getColumns<M>({
@@ -95,7 +95,7 @@ function getColumns<M extends Mode>({
   onMiniResultChartSelected,
 }: {
   format: Formatting;
-  tags: TagItem[];
+  tags: readonly Tag[];
   onMiniResultChartSelected(val: string): void;
 }): DataTableColumnDef<NormalizedLocalResult<M>>[] {
   const defineColumn = createColumnHelper<

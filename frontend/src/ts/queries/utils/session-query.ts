@@ -15,7 +15,8 @@ import { baseKey } from "./keys";
  * Server data held for the signed-in session (user, presets…): downloaded by
  * the auth flow, kept until sign out resets it, never refetched by Query on
  * its own. Written only through `update`. Either one record or a list (which
- * names its items' id); optimistic mutations roll back by that shape.
+ * names its items' id); optimistic mutations roll back by that shape. A query
+ * without `fetch` is filled from another query's download (`replace`).
  */
 export type SessionQuery<T> = {
   key: QueryKey;
@@ -33,13 +34,19 @@ export type SessionQuery<T> = {
    * `Suspense`; check the status first, or use `get` for plain reads.
    */
   use: () => UseQueryResult<DeepReadonly<T>>;
-  /** Downloads into the cache; throws if the request fails. */
+  /**
+   * Downloads into the cache; throws if the request fails, or if the query is
+   * filled from another query's download.
+   */
   download: () => Promise<void>;
   /** Leaves no data. */
   reset: () => void;
   /** Applies `recipe` to a copy of the cached data; no-op without data. */
   update: (recipe: (data: T) => void) => void;
-  /** Replaces the cached data without a download, for tests. */
+  /**
+   * Replaces the cached data without a download: how another query's download
+   * fills a query without `fetch`, and for tests.
+   */
   replace: (data: T | undefined) => void;
   /** A list's item id; `undefined` for one record. */
   id: ItemId<T> | undefined;
@@ -57,7 +64,8 @@ export function createSessionQuery<T>(
   options: {
     /** Unique among the user's queries; the key is `["user", name]`. */
     name: string;
-    fetch: () => Promise<T>;
+    /** Omitted when another query's download fills this one (`replace`). */
+    fetch?: () => Promise<T>;
   } & ShapeOptions<T>,
 ): SessionQuery<T> {
   // user-scoped by definition: sign out resets every `["user", ...]` query,
@@ -116,9 +124,15 @@ export function createSessionQuery<T>(
         () => queryClient,
       ),
     download: async () => {
+      const fetch = options.fetch;
+      if (fetch === undefined) {
+        throw new Error(
+          `Session query "${options.name}" is filled by another download`,
+        );
+      }
       await queryClient.query({
         queryKey: key,
-        queryFn: options.fetch,
+        queryFn: fetch,
         // the sign in (or retry) always downloads
         staleTime: 0,
       });

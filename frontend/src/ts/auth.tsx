@@ -22,7 +22,6 @@ import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
-import { waitForTagsReady } from "./collections/tags";
 import * as RemoteConfig from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
@@ -173,11 +172,10 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     // fetch everything in parallel, apply in order below
-    const [userData, , , remoteConfig] = await Promise.all([
+    const [userData, , remoteConfig] = await Promise.all([
       loadUserData(),
       //TODO: preload collections for now, remove when __nonReactive is removed from collections
       waitForPresetsReady(),
-      waitForTagsReady(),
       RemoteConfig.fetchFromServer(),
     ]);
 

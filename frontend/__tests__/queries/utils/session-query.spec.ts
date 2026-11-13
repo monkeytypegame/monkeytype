@@ -39,6 +39,16 @@ describe("createSessionQuery", () => {
     expect(query.get()).toBeUndefined();
   });
 
+  it("without fetch, is filled by replace and refuses to download", async () => {
+    const query = createSessionQuery<Data>({ name: `test-${keyIndex++}` });
+
+    await expect(query.download()).rejects.toThrow("filled by another");
+    expect(query.get()).toBeUndefined();
+
+    query.replace(data());
+    expect(query.get()).toEqual(data());
+  });
+
   it("re-runs readers at once on a change, not on a no-op write", () => {
     const { query } = setup();
     query.replace(data());

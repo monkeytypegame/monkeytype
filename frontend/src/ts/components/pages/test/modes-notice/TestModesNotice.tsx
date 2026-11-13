@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js";
 
-import { useActiveTagsLiveQuery } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
+import { getActiveTags } from "../../../../queries/tags";
 import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
@@ -378,7 +378,7 @@ function OppositeShift() {
 }
 
 function Tags() {
-  const tags = useActiveTagsLiveQuery();
+  const tags = getActiveTags;
 
   return (
     <Notice

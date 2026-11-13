@@ -64,7 +64,7 @@ Read app state through these members or the DOM. Importing app modules from an i
 
 To check auth state, read `__mt.getSignal("getUserId")` (`null` = signed out) and `userData()` presence.
 
-Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `userData`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets and tags live in query collections, not `userData()`.
+Older globals from `frontend/src/ts/index.tsx` (`addToGlobal`) also exist in all envs: `config`, `userData`, `qs`/`qsa`, `lastEventLog()`, `currentEventLog()`, `toggleDebugLogs()`. Presets live in a query collection and tags in their own session query (`queries/tags.ts`), not `userData()`.
 
 ## Console
 

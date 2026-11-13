@@ -14,9 +14,9 @@ import {
   insertResultFilterPreset,
   useResultFilterPresetsLiveQuery,
 } from "../../../collections/result-filter-presets";
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
+import { getTags, isTagActive, type Tag } from "../../../queries/tags";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
@@ -213,7 +213,7 @@ export function Filters(props: {
     );
   };
 
-  const tags = useTagsLiveQuery();
+  const tags = getTags;
   const [isShowAdvanced, setShowAdvanced] = createSignal(false);
 
   const setFilter = (
@@ -373,7 +373,7 @@ function noFilters(): ResultFilters {
   return filters;
 }
 
-function fromCurrentSettings(tags: TagItem[]): ResultFilters {
+function fromCurrentSettings(tags: readonly Tag[]): ResultFilters {
   const filters = noFilters();
 
   filters.pb.no = true;
@@ -437,7 +437,7 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   filters.tags["none"] = true;
 
   tags.forEach((tag) => {
-    if (tag.active) {
+    if (isTagActive(tag._id)) {
       filters.tags["none"] = false;
       filters.tags[tag._id] = true;
     }
@@ -448,7 +448,7 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   return filters;
 }
 
-function fromDefaultSettings(tags: TagItem[]): ResultFilters {
+function fromDefaultSettings(tags: readonly Tag[]): ResultFilters {
   const tagFilters: Record<string, boolean> = {};
   tagFilters["none"] = true;
   tags.forEach((tag) => {

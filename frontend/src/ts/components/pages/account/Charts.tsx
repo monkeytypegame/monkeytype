@@ -6,8 +6,8 @@ import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
+import { getTags, type Tag } from "../../../queries/tags";
 import { getFormatting, isAuthenticated } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import {
@@ -31,7 +31,7 @@ export function Charts(props: {
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
   const format = getFormatting;
-  const tags = useTagsLiveQuery();
+  const tags = getTags;
 
   const resultsQuery = useLiveQuery((q) => {
     if (!isAuthenticated()) return undefined;
@@ -76,7 +76,7 @@ export function Charts(props: {
 
 function FilterSummary(props: {
   filters: ResultFilters;
-  tags: TagItem[];
+  tags: readonly Tag[];
 }): JSXElement {
   const Item = <T extends ResultFiltersKeys>(options: {
     group: T;

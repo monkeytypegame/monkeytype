@@ -22,6 +22,7 @@ import {
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
 import { queryClient } from "../../src/ts/queries";
+import { getTags } from "../../src/ts/queries/tags";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
@@ -120,6 +121,8 @@ describe("loadUserData", () => {
         xp: 50,
         streak: { length: 4, maxLength: 9, hourOffset: 2 },
         testActivity: { testsByDays: [1], lastDay: LAST_DAY },
+        tags: [{ _id: "t1", name: "my_tag", personalBests: {} }],
+        resultFilterPresets: [{ _id: "p1", name: "my_preset" }],
       }),
     );
 
@@ -137,7 +140,10 @@ describe("loadUserData", () => {
       inboxUnreadSize: 0,
       isPremium: false,
       testActivity: { testsByDays: [1], lastDay: LAST_DAY },
+      resultFilterPresets: [{ _id: "p1", name: "my preset" }],
     });
+    // the same download fills the tags query
+    expect(getTags().map((tag) => tag.name)).toEqual(["my tag"]);
   });
 
   it("leaves no user when the download fails", async () => {
