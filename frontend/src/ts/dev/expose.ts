@@ -227,43 +227,91 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
   return matches[0] as (typeof trackedSignals)[number];
 }
 
+/**
+ * Dev-only browser handle, read by agents before scripting (docs/AGENT_BROWSER.md).
+ * Read app state through these members or the DOM: importing app modules from
+ * an injected script loads a separate module instance with its own state.
+ */
 const mt = {
+  /**
+   * Client-side route change: `navigate({ to, params, search })`, or
+   * `navigate({ href: "/settings?x=1" })` for a raw path.
+   */
   navigate,
+  /** Page name of the last resolved route ("loading" before the first or after a failed load). */
   getRoutePage,
   /** Whether a navigation is in progress (the loading page may cover the page). */
   isNavigating: (): boolean => getRouter()?.state.status === "pending",
-  /** Turns intent preloading (hovered links) off or back on. */
+  /**
+   * Turns intent preloading (hovered/focused links run the next page's guards
+   * and loaders) off or back on, no rebuild; resets on reload. Permanent
+   * switch: `INTENT_PRELOADING` in `router/create-router.ts`.
+   */
   setPreloading,
+  /** The config store object, not a function: `getConfig.fontSize`. */
   getConfig,
+  /**
+   * Writes a config key. Doesn't restart the test (callers restart until T6b):
+   * use `runCommand` when the restart matters.
+   */
   setConfig,
+  /** Opens a modal by `ModalId`. */
   showModal,
+  /** Hides a modal by `ModalId`. */
   hideModal,
+  /** Restarts the typing test. */
   restartTest,
+  /**
+   * Types through the real input handlers; `"\n"` is a line break, `"\b"` a
+   * backspace. Paced with `msPerChar`, else all in one task.
+   */
   typeText,
+  /**
+   * IME composition through the real input handlers: each update is the
+   * composition so far (eg. `["k", "か"]`), the last one commits.
+   */
   compose,
   wordsSnapshot,
   caretOffset,
+  /** Run it after any change to the test UI. */
   checkLayout,
+  /**
+   * `setConfig` skips the commandline's out of focus blur, so reproduce
+   * commandline bugs with this. Also `applyPreset<presetId>`, and booleans as
+   * `True`/`False` (`setPunctuationFalse`).
+   */
   runCommand,
+  /** Starts a custom test with `text` (newlines become line breaks), as the custom text modal's simple mode. */
   setCustomText,
   /**
-   * Signs in with the QUICK_LOGIN_* account from the frontend .env; resolves
-   * once the account data is loaded.
+   * Signs in with the QUICK_LOGIN_* account from the frontend .env (same as
+   * the DevOptions modal button); resolves once the account data is loaded,
+   * rejects after 10s. Use it whenever a check needs an account: presets,
+   * tags, results, sync.
    */
   quickLogin,
-  /** Signs out the current session; resolves once the snapshot clears. */
+  /**
+   * Signs out the current session; resolves once the app clears it, rejects
+   * after 10s. No-op without a session.
+   */
   signOut,
   /**
    * Modules hot-updated since the page loaded. Not empty: the page may hold
    * stale module state, reload before measuring.
    */
   hotUpdates: (): string[] => [...(window.__mtHotUpdates ?? [])],
-  /** List tracked signals, optionally filtered by substring of name or source. */
+  /**
+   * Tracked Solid signals `{ name, source, value }`, optionally filtered by
+   * substring of name or source. Not every signal is tracked: list before
+   * `getSignal`.
+   */
   signals: (filter = "") =>
     trackedSignals
       .filter((s) => s.name.includes(filter) || s.source.includes(filter))
       .map((s) => ({ name: s.name, source: s.source, value: s.peek() })),
+  /** Reads a tracked signal by exact name. */
   getSignal: (name: string) => findSignal(name).peek(),
+  /** Writes a tracked signal by exact name. */
   setSignal: (name: string, value: unknown) => findSignal(name).set(value),
 };
 

@@ -10,12 +10,12 @@ import {
   Suspense,
 } from "solid-js";
 
-import { useTagsLiveQuery } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
 import { createTrigger } from "../../../../hooks/createTrigger";
+import { getTags } from "../../../../queries/tags";
 import { setQuoteFavorite, getUserData } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
@@ -208,9 +208,8 @@ function Lines(props: { lines: string[] }): JSXElement {
 }
 
 function Tags(): JSXElement {
-  const userTags = useTagsLiveQuery();
   const tagNames = createMemo(
-    () => new Map((userTags() ?? []).map((t) => [t._id, t.name])),
+    () => new Map(getTags().map((t) => [t._id, t.name])),
   );
 
   const openEditModal = (): void => {
