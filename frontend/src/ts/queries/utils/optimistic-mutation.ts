@@ -86,8 +86,13 @@ export type OptimisticMutation<T, V> = MutationObserverOptions<
 /** An API response: every body carries the server's message. */
 export type ApiResponse = { status: number; body: MonkeyResponseType };
 
-/** The 200 variant of an API response. */
-export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
+/** The data of an API response's 200 variant; `undefined` if it has none. */
+export type OkData<R extends ApiResponse> = Extract<
+  R,
+  { status: 200 }
+>["body"] extends { data: infer D }
+  ? D
+  : undefined;
 
 /**
  * A TanStack mutation on a session query's data: runs `applyFn` at once, sends
@@ -112,7 +117,10 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
       if (response.status !== 200) throw new Error(response.body.message);
       return reconcileVars === undefined
         ? vars
-        : reconcileVars(vars, response as OkResponse<R>);
+        : reconcileVars(
+            vars,
+            (response.body as { data?: unknown }).data as OkData<R>,
+          );
     },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
@@ -151,11 +159,11 @@ export type MutationOptions<T, V, R extends ApiResponse> = {
    */
   mutationFn: (vars: V) => Promise<R>;
   /**
-   * The variables `applyFn` runs with on a 200, read from the response (the
-   * server may assign an id or sanitize a value). Left out: the variables as
-   * sent.
+   * The variables `applyFn` runs with on a 200, read from the response's data
+   * (the server may assign an id or sanitize a value). Left out: the variables
+   * as sent.
    */
-  reconcileVars?: (vars: V, response: OkResponse<R>) => V;
+  reconcileVars?: (vars: V, data: OkData<R>) => V;
 };
 
 /**

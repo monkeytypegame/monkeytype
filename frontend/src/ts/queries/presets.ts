@@ -120,10 +120,7 @@ const addPresetMutation = presetsMutation({
         }),
       },
     }),
-  reconcileVars: (vars, response) => ({
-    ...vars,
-    presetId: response.body.data.presetId,
-  }),
+  reconcileVars: (vars, { presetId }) => ({ ...vars, presetId }),
 });
 
 export async function addPreset(params: {

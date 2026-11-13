@@ -33,14 +33,14 @@ type Ok<V> = { status: 200; body: { message: string; data: V } };
  */
 function viaApi<V>(request: (vars: V) => Promise<V>): {
   mutationFn: (vars: V) => Promise<Ok<V>>;
-  reconcileVars: (vars: V, response: Ok<V>) => V;
+  reconcileVars: (vars: V, data: V) => V;
 } {
   return {
     mutationFn: async (vars) => ({
       status: 200,
       body: { message: "ok", data: await request(vars) },
     }),
-    reconcileVars: (_vars, response) => response.body.data,
+    reconcileVars: (_vars, data) => data,
   };
 }
 

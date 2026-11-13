@@ -351,9 +351,9 @@ const updateProfileMutation = userMutation({
       body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
     }),
   // the server sanitizes the details
-  reconcileVars: (profile, response) => ({
+  reconcileVars: (profile, details) => ({
     ...profile,
-    details: response.body.data ?? profile.details,
+    details: details ?? profile.details,
   }),
 });
 
