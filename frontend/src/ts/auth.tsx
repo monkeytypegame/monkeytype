@@ -35,6 +35,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
@@ -172,8 +173,9 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     // fetch everything in parallel, apply in order below
-    const [userData, , remoteConfig] = await Promise.all([
+    const [userData, , , remoteConfig] = await Promise.all([
       loadUserData(),
+      loadTags(),
       //TODO: preload collections for now, remove when __nonReactive is removed from collections
       waitForPresetsReady(),
       RemoteConfig.fetchFromServer(),

@@ -17,9 +17,9 @@ import {
 import { Result } from "@monkeytype/util/trycatch";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
-import { GetUserResponse } from "@monkeytype/contracts/users";
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
+import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { UserData } from "../constants/user-data";
 import { isAuthenticated } from "../states/core";
@@ -33,7 +33,6 @@ import {
   runMutation,
 } from "./utils/optimistic-mutation";
 import { createSessionQuery } from "./utils/session-query";
-import { createEvent } from "../hooks/createEvent";
 
 /** The cached user. Readonly: writes go through `userQuery.update`. */
 export type CachedUser = DeepReadonly<UserData>;
@@ -49,29 +48,12 @@ const userQuery = createSessionQuery<UserData>({
   fetch: fetchUser,
 });
 
-/** The user endpoint's response body (it holds more than the user). */
-export type UserResponse = NonNullable<GetUserResponse["data"]>;
-
-/**
- * Fires with each user download's response, before the user lands in the
- * cache: data from the same endpoint held elsewhere (tags, filter presets)
- * fills itself from it, so there is one request.
- */
-export const userDownloaded = createEvent<UserResponse>();
-
 /** The user query for components that need its status: see `use`. */
 export const useUser = userQuery.use;
 
 /** Downloads the user and maps the API shape. */
 async function fetchUser(): Promise<UserData> {
-  const response = await Ape.users.get();
-  if (response.status !== 200) {
-    throw new UserDataLoadError(
-      `${response.body.message} (user)`,
-      response.status,
-    );
-  }
-  const userData = response.body.data;
+  const userData = await fetchUserFromApi();
 
   if (userData === null || userData === undefined) {
     throw new UserDataLoadError(
@@ -84,8 +66,6 @@ async function fetchUser(): Promise<UserData> {
   for (const mode of ["time", "words", "quote", "zen", "custom"] as const) {
     personalBests[mode] ??= {};
   }
-
-  userDownloaded.dispatch(userData);
 
   return {
     uid: userData.uid,

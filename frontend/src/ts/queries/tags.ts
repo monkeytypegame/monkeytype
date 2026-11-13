@@ -13,6 +13,7 @@ import { createMemo, createRoot } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../ape";
+import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { tempId } from "../collections/utils/misc";
 import { useLocalStorage } from "../hooks/useLocalStorage";
@@ -22,26 +23,28 @@ import {
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
 import { DeepReadonly } from "../utils/types";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import {
   keptOrThrow,
   type OptimisticMutation,
   optimisticMutation,
   runMutation,
 } from "./utils/optimistic-mutation";
-import { userDownloaded } from "./user";
 import { createSessionQuery } from "./utils/session-query";
 
 /**
- * The signed-in user's tags: a list session query beside the user, filled from
- * the same download (`fillTags`), so tag edits don't replace the user. Which
- * tags are active is local: a signal backed by localStorage. Getters return
- * only what's loaded, never fetch; reactive inside components and effects, a
- * plain read elsewhere.
+ * The signed-in user's tags: a list session query beside the user, so tag
+ * edits don't replace the user. It reads the user endpoint through
+ * `fetchUserFromApi`, which the user query shares (one request). Which tags are
+ * active is local: a signal backed by localStorage. Getters return only what's
+ * loaded, never fetch; reactive inside components and effects, a plain read
+ * elsewhere.
  */
 export type Tag = DeepReadonly<UserTag>;
 
 const tagsQuery = createSessionQuery<UserTag[]>({
   name: "tags",
+  fetch: fetchTags,
   id: (tag) => tag._id,
 });
 
@@ -77,18 +80,25 @@ const activeTags = createRoot(() =>
 
 // --- Loading ---
 
-/** Fills the tags from a user download (server names, with underscores). */
-function fillTags(serverTags: UserTag[]): void {
-  tagsQuery.replace(
-    serverTags.map((tag) => ({
-      ...tag,
-      name: replaceUnderscoresWithSpaces(tag.name),
-    })),
-  );
-  updateTagsInFilterStorage(serverTags.map((tag) => tag._id));
+/** Picks the tags from the user endpoint, names with spaces. */
+async function fetchTags(): Promise<UserTag[]> {
+  const userData = await fetchUserFromApi();
+  if (userData === undefined) {
+    throw new UserDataLoadError("Tags didn't load: not signed in", 401);
+  }
+
+  const tags = (userData.tags ?? []).map((tag) => ({
+    ...tag,
+    name: replaceUnderscoresWithSpaces(tag.name),
+  }));
+  updateTagsInFilterStorage(tags.map((tag) => tag._id));
+  return tags;
 }
 
-userDownloaded.subscribe((response) => fillTags(response.tags ?? []));
+/** Downloads the tags (the auth flow, beside `loadUserData`); throws on failure. */
+export async function loadTags(): Promise<void> {
+  await tagsQuery.download();
+}
 
 // --- Reads ---
 

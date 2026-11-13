@@ -1,8 +1,12 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("../../src/ts/ape/user", () => ({
+  fetchUserFromApi: vi.fn(async () => undefined),
+}));
+
+import { fetchUserFromApi } from "../../src/ts/ape/user";
 import "../../src/ts/collections/result-filter-presets";
 import { queryClient } from "../../src/ts/queries/index";
-import { userDownloaded } from "../../src/ts/queries/user";
 import { setUserId } from "../../src/ts/states/core";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
@@ -21,21 +25,18 @@ async function waitFor(predicate: () => boolean, what: string): Promise<void> {
   }
 }
 
-/** The collection's downloaded presets' names, if it fetched. */
-function downloaded(): string[] | undefined {
-  const data = queryClient
+/** Whether the collection's query fetched at least once. */
+function hasDownloaded(): boolean {
+  return queryClient
     .getQueryCache()
     .findAll({ queryKey: ["user", "resultFilterPresets"] })
-    .find((query) => query.state.data !== undefined)?.state.data as
-    | { name: string }[]
-    | undefined;
-  return data?.map((it) => it.name);
+    .some((query) => query.state.data !== undefined);
 }
 
 /**
  * The collection starts its sync at module load (`startSync: true`), which in
  * the app is before the auth state resolves, so its query starts disabled.
- * When the user download fills it, the collection still has to fetch:
+ * When the user signs in, the collection still has to download its data:
  * the account page's filter presets section only shows it once the query
  * fetched, and nothing else starts the download.
  *
@@ -47,23 +48,17 @@ describe("resultFilterPresets collection", () => {
   beforeEach(async () => {
     setUserId(null);
     await flush();
+    vi.mocked(fetchUserFromApi).mockClear();
   });
 
-  it("does not download before the user download fills it", async () => {
-    setUserId("uid");
+  it("does not download while signed out", async () => {
     await flush();
-    expect(downloaded()).toBeUndefined();
+    expect(fetchUserFromApi).not.toHaveBeenCalled();
   });
 
-  it("is filled from the user download, names with spaces", async () => {
+  it("downloads after sign in", async () => {
     setUserId("uid");
-    userDownloaded.dispatch({
-      resultFilterPresets: [{ _id: "p1", name: "my_preset" }],
-    } as never);
-    await waitFor(
-      () => downloaded() !== undefined,
-      "the resultFilterPresets query to fetch",
-    );
-    expect(downloaded()).toEqual(["my preset"]);
+    await waitFor(hasDownloaded, "the resultFilterPresets query to fetch");
+    expect(fetchUserFromApi).toHaveBeenCalled();
   });
 });

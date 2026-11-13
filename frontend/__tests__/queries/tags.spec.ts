@@ -1,7 +1,10 @@
 import { UserTag } from "@monkeytype/schemas/users";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("../../src/ts/ape/user", () => ({ fetchUserFromApi: vi.fn() }));
+
 import Ape from "../../src/ts/ape";
+import { fetchUserFromApi } from "../../src/ts/ape/user";
 import { queryClient } from "../../src/ts/queries";
 import {
   areTagsLoaded,
@@ -11,17 +14,20 @@ import {
   getTags,
   insertTag,
   isTagActive,
+  loadTags,
   saveLocalTagPB,
   setActiveTags,
   toggleTagActive,
   updateTagName,
 } from "../../src/ts/queries/tags";
-import { userDownloaded } from "../../src/ts/queries/user";
 import { filters } from "../../src/ts/states/result-filters";
+import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 
-/** A user download with these tags. */
-const fillTags = (tags: UserTag[]): void =>
-  userDownloaded.dispatch({ tags } as never);
+/** Downloads the tags from a user response with these tags. */
+async function download(tags: UserTag[]): Promise<void> {
+  vi.mocked(fetchUserFromApi).mockResolvedValue({ tags } as never);
+  await loadTags();
+}
 
 function tag(_id: string, name: string): UserTag {
   return {
@@ -51,8 +57,8 @@ function deferred(): {
 
 const names = (): string[] => getTags().map((it) => `${it._id}:${it.name}`);
 
-beforeEach(() => {
-  fillTags([tag("b", "beta"), tag("a", "alpha")]);
+beforeEach(async () => {
+  await download([tag("b", "beta"), tag("a", "alpha")]);
   setActiveTags([]);
 });
 
@@ -62,10 +68,18 @@ afterEach(async () => {
 });
 
 describe("reads", () => {
-  it("fills from the user download with spaces in names, sorted", () => {
-    fillTags([tag("b", "beta_tag"), tag("a", "alpha")]);
+  it("picks the tags from the user endpoint, names with spaces, sorted", async () => {
+    await download([tag("b", "beta_tag"), tag("a", "alpha")]);
     expect(names()).toEqual(["a:alpha", "b:beta tag"]);
     expect(filters.tags["b"]).toBe(true);
+  });
+
+  it("fails to load while signed out, leaving no tags", async () => {
+    await queryClient.resetQueries({ queryKey: ["user"] });
+    vi.mocked(fetchUserFromApi).mockResolvedValue(undefined);
+
+    await expect(loadTags()).rejects.toBeInstanceOf(UserDataLoadError);
+    expect(areTagsLoaded()).toBe(false);
   });
 
   it("is empty and not loaded after the sign-out reset", async () => {
