@@ -8,6 +8,7 @@ import {
 } from "@monkeytype/schemas/shared";
 import { UserTag } from "@monkeytype/schemas/users";
 import { IdSchema } from "@monkeytype/schemas/util";
+import { Result } from "@monkeytype/util/trycatch";
 import { createMemo, createRoot } from "solid-js";
 import { z } from "zod";
 
@@ -22,6 +23,7 @@ import {
 } from "../utils/strings";
 import { DeepReadonly } from "../utils/types";
 import {
+  keptOrThrow,
   type OptimisticMutation,
   optimisticMutation,
   runMutation,
@@ -120,26 +122,6 @@ export function setActiveTags(ids: readonly string[]): void {
 
 // --- Optimistic actions: rolled back by tag id if the request fails ---
 
-function keptOrThrow<T>(
-  response: { status: number; body: { message: string } },
-  kept: T,
-  what: string,
-): T {
-  if (response.status !== 200) {
-    throw new Error(`Failed to ${what}: ${response.body.message}`);
-  }
-  return kept;
-}
-
-/** Throws the mutation's error, as callers (simple modals) expect. */
-async function runOrThrow<T, V>(
-  mutation: OptimisticMutation<T, V>,
-  vars: V,
-): Promise<void> {
-  const { error } = await runMutation(mutation, vars);
-  if (error !== null) throw error;
-}
-
 /** An optimistic mutation on the tags, rolled back by tag id. */
 function tagsMutation<V>(
   name: string,
@@ -168,9 +150,7 @@ const insertTagMutation = tagsMutation<Insert>(
     const response = await Ape.users.createTag({
       body: { tagName: replaceSpacesWithUnderscores(vars.name) },
     });
-    if (response.status !== 200) {
-      throw new Error(`Failed to add tag: ${response.body.message}`);
-    }
+    if (response.status !== 200) throw new Error(response.body.message);
     const tag = response.body.data;
     return {
       ...vars,
@@ -179,39 +159,42 @@ const insertTagMutation = tagsMutation<Insert>(
   },
 );
 
-export async function insertTag({ name }: { name: string }): Promise<void> {
-  await runOrThrow(insertTagMutation, {
+export async function insertTag(name: string): Promise<Result<void>> {
+  const result = await runMutation(insertTagMutation, {
     tempId: tempId(),
     name: replaceUnderscoresWithSpaces(name),
   });
-  syncFilterStorage();
+  if (result.error === null) syncFilterStorage();
+  return result;
 }
 
-type Rename = { tagId: string; newName: string };
+type Rename = { tagId: string; name: string };
 
 const updateTagNameMutation = tagsMutation<Rename>(
   "updateTagName",
-  (list, { tagId, newName }) => {
+  (list, { tagId, name }) => {
     const tag = list.find((it) => it._id === tagId);
-    if (tag !== undefined) tag.name = newName;
+    if (tag !== undefined) tag.name = name;
   },
-  async (vars) =>
+  async (rename) =>
     keptOrThrow(
       await Ape.users.editTag({
         body: {
-          tagId: vars.tagId,
-          newName: replaceSpacesWithUnderscores(vars.newName),
+          tagId: rename.tagId,
+          newName: replaceSpacesWithUnderscores(rename.name),
         },
       }),
-      vars,
-      "update tag",
+      rename,
     ),
 );
 
-export async function updateTagName({ tagId, newName }: Rename): Promise<void> {
-  await runOrThrow(updateTagNameMutation, {
+export async function updateTagName(
+  tagId: string,
+  name: string,
+): Promise<Result<void>> {
+  return runMutation(updateTagNameMutation, {
     tagId,
-    newName: replaceUnderscoresWithSpaces(newName),
+    name: replaceUnderscoresWithSpaces(name),
   });
 }
 
@@ -225,12 +208,11 @@ const clearTagPBsMutation = tagsMutation<string>(
     keptOrThrow(
       await Ape.users.deleteTagPersonalBest({ params: { tagId } }),
       tagId,
-      "clear tag PBs",
     ),
 );
 
-export async function clearTagPBs({ tagId }: { tagId: string }): Promise<void> {
-  await runOrThrow(clearTagPBsMutation, tagId);
+export async function clearTagPBs(tagId: string): Promise<Result<void>> {
+  return runMutation(clearTagPBsMutation, tagId);
 }
 
 const deleteTagMutation = tagsMutation<string>(
@@ -240,17 +222,16 @@ const deleteTagMutation = tagsMutation<string>(
     if (index !== -1) list.splice(index, 1);
   },
   async (tagId) =>
-    keptOrThrow(
-      await Ape.users.deleteTag({ params: { tagId } }),
-      tagId,
-      "delete tag",
-    ),
+    keptOrThrow(await Ape.users.deleteTag({ params: { tagId } }), tagId),
 );
 
-export async function deleteTag({ tagId }: { tagId: string }): Promise<void> {
-  await runOrThrow(deleteTagMutation, tagId);
-  setActiveIds((ids) => ids.filter((id) => id !== tagId));
-  syncFilterStorage();
+export async function deleteTag(tagId: string): Promise<Result<void>> {
+  const result = await runMutation(deleteTagMutation, tagId);
+  if (result.error === null) {
+    setActiveIds((ids) => ids.filter((id) => id !== tagId));
+    syncFilterStorage();
+  }
+  return result;
 }
 
 // --- Personal bests: local only, the result saving updates the server ---

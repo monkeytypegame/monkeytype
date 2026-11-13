@@ -20,9 +20,14 @@ export function showAddTagModal(): void {
       },
     },
     execFn: async ({ tagName }) => {
-      await insertTag({
-        name: tagName,
-      });
+      const { error } = await insertTag(tagName);
+      if (error !== null) {
+        return {
+          status: "error",
+          message: "Failed to add tag",
+          notificationOptions: { error },
+        };
+      }
 
       return {
         status: "success",

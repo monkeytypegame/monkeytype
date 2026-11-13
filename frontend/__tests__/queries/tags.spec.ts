@@ -94,12 +94,12 @@ describe("optimistic actions", () => {
       .mockReturnValueOnce(slow.promise)
       .mockResolvedValueOnce(ok());
 
-    const renaming = updateTagName({ tagId: "a", newName: "alpha_2" });
+    const renaming = updateTagName("a", "alpha_2");
     expect(names()).toEqual(["a:alpha 2", "b:beta"]);
-    await updateTagName({ tagId: "b", newName: "beta 2" });
+    await updateTagName("b", "beta 2");
     slow.resolve(fail("nope"));
 
-    await expect(renaming).rejects.toThrow("Failed to update tag: nope");
+    expect((await renaming).error?.message).toBe("nope");
     expect(names()).toEqual(["a:alpha", "b:beta 2"]);
     expect(Ape.users.editTag).toHaveBeenCalledWith({
       body: { tagId: "a", newName: "alpha_2" },
@@ -110,7 +110,7 @@ describe("optimistic actions", () => {
     const slow = deferred();
     vi.spyOn(Ape.users, "createTag").mockReturnValue(slow.promise);
 
-    const inserting = insertTag({ name: "gamma tag" });
+    const inserting = insertTag("gamma tag");
     expect(getTags().map((it) => it.name)).toEqual([
       "alpha",
       "beta",
@@ -126,9 +126,7 @@ describe("optimistic actions", () => {
   it("removes the added tag when the insert fails", async () => {
     vi.spyOn(Ape.users, "createTag").mockResolvedValue(fail("nope"));
 
-    await expect(insertTag({ name: "gamma" })).rejects.toThrow(
-      "Failed to add tag: nope",
-    );
+    expect((await insertTag("gamma")).error?.message).toBe("nope");
     expect(names()).toEqual(["a:alpha", "b:beta"]);
   });
 
@@ -136,7 +134,7 @@ describe("optimistic actions", () => {
     vi.spyOn(Ape.users, "deleteTag").mockResolvedValue(ok());
     setActiveTags(["a", "b"]);
 
-    await deleteTag({ tagId: "a" });
+    await deleteTag("a");
 
     expect(names()).toEqual(["b:beta"]);
     expect(isTagActive("a")).toBe(false);

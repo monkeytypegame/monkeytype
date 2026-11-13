@@ -125,6 +125,15 @@ export function optimisticMutation<T extends object, V>(options: {
   };
 }
 
+/** For a mutation's request: `kept` on a 200, else throws the server message. */
+export function keptOrThrow<T>(
+  response: { status: number; body: { message: string } },
+  kept: T,
+): T {
+  if (response.status !== 200) throw new Error(response.body.message);
+  return kept;
+}
+
 /**
  * Runs a mutation outside a component (`useMutation` takes the same options
  * inside one). Failure is returned as `error`, never thrown, so callers see it

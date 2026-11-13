@@ -48,7 +48,14 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "clear",
                       execFn: async () => {
-                        await clearTagPBs({ tagId: tag._id });
+                        const { error } = await clearTagPBs(tag._id);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to clear personal bests",
+                            notificationOptions: { error },
+                          };
+                        }
 
                         return {
                           status: "success",
@@ -76,10 +83,14 @@ export function Tags(): JSXElement {
                         },
                       },
                       execFn: async ({ tagName }) => {
-                        await updateTagName({
-                          tagId: tag._id,
-                          newName: tagName,
-                        });
+                        const { error } = await updateTagName(tag._id, tagName);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to update tag name",
+                            notificationOptions: { error },
+                          };
+                        }
 
                         return {
                           status: "success",
@@ -99,7 +110,14 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "delete",
                       execFn: async () => {
-                        await deleteTag({ tagId: tag._id });
+                        const { error } = await deleteTag(tag._id);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to delete tag",
+                            notificationOptions: { error },
+                          };
+                        }
                         await deleteLocalTag({ tagId: tag._id });
 
                         return {
