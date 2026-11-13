@@ -9,7 +9,7 @@ import * as ConfigUtils from "../../src/ts/config/utils";
 import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
-import * as Tags from "../../src/ts/collections/tags";
+import * as Tags from "../../src/ts/queries/tags";
 import * as Presets from "../../src/ts/collections/presets";
 
 describe("PresetController", () => {
@@ -36,9 +36,7 @@ describe("PresetController", () => {
       "showSuccessNotification",
     );
     const testRestartMock = vi.spyOn(TestLogic, "restartTest");
-    const tagsClearMock = vi.spyOn(Tags, "clearActiveTags");
-    const tagsSetMock = vi.spyOn(Tags, "setTagActive");
-    const tagsSaveActiveMock = vi.spyOn(Tags, "saveActiveToLocalStorage");
+    const tagsSetMock = vi.spyOn(Tags, "setActiveTags");
 
     beforeEach(() => {
       [
@@ -49,14 +47,11 @@ describe("PresetController", () => {
         configGetConfigChangesMock,
         notificationAddMock,
         testRestartMock,
-        tagsClearMock,
         tagsSetMock,
-        tagsSaveActiveMock,
       ].forEach((it) => it.mockClear());
 
       getUserMock.mockReturnValue({} as any);
       configApplyMock.mockResolvedValue();
-      tagsClearMock.mockResolvedValue();
     });
 
     it("should apply for full preset", async () => {
@@ -68,7 +63,7 @@ describe("PresetController", () => {
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith(preset.config);
-      expect(tagsClearMock).toHaveBeenCalled();
+      expect(tagsSetMock).toHaveBeenCalledWith([]);
       expect(testRestartMock).toHaveBeenCalled();
       expect(notificationAddMock).toHaveBeenCalledWith("Preset applied", {
         durationMs: 2000,
@@ -86,16 +81,7 @@ describe("PresetController", () => {
       await PresetController.apply(preset._id);
 
       //THEN
-      expect(tagsClearMock).toHaveBeenCalled();
-      expect(tagsSetMock).toHaveBeenNthCalledWith(1, {
-        tagId: "tagOne",
-        active: true,
-      });
-      expect(tagsSetMock).toHaveBeenNthCalledWith(2, {
-        tagId: "tagTwo",
-        active: true,
-      });
-      expect(tagsSaveActiveMock).toHaveBeenCalled();
+      expect(tagsSetMock).toHaveBeenCalledExactlyOnceWith(["tagOne", "tagTwo"]);
     });
 
     it("should ignore unknown preset", async () => {
@@ -146,16 +132,7 @@ describe("PresetController", () => {
       await PresetController.apply(preset._id);
 
       //THEN
-      expect(tagsClearMock).toHaveBeenCalled();
-      expect(tagsSetMock).toHaveBeenNthCalledWith(1, {
-        tagId: "tagOne",
-        active: true,
-      });
-      expect(tagsSetMock).toHaveBeenNthCalledWith(2, {
-        tagId: "tagTwo",
-        active: true,
-      });
-      expect(tagsSaveActiveMock).toHaveBeenCalled();
+      expect(tagsSetMock).toHaveBeenCalledExactlyOnceWith(["tagOne", "tagTwo"]);
     });
 
     const givenPreset = (partialPreset: Partial<Preset>): Preset => {

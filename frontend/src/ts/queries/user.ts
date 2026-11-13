@@ -27,6 +27,7 @@ import { setXpBarData } from "../states/header";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
 import {
+  keptOrThrow,
   type OptimisticMutation,
   optimisticMutation,
   runMutation,
@@ -251,15 +252,6 @@ function userMutation<V>(
   request: (vars: V) => Promise<V>,
 ): OptimisticMutation<UserData, V> {
   return optimisticMutation({ query: userQuery, name, recipe, request });
-}
-
-/** `kept` on a 200, else throws the server message. */
-function keptOrThrow<T>(
-  response: { status: number; body: { message: string } },
-  kept: T,
-): T {
-  if (response.status !== 200) throw new Error(response.body.message);
-  return kept;
 }
 
 const updateNameMutation = userMutation<string>(

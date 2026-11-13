@@ -3,11 +3,7 @@ import { Config } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
 import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
-import {
-  clearActiveTags,
-  setTagActive,
-  saveActiveToLocalStorage,
-} from "../collections/tags";
+import { setActiveTags } from "../queries/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { __nonReactive, type PresetItem } from "../collections/presets";
 
@@ -33,13 +29,7 @@ export async function apply(_id: string): Promise<void> {
     !isPartialPreset(presetToApply) ||
     presetToApply.settingGroups?.includes("behavior")
   ) {
-    await clearActiveTags({ noSave: true });
-    if (presetToApply.config.tags) {
-      for (const tagId of presetToApply.config.tags) {
-        await setTagActive({ tagId, active: true });
-      }
-      saveActiveToLocalStorage();
-    }
+    setActiveTags(presetToApply.config.tags ?? []);
   }
   void TestLogic.restartTest();
   showSuccessNotification("Preset applied", { durationMs: 2000 });
