@@ -39,12 +39,10 @@ export function Table<M extends Mode>(props: {
     undefined,
   );
 
-  const tags = getTags;
-
   const columns = createMemo(() =>
     getColumns<M>({
       format: getFormatting(),
-      tags: tags(),
+      tags: getTags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
         if (id !== undefined) showModal("MiniResultChartModal");
