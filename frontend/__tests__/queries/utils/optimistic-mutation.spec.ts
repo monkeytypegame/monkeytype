@@ -7,6 +7,7 @@ import {
 } from "../../../src/ts/queries/utils/session-query";
 import {
   optimisticMutation,
+  rollbackById,
   runMutation,
 } from "../../../src/ts/queries/utils/optimistic-mutation";
 
@@ -207,5 +208,168 @@ describe("optimisticMutation", () => {
 
     expect(result.error?.message).toBe("network");
     expect(query.get()?.name).toBe("a");
+  });
+});
+
+type Item = { _id: string; name: string };
+type List = { items: Item[] };
+
+function setupList(items: Item[]): SessionQuery<List> {
+  const query = createSessionQuery<List>({
+    name: `mutation-list-test-${keyIndex++}`,
+    fetch: async () => ({ items: [] }),
+  });
+  query.replace({ items });
+  return query;
+}
+
+const byId = rollbackById<List, Item>({
+  list: (data) => data.items,
+  id: (item) => item._id,
+});
+
+const names = (query: SessionQuery<List>): string[] =>
+  query.get()?.items.map((item) => `${item._id}:${item.name}`) ?? [];
+
+describe("rollbackById", () => {
+  function renameItem(
+    query: SessionQuery<List>,
+    request: (vars: Item) => Promise<Item>,
+  ): ReturnType<typeof optimisticMutation<List, Item>> {
+    return optimisticMutation<List, Item>({
+      query,
+      name: "renameItem",
+      recipe: (data, { _id, name }) => {
+        const item = data.items.find((it) => it._id === _id);
+        if (item !== undefined) item.name = name;
+      },
+      request,
+      rollback: byId,
+    });
+  }
+
+  function deleteItem(
+    query: SessionQuery<List>,
+    request: (id: string) => Promise<string>,
+  ): ReturnType<typeof optimisticMutation<List, string>> {
+    return optimisticMutation<List, string>({
+      query,
+      name: "deleteItem",
+      recipe: (data, id) => {
+        data.items = data.items.filter((it) => it._id !== id);
+      },
+      request,
+      rollback: byId,
+    });
+  }
+
+  type Insert = { tempId: string; _id?: string; name: string };
+
+  function addItem(
+    query: SessionQuery<List>,
+    request: (vars: Insert) => Promise<Insert>,
+  ): ReturnType<typeof optimisticMutation<List, Insert>> {
+    return optimisticMutation<List, Insert>({
+      query,
+      name: "addItem",
+      // idempotent: the server's id replaces the temporary one
+      recipe: (data, { tempId, _id, name }) => {
+        data.items = data.items.filter((it) => it._id !== tempId);
+        const id = _id ?? tempId;
+        if (!data.items.some((it) => it._id === id)) {
+          data.items.push({ _id: id, name });
+        }
+      },
+      request,
+      rollback: byId,
+    });
+  }
+
+  it("undoes only its own item when other items changed meanwhile", async () => {
+    const query = setupList([
+      { _id: "a", name: "A" },
+      { _id: "b", name: "B" },
+    ]);
+    const req = pending<Item>();
+
+    const renaming = runMutation(renameItem(query, req.request), {
+      _id: "a",
+      name: "A2",
+    });
+    await vi.waitFor(() => expect(req.calls).toHaveLength(1));
+    await runMutation(
+      deleteItem(query, async (id) => id),
+      "b",
+    );
+    req.reject(new Error("nope"));
+
+    expect((await renaming).error?.message).toBe("nope");
+    // A gets its old name back, B stays deleted
+    expect(names(query)).toEqual(["a:A"]);
+  });
+
+  it("removes an added item when the add fails", async () => {
+    const query = setupList([{ _id: "a", name: "A" }]);
+
+    const result = await runMutation(
+      addItem(query, async () => {
+        throw new Error("nope");
+      }),
+      { tempId: "temp", name: "T" },
+    );
+
+    expect(result.error?.message).toBe("nope");
+    expect(names(query)).toEqual(["a:A"]);
+  });
+
+  it("puts a removed item back where it was when the delete fails", async () => {
+    const query = setupList([
+      { _id: "a", name: "A" },
+      { _id: "b", name: "B" },
+      { _id: "c", name: "C" },
+    ]);
+
+    await runMutation(
+      deleteItem(query, async () => {
+        throw new Error("nope");
+      }),
+      "b",
+    );
+
+    expect(names(query)).toEqual(["a:A", "b:B", "c:C"]);
+  });
+
+  it("keeps an item changed again since", async () => {
+    const query = setupList([{ _id: "a", name: "A" }]);
+    const req = pending<Item>();
+
+    const renaming = runMutation(renameItem(query, req.request), {
+      _id: "a",
+      name: "A2",
+    });
+    await vi.waitFor(() => expect(req.calls).toHaveLength(1));
+    query.update((data) => {
+      const item = data.items[0];
+      if (item !== undefined) item.name = "A3";
+    });
+    req.reject(new Error("nope"));
+    await renaming;
+
+    expect(names(query)).toEqual(["a:A3"]);
+  });
+
+  it("replaces a temporary id with the server's on success", async () => {
+    const query = setupList([{ _id: "a", name: "A" }]);
+    const req = pending<Insert>();
+
+    const adding = runMutation(addItem(query, req.request), {
+      tempId: "temp",
+      name: "T",
+    });
+    await vi.waitFor(() => expect(names(query)).toEqual(["a:A", "temp:T"]));
+    req.resolve({ tempId: "temp", _id: "real", name: "T" });
+
+    expect((await adding).error).toBeNull();
+    expect(names(query)).toEqual(["a:A", "real:T"]);
   });
 });
