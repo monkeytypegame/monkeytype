@@ -53,8 +53,13 @@ export function meta(metadata: EndpointMetadata): EndpointMetadata {
 }
 
 export type RequestAuthenticationOptions = {
-  /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
-  isPublic?: boolean;
+  /**
+   * Access mode of the endpoint.
+   * - `true`: public, authentication is always skipped, any auth header is ignored.
+   * - `"optionalUser"`: public, a provided token is verified and used for user-specific data if valid.
+   * - `false` (default): authentication is required.
+   */
+  isPublic?: boolean | "optionalUser";
   /** Endpoint is accessible with ape key authentication in  _addition_ to the bearer authentication. */
   acceptApeKeys?: boolean;
   /** Endpoint requires an authentication token which is younger than one minute.  */
