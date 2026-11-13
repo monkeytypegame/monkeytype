@@ -208,9 +208,8 @@ function Lines(props: { lines: string[] }): JSXElement {
 }
 
 function Tags(): JSXElement {
-  const userTags = getTags;
   const tagNames = createMemo(
-    () => new Map(userTags().map((t) => [t._id, t.name])),
+    () => new Map(getTags().map((t) => [t._id, t.name])),
   );
 
   const openEditModal = (): void => {
