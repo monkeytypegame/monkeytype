@@ -14,6 +14,7 @@ import {
 } from "../utils/strings";
 import { tempId, keepForever } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
+import { userDownloaded } from "../queries/user";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
@@ -38,18 +39,22 @@ const resultFilterPresetsCollection = createCollection({
 });
 
 /**
- * Fills the presets from the user download (server names, with underscores).
+ * Fills the presets from a user download (server names, with underscores).
  * The collection's query is created disabled (startSync runs at module load,
  * before the auth state resolves) and never re-evaluates `enabled` on its own,
  * so this kicks it.
  */
-export function fillResultFilterPresets(presets: ResultFilters[]): void {
+function fillResultFilterPresets(presets: ResultFilters[]): void {
   downloaded = presets.map((it) => ({
     ...it,
     name: replaceUnderscoresWithSpaces(it.name),
   }));
   void resultFilterPresetsCollection.utils.refetch();
 }
+
+userDownloaded.subscribe((response) =>
+  fillResultFilterPresets(response.resultFilterPresets ?? []),
+);
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useResultFilterPresetsLiveQuery() {

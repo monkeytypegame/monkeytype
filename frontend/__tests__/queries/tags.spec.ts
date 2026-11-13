@@ -6,7 +6,6 @@ import { queryClient } from "../../src/ts/queries";
 import {
   areTagsLoaded,
   deleteTag,
-  fillTags,
   getActiveTags,
   getLocalTagPB,
   getTags,
@@ -17,7 +16,12 @@ import {
   toggleTagActive,
   updateTagName,
 } from "../../src/ts/queries/tags";
+import { userDownloaded } from "../../src/ts/queries/user";
 import { filters } from "../../src/ts/states/result-filters";
+
+/** A user download with these tags. */
+const fillTags = (tags: UserTag[]): void =>
+  userDownloaded.dispatch({ tags } as never);
 
 function tag(_id: string, name: string): UserTag {
   return {

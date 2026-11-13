@@ -17,6 +17,7 @@ import {
 import { Result } from "@monkeytype/util/trycatch";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
+import { GetUserResponse } from "@monkeytype/contracts/users";
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
 import type { NormalizedLocalResult } from "../collections/results";
@@ -31,9 +32,8 @@ import {
   optimisticMutation,
   runMutation,
 } from "./utils/optimistic-mutation";
-import { fillResultFilterPresets } from "../collections/result-filter-presets";
-import { fillTags } from "./tags";
 import { createSessionQuery } from "./utils/session-query";
+import { createEvent } from "../hooks/createEvent";
 
 /** The cached user. Readonly: writes go through `userQuery.update`. */
 export type CachedUser = DeepReadonly<UserData>;
@@ -48,6 +48,16 @@ const userQuery = createSessionQuery<UserData>({
   name: "user",
   fetch: fetchUser,
 });
+
+/** The user endpoint's response body (it holds more than the user). */
+export type UserResponse = NonNullable<GetUserResponse["data"]>;
+
+/**
+ * Fires with each user download's response, before the user lands in the
+ * cache: data from the same endpoint held elsewhere (tags, filter presets)
+ * fills itself from it, so there is one request.
+ */
+export const userDownloaded = createEvent<UserResponse>();
 
 /** The user query for components that need its status: see `use`. */
 export const useUser = userQuery.use;
@@ -75,9 +85,7 @@ async function fetchUser(): Promise<UserData> {
     personalBests[mode] ??= {};
   }
 
-  // tags and filter presets are held apart, filled from this same download
-  fillTags(userData.tags ?? []);
-  fillResultFilterPresets(userData.resultFilterPresets ?? []);
+  userDownloaded.dispatch(userData);
 
   return {
     uid: userData.uid,

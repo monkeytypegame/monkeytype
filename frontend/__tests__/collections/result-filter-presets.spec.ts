@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { fillResultFilterPresets } from "../../src/ts/collections/result-filter-presets";
+import "../../src/ts/collections/result-filter-presets";
 import { queryClient } from "../../src/ts/queries/index";
+import { userDownloaded } from "../../src/ts/queries/user";
 import { setUserId } from "../../src/ts/states/core";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
@@ -56,7 +57,9 @@ describe("resultFilterPresets collection", () => {
 
   it("is filled from the user download, names with spaces", async () => {
     setUserId("uid");
-    fillResultFilterPresets([{ _id: "p1", name: "my_preset" } as never]);
+    userDownloaded.dispatch({
+      resultFilterPresets: [{ _id: "p1", name: "my_preset" }],
+    } as never);
     await waitFor(
       () => downloaded() !== undefined,
       "the resultFilterPresets query to fetch",

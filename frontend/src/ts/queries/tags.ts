@@ -28,6 +28,7 @@ import {
   optimisticMutation,
   runMutation,
 } from "./utils/optimistic-mutation";
+import { userDownloaded } from "./user";
 import { createSessionQuery } from "./utils/session-query";
 
 /**
@@ -76,8 +77,8 @@ const activeTags = createRoot(() =>
 
 // --- Loading ---
 
-/** Fills the tags from the user download (server names, with underscores). */
-export function fillTags(serverTags: UserTag[]): void {
+/** Fills the tags from a user download (server names, with underscores). */
+function fillTags(serverTags: UserTag[]): void {
   tagsQuery.replace(
     serverTags.map((tag) => ({
       ...tag,
@@ -86,6 +87,8 @@ export function fillTags(serverTags: UserTag[]): void {
   );
   updateTagsInFilterStorage(serverTags.map((tag) => tag._id));
 }
+
+userDownloaded.subscribe((response) => fillTags(response.tags ?? []));
 
 // --- Reads ---
 
