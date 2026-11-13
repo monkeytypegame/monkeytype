@@ -89,8 +89,8 @@ export type ApiResponse = { status: number; body: { message: string } };
 export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
 
 /**
- * A TanStack mutation on a session query's data: runs `apply` at once, sends
- * the change (`mutationFn`), and on a 200 runs `apply` again with the
+ * A TanStack mutation on a session query's data: runs `applyFn` at once, sends
+ * the change (`mutationFn`), and on a 200 runs `applyFn` again with the
  * server's values (`reconcileVars`). On failure (a non-200, with the server's
  * message, or a thrown `mutationFn`) the change is undone by the query's
  * shape: by field for one record, by id for a list.
@@ -98,7 +98,7 @@ export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
 export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
 ): OptimisticMutation<T, V> {
-  const { query, apply, reconcileVars } = options;
+  const { query, applyFn, reconcileVars } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -118,7 +118,7 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
     onMutate: (vars) => {
       const before = query.copy();
       if (before === undefined) throw new Error("Not signed in");
-      query.update((data) => apply(data, vars));
+      query.update((data) => applyFn(data, vars));
       const written = query.copy() ?? before;
       return { undo: rollback(before, written) };
     },
@@ -127,7 +127,7 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
       query.update(rollbackResult.undo);
     },
     onSuccess: (kept) => {
-      query.update((data) => apply(data, kept));
+      query.update((data) => applyFn(data, kept));
     },
   };
 }
@@ -143,15 +143,16 @@ export type MutationOptions<T, V, R extends ApiResponse> = {
    * with a temporary id must replace that item on the second run, not add a
    * second one.
    */
-  apply: (data: T, vars: V) => void;
+  applyFn: (data: T, vars: V) => void;
   /**
    * Sends the change; returns the API response unchecked. A non-200 fails the
    * mutation with the server's message and rolls the change back.
    */
   mutationFn: (vars: V) => Promise<R>;
   /**
-   * The variables `apply` runs with on a 200, read from the response (the server
-   * may assign an id or sanitize a value). Left out: the variables as sent.
+   * The variables `applyFn` runs with on a 200, read from the response (the
+   * server may assign an id or sanitize a value). Left out: the variables as
+   * sent.
    */
   reconcileVars?: (vars: V, response: OkResponse<R>) => V;
 };

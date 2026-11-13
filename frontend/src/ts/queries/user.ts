@@ -255,7 +255,7 @@ function userMutation<V, R extends ApiResponse>(
 
 const updateNameMutation = userMutation({
   name: "updateName",
-  apply: (user, name: string) => {
+  applyFn: (user, name: string) => {
     user.name = name;
   },
   mutationFn: async (name) => Ape.users.updateName({ body: { name } }),
@@ -267,7 +267,7 @@ export async function updateName(name: string): Promise<Result<void>> {
 
 const unlinkDiscordMutation = userMutation({
   name: "unlinkDiscord",
-  apply: (user, _vars: undefined) => {
+  applyFn: (user, _vars: undefined) => {
     user.discordId = undefined;
     user.discordAvatar = undefined;
   },
@@ -280,7 +280,7 @@ export async function unlinkDiscord(): Promise<Result<void>> {
 
 const setStreakHourOffsetMutation = userMutation({
   name: "setStreakHourOffset",
-  apply: (user, hourOffset: number) => {
+  applyFn: (user, hourOffset: number) => {
     user.streakHourOffset = hourOffset;
   },
   mutationFn: async (hourOffset) =>
@@ -297,7 +297,7 @@ type QuoteRating = { language: Language; quoteId: number; rating: number };
 
 const rateQuoteMutation = userMutation({
   name: "rateQuote",
-  apply: (user, { language, quoteId, rating }: QuoteRating) => {
+  applyFn: (user, { language, quoteId, rating }: QuoteRating) => {
     user.quoteRatings ??= {};
     user.quoteRatings[language] ??= {};
     user.quoteRatings[language][quoteId] = rating;
@@ -313,7 +313,7 @@ type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
 const setQuoteFavoriteMutation = userMutation({
   name: "setQuoteFavorite",
-  apply: (user, { language, quoteId, favorite }: QuoteFavorite) => {
+  applyFn: (user, { language, quoteId, favorite }: QuoteFavorite) => {
     const list = user.favoriteQuotes?.[language] ?? [];
     const without = list.filter((id) => id !== quoteId);
     user.favoriteQuotes ??= {};
@@ -340,7 +340,7 @@ type ProfileUpdate = {
 
 const updateProfileMutation = userMutation({
   name: "updateProfile",
-  apply: (user, { details, selectedBadgeId }: ProfileUpdate) => {
+  applyFn: (user, { details, selectedBadgeId }: ProfileUpdate) => {
     user.details = details;
     for (const badge of user.inventory?.badges ?? []) {
       badge.selected = badge.id === selectedBadgeId;

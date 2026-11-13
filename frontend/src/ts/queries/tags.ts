@@ -157,7 +157,7 @@ type Insert = { tempId: string; name: string; tag?: UserTag };
 const insertTagMutation = tagsMutation({
   name: "insertTag",
   // idempotent: the server's tag replaces the temporary one
-  apply: (list, { tempId, name, tag }: Insert) => {
+  applyFn: (list, { tempId, name, tag }: Insert) => {
     const temp = list.findIndex((it) => it._id === tempId);
     if (temp !== -1) list.splice(temp, 1);
     const item = tag ?? { _id: tempId, name, personalBests: emptyPbs() };
@@ -186,7 +186,7 @@ type Rename = { tagId: string; name: string };
 
 const updateTagNameMutation = tagsMutation({
   name: "updateTagName",
-  apply: (list, { tagId, name }: Rename) => {
+  applyFn: (list, { tagId, name }: Rename) => {
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.name = name;
   },
@@ -211,7 +211,7 @@ export async function updateTagName(
 
 const clearTagPBsMutation = tagsMutation({
   name: "clearTagPBs",
-  apply: (list, tagId: string) => {
+  applyFn: (list, tagId: string) => {
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.personalBests = emptyPbs();
   },
@@ -225,7 +225,7 @@ export async function clearTagPBs(tagId: string): Promise<Result<void>> {
 
 const deleteTagMutation = tagsMutation({
   name: "deleteTag",
-  apply: (list, tagId: string) => {
+  applyFn: (list, tagId: string) => {
     const index = list.findIndex((it) => it._id === tagId);
     if (index !== -1) list.splice(index, 1);
   },

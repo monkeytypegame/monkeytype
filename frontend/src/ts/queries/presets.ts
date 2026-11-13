@@ -95,7 +95,10 @@ type Insert = {
 const addPresetMutation = presetsMutation({
   name: "addPreset",
   // idempotent: the server's id replaces the temporary one
-  apply: (list, { tempId, name, config, settingGroups, presetId }: Insert) => {
+  applyFn: (
+    list,
+    { tempId, name, config, settingGroups, presetId }: Insert,
+  ) => {
     const temp = list.findIndex((it) => it._id === tempId);
     if (temp !== -1) list.splice(temp, 1);
     const _id = presetId ?? tempId;
@@ -146,7 +149,7 @@ type Edit = {
 
 const editPresetMutation = presetsMutation({
   name: "editPreset",
-  apply: (list, { presetId, name, config, settingGroups }: Edit) => {
+  applyFn: (list, { presetId, name, config, settingGroups }: Edit) => {
     const preset = list.find((it) => it._id === presetId);
     if (preset === undefined) return;
     preset.name = name;
@@ -175,7 +178,7 @@ export async function editPreset(params: Edit): Promise<Result<void>> {
 
 const deletePresetMutation = presetsMutation({
   name: "deletePreset",
-  apply: (list, presetId: string) => {
+  applyFn: (list, presetId: string) => {
     const index = list.findIndex((it) => it._id === presetId);
     if (index !== -1) list.splice(index, 1);
   },

@@ -73,7 +73,7 @@ function rename(
   return optimisticMutation<Data, string, Ok<string>>({
     query,
     name: "rename",
-    apply: (data, name) => {
+    applyFn: (data, name) => {
       data.name = name;
     },
     ...viaApi(request),
@@ -120,7 +120,7 @@ describe("optimisticMutation", () => {
     const mutation = optimisticMutation({
       query,
       name: "rename",
-      apply: (data, name: string) => {
+      applyFn: (data, name: string) => {
         data.name = name;
       },
       mutationFn: async () => ({
@@ -140,7 +140,7 @@ describe("optimisticMutation", () => {
     const mutation = optimisticMutation({
       query,
       name: "rename",
-      apply: (data, name: string) => {
+      applyFn: (data, name: string) => {
         data.name = name;
       },
       mutationFn: async () => ({
@@ -185,7 +185,7 @@ describe("optimisticMutation", () => {
     const mutation = optimisticMutation<Data, number, Ok<number>>({
       query,
       name: "bump",
-      apply: (data, count) => {
+      applyFn: (data, count) => {
         data.name = "bumped";
         data.count = count;
       },
@@ -223,12 +223,12 @@ describe("optimisticMutation", () => {
     expect(query.get()?.name).toBe("c");
   });
 
-  it("rolls back a field `apply` added", async () => {
+  it("rolls back a field `applyFn` added", async () => {
     const { query } = setup();
     const mutation = optimisticMutation<Data, string, Ok<string>>({
       query,
       name: "addExtra",
-      apply: (data, extra) => {
+      applyFn: (data, extra) => {
         data.extra = extra;
       },
       ...viaApi<string>(async () => {
@@ -303,7 +303,7 @@ describe("a list query's mutations roll back by id", () => {
     return optimisticMutation<Item[], Item, Ok<Item>>({
       query,
       name: "renameItem",
-      apply: (items, { _id, name }) => {
+      applyFn: (items, { _id, name }) => {
         const item = items.find((it) => it._id === _id);
         if (item !== undefined) item.name = name;
       },
@@ -318,7 +318,7 @@ describe("a list query's mutations roll back by id", () => {
     return optimisticMutation<Item[], string, Ok<string>>({
       query,
       name: "deleteItem",
-      apply: (items, id) => {
+      applyFn: (items, id) => {
         const index = items.findIndex((it) => it._id === id);
         if (index !== -1) items.splice(index, 1);
       },
@@ -336,7 +336,7 @@ describe("a list query's mutations roll back by id", () => {
       query,
       name: "addItem",
       // idempotent: the server's id replaces the temporary one
-      apply: (items, { tempId, _id, name }) => {
+      applyFn: (items, { tempId, _id, name }) => {
         const temp = items.findIndex((it) => it._id === tempId);
         if (temp !== -1) items.splice(temp, 1);
         const id = _id ?? tempId;
