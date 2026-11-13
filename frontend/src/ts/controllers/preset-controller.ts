@@ -5,7 +5,7 @@ import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
 import { setActiveTags } from "../queries/tags";
 import { saveFullConfigToLocalStorage } from "../config/persistence";
-import { type Preset as PresetSchema } from "@monkeytype/schemas/presets";
+import { type PartialConfig } from "@monkeytype/schemas/configs";
 import { getPreset, type Preset } from "../queries/presets";
 
 export async function apply(_id: string): Promise<void> {
@@ -17,10 +17,8 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
 
-  // a mutable copy: the cached preset is read-only
-  const config = structuredClone(
-    presetToApply.config,
-  ) as PresetSchema["config"];
+  // applyConfig doesn't mutate its input
+  const config = presetToApply.config as PartialConfig;
   if (isPartialPreset(presetToApply)) {
     await applyConfig({
       ...structuredClone(Config),
