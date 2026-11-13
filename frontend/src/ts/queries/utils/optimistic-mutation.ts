@@ -3,6 +3,7 @@ import {
   type MutationObserverOptions,
   replaceEqualDeep,
 } from "@tanstack/solid-query";
+import { MonkeyResponseType } from "@monkeytype/contracts/util/api";
 import { Result } from "@monkeytype/util/trycatch";
 
 import { queryClient } from "..";
@@ -82,8 +83,8 @@ export type OptimisticMutation<T, V> = MutationObserverOptions<
   Undo<T>
 >;
 
-/** An API response: a non-200 carries the server's message. */
-export type ApiResponse = { status: number; body: { message: string } };
+/** An API response: every body carries the server's message. */
+export type ApiResponse = { status: number; body: MonkeyResponseType };
 
 /** The 200 variant of an API response. */
 export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
