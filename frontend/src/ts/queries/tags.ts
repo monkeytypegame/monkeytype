@@ -163,11 +163,11 @@ const insertTagMutation = tagsMutation({
     const item = tag ?? { _id: tempId, name, personalBests: emptyPbs() };
     if (!list.some((it) => it._id === item._id)) list.push(item);
   },
-  send: async (vars) =>
+  mutationFn: async (vars) =>
     Ape.users.createTag({
       body: { tagName: replaceSpacesWithUnderscores(vars.name) },
     }),
-  reconcileResponse: (vars, { body: { data: tag } }) => ({
+  reconcileVars: (vars, { body: { data: tag } }) => ({
     ...vars,
     tag: { ...tag, name: replaceUnderscoresWithSpaces(tag.name) },
   }),
@@ -190,7 +190,7 @@ const updateTagNameMutation = tagsMutation({
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.name = name;
   },
-  send: async (rename) =>
+  mutationFn: async (rename) =>
     Ape.users.editTag({
       body: {
         tagId: rename.tagId,
@@ -215,7 +215,8 @@ const clearTagPBsMutation = tagsMutation({
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.personalBests = emptyPbs();
   },
-  send: async (tagId) => Ape.users.deleteTagPersonalBest({ params: { tagId } }),
+  mutationFn: async (tagId) =>
+    Ape.users.deleteTagPersonalBest({ params: { tagId } }),
 });
 
 export async function clearTagPBs(tagId: string): Promise<Result<void>> {
@@ -228,7 +229,7 @@ const deleteTagMutation = tagsMutation({
     const index = list.findIndex((it) => it._id === tagId);
     if (index !== -1) list.splice(index, 1);
   },
-  send: async (tagId) => Ape.users.deleteTag({ params: { tagId } }),
+  mutationFn: async (tagId) => Ape.users.deleteTag({ params: { tagId } }),
 });
 
 export async function deleteTag(tagId: string): Promise<Result<void>> {

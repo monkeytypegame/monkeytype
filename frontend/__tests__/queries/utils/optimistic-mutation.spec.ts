@@ -29,18 +29,18 @@ type Ok<V> = { status: 200; body: { message: string; data: V } };
 
 /**
  * The tests' requests resolve to the values to keep: sent as a 200 that
- * `reconcileResponse` reads back.
+ * `reconcileVars` reads back.
  */
 function viaApi<V>(request: (vars: V) => Promise<V>): {
-  send: (vars: V) => Promise<Ok<V>>;
-  reconcileResponse: (vars: V, response: Ok<V>) => V;
+  mutationFn: (vars: V) => Promise<Ok<V>>;
+  reconcileVars: (vars: V, response: Ok<V>) => V;
 } {
   return {
-    send: async (vars) => ({
+    mutationFn: async (vars) => ({
       status: 200,
       body: { message: "ok", data: await request(vars) },
     }),
-    reconcileResponse: (_vars, response) => response.body.data,
+    reconcileVars: (_vars, response) => response.body.data,
   };
 }
 
@@ -123,7 +123,7 @@ describe("optimisticMutation", () => {
       apply: (data, name: string) => {
         data.name = name;
       },
-      send: async () => ({
+      mutationFn: async () => ({
         status: 409 as const,
         body: { message: "taken" },
       }),
@@ -135,7 +135,7 @@ describe("optimisticMutation", () => {
     expect(query.get()).toEqual({ name: "a", count: 1 });
   });
 
-  it("keeps the values as sent on a 200 without `reconcileResponse`", async () => {
+  it("keeps the values as sent on a 200 without `reconcileVars`", async () => {
     const { query } = setup();
     const mutation = optimisticMutation({
       query,
@@ -143,7 +143,10 @@ describe("optimisticMutation", () => {
       apply: (data, name: string) => {
         data.name = name;
       },
-      send: async () => ({ status: 200 as const, body: { message: "ok" } }),
+      mutationFn: async () => ({
+        status: 200 as const,
+        body: { message: "ok" },
+      }),
     });
 
     expect((await runMutation(mutation, "b")).error).toBeNull();

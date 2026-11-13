@@ -258,7 +258,7 @@ const updateNameMutation = userMutation({
   apply: (user, name: string) => {
     user.name = name;
   },
-  send: async (name) => Ape.users.updateName({ body: { name } }),
+  mutationFn: async (name) => Ape.users.updateName({ body: { name } }),
 });
 
 export async function updateName(name: string): Promise<Result<void>> {
@@ -271,7 +271,7 @@ const unlinkDiscordMutation = userMutation({
     user.discordId = undefined;
     user.discordAvatar = undefined;
   },
-  send: async () => Ape.users.unlinkDiscord(),
+  mutationFn: async () => Ape.users.unlinkDiscord(),
 });
 
 export async function unlinkDiscord(): Promise<Result<void>> {
@@ -283,7 +283,7 @@ const setStreakHourOffsetMutation = userMutation({
   apply: (user, hourOffset: number) => {
     user.streakHourOffset = hourOffset;
   },
-  send: async (hourOffset) =>
+  mutationFn: async (hourOffset) =>
     Ape.users.setStreakHourOffset({ body: { hourOffset } }),
 });
 
@@ -302,7 +302,7 @@ const rateQuoteMutation = userMutation({
     user.quoteRatings[language] ??= {};
     user.quoteRatings[language][quoteId] = rating;
   },
-  send: async (rating) => Ape.quotes.addRating({ body: rating }),
+  mutationFn: async (rating) => Ape.quotes.addRating({ body: rating }),
 });
 
 export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
@@ -319,7 +319,7 @@ const setQuoteFavoriteMutation = userMutation({
     user.favoriteQuotes ??= {};
     user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
   },
-  send: async (favorite) => {
+  mutationFn: async (favorite) => {
     const body = { language: favorite.language, quoteId: favorite.quoteId };
     return favorite.favorite
       ? Ape.users.addQuoteToFavorites({ body })
@@ -346,12 +346,12 @@ const updateProfileMutation = userMutation({
       badge.selected = badge.id === selectedBadgeId;
     }
   },
-  send: async (profile) =>
+  mutationFn: async (profile) =>
     Ape.users.updateProfile({
       body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
     }),
   // the server sanitizes the details
-  reconcileResponse: (profile, response) => ({
+  reconcileVars: (profile, response) => ({
     ...profile,
     details: response.body.data ?? profile.details,
   }),

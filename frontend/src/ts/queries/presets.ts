@@ -107,7 +107,7 @@ const addPresetMutation = presetsMutation({
       ...(settingGroups !== undefined && { settingGroups }),
     });
   },
-  send: async (vars) =>
+  mutationFn: async (vars) =>
     Ape.presets.add({
       body: {
         name: replaceSpacesWithUnderscores(vars.name),
@@ -117,7 +117,7 @@ const addPresetMutation = presetsMutation({
         }),
       },
     }),
-  reconcileResponse: (vars, response) => ({
+  reconcileVars: (vars, response) => ({
     ...vars,
     presetId: response.body.data.presetId,
   }),
@@ -153,7 +153,7 @@ const editPresetMutation = presetsMutation({
     if (config !== undefined) preset.config = config;
     if (settingGroups !== undefined) preset.settingGroups = settingGroups;
   },
-  send: async (edit) =>
+  mutationFn: async (edit) =>
     Ape.presets.save({
       body: {
         _id: edit.presetId,
@@ -179,7 +179,7 @@ const deletePresetMutation = presetsMutation({
     const index = list.findIndex((it) => it._id === presetId);
     if (index !== -1) list.splice(index, 1);
   },
-  send: async (presetId) => Ape.presets.delete({ params: { presetId } }),
+  mutationFn: async (presetId) => Ape.presets.delete({ params: { presetId } }),
 });
 
 export async function deletePreset({

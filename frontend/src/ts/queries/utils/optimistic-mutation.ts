@@ -89,16 +89,16 @@ export type ApiResponse = { status: number; body: { message: string } };
 export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
 
 /**
- * A TanStack mutation on a session query's data: runs `apply` at once,
- * `send`s the change, and on a 200 runs `apply` again with the server's
- * values (`reconcileResponse`). On failure (a non-200, with the server's
- * message, or a thrown `send`) the change is undone by the query's shape: by
- * field for one record, by id for a list.
+ * A TanStack mutation on a session query's data: runs `apply` at once, sends
+ * the change (`mutationFn`), and on a 200 runs `apply` again with the
+ * server's values (`reconcileVars`). On failure (a non-200, with the server's
+ * message, or a thrown `mutationFn`) the change is undone by the query's
+ * shape: by field for one record, by id for a list.
  */
 export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
 ): OptimisticMutation<T, V> {
-  const { query, apply, send, reconcileResponse } = options;
+  const { query, apply, reconcileVars } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -107,11 +107,11 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   return {
     mutationKey: [...query.key, options.name],
     mutationFn: async (vars) => {
-      const response = await send(vars);
+      const response = await options.mutationFn(vars);
       if (response.status !== 200) throw new Error(response.body.message);
-      return reconcileResponse === undefined
+      return reconcileVars === undefined
         ? vars
-        : reconcileResponse(vars, response as OkResponse<R>);
+        : reconcileVars(vars, response as OkResponse<R>);
     },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
@@ -139,7 +139,7 @@ export type MutationOptions<T, V, R extends ApiResponse> = {
   /**
    * Writes the change into a copy of the query's data: a list in place, a
    * record by field. Runs twice: at once with the variables as sent, and on a
-   * 200 with `reconcileResponse`'s values. So it must be idempotent: an insert
+   * 200 with `reconcileVars`'s values. So it must be idempotent: an insert
    * with a temporary id must replace that item on the second run, not add a
    * second one.
    */
@@ -148,12 +148,12 @@ export type MutationOptions<T, V, R extends ApiResponse> = {
    * Sends the change; returns the API response unchecked. A non-200 fails the
    * mutation with the server's message and rolls the change back.
    */
-  send: (vars: V) => Promise<R>;
+  mutationFn: (vars: V) => Promise<R>;
   /**
    * The variables `apply` runs with on a 200, read from the response (the server
    * may assign an id or sanitize a value). Left out: the variables as sent.
    */
-  reconcileResponse?: (vars: V, response: OkResponse<R>) => V;
+  reconcileVars?: (vars: V, response: OkResponse<R>) => V;
 };
 
 /**
