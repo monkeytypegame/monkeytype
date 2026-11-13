@@ -95,7 +95,7 @@ type Insert = {
 const addPresetMutation = presetsMutation({
   name: "addPreset",
   // idempotent: the server's id replaces the temporary one
-  recipe: (list, { tempId, name, config, settingGroups, presetId }: Insert) => {
+  apply: (list, { tempId, name, config, settingGroups, presetId }: Insert) => {
     const temp = list.findIndex((it) => it._id === tempId);
     if (temp !== -1) list.splice(temp, 1);
     const _id = presetId ?? tempId;
@@ -107,7 +107,7 @@ const addPresetMutation = presetsMutation({
       ...(settingGroups !== undefined && { settingGroups }),
     });
   },
-  request: async (vars) =>
+  send: async (vars) =>
     Ape.presets.add({
       body: {
         name: replaceSpacesWithUnderscores(vars.name),
@@ -117,7 +117,7 @@ const addPresetMutation = presetsMutation({
         }),
       },
     }),
-  fromResponse: (vars, response) => ({
+  reconcileResponse: (vars, response) => ({
     ...vars,
     presetId: response.body.data.presetId,
   }),
@@ -146,14 +146,14 @@ type Edit = {
 
 const editPresetMutation = presetsMutation({
   name: "editPreset",
-  recipe: (list, { presetId, name, config, settingGroups }: Edit) => {
+  apply: (list, { presetId, name, config, settingGroups }: Edit) => {
     const preset = list.find((it) => it._id === presetId);
     if (preset === undefined) return;
     preset.name = name;
     if (config !== undefined) preset.config = config;
     if (settingGroups !== undefined) preset.settingGroups = settingGroups;
   },
-  request: async (edit) =>
+  send: async (edit) =>
     Ape.presets.save({
       body: {
         _id: edit.presetId,
@@ -175,11 +175,11 @@ export async function editPreset(params: Edit): Promise<Result<void>> {
 
 const deletePresetMutation = presetsMutation({
   name: "deletePreset",
-  recipe: (list, presetId: string) => {
+  apply: (list, presetId: string) => {
     const index = list.findIndex((it) => it._id === presetId);
     if (index !== -1) list.splice(index, 1);
   },
-  request: async (presetId) => Ape.presets.delete({ params: { presetId } }),
+  send: async (presetId) => Ape.presets.delete({ params: { presetId } }),
 });
 
 export async function deletePreset({

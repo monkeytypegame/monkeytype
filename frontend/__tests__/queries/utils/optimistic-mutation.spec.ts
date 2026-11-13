@@ -29,18 +29,18 @@ type Ok<V> = { status: 200; body: { message: string; data: V } };
 
 /**
  * The tests' requests resolve to the values to keep: sent as a 200 that
- * `fromResponse` reads back.
+ * `reconcileResponse` reads back.
  */
 function viaApi<V>(request: (vars: V) => Promise<V>): {
-  request: (vars: V) => Promise<Ok<V>>;
-  fromResponse: (vars: V, response: Ok<V>) => V;
+  send: (vars: V) => Promise<Ok<V>>;
+  reconcileResponse: (vars: V, response: Ok<V>) => V;
 } {
   return {
-    request: async (vars) => ({
+    send: async (vars) => ({
       status: 200,
       body: { message: "ok", data: await request(vars) },
     }),
-    fromResponse: (_vars, response) => response.body.data,
+    reconcileResponse: (_vars, response) => response.body.data,
   };
 }
 
@@ -73,7 +73,7 @@ function rename(
   return optimisticMutation<Data, string, Ok<string>>({
     query,
     name: "rename",
-    recipe: (data, name) => {
+    apply: (data, name) => {
       data.name = name;
     },
     ...viaApi(request),
@@ -120,10 +120,10 @@ describe("optimisticMutation", () => {
     const mutation = optimisticMutation({
       query,
       name: "rename",
-      recipe: (data, name: string) => {
+      apply: (data, name: string) => {
         data.name = name;
       },
-      request: async () => ({
+      send: async () => ({
         status: 409 as const,
         body: { message: "taken" },
       }),
@@ -135,15 +135,15 @@ describe("optimisticMutation", () => {
     expect(query.get()).toEqual({ name: "a", count: 1 });
   });
 
-  it("keeps the values as sent on a 200 without `fromResponse`", async () => {
+  it("keeps the values as sent on a 200 without `reconcileResponse`", async () => {
     const { query } = setup();
     const mutation = optimisticMutation({
       query,
       name: "rename",
-      recipe: (data, name: string) => {
+      apply: (data, name: string) => {
         data.name = name;
       },
-      request: async () => ({ status: 200 as const, body: { message: "ok" } }),
+      send: async () => ({ status: 200 as const, body: { message: "ok" } }),
     });
 
     expect((await runMutation(mutation, "b")).error).toBeNull();
@@ -182,7 +182,7 @@ describe("optimisticMutation", () => {
     const mutation = optimisticMutation<Data, number, Ok<number>>({
       query,
       name: "bump",
-      recipe: (data, count) => {
+      apply: (data, count) => {
         data.name = "bumped";
         data.count = count;
       },
@@ -220,12 +220,12 @@ describe("optimisticMutation", () => {
     expect(query.get()?.name).toBe("c");
   });
 
-  it("rolls back a field the recipe added", async () => {
+  it("rolls back a field `apply` added", async () => {
     const { query } = setup();
     const mutation = optimisticMutation<Data, string, Ok<string>>({
       query,
       name: "addExtra",
-      recipe: (data, extra) => {
+      apply: (data, extra) => {
         data.extra = extra;
       },
       ...viaApi<string>(async () => {
@@ -300,7 +300,7 @@ describe("a list query's mutations roll back by id", () => {
     return optimisticMutation<Item[], Item, Ok<Item>>({
       query,
       name: "renameItem",
-      recipe: (items, { _id, name }) => {
+      apply: (items, { _id, name }) => {
         const item = items.find((it) => it._id === _id);
         if (item !== undefined) item.name = name;
       },
@@ -315,7 +315,7 @@ describe("a list query's mutations roll back by id", () => {
     return optimisticMutation<Item[], string, Ok<string>>({
       query,
       name: "deleteItem",
-      recipe: (items, id) => {
+      apply: (items, id) => {
         const index = items.findIndex((it) => it._id === id);
         if (index !== -1) items.splice(index, 1);
       },
@@ -333,7 +333,7 @@ describe("a list query's mutations roll back by id", () => {
       query,
       name: "addItem",
       // idempotent: the server's id replaces the temporary one
-      recipe: (items, { tempId, _id, name }) => {
+      apply: (items, { tempId, _id, name }) => {
         const temp = items.findIndex((it) => it._id === tempId);
         if (temp !== -1) items.splice(temp, 1);
         const id = _id ?? tempId;

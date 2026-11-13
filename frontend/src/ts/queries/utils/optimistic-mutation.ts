@@ -89,16 +89,16 @@ export type ApiResponse = { status: number; body: { message: string } };
 export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
 
 /**
- * A TanStack mutation on a session query's data: applies `recipe` at once,
- * sends `request`, and on a 200 applies `recipe` again with the server's
- * values (`fromResponse`). On failure (a non-200, with the server's message, or
- * a thrown request) the change is undone by the query's shape: by field for
- * one record, by id for a list.
+ * A TanStack mutation on a session query's data: runs `apply` at once,
+ * `send`s the change, and on a 200 runs `apply` again with the server's
+ * values (`reconcileResponse`). On failure (a non-200, with the server's
+ * message, or a thrown `send`) the change is undone by the query's shape: by
+ * field for one record, by id for a list.
  */
 export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
 ): OptimisticMutation<T, V> {
-  const { query, recipe, request, fromResponse } = options;
+  const { query, apply, send, reconcileResponse } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -107,18 +107,18 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   return {
     mutationKey: [...query.key, options.name],
     mutationFn: async (vars) => {
-      const response = await request(vars);
+      const response = await send(vars);
       if (response.status !== 200) throw new Error(response.body.message);
-      return fromResponse === undefined
+      return reconcileResponse === undefined
         ? vars
-        : fromResponse(vars, response as OkResponse<R>);
+        : reconcileResponse(vars, response as OkResponse<R>);
     },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
     onMutate: (vars) => {
       const before = query.copy();
       if (before === undefined) throw new Error("Not signed in");
-      query.update((data) => recipe(data, vars));
+      query.update((data) => apply(data, vars));
       const written = query.copy() ?? before;
       return { undo: rollback(before, written) };
     },
@@ -127,7 +127,7 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
       query.update(rollbackResult.undo);
     },
     onSuccess: (kept) => {
-      query.update((data) => recipe(data, kept));
+      query.update((data) => apply(data, kept));
     },
   };
 }
@@ -139,21 +139,21 @@ export type MutationOptions<T, V, R extends ApiResponse> = {
   /**
    * Writes the change into a copy of the query's data: a list in place, a
    * record by field. Runs twice: at once with the variables as sent, and on a
-   * 200 with `fromResponse`'s values. So it must be idempotent: an insert with
-   * a temporary id must replace that item on the second run, not add a second
-   * one.
+   * 200 with `reconcileResponse`'s values. So it must be idempotent: an insert
+   * with a temporary id must replace that item on the second run, not add a
+   * second one.
    */
-  recipe: (data: T, vars: V) => void;
+  apply: (data: T, vars: V) => void;
   /**
    * Sends the change; returns the API response unchecked. A non-200 fails the
    * mutation with the server's message and rolls the change back.
    */
-  request: (vars: V) => Promise<R>;
+  send: (vars: V) => Promise<R>;
   /**
-   * The values `recipe` applies on a 200, read from the response (the server
+   * The variables `apply` runs with on a 200, read from the response (the server
    * may assign an id or sanitize a value). Left out: the variables as sent.
    */
-  fromResponse?: (vars: V, response: OkResponse<R>) => V;
+  reconcileResponse?: (vars: V, response: OkResponse<R>) => V;
 };
 
 /**

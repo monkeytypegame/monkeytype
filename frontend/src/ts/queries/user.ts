@@ -255,10 +255,10 @@ function userMutation<V, R extends ApiResponse>(
 
 const updateNameMutation = userMutation({
   name: "updateName",
-  recipe: (user, name: string) => {
+  apply: (user, name: string) => {
     user.name = name;
   },
-  request: async (name) => Ape.users.updateName({ body: { name } }),
+  send: async (name) => Ape.users.updateName({ body: { name } }),
 });
 
 export async function updateName(name: string): Promise<Result<void>> {
@@ -267,11 +267,11 @@ export async function updateName(name: string): Promise<Result<void>> {
 
 const unlinkDiscordMutation = userMutation({
   name: "unlinkDiscord",
-  recipe: (user, _vars: undefined) => {
+  apply: (user, _vars: undefined) => {
     user.discordId = undefined;
     user.discordAvatar = undefined;
   },
-  request: async () => Ape.users.unlinkDiscord(),
+  send: async () => Ape.users.unlinkDiscord(),
 });
 
 export async function unlinkDiscord(): Promise<Result<void>> {
@@ -280,10 +280,10 @@ export async function unlinkDiscord(): Promise<Result<void>> {
 
 const setStreakHourOffsetMutation = userMutation({
   name: "setStreakHourOffset",
-  recipe: (user, hourOffset: number) => {
+  apply: (user, hourOffset: number) => {
     user.streakHourOffset = hourOffset;
   },
-  request: async (hourOffset) =>
+  send: async (hourOffset) =>
     Ape.users.setStreakHourOffset({ body: { hourOffset } }),
 });
 
@@ -297,12 +297,12 @@ type QuoteRating = { language: Language; quoteId: number; rating: number };
 
 const rateQuoteMutation = userMutation({
   name: "rateQuote",
-  recipe: (user, { language, quoteId, rating }: QuoteRating) => {
+  apply: (user, { language, quoteId, rating }: QuoteRating) => {
     user.quoteRatings ??= {};
     user.quoteRatings[language] ??= {};
     user.quoteRatings[language][quoteId] = rating;
   },
-  request: async (rating) => Ape.quotes.addRating({ body: rating }),
+  send: async (rating) => Ape.quotes.addRating({ body: rating }),
 });
 
 export async function rateQuote(rating: QuoteRating): Promise<Result<void>> {
@@ -313,13 +313,13 @@ type QuoteFavorite = { language: Language; quoteId: string; favorite: boolean };
 
 const setQuoteFavoriteMutation = userMutation({
   name: "setQuoteFavorite",
-  recipe: (user, { language, quoteId, favorite }: QuoteFavorite) => {
+  apply: (user, { language, quoteId, favorite }: QuoteFavorite) => {
     const list = user.favoriteQuotes?.[language] ?? [];
     const without = list.filter((id) => id !== quoteId);
     user.favoriteQuotes ??= {};
     user.favoriteQuotes[language] = favorite ? [...without, quoteId] : without;
   },
-  request: async (favorite) => {
+  send: async (favorite) => {
     const body = { language: favorite.language, quoteId: favorite.quoteId };
     return favorite.favorite
       ? Ape.users.addQuoteToFavorites({ body })
@@ -340,18 +340,18 @@ type ProfileUpdate = {
 
 const updateProfileMutation = userMutation({
   name: "updateProfile",
-  recipe: (user, { details, selectedBadgeId }: ProfileUpdate) => {
+  apply: (user, { details, selectedBadgeId }: ProfileUpdate) => {
     user.details = details;
     for (const badge of user.inventory?.badges ?? []) {
       badge.selected = badge.id === selectedBadgeId;
     }
   },
-  request: async (profile) =>
+  send: async (profile) =>
     Ape.users.updateProfile({
       body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
     }),
   // the server sanitizes the details
-  fromResponse: (profile, response) => ({
+  reconcileResponse: (profile, response) => ({
     ...profile,
     details: response.body.data ?? profile.details,
   }),
