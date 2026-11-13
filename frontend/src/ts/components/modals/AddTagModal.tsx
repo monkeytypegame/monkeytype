@@ -1,7 +1,7 @@
 import { TagNameSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
-import { insertTag } from "../../collections/tags";
+import { insertTag } from "../../queries/tags";
 import { showSimpleModal } from "../../states/simple-modal";
 import { normalizeName } from "../../utils/strings";
 
@@ -20,9 +20,14 @@ export function showAddTagModal(): void {
       },
     },
     execFn: async ({ tagName }) => {
-      await insertTag({
-        name: tagName,
-      });
+      const { error } = await insertTag(tagName);
+      if (error !== null) {
+        return {
+          status: "error",
+          message: "Failed to add tag",
+          notificationOptions: { error },
+        };
+      }
 
       return {
         status: "success",

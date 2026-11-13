@@ -14,7 +14,8 @@ import { baseKey } from "./keys";
 /**
  * Server data held for the signed-in session (user, presets…): downloaded by
  * the auth flow, kept until sign out resets it, never refetched by Query on
- * its own. Written only through `update`.
+ * its own. Written only through `update`. Either one record or a list (which
+ * names its items' id); optimistic mutations roll back by that shape.
  */
 export type SessionQuery<T> = {
   key: QueryKey;
@@ -40,13 +41,25 @@ export type SessionQuery<T> = {
   update: (recipe: (data: T) => void) => void;
   /** Replaces the cached data without a download, for tests. */
   replace: (data: T | undefined) => void;
+  /** A list's item id; `undefined` for one record. */
+  id: ItemId<T> | undefined;
 };
 
-export function createSessionQuery<T>(options: {
-  /** Unique among the user's queries; the key is `["user", name]`. */
-  name: string;
-  fetch: () => Promise<T>;
-}): SessionQuery<T> {
+/** The id of a list's items; a record has none. */
+type ItemId<T> = T extends readonly (infer I)[] ? (item: I) => string : never;
+
+/** A list query names its items' id; a record doesn't. */
+type ShapeOptions<T> = T extends readonly unknown[]
+  ? { id: ItemId<T> }
+  : { id?: never };
+
+export function createSessionQuery<T>(
+  options: {
+    /** Unique among the user's queries; the key is `["user", name]`. */
+    name: string;
+    fetch: () => Promise<T>;
+  } & ShapeOptions<T>,
+): SessionQuery<T> {
   // user-scoped by definition: sign out resets every `["user", ...]` query,
   // which is what clears the session's data
   const key = baseKey(options.name, { isUserSpecific: true });
@@ -88,6 +101,7 @@ export function createSessionQuery<T>(options: {
 
   return {
     key,
+    id: options.id,
     get: () => {
       track();
       return peek();

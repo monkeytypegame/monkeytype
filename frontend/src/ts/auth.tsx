@@ -22,7 +22,6 @@ import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import { waitForPresetsReady } from "./collections/presets";
-import { waitForTagsReady } from "./collections/tags";
 import * as RemoteConfig from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
@@ -36,6 +35,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { getUserId, isAuthenticated, setUserId } from "./states/core";
@@ -175,9 +175,9 @@ async function getDataAndInit(): Promise<boolean> {
     // fetch everything in parallel, apply in order below
     const [userData, , , remoteConfig] = await Promise.all([
       loadUserData(),
+      loadTags(),
       //TODO: preload collections for now, remove when __nonReactive is removed from collections
       waitForPresetsReady(),
-      waitForTagsReady(),
       RemoteConfig.fetchFromServer(),
     ]);
 
