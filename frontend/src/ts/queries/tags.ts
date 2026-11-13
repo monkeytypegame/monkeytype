@@ -16,6 +16,10 @@ import type { NormalizedLocalResult } from "../collections/results";
 import { tempId } from "../collections/utils/misc";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { updateTagsInFilterStorage } from "../states/result-filters";
+import {
+  replaceSpacesWithUnderscores,
+  replaceUnderscoresWithSpaces,
+} from "../utils/strings";
 import { DeepReadonly } from "../utils/types";
 import {
   type OptimisticMutation,
@@ -46,9 +50,6 @@ const emptyPbs = (): PersonalBests => ({
   custom: {},
 });
 
-const toServerName = (name: string): string => name.replace(/ /g, "_");
-const toLocalName = (name: string): string => name.replace(/_/g, " ");
-
 const [activeIds, setActiveIds] = createRoot(() =>
   useLocalStorage({
     key: "activeTags",
@@ -76,7 +77,10 @@ const activeTags = createRoot(() =>
 /** Fills the tags from the user download (server names, with underscores). */
 export function fillTags(serverTags: UserTag[]): void {
   tagsQuery.replace(
-    serverTags.map((tag) => ({ ...tag, name: toLocalName(tag.name) })),
+    serverTags.map((tag) => ({
+      ...tag,
+      name: replaceUnderscoresWithSpaces(tag.name),
+    })),
   );
   updateTagsInFilterStorage(serverTags.map((tag) => tag._id));
 }
@@ -162,20 +166,23 @@ const insertTagMutation = tagsMutation<Insert>(
   },
   async (vars) => {
     const response = await Ape.users.createTag({
-      body: { tagName: toServerName(vars.name) },
+      body: { tagName: replaceSpacesWithUnderscores(vars.name) },
     });
     if (response.status !== 200) {
       throw new Error(`Failed to add tag: ${response.body.message}`);
     }
     const tag = response.body.data;
-    return { ...vars, tag: { ...tag, name: toLocalName(tag.name) } };
+    return {
+      ...vars,
+      tag: { ...tag, name: replaceUnderscoresWithSpaces(tag.name) },
+    };
   },
 );
 
 export async function insertTag({ name }: { name: string }): Promise<void> {
   await runOrThrow(insertTagMutation, {
     tempId: tempId(),
-    name: toLocalName(name),
+    name: replaceUnderscoresWithSpaces(name),
   });
   syncFilterStorage();
 }
@@ -191,7 +198,10 @@ const updateTagNameMutation = tagsMutation<Rename>(
   async (vars) =>
     keptOrThrow(
       await Ape.users.editTag({
-        body: { tagId: vars.tagId, newName: toServerName(vars.newName) },
+        body: {
+          tagId: vars.tagId,
+          newName: replaceSpacesWithUnderscores(vars.newName),
+        },
       }),
       vars,
       "update tag",
@@ -201,7 +211,7 @@ const updateTagNameMutation = tagsMutation<Rename>(
 export async function updateTagName({ tagId, newName }: Rename): Promise<void> {
   await runOrThrow(updateTagNameMutation, {
     tagId,
-    newName: toLocalName(newName),
+    newName: replaceUnderscoresWithSpaces(newName),
   });
 }
 
