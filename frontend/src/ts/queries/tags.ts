@@ -167,7 +167,7 @@ const insertTagMutation = tagsMutation({
     Ape.users.createTag({
       body: { tagName: replaceSpacesWithUnderscores(vars.name) },
     }),
-  keep: (vars, { body: { data: tag } }) => ({
+  fromResponse: (vars, { body: { data: tag } }) => ({
     ...vars,
     tag: { ...tag, name: replaceUnderscoresWithSpaces(tag.name) },
   }),

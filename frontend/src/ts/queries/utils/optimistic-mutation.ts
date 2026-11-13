@@ -89,20 +89,16 @@ export type ApiResponse = { status: number; body: { message: string } };
 export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
 
 /**
- * A TanStack mutation on a session query's data: applies `recipe` with its
- * variables at once and sends `request`. A non-200 response fails it with the
- * server's message. On a 200 the recipe is applied again with the values to
- * keep: `keep` picks them from the response (the server may change them), else
- * the variables as sent. On failure the change is undone by the query's shape:
- * by field for one record, by id for a list. The recipe must be idempotent: on
- * success it runs again with the kept values, so an insert with a temporary id
- * must replace that item, not add a second one. A list recipe edits the list
- * in place.
+ * A TanStack mutation on a session query's data: applies `recipe` at once,
+ * sends `request`, and on a 200 applies `recipe` again with the server's
+ * values (`fromResponse`). On failure (a non-200, with the server's message, or
+ * a thrown request) the change is undone by the query's shape: by field for
+ * one record, by id for a list.
  */
 export function optimisticMutation<T extends object, V, R extends ApiResponse>(
   options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
 ): OptimisticMutation<T, V> {
-  const { query, recipe, request, keep } = options;
+  const { query, recipe, request, fromResponse } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -113,7 +109,9 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
     mutationFn: async (vars) => {
       const response = await request(vars);
       if (response.status !== 200) throw new Error(response.body.message);
-      return keep === undefined ? vars : keep(vars, response as OkResponse<R>);
+      return fromResponse === undefined
+        ? vars
+        : fromResponse(vars, response as OkResponse<R>);
     },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
@@ -136,11 +134,26 @@ export function optimisticMutation<T extends object, V, R extends ApiResponse>(
 
 /** What a mutation names, beside its query: see `optimisticMutation`. */
 export type MutationOptions<T, V, R extends ApiResponse> = {
+  /** Unique within the query; the mutation key is the query's key plus it. */
   name: string;
+  /**
+   * Writes the change into a copy of the query's data: a list in place, a
+   * record by field. Runs twice: at once with the variables as sent, and on a
+   * 200 with `fromResponse`'s values. So it must be idempotent: an insert with
+   * a temporary id must replace that item on the second run, not add a second
+   * one.
+   */
   recipe: (data: T, vars: V) => void;
+  /**
+   * Sends the change; returns the API response unchecked. A non-200 fails the
+   * mutation with the server's message and rolls the change back.
+   */
   request: (vars: V) => Promise<R>;
-  /** The values to keep from a 200; the variables as sent without it. */
-  keep?: (vars: V, response: OkResponse<R>) => V;
+  /**
+   * The values `recipe` applies on a 200, read from the response (the server
+   * may assign an id or sanitize a value). Left out: the variables as sent.
+   */
+  fromResponse?: (vars: V, response: OkResponse<R>) => V;
 };
 
 /**

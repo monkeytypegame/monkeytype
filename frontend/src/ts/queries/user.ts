@@ -351,7 +351,7 @@ const updateProfileMutation = userMutation({
       body: { ...profile.details, selectedBadgeId: profile.selectedBadgeId },
     }),
   // the server sanitizes the details
-  keep: (profile, response) => ({
+  fromResponse: (profile, response) => ({
     ...profile,
     details: response.body.data ?? profile.details,
   }),

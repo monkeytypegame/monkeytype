@@ -117,7 +117,7 @@ const addPresetMutation = presetsMutation({
         }),
       },
     }),
-  keep: (vars, response) => ({
+  fromResponse: (vars, response) => ({
     ...vars,
     presetId: response.body.data.presetId,
   }),

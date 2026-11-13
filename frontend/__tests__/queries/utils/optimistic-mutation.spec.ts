@@ -28,19 +28,19 @@ function setup(initial: Data | null = { name: "a", count: 1 }): {
 type Ok<V> = { status: 200; body: { message: string; data: V } };
 
 /**
- * The tests' requests resolve to the values to keep: sent as a 200 that `keep`
- * reads back.
+ * The tests' requests resolve to the values to keep: sent as a 200 that
+ * `fromResponse` reads back.
  */
 function viaApi<V>(request: (vars: V) => Promise<V>): {
   request: (vars: V) => Promise<Ok<V>>;
-  keep: (vars: V, response: Ok<V>) => V;
+  fromResponse: (vars: V, response: Ok<V>) => V;
 } {
   return {
     request: async (vars) => ({
       status: 200,
       body: { message: "ok", data: await request(vars) },
     }),
-    keep: (_vars, response) => response.body.data,
+    fromResponse: (_vars, response) => response.body.data,
   };
 }
 
@@ -135,7 +135,7 @@ describe("optimisticMutation", () => {
     expect(query.get()).toEqual({ name: "a", count: 1 });
   });
 
-  it("keeps the values as sent on a 200 without `keep`", async () => {
+  it("keeps the values as sent on a 200 without `fromResponse`", async () => {
     const { query } = setup();
     const mutation = optimisticMutation({
       query,
