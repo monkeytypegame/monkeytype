@@ -21,7 +21,6 @@ import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
-import { waitForPresetsReady } from "./collections/presets";
 import * as RemoteConfig from "./config/remote";
 import { authEvent } from "./events/auth";
 import {
@@ -35,6 +34,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadPresets } from "./queries/presets";
 import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
@@ -176,8 +176,7 @@ async function getDataAndInit(): Promise<boolean> {
     const [userData, , , remoteConfig] = await Promise.all([
       loadUserData(),
       loadTags(),
-      //TODO: preload collections for now, remove when __nonReactive is removed from collections
-      waitForPresetsReady(),
+      loadPresets(),
       RemoteConfig.fetchFromServer(),
     ]);
 

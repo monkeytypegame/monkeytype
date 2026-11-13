@@ -12,8 +12,8 @@ createRoot(() =>
     //
     // Do NOT reset on sign in. Each collection already starts its own
     // initial download once authenticated: live queries fetch on first
-    // subscribe, (presets, tags) are awaited via waitFor...Ready in the login
-    // flow, and the startSync'd ones (filter presets, custom themes)
+    // subscribe, the session queries (user, tags, presets) are downloaded by
+    // the login flow, and the startSync'd ones (filter presets, custom themes)
     // refetch themselves on sign in. A reset here would race that download
     // and fetch a second time (the duplicate connections fetch on the test
     // page).
