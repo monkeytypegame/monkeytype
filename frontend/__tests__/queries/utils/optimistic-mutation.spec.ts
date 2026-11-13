@@ -6,6 +6,7 @@ import {
   type SessionQuery,
 } from "../../../src/ts/queries/utils/session-query";
 import {
+  type OptimisticMutation,
   optimisticMutation,
   runMutation,
 } from "../../../src/ts/queries/utils/optimistic-mutation";
@@ -22,6 +23,25 @@ function setup(initial: Data | null = { name: "a", count: 1 }): {
   });
   query.replace(initial ?? undefined);
   return { query };
+}
+
+type Ok<V> = { status: 200; body: { message: string; data: V } };
+
+/**
+ * The tests' requests resolve to the values to keep: sent as a 200 that `keep`
+ * reads back.
+ */
+function viaApi<V>(request: (vars: V) => Promise<V>): {
+  request: (vars: V) => Promise<Ok<V>>;
+  keep: (vars: V, response: Ok<V>) => V;
+} {
+  return {
+    request: async (vars) => ({
+      status: 200,
+      body: { message: "ok", data: await request(vars) },
+    }),
+    keep: (_vars, response) => response.body.data,
+  };
 }
 
 /** A request that waits until the test settles it. */
@@ -49,14 +69,14 @@ function pending<V>(): {
 function rename(
   query: SessionQuery<Data>,
   request: (name: string) => Promise<string>,
-): ReturnType<typeof optimisticMutation<Data, string>> {
-  return optimisticMutation<Data, string>({
+): OptimisticMutation<Data, string> {
+  return optimisticMutation<Data, string, Ok<string>>({
     query,
     name: "rename",
     recipe: (data, name) => {
       data.name = name;
     },
-    request,
+    ...viaApi(request),
   });
 }
 
@@ -95,6 +115,41 @@ describe("optimisticMutation", () => {
     expect(query.get()).toEqual({ name: "b!", count: 1 });
   });
 
+  it("fails with the server's message on a non-200 and rolls back", async () => {
+    const { query } = setup();
+    const mutation = optimisticMutation({
+      query,
+      name: "rename",
+      recipe: (data, name: string) => {
+        data.name = name;
+      },
+      request: async () => ({
+        status: 409 as const,
+        body: { message: "taken" },
+      }),
+    });
+
+    const result = await runMutation(mutation, "b");
+
+    expect(result.error?.message).toBe("taken");
+    expect(query.get()).toEqual({ name: "a", count: 1 });
+  });
+
+  it("keeps the values as sent on a 200 without `keep`", async () => {
+    const { query } = setup();
+    const mutation = optimisticMutation({
+      query,
+      name: "rename",
+      recipe: (data, name: string) => {
+        data.name = name;
+      },
+      request: async () => ({ status: 200 as const, body: { message: "ok" } }),
+    });
+
+    expect((await runMutation(mutation, "b")).error).toBeNull();
+    expect(query.get()).toEqual({ name: "b", count: 1 });
+  });
+
   it("returns a failure as an error, never throws, and rolls back", async () => {
     const { query } = setup();
 
@@ -124,14 +179,14 @@ describe("optimisticMutation", () => {
   it("keeps a field changed since by a direct write", async () => {
     const { query } = setup();
     const req = pending<number>();
-    const mutation = optimisticMutation<Data, number>({
+    const mutation = optimisticMutation<Data, number, Ok<number>>({
       query,
       name: "bump",
       recipe: (data, count) => {
         data.name = "bumped";
         data.count = count;
       },
-      request: req.request,
+      ...viaApi(req.request),
     });
 
     const done = runMutation(mutation, 5);
@@ -167,15 +222,15 @@ describe("optimisticMutation", () => {
 
   it("rolls back a field the recipe added", async () => {
     const { query } = setup();
-    const mutation = optimisticMutation<Data, string>({
+    const mutation = optimisticMutation<Data, string, Ok<string>>({
       query,
       name: "addExtra",
       recipe: (data, extra) => {
         data.extra = extra;
       },
-      request: async () => {
+      ...viaApi<string>(async () => {
         throw new Error("nope");
-      },
+      }),
     });
 
     await runMutation(mutation, "x");
@@ -241,30 +296,30 @@ describe("a list query's mutations roll back by id", () => {
   function renameItem(
     query: SessionQuery<Item[]>,
     request: (vars: Item) => Promise<Item>,
-  ): ReturnType<typeof optimisticMutation<Item[], Item>> {
-    return optimisticMutation<Item[], Item>({
+  ): OptimisticMutation<Item[], Item> {
+    return optimisticMutation<Item[], Item, Ok<Item>>({
       query,
       name: "renameItem",
       recipe: (items, { _id, name }) => {
         const item = items.find((it) => it._id === _id);
         if (item !== undefined) item.name = name;
       },
-      request,
+      ...viaApi(request),
     });
   }
 
   function deleteItem(
     query: SessionQuery<Item[]>,
     request: (id: string) => Promise<string>,
-  ): ReturnType<typeof optimisticMutation<Item[], string>> {
-    return optimisticMutation<Item[], string>({
+  ): OptimisticMutation<Item[], string> {
+    return optimisticMutation<Item[], string, Ok<string>>({
       query,
       name: "deleteItem",
       recipe: (items, id) => {
         const index = items.findIndex((it) => it._id === id);
         if (index !== -1) items.splice(index, 1);
       },
-      request,
+      ...viaApi(request),
     });
   }
 
@@ -273,8 +328,8 @@ describe("a list query's mutations roll back by id", () => {
   function addItem(
     query: SessionQuery<Item[]>,
     request: (vars: Insert) => Promise<Insert>,
-  ): ReturnType<typeof optimisticMutation<Item[], Insert>> {
-    return optimisticMutation<Item[], Insert>({
+  ): OptimisticMutation<Item[], Insert> {
+    return optimisticMutation<Item[], Insert, Ok<Insert>>({
       query,
       name: "addItem",
       // idempotent: the server's id replaces the temporary one
@@ -284,7 +339,7 @@ describe("a list query's mutations roll back by id", () => {
         const id = _id ?? tempId;
         if (!items.some((it) => it._id === id)) items.push({ _id: id, name });
       },
-      request,
+      ...viaApi(request),
     });
   }
 

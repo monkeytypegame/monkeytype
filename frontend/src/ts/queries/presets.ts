@@ -12,7 +12,8 @@ import {
 import { DeepReadonly } from "../utils/types";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import {
-  keptOrThrow,
+  type ApiResponse,
+  type MutationOptions,
   type OptimisticMutation,
   optimisticMutation,
   runMutation,
@@ -76,12 +77,10 @@ export function getPreset(id: string): Preset | undefined {
 // --- Optimistic actions: rolled back by preset id if the request fails ---
 
 /** An optimistic mutation on the presets, rolled back by preset id. */
-function presetsMutation<V>(
-  name: string,
-  recipe: (list: PresetSchema[], vars: V) => void,
-  request: (vars: V) => Promise<V>,
+function presetsMutation<V, R extends ApiResponse>(
+  options: MutationOptions<PresetSchema[], V, R>,
 ): OptimisticMutation<PresetSchema[], V> {
-  return optimisticMutation({ query: presetsQuery, name, recipe, request });
+  return optimisticMutation({ ...options, query: presetsQuery });
 }
 
 type Insert = {
@@ -93,10 +92,10 @@ type Insert = {
   presetId?: string;
 };
 
-const addPresetMutation = presetsMutation<Insert>(
-  "addPreset",
+const addPresetMutation = presetsMutation({
+  name: "addPreset",
   // idempotent: the server's id replaces the temporary one
-  (list, { tempId, name, config, settingGroups, presetId }) => {
+  recipe: (list, { tempId, name, config, settingGroups, presetId }: Insert) => {
     const temp = list.findIndex((it) => it._id === tempId);
     if (temp !== -1) list.splice(temp, 1);
     const _id = presetId ?? tempId;
@@ -108,8 +107,8 @@ const addPresetMutation = presetsMutation<Insert>(
       ...(settingGroups !== undefined && { settingGroups }),
     });
   },
-  async (vars) => {
-    const response = await Ape.presets.add({
+  request: async (vars) =>
+    Ape.presets.add({
       body: {
         name: replaceSpacesWithUnderscores(vars.name),
         config: vars.config,
@@ -117,11 +116,12 @@ const addPresetMutation = presetsMutation<Insert>(
           settingGroups: vars.settingGroups,
         }),
       },
-    });
-    if (response.status !== 200) throw new Error(response.body.message);
-    return { ...vars, presetId: response.body.data.presetId };
-  },
-);
+    }),
+  keep: (vars, response) => ({
+    ...vars,
+    presetId: response.body.data.presetId,
+  }),
+});
 
 export async function addPreset(params: {
   name: string;
@@ -144,30 +144,27 @@ type Edit = {
   settingGroups?: ConfigGroupName[] | null;
 };
 
-const editPresetMutation = presetsMutation<Edit>(
-  "editPreset",
-  (list, { presetId, name, config, settingGroups }) => {
+const editPresetMutation = presetsMutation({
+  name: "editPreset",
+  recipe: (list, { presetId, name, config, settingGroups }: Edit) => {
     const preset = list.find((it) => it._id === presetId);
     if (preset === undefined) return;
     preset.name = name;
     if (config !== undefined) preset.config = config;
     if (settingGroups !== undefined) preset.settingGroups = settingGroups;
   },
-  async (edit) =>
-    keptOrThrow(
-      await Ape.presets.save({
-        body: {
-          _id: edit.presetId,
-          name: replaceSpacesWithUnderscores(edit.name),
-          ...(edit.config !== undefined && {
-            config: edit.config,
-            settingGroups: edit.settingGroups,
-          }),
-        },
-      }),
-      edit,
-    ),
-);
+  request: async (edit) =>
+    Ape.presets.save({
+      body: {
+        _id: edit.presetId,
+        name: replaceSpacesWithUnderscores(edit.name),
+        ...(edit.config !== undefined && {
+          config: edit.config,
+          settingGroups: edit.settingGroups,
+        }),
+      },
+    }),
+});
 
 export async function editPreset(params: Edit): Promise<Result<void>> {
   return runMutation(editPresetMutation, {
@@ -176,15 +173,14 @@ export async function editPreset(params: Edit): Promise<Result<void>> {
   });
 }
 
-const deletePresetMutation = presetsMutation<string>(
-  "deletePreset",
-  (list, presetId) => {
+const deletePresetMutation = presetsMutation({
+  name: "deletePreset",
+  recipe: (list, presetId: string) => {
     const index = list.findIndex((it) => it._id === presetId);
     if (index !== -1) list.splice(index, 1);
   },
-  async (presetId) =>
-    keptOrThrow(await Ape.presets.delete({ params: { presetId } }), presetId),
-);
+  request: async (presetId) => Ape.presets.delete({ params: { presetId } }),
+});
 
 export async function deletePreset({
   presetId,

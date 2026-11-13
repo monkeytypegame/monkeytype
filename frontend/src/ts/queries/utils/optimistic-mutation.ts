@@ -82,22 +82,27 @@ export type OptimisticMutation<T, V> = MutationObserverOptions<
   Undo<T>
 >;
 
+/** An API response: a non-200 carries the server's message. */
+export type ApiResponse = { status: number; body: { message: string } };
+
+/** The 200 variant of an API response. */
+export type OkResponse<R extends ApiResponse> = Extract<R, { status: 200 }>;
+
 /**
  * A TanStack mutation on a session query's data: applies `recipe` with its
- * variables at once and sends `request`, which resolves to the values to keep
- * (the server may change them) or throws; the recipe is applied again with
- * those. On failure the change is undone by the query's shape: by field for
- * one record, by id for a list. The recipe must be idempotent: on success it runs
- * again with the kept values, so an insert with a temporary id must replace
- * that item, not add a second one. A list recipe edits the list in place.
+ * variables at once and sends `request`. A non-200 response fails it with the
+ * server's message. On a 200 the recipe is applied again with the values to
+ * keep: `keep` picks them from the response (the server may change them), else
+ * the variables as sent. On failure the change is undone by the query's shape:
+ * by field for one record, by id for a list. The recipe must be idempotent: on
+ * success it runs again with the kept values, so an insert with a temporary id
+ * must replace that item, not add a second one. A list recipe edits the list
+ * in place.
  */
-export function optimisticMutation<T extends object, V>(options: {
-  query: SessionQuery<T>;
-  name: string;
-  recipe: (data: T, vars: V) => void;
-  request: (vars: V) => Promise<V>;
-}): OptimisticMutation<T, V> {
-  const { query, recipe } = options;
+export function optimisticMutation<T extends object, V, R extends ApiResponse>(
+  options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
+): OptimisticMutation<T, V> {
+  const { query, recipe, request, keep } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -105,7 +110,11 @@ export function optimisticMutation<T extends object, V>(options: {
   ) as Rollback<T>;
   return {
     mutationKey: [...query.key, options.name],
-    mutationFn: options.request,
+    mutationFn: async (vars) => {
+      const response = await request(vars);
+      if (response.status !== 200) throw new Error(response.body.message);
+      return keep === undefined ? vars : keep(vars, response as OkResponse<R>);
+    },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
     onMutate: (vars) => {
@@ -125,14 +134,14 @@ export function optimisticMutation<T extends object, V>(options: {
   };
 }
 
-/** For a mutation's request: `kept` on a 200, else throws the server message. */
-export function keptOrThrow<T>(
-  response: { status: number; body: { message: string } },
-  kept: T,
-): T {
-  if (response.status !== 200) throw new Error(response.body.message);
-  return kept;
-}
+/** What a mutation names, beside its query: see `optimisticMutation`. */
+export type MutationOptions<T, V, R extends ApiResponse> = {
+  name: string;
+  recipe: (data: T, vars: V) => void;
+  request: (vars: V) => Promise<R>;
+  /** The values to keep from a 200; the variables as sent without it. */
+  keep?: (vars: V, response: OkResponse<R>) => V;
+};
 
 /**
  * Runs a mutation outside a component (`useMutation` takes the same options

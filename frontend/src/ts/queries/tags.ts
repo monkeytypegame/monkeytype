@@ -25,7 +25,8 @@ import {
 import { DeepReadonly } from "../utils/types";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import {
-  keptOrThrow,
+  type ApiResponse,
+  type MutationOptions,
   type OptimisticMutation,
   optimisticMutation,
   runMutation,
@@ -141,12 +142,10 @@ export function setActiveTags(ids: readonly string[]): void {
 // --- Optimistic actions: rolled back by tag id if the request fails ---
 
 /** An optimistic mutation on the tags, rolled back by tag id. */
-function tagsMutation<V>(
-  name: string,
-  recipe: (list: UserTag[], vars: V) => void,
-  request: (vars: V) => Promise<V>,
+function tagsMutation<V, R extends ApiResponse>(
+  options: MutationOptions<UserTag[], V, R>,
 ): OptimisticMutation<UserTag[], V> {
-  return optimisticMutation({ query: tagsQuery, name, recipe, request });
+  return optimisticMutation({ ...options, query: tagsQuery });
 }
 
 function syncFilterStorage(): void {
@@ -155,27 +154,24 @@ function syncFilterStorage(): void {
 
 type Insert = { tempId: string; name: string; tag?: UserTag };
 
-const insertTagMutation = tagsMutation<Insert>(
-  "insertTag",
+const insertTagMutation = tagsMutation({
+  name: "insertTag",
   // idempotent: the server's tag replaces the temporary one
-  (list, { tempId, name, tag }) => {
+  recipe: (list, { tempId, name, tag }: Insert) => {
     const temp = list.findIndex((it) => it._id === tempId);
     if (temp !== -1) list.splice(temp, 1);
     const item = tag ?? { _id: tempId, name, personalBests: emptyPbs() };
     if (!list.some((it) => it._id === item._id)) list.push(item);
   },
-  async (vars) => {
-    const response = await Ape.users.createTag({
+  request: async (vars) =>
+    Ape.users.createTag({
       body: { tagName: replaceSpacesWithUnderscores(vars.name) },
-    });
-    if (response.status !== 200) throw new Error(response.body.message);
-    const tag = response.body.data;
-    return {
-      ...vars,
-      tag: { ...tag, name: replaceUnderscoresWithSpaces(tag.name) },
-    };
-  },
-);
+    }),
+  keep: (vars, { body: { data: tag } }) => ({
+    ...vars,
+    tag: { ...tag, name: replaceUnderscoresWithSpaces(tag.name) },
+  }),
+});
 
 export async function insertTag(name: string): Promise<Result<void>> {
   const result = await runMutation(insertTagMutation, {
@@ -188,23 +184,20 @@ export async function insertTag(name: string): Promise<Result<void>> {
 
 type Rename = { tagId: string; name: string };
 
-const updateTagNameMutation = tagsMutation<Rename>(
-  "updateTagName",
-  (list, { tagId, name }) => {
+const updateTagNameMutation = tagsMutation({
+  name: "updateTagName",
+  recipe: (list, { tagId, name }: Rename) => {
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.name = name;
   },
-  async (rename) =>
-    keptOrThrow(
-      await Ape.users.editTag({
-        body: {
-          tagId: rename.tagId,
-          newName: replaceSpacesWithUnderscores(rename.name),
-        },
-      }),
-      rename,
-    ),
-);
+  request: async (rename) =>
+    Ape.users.editTag({
+      body: {
+        tagId: rename.tagId,
+        newName: replaceSpacesWithUnderscores(rename.name),
+      },
+    }),
+});
 
 export async function updateTagName(
   tagId: string,
@@ -216,32 +209,28 @@ export async function updateTagName(
   });
 }
 
-const clearTagPBsMutation = tagsMutation<string>(
-  "clearTagPBs",
-  (list, tagId) => {
+const clearTagPBsMutation = tagsMutation({
+  name: "clearTagPBs",
+  recipe: (list, tagId: string) => {
     const tag = list.find((it) => it._id === tagId);
     if (tag !== undefined) tag.personalBests = emptyPbs();
   },
-  async (tagId) =>
-    keptOrThrow(
-      await Ape.users.deleteTagPersonalBest({ params: { tagId } }),
-      tagId,
-    ),
-);
+  request: async (tagId) =>
+    Ape.users.deleteTagPersonalBest({ params: { tagId } }),
+});
 
 export async function clearTagPBs(tagId: string): Promise<Result<void>> {
   return runMutation(clearTagPBsMutation, tagId);
 }
 
-const deleteTagMutation = tagsMutation<string>(
-  "deleteTag",
-  (list, tagId) => {
+const deleteTagMutation = tagsMutation({
+  name: "deleteTag",
+  recipe: (list, tagId: string) => {
     const index = list.findIndex((it) => it._id === tagId);
     if (index !== -1) list.splice(index, 1);
   },
-  async (tagId) =>
-    keptOrThrow(await Ape.users.deleteTag({ params: { tagId } }), tagId),
-);
+  request: async (tagId) => Ape.users.deleteTag({ params: { tagId } }),
+});
 
 export async function deleteTag(tagId: string): Promise<Result<void>> {
   const result = await runMutation(deleteTagMutation, tagId);
