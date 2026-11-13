@@ -1,7 +1,6 @@
 import { createRoot } from "solid-js";
 import {
   and,
-  createCollection,
   eq,
   useLiveQuery,
   not,
@@ -10,7 +9,7 @@ import {
 import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
-import { registerSessionCollection } from "./utils/session-collection";
+import { createSessionCollection } from "./utils/session-collection";
 import Ape from "../ape";
 import { tempId, keepForever } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
@@ -33,7 +32,7 @@ const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
 };
 
-const connectionsCollection = createCollection({
+const connectionsCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     ...blockingDownloadOptions,
@@ -54,12 +53,6 @@ const connectionsCollection = createCollection({
     },
   }),
   ...keepForever,
-});
-
-// Registered for the sign in / sign out cleanup in `queries/index.ts`.
-registerSessionCollection({
-  collection: connectionsCollection,
-  queryKey: queryKeys.root(),
 });
 
 const connectionsQuery = createRoot(() =>

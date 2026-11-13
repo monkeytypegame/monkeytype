@@ -1,12 +1,8 @@
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  createCollection,
-  createOptimisticAction,
-  useLiveQuery,
-} from "@tanstack/solid-db";
+import { createOptimisticAction, useLiveQuery } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
-import { registerSessionCollection } from "./utils/session-collection";
+import { createSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import {
@@ -38,7 +34,7 @@ export function useApeKeyLiveQuery() {
   );
 }
 
-const apeKeysCollection = createCollection({
+const apeKeysCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     staleTime: Infinity,
@@ -73,12 +69,6 @@ const apeKeysCollection = createCollection({
     },
   }),
   ...keepForever,
-});
-
-// Registered for the sign in / sign out cleanup in `queries/index.ts`.
-registerSessionCollection({
-  collection: apeKeysCollection,
-  queryKey: queryKeys.root(),
 });
 
 type ActionType = {

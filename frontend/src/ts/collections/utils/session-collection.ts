@@ -1,63 +1,140 @@
-import { createTransaction } from "@tanstack/solid-db";
+import {
+  type Collection,
+  type CollectionConfig,
+  createCollection,
+  type NonSingleResult,
+} from "@tanstack/solid-db";
+import type { QueryCollectionUtils } from "@tanstack/query-db-collection";
 import type { QueryClient } from "@tanstack/solid-query";
 
 /**
- * Registry of the session collections for the sign in / sign out
- * cleanup driven by the auth effect in `queries/index.ts` (the collection
- * modules register at module load).
+ * Session collections: the user-bound query collections, cleared on sign out
+ * and downloaded again on sign in. Driven by the auth effect in
+ * `queries/index.ts`; create them with `createSessionCollection`, which
+ * registers them.
  *
- * `queryClient.resetQueries`/`removeQueries` alone cannot clear a
- * `queryCollectionOptions` collection: the collection keeps its rows in its
- * own normalized state, which resetting or removing the query never touches
- * (the sync only applies successful fetches). So on sign out the clear
- * sweeps every row of the collection (in a transaction, since the
- * collections have no `onDelete` handler — and locally written rows the
- * query does not own would survive the sync anyway), then empties the
- * backing query with `setQueryData(rootKey, [])`, which the sync applies,
- * dropping the query's ownership and the cache copy.
+ * Sign out: `resetQueries`/`removeQueries` alone cannot clear a
+ * `queryCollectionOptions` collection, it keeps its rows in its own synced
+ * state. Optimistic deletes don't stick either (they are dropped once their
+ * transaction settles). So the clear cancels in-flight user fetches, deletes
+ * every synced row with `utils.writeDelete` (a sync-level write: no mutation
+ * handler, nothing sent to the backend), runs each collection's `onSignOut`
+ * for state its queryFn keeps outside the collection, then resets the user
+ * queries so their data is `undefined` again.
  *
- * On sign in, `collection.utils.refetch()` restarts the download for the
- * next user. A collection that never downloaded has no query, so the
- * refetch is a no-op; the `startSync`'d ones need it unconditionally, as
- * their query starts disabled (created at module load, before the auth
- * state resolves) and never re-evaluates `enabled` on its own. A refetch
- * never double-downloads: it joins an in-flight initial download.
+ * Sign in: `utils.refetch()` downloads the next user's rows (a no-op for a
+ * collection that never started). The `startSync`'d collections and those
+ * started while signed out need it: their query is disabled
+ * (`enabled: isAuthenticated`) and never re-evaluates `enabled` on its own.
+ * As the query data is `undefined` (reset on sign out, or never fetched), a
+ * refetch joins an in-flight download instead of restarting it. The cleared
+ * collections stay `ready`, so readiness goes through
+ * `waitForSessionCollection`, which waits for this download.
  */
 
+/** What the readiness helpers need of a session collection. */
 export type SessionCollection = {
-  collection: {
-    values(): Iterable<object>;
-    getKeyFromItem(item: object): string;
-    delete(keys: string | string[]): unknown;
-    utils: { refetch(): unknown };
-  };
-  queryKey: unknown[];
+  stateWhenReady(): Promise<unknown>;
 };
 
-const sessionCollections: SessionCollection[] = [];
+/** What the sign in / sign out handling needs of a session collection. */
+type RegisteredCollection = SessionCollection & {
+  _state: {
+    syncedData: { keys(): Iterable<string | number> };
+    getAcceptedSyncedRow(key: string | number): unknown;
+  };
+  utils: {
+    refetch(): Promise<unknown>;
+    writeDelete(keys: (string | number)[]): Promise<void>;
+  };
+};
 
-export function registerSessionCollection(collection: SessionCollection): void {
-  sessionCollections.push(collection);
+type SessionOptions = {
+  /** Clears user state the collection's queryFn keeps outside of it. */
+  onSignOut?: () => void;
+};
+
+const sessionCollections = new Map<RegisteredCollection, SessionOptions>();
+const signInDownloads = new Map<SessionCollection, Promise<void>>();
+let signOutDone: Promise<void> = Promise.resolve();
+
+/** `createCollection` for a user-bound query collection, registered for the sign in / sign out handling. */
+export function createSessionCollection<
+  T extends object,
+  TKey extends string | number,
+  TUtils extends QueryCollectionUtils<T, TKey>,
+>(
+  options: Omit<CollectionConfig<T, TKey, never, TUtils>, "utils"> & {
+    schema?: never;
+    utils: TUtils;
+  } & NonSingleResult,
+  session: SessionOptions = {},
+): Collection<T, TKey, TUtils, never, T> & NonSingleResult {
+  const collection = createCollection(options);
+  sessionCollections.set(collection as RegisteredCollection, session);
+  return collection;
 }
 
-export function clearSessionCollections(queryClient: QueryClient): void {
-  for (const { collection, queryKey } of sessionCollections) {
-    const keys = [...collection.values()].map((row) =>
-      collection.getKeyFromItem(row),
+export async function signOutSession(queryClient: QueryClient): Promise<void> {
+  signInDownloads.clear();
+  const done = (async () => {
+    // A download still running for the previous user must not land.
+    await queryClient.cancelQueries({ queryKey: ["user"] });
+    await Promise.all(
+      [...sessionCollections].map(async ([collection, { onSignOut }]) => {
+        const keys = [...collection._state.syncedData.keys()].filter(
+          (key) => collection._state.getAcceptedSyncedRow(key) !== undefined,
+        );
+        if (keys.length > 0) await collection.utils.writeDelete(keys);
+        onSignOut?.();
+      }),
     );
-    if (keys.length > 0) {
-      createTransaction({ mutationFn: async () => undefined }).mutate(() => {
-        collection.delete(keys);
-      });
-    }
-    if (queryClient.getQueryCache().find({ queryKey, exact: true })) {
-      queryClient.setQueryData(queryKey, []);
-    }
-  }
+    await queryClient.resetQueries({ queryKey: ["user"] });
+  })();
+  signOutDone = done;
+  await done;
 }
 
-export function refetchSessionCollections(): void {
-  for (const { collection } of sessionCollections) {
-    void collection.utils.refetch();
+export function signInSession(): void {
+  // Register every download before any starts: a queryFn may wait for
+  // another session collection (results wait for tags).
+  const kicks: (() => void)[] = [];
+  for (const collection of sessionCollections.keys()) {
+    const download = new Promise<void>((resolve) => {
+      kicks.push(() => {
+        // A failed download surfaces through the collection's error utils
+        // (see `waitForDownload`).
+        collection.utils.refetch().then(
+          () => resolve(),
+          () => resolve(),
+        );
+      });
+    });
+    signInDownloads.set(collection, download);
+    void download.then(() => {
+      if (signInDownloads.get(collection) === download) {
+        signInDownloads.delete(collection);
+      }
+    });
   }
+  const kickAll = (): void => {
+    for (const kick of kicks) kick();
+  };
+  // Download even if the clear failed, else readiness would wait forever.
+  void signOutDone.then(kickAll, kickAll);
+}
+
+/** Waits until the collection is ready with the signed in user's rows. */
+export async function waitForSessionCollection(
+  collection: SessionCollection,
+): Promise<void> {
+  await signInDownloads.get(collection);
+  await collection.stateWhenReady();
+}
+
+/** Whether a sign in download of the collection is still running. */
+export function isSessionDownloadPending(
+  collection: SessionCollection,
+): boolean {
+  return signInDownloads.has(collection);
 }

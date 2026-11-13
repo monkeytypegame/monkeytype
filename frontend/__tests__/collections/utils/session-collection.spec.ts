@@ -1,80 +1,144 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient } from "@tanstack/solid-query";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
+import { createSignal } from "solid-js";
 
 import {
-  clearSessionCollections,
-  refetchSessionCollections,
-  registerSessionCollection,
+  createSessionCollection,
+  signInSession,
+  signOutSession,
+  waitForSessionCollection,
 } from "../../../src/ts/collections/utils/session-collection";
 
 /**
- * A collection created in the test, not one of the app's modules: covers the
- * session collection registry in isolation.
+ * Collections created in the test, not the app's modules: covers the session
+ * collection registry in isolation. The auth state is a local signal, like
+ * the app's `isAuthenticated` the collections' queries are `enabled` by.
  */
 
-type SessionTestRow = { _id: string; name: string };
-
-const queryKey: unknown[] = ["user", "sessionTest"];
+type Row = { _id: string; user: string };
 
 const queryClient = new QueryClient();
+const [isSignedIn, setSignedIn] = createSignal(true);
+let user = "A";
 
-const queryFn = vi.fn(async (): Promise<SessionTestRow[]> => [
-  { _id: "row1", name: "Row 1" },
-  { _id: "row2", name: "Row 2" },
-]);
-
-// The delete mutation handler. The clear must run its sweep in an ambient
-// transaction, which bypasses the handlers (no backend sync on sign out).
+// The clear must not go through the mutation handlers (no backend sync on
+// sign out).
 const onDelete = vi.fn(async () => {
-  throw new Error(
-    "clearSessionCollections must not invoke the collection delete handler",
+  throw new Error("the sign out clear must not invoke the delete handler");
+});
+
+// oxlint-disable-next-line typescript/explicit-function-return-type
+function makeCollection(name: string, opts: { startSync?: true } = {}) {
+  const queryFn = vi.fn(async (): Promise<Row[]> => {
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    return [
+      { _id: `${user}1`, user },
+      { _id: `${user}2`, user },
+    ];
+  });
+  const onSignOut = vi.fn();
+  const collection = createSessionCollection(
+    {
+      ...queryCollectionOptions({
+        queryKey: ["user", name],
+        queryClient,
+        enabled: isSignedIn,
+        getKey: (it: Row) => it._id,
+        queryFn,
+        ...opts,
+      }),
+      onDelete,
+    },
+    { onSignOut },
   );
-});
-
-const collection = createCollection({
-  ...queryCollectionOptions({
-    queryKey,
-    queryClient,
-    getKey: (it) => it._id,
-    queryFn,
-    startSync: true,
-  }),
-  onDelete,
-});
-
-registerSessionCollection({ collection, queryKey });
-
-const rowIds = (): string[] =>
-  [...collection.values()].map((it) => it._id).sort();
-
-/** Polls until the predicate holds; fetches settle across microtask turns. */
-async function waitFor(predicate: () => boolean, what: string): Promise<void> {
-  const start = Date.now();
-  while (!predicate()) {
-    if (Date.now() - start > 5_000) {
-      throw new Error(`timed out waiting for ${what}`);
-    }
-    await new Promise((resolve) => setTimeout(resolve, 10));
-  }
+  return { collection, queryFn, onSignOut };
 }
 
-describe("session collections registry", () => {
-  it("clearSessionCollections sweeps the rows and empties the query without calling the delete handler; refetchSessionCollections restarts the download", async () => {
-    // startSync downloads the rows at module load.
-    await waitFor(() => rowIds().join() === "row1,row2", "initial download");
-    expect(collection.status).toBe("ready");
-    expect(queryClient.getQueryData(queryKey)).toHaveLength(2);
+const eager = makeCollection("eager", { startSync: true });
+const lazy = makeCollection("lazy");
 
-    clearSessionCollections(queryClient);
+const rowIds = (c: { values(): Iterable<Row> }): string[] =>
+  [...c.values()].map((it) => it._id).sort();
+
+const settle = async (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 50));
+
+async function signOut(): Promise<void> {
+  setSignedIn(false);
+  await signOutSession(queryClient);
+}
+
+function signIn(next: string): void {
+  user = next;
+  setSignedIn(true);
+  signInSession();
+}
+
+describe("session collections", () => {
+  beforeEach(async () => {
+    // Every test starts with user A signed in and both collections loaded.
+    if (!isSignedIn() || user !== "A") {
+      await signOut();
+      signIn("A");
+    }
+    eager.collection.startSyncImmediate();
+    const sub = lazy.collection.subscribeChanges(() => undefined);
+    await waitForSessionCollection(eager.collection);
+    await waitForSessionCollection(lazy.collection);
+    sub.unsubscribe();
+    expect(rowIds(eager.collection)).toEqual(["A1", "A2"]);
+    expect(rowIds(lazy.collection)).toEqual(["A1", "A2"]);
+    vi.clearAllMocks();
+  });
+
+  it("sign out keeps the collections empty, also without subscribers and with direct writes", async () => {
+    await eager.collection.utils.writeInsert({ _id: "A3", user: "A" });
+
+    await signOut();
+    await settle();
+
+    expect(rowIds(eager.collection)).toEqual([]);
+    expect(rowIds(lazy.collection)).toEqual([]);
     expect(onDelete).not.toHaveBeenCalled();
-    expect(rowIds()).toEqual([]);
-    expect(queryClient.getQueryData(queryKey)).toEqual([]);
+    expect(queryClient.getQueryData(["user", "eager"])).toBeUndefined();
+    expect(queryClient.getQueryData(["user", "lazy"])).toBeUndefined();
+  });
 
-    refetchSessionCollections();
-    await waitFor(() => rowIds().join() === "row1,row2", "sign in refetch");
-    expect(queryFn).toHaveBeenCalledTimes(2);
-    expect(queryClient.getQueryData(queryKey)).toHaveLength(2);
+  it("sign out runs each collection's onSignOut", async () => {
+    await signOut();
+
+    expect(eager.onSignOut).toHaveBeenCalledTimes(1);
+    expect(lazy.onSignOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("sign in downloads the next user's rows once; readiness waits for them", async () => {
+    await signOut();
+    signIn("B");
+
+    // The cleared collections are still `ready`: readiness must wait for
+    // the new user's download, not resolve on the empty collection.
+    await waitForSessionCollection(eager.collection);
+    expect(rowIds(eager.collection)).toEqual(["B1", "B2"]);
+    await waitForSessionCollection(lazy.collection);
+    expect(rowIds(lazy.collection)).toEqual(["B1", "B2"]);
+
+    await settle();
+    expect(eager.queryFn).toHaveBeenCalledTimes(1);
+    expect(lazy.queryFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("sign in joins an in-flight download instead of restarting it", async () => {
+    await signOut();
+    user = "B";
+    setSignedIn(true);
+    const inFlight = eager.collection.utils.refetch();
+    signInSession();
+    await inFlight;
+    await waitForSessionCollection(eager.collection);
+    await settle();
+
+    expect(rowIds(eager.collection)).toEqual(["B1", "B2"]);
+    expect(eager.queryFn).toHaveBeenCalledTimes(1);
   });
 });

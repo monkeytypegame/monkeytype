@@ -1,13 +1,9 @@
 import { CustomTheme } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  createCollection,
-  createOptimisticAction,
-  useLiveQuery,
-} from "@tanstack/solid-db";
+import { createOptimisticAction, useLiveQuery } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
-import { registerSessionCollection } from "./utils/session-collection";
+import { createSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { tempId, keepForever } from "./utils/misc";
 import { isAuthenticated } from "../states/core";
@@ -27,7 +23,7 @@ export function useCustomThemesLiveQuery() {
   });
 }
 
-const customThemesCollection = createCollection({
+const customThemesCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     staleTime: Infinity,
@@ -48,12 +44,6 @@ const customThemesCollection = createCollection({
     },
   }),
   ...keepForever,
-});
-
-// Registered for the sign in / sign out cleanup in `queries/index.ts`.
-registerSessionCollection({
-  collection: customThemesCollection,
-  queryKey: queryKeys.root(),
 });
 
 type ActionType = {

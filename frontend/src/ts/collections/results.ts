@@ -12,7 +12,6 @@ import {
   avg,
   BTreeIndex,
   count,
-  createCollection,
   createOptimisticAction,
   eq,
   gte,
@@ -30,7 +29,7 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
-import { registerSessionCollection } from "./utils/session-collection";
+import { createSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/last-result";
@@ -262,43 +261,49 @@ function normalizeResult(
   } as NormalizedLocalResult<Mode>;
 }
 
-const resultsCollection = createCollection({
-  ...queryCollectionOptions({
-    ...keepForever,
-    ...blockingDownloadOptions,
-    staleTime: Infinity,
-    queryKey: queryKeys.root(),
-    enabled: isAuthenticated,
-    queryFn: async () => {
-      const tagIds = await getTagsOnce();
-      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
-      //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
+const resultsCollection = createSessionCollection(
+  {
+    ...queryCollectionOptions({
+      ...keepForever,
+      ...blockingDownloadOptions,
+      staleTime: Infinity,
+      queryKey: queryKeys.root(),
+      enabled: isAuthenticated,
+      queryFn: async () => {
+        const tagIds = await getTagsOnce();
+        const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
+        //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
-      const response = await Ape.results.get({
-        //query: { limit: options.limit },
-      });
+        const response = await Ape.results.get({
+          //query: { limit: options.limit },
+        });
 
-      if (response.status !== 200) {
-        throw new Error(`Error fetching results:${response.body.message}`);
-      }
+        if (response.status !== 200) {
+          throw new Error(`Error fetching results:${response.body.message}`);
+        }
 
-      const results = response.body.data.map((result) =>
-        normalizeResult(result, knownTagIds),
-      );
-
-      if (getLastResult() === undefined && results.length > 0) {
-        const lastResult = results.reduce((acc, cur) =>
-          acc === undefined || acc.timestamp < cur.timestamp ? cur : acc,
+        const results = response.body.data.map((result) =>
+          normalizeResult(result, knownTagIds),
         );
-        setLastResult(lastResult);
-      }
-      return results;
-    },
-    queryClient,
-    getKey: (it) => it._id,
-  }),
-  ...keepForever,
-});
+
+        if (getLastResult() === undefined && results.length > 0) {
+          const lastResult = results.reduce((acc, cur) =>
+            acc === undefined || acc.timestamp < cur.timestamp ? cur : acc,
+          );
+          setLastResult(lastResult);
+        }
+        return results;
+      },
+      queryClient,
+      getKey: (it) => it._id,
+    }),
+    ...keepForever,
+  },
+  {
+    // Its queryFn sets the last result once per user.
+    onSignOut: () => setLastResult(undefined),
+  },
+);
 
 resultsCollection.createIndex((row) => row.timestamp, {
   indexType: BTreeIndex,
@@ -781,15 +786,6 @@ export function isResultsReady(): boolean {
 export async function waitForResultsReady(): Promise<void> {
   await waitForDownload(resultsCollection);
 }
-
-/**
- *
- */
-// Registered for the sign in / sign out cleanup in `queries/index.ts`.
-registerSessionCollection({
-  collection: resultsCollection,
-  queryKey: queryKeys.root(),
-});
 
 function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];
