@@ -1,11 +1,7 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { roundTo2 } from "@monkeytype/util/numbers";
 
-import {
-  __nonReactive as tagsNonReactive,
-  getLocalTagPB,
-  saveLocalTagPB,
-} from "../collections/tags";
+import { getActiveTags, getLocalTagPB, saveLocalTagPB } from "../queries/tags";
 import { getLocalPB } from "../queries/user";
 import Format from "../singletons/format";
 import { hideCrown, ResultTag, resultState, showCrown } from "../states/result";
@@ -107,7 +103,7 @@ export function getResultTags(
 ): ResultTag[] {
   const pbAllowed = canGet?.value === true;
 
-  return tagsNonReactive.getActiveTags().map((tag) => {
+  return getActiveTags().map((tag) => {
     const tpb = getLocalTagPB(
       tag._id,
       result.mode,
