@@ -31,7 +31,6 @@ export function Charts(props: {
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
   const format = getFormatting;
-  const tags = getTags;
 
   const resultsQuery = useLiveQuery((q) => {
     if (!isAuthenticated()) return undefined;
@@ -47,7 +46,7 @@ export function Charts(props: {
       {({ resultsQueryData }) => (
         <div class="flex flex-col gap-8">
           <div>
-            <FilterSummary filters={props.filters} tags={tags()} />
+            <FilterSummary filters={props.filters} tags={getTags()} />
             <HistoryChart
               results={resultsQueryData()}
               beginAtZero={beginAtZero()}
