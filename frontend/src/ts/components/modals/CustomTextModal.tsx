@@ -29,6 +29,7 @@ import { Separator } from "../common/Separator";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import { TextareaField } from "../ui/form/TextareaField";
 import { CustomGeneratorModal } from "./CustomGeneratorModal";
+import { LyricsSearchModal } from "./LyricsSearchModal";
 import { SaveCustomTextModal } from "./SaveCustomTextModal";
 import { SavedTextsModal } from "./SavedTextsModal";
 import { WordFilterModal } from "./WordFilterModal";
@@ -660,6 +661,12 @@ export function CustomTextModal(): JSXElement {
               />
               <Button
                 variant="button"
+                fa={{ icon: "fa-music" }}
+                text="load lyrics"
+                onClick={() => showModal("LyricsSearch")}
+              />
+              <Button
+                variant="button"
                 fa={{ icon: "fa-filter" }}
                 text="words filter"
                 onClick={() => showModal("WordFilter")}
@@ -739,6 +746,7 @@ export function CustomTextModal(): JSXElement {
       </AnimatedModal>
       <SaveCustomTextModal textToSave={textToSave} />
       <SavedTextsModal setChainedData={setIncomingChainedData} />
+      <LyricsSearchModal setChainedData={setIncomingChainedData} />
       <WordFilterModal setChainedData={setIncomingChainedData} />
       <CustomGeneratorModal setChainedData={setIncomingChainedData} />
     </>
