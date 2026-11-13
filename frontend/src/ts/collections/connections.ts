@@ -1,7 +1,6 @@
 import { createRoot } from "solid-js";
 import {
   and,
-  createCollection,
   eq,
   useLiveQuery,
   not,
@@ -10,6 +9,7 @@ import {
 import { baseKey } from "../queries/utils/keys";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
+import { createSessionCollection } from "./utils/session-collection";
 import Ape from "../ape";
 import { tempId, keepForever } from "./utils/misc";
 import { getUserId, isAuthenticated } from "../states/core";
@@ -32,7 +32,7 @@ const queryKeys = {
   root: () => [...baseKey("connections", { isUserSpecific: true })],
 };
 
-const connectionsCollection = createCollection({
+const connectionsCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     ...blockingDownloadOptions,

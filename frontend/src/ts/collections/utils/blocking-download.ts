@@ -1,9 +1,15 @@
+import {
+  isSessionDownloadPending,
+  type SessionCollection,
+  waitForSessionCollection,
+} from "./session-collection";
+
 /**
  * A query collection a page waits for behind the loading bar (results,
  * friends). A failed query still marks the collection ready (with
  * `utils.isError`), so readiness alone doesn't tell a download succeeded.
  */
-type BlockingDownload = {
+type BlockingDownload = SessionCollection & {
   isReady: () => boolean;
   stateWhenReady: () => Promise<unknown>;
   utils: {
@@ -22,7 +28,11 @@ export const blockingDownloadOptions = { retry: 1 } as const;
 
 /** Whether the collection downloaded (its last fetch didn't fail). */
 export function isDownloaded(collection: BlockingDownload): boolean {
-  return collection.isReady() && !collection.utils.isError;
+  return (
+    collection.isReady() &&
+    !collection.utils.isError &&
+    !isSessionDownloadPending(collection)
+  );
 }
 
 /**
@@ -36,7 +46,7 @@ export async function waitForDownload(
     await collection.utils.refetch({ throwOnError: true });
     return;
   }
-  await collection.stateWhenReady();
+  await waitForSessionCollection(collection);
   if (collection.utils.isError) {
     const error = collection.utils.lastError;
     throw error instanceof Error ? error : new Error(String(error));

@@ -1,12 +1,12 @@
 import { Preset } from "@monkeytype/schemas/presets";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  createCollection,
-  createOptimisticAction,
-  useLiveQuery,
-} from "@tanstack/solid-db";
+import { createOptimisticAction, useLiveQuery } from "@tanstack/solid-db";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import {
+  createSessionCollection,
+  waitForSessionCollection,
+} from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { ConfigGroupName } from "@monkeytype/schemas/configs";
 import { tempId, keepForever } from "./utils/misc";
@@ -29,7 +29,7 @@ export function usePresetsLiveQuery() {
   });
 }
 
-const presetsCollection = createCollection({
+const presetsCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     staleTime: Infinity,
@@ -163,7 +163,7 @@ const actions = {
 
 // --- Public API ---
 export async function waitForPresetsReady(): Promise<void> {
-  await presetsCollection.stateWhenReady();
+  await waitForSessionCollection(presetsCollection);
 }
 
 function getPresets(): PresetItem[] {

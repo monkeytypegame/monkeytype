@@ -1,7 +1,6 @@
 import { UserTag } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  createCollection,
   createOptimisticAction,
   eq,
   queryOnce,
@@ -10,6 +9,10 @@ import {
 import { z } from "zod";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import {
+  createSessionCollection,
+  waitForSessionCollection,
+} from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { IdSchema } from "@monkeytype/schemas/util";
@@ -33,7 +36,7 @@ const queryKeys = {
   root: () => [...baseKey("tags", { isUserSpecific: true })],
 };
 
-const tagsCollection = createCollection({
+const tagsCollection = createSessionCollection({
   ...queryCollectionOptions({
     ...keepForever,
     staleTime: Infinity,
@@ -82,6 +85,8 @@ export async function getActiveTagsOnce() {
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export async function getTagsOnce() {
+  // The signed in user's tags, not the empty ones while their download runs.
+  await waitForTagsReady();
   return queryOnce((q) => {
     return q.from({ tag: tagsCollection });
   });
@@ -268,7 +273,7 @@ const actions = {
 // --- Public API ---
 
 export async function waitForTagsReady(): Promise<void> {
-  await tagsCollection.stateWhenReady();
+  await waitForSessionCollection(tagsCollection);
 }
 
 export async function insertTag(

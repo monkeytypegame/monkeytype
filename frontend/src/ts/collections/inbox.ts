@@ -1,7 +1,6 @@
 import { AllRewards, MonkeyMail } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  createCollection,
   createPacedMutations,
   eq,
   MutationFnParams,
@@ -11,6 +10,7 @@ import {
 import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
+import { createSessionCollection } from "./utils/session-collection";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
@@ -37,38 +37,43 @@ export { maxMailboxSize };
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
-const inboxCollection = createCollection({
-  ...queryCollectionOptions({
-    ...keepForever,
-    staleTime: 1000 * 60 * 5,
-    queryKey: queryKeys.root(),
-    enabled: isAuthenticated,
-    queryFn: async () => {
-      const addStatus = (item: MonkeyMail): InboxItem => ({
-        ...item,
-        status:
-          item.rewards.length > 0 && !item.read
-            ? "unclaimed"
-            : item.read
-              ? "read"
-              : "unread",
-      });
+const inboxCollection = createSessionCollection(
+  {
+    ...queryCollectionOptions({
+      ...keepForever,
+      staleTime: 1000 * 60 * 5,
+      queryKey: queryKeys.root(),
+      enabled: isAuthenticated,
+      queryFn: async () => {
+        const addStatus = (item: MonkeyMail): InboxItem => ({
+          ...item,
+          status:
+            item.rewards.length > 0 && !item.read
+              ? "unclaimed"
+              : item.read
+                ? "read"
+                : "unread",
+        });
 
-      const response = await Ape.users.getInbox();
-      if (response.status !== 200) {
-        showErrorNotification(
-          `Error fetching user inbox: ${response.body.message}`,
-        );
-        throw new Error(`Error fetching user inbox: ${response.body.message}`);
-      }
-      setMaxMailboxSize(response.body.data.maxMail);
-      return response.body.data.inbox.map(addStatus);
-    },
-    queryClient,
-    getKey: (it) => it.id,
-  }),
-  ...keepForever,
-});
+        const response = await Ape.users.getInbox();
+        if (response.status !== 200) {
+          showErrorNotification(
+            `Error fetching user inbox: ${response.body.message}`,
+          );
+          throw new Error(
+            `Error fetching user inbox: ${response.body.message}`,
+          );
+        }
+        setMaxMailboxSize(response.body.data.maxMail);
+        return response.body.data.inbox.map(addStatus);
+      },
+      queryClient,
+      getKey: (it) => it.id,
+    }),
+    ...keepForever,
+  },
+  { onSignOut: () => setMaxMailboxSize(0) },
+);
 
 export async function refetchInboxCollection(): Promise<void> {
   await inboxCollection.utils.refetch();
