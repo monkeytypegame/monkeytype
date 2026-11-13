@@ -10,11 +10,13 @@ import { queryClient } from "..";
 import { createTrigger } from "../../hooks/createTrigger";
 import { DeepReadonly } from "../../utils/types";
 import { baseKey } from "./keys";
+import { type Rollback, rollbackByField, rollbackById } from "./rollback";
 
 /**
  * Server data held for the signed-in session (user, presets…): downloaded by
  * the auth flow, kept until sign out resets it, never refetched by Query on
- * its own. Written only through `update`.
+ * its own. Written only through `update`. Either one record or a list (which
+ * names its items' id): that picks how optimistic mutations roll back.
  */
 export type SessionQuery<T> = {
   key: QueryKey;
@@ -40,17 +42,34 @@ export type SessionQuery<T> = {
   update: (recipe: (data: T) => void) => void;
   /** Replaces the cached data without a download, for tests. */
   replace: (data: T | undefined) => void;
+  /**
+   * How optimistic mutations on this query roll back: by id for a list, by
+   * field for one record.
+   */
+  rollback: Rollback<T>;
 };
 
-export function createSessionQuery<T>(options: {
-  /** Unique among the user's queries; the key is `["user", name]`. */
-  name: string;
-  fetch: () => Promise<T>;
-}): SessionQuery<T> {
+/** A list query names its items' id (rollback by id); a record doesn't. */
+type ShapeOptions<T> = T extends readonly (infer I)[]
+  ? { id: (item: I) => string }
+  : { id?: never };
+
+export function createSessionQuery<T>(
+  options: {
+    /** Unique among the user's queries; the key is `["user", name]`. */
+    name: string;
+    fetch: () => Promise<T>;
+  } & ShapeOptions<T>,
+): SessionQuery<T> {
   // user-scoped by definition: sign out resets every `["user", ...]` query,
   // which is what clears the session's data
   const key = baseKey(options.name, { isUserSpecific: true });
   type Cached = DeepReadonly<T>;
+  const rollback = (
+    options.id === undefined
+      ? rollbackByField<T & object>()
+      : rollbackById(options.id)
+  ) as Rollback<T>;
 
   queryClient.setQueryDefaults(key, {
     staleTime: Infinity,
@@ -88,6 +107,7 @@ export function createSessionQuery<T>(options: {
 
   return {
     key,
+    rollback,
     get: () => {
       track();
       return peek();

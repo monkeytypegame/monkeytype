@@ -7,7 +7,6 @@ import {
 } from "../../../src/ts/queries/utils/session-query";
 import {
   optimisticMutation,
-  rollbackById,
   runMutation,
 } from "../../../src/ts/queries/utils/optimistic-mutation";
 
@@ -212,76 +211,80 @@ describe("optimisticMutation", () => {
 });
 
 type Item = { _id: string; name: string };
-type List = { items: Item[] };
 
-function setupList(items: Item[]): SessionQuery<List> {
-  const query = createSessionQuery<List>({
+function setupList(items: Item[]): SessionQuery<Item[]> {
+  const query = createSessionQuery<Item[]>({
     name: `mutation-list-test-${keyIndex++}`,
-    fetch: async () => ({ items: [] }),
+    fetch: async () => [],
+    id: (item) => item._id,
   });
-  query.replace({ items });
+  query.replace(items);
   return query;
 }
 
-const byId = rollbackById<List, Item>({
-  list: (data) => data.items,
-  id: (item) => item._id,
-});
+const names = (query: SessionQuery<Item[]>): string[] =>
+  query.get()?.map((item) => `${item._id}:${item.name}`) ?? [];
 
-const names = (query: SessionQuery<List>): string[] =>
-  query.get()?.items.map((item) => `${item._id}:${item.name}`) ?? [];
+describe("a list query's mutations roll back by id", () => {
+  it("requires an id for a list query, and none for a record", () => {
+    // @ts-expect-error a list query names its items' id
+    createSessionQuery<Item[]>({ name: "x", fetch: async () => [] });
+    createSessionQuery<Data>({
+      name: "y",
+      fetch: async () => ({ name: "", count: 0 }),
+      // @ts-expect-error a record has no id
+      id: () => "",
+    });
+    expect(true).toBe(true);
+  });
 
-describe("rollbackById", () => {
   function renameItem(
-    query: SessionQuery<List>,
+    query: SessionQuery<Item[]>,
     request: (vars: Item) => Promise<Item>,
-  ): ReturnType<typeof optimisticMutation<List, Item>> {
-    return optimisticMutation<List, Item>({
+  ): ReturnType<typeof optimisticMutation<Item[], Item>> {
+    return optimisticMutation<Item[], Item>({
       query,
       name: "renameItem",
-      recipe: (data, { _id, name }) => {
-        const item = data.items.find((it) => it._id === _id);
+      recipe: (items, { _id, name }) => {
+        const item = items.find((it) => it._id === _id);
         if (item !== undefined) item.name = name;
       },
       request,
-      rollback: byId,
     });
   }
 
   function deleteItem(
-    query: SessionQuery<List>,
+    query: SessionQuery<Item[]>,
     request: (id: string) => Promise<string>,
-  ): ReturnType<typeof optimisticMutation<List, string>> {
-    return optimisticMutation<List, string>({
+  ): ReturnType<typeof optimisticMutation<Item[], string>> {
+    return optimisticMutation<Item[], string>({
       query,
       name: "deleteItem",
-      recipe: (data, id) => {
-        data.items = data.items.filter((it) => it._id !== id);
+      recipe: (items, id) => {
+        const index = items.findIndex((it) => it._id === id);
+        if (index !== -1) items.splice(index, 1);
       },
       request,
-      rollback: byId,
     });
   }
 
   type Insert = { tempId: string; _id?: string; name: string };
 
   function addItem(
-    query: SessionQuery<List>,
+    query: SessionQuery<Item[]>,
     request: (vars: Insert) => Promise<Insert>,
-  ): ReturnType<typeof optimisticMutation<List, Insert>> {
-    return optimisticMutation<List, Insert>({
+  ): ReturnType<typeof optimisticMutation<Item[], Insert>> {
+    return optimisticMutation<Item[], Insert>({
       query,
       name: "addItem",
       // idempotent: the server's id replaces the temporary one
-      recipe: (data, { tempId, _id, name }) => {
-        data.items = data.items.filter((it) => it._id !== tempId);
+      recipe: (items, { tempId, _id, name }) => {
+        const temp = items.findIndex((it) => it._id === tempId);
+        if (temp !== -1) items.splice(temp, 1);
         const id = _id ?? tempId;
-        if (!data.items.some((it) => it._id === id)) {
-          data.items.push({ _id: id, name });
-        }
+        if (!items.some((it) => it._id === id)) items.push({ _id: id, name });
       },
       request,
-      rollback: byId,
     });
   }
 
@@ -348,8 +351,8 @@ describe("rollbackById", () => {
       name: "A2",
     });
     await vi.waitFor(() => expect(req.calls).toHaveLength(1));
-    query.update((data) => {
-      const item = data.items[0];
+    query.update((items) => {
+      const item = items[0];
       if (item !== undefined) item.name = "A3";
     });
     req.reject(new Error("nope"));
