@@ -83,7 +83,8 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
       hidden: indicator() !== "bar",
     });
   const textClass = (): string =>
-    cn("min-h-[1.25em]", { hidden: text() === null });
+    // pre-line: messages can break lines with \n
+    cn("min-h-[1.25em] whitespace-pre-line", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
