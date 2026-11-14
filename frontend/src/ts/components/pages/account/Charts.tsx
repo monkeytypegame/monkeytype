@@ -8,7 +8,8 @@ import {
 } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
 import { getTags, type Tag } from "../../../queries/tags";
-import { getFormatting, isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
+import { getFormatting } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import {
   capitalizeFirstLetter,

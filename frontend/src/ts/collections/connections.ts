@@ -12,7 +12,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { queryClient } from "../queries";
 import Ape from "../ape";
 import { tempId, keepForever } from "./utils/misc";
-import { getUserId, isAuthenticated } from "../states/core";
+import { getUserId, isAuthenticated } from "../states/auth";
 
 import {
   configurationPromise,

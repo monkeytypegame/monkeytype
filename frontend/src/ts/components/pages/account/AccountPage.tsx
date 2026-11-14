@@ -9,7 +9,7 @@ import {
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { createTrigger } from "../../../hooks/createTrigger";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
 import { downloadResultsCSV } from "../../../utils/misc";

@@ -3,11 +3,11 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import * as AdController from "../controllers/ad-controller";
-import { signOut } from "../auth";
+import { signOut } from "../auth/actions";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
-import { isAuthAvailable } from "../firebase";
+import { isAuthAvailable } from "../auth/provider";
 import { queryClient } from "../queries";
-import { getAuthState } from "../states/core";
+import { getAuthState } from "../states/auth";
 import { getRoutePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";

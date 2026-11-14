@@ -38,9 +38,9 @@
  * - Reading: `word(i).letters()` / `word(i).state`, `phase()`, `liveStats()`.
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
- * - Mocked: firebase (signed out, so a finished test isn't saved), the theme
- *   controller (indexedDB), the chart (canvas). Stubbed in jsdom: matchMedia
- *   (nothing matches), scrolling. The engine's debug logs are muted.
+ * - Mocked: firebase (auth is never initialised, so signed out and a finished
+ *   test isn't saved), the theme controller (indexedDB), the chart (canvas).
+ *   Stubbed in jsdom: matchMedia (nothing matches), scrolling. The engine's debug logs are muted.
  * - The page mounts in a router with only the test page, so it reads as the
  *   test page (typing starts a test only there) and the result's links work.
  */
@@ -113,12 +113,7 @@ vi.hoisted(() => {
       dispatchEvent: () => false,
     }) as unknown as MediaQueryList;
 });
-vi.mock("../../src/ts/firebase", () => ({
-  app: undefined,
-  Auth: undefined,
-  getAuthenticatedUser: () => null,
-  isAuthAvailable: () => false,
-}));
+vi.mock("../../src/ts/auth/providers/firebase", () => ({}));
 // no canvas in jsdom; the result chart renders nothing
 vi.mock("../../src/ts/components/common/ChartJs", () => ({
   ChartJs: () => null,

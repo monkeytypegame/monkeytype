@@ -16,7 +16,7 @@ import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { getUserData } from "../../queries/user";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../states/auth";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,

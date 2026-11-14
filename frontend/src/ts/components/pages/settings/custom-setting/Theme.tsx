@@ -23,7 +23,7 @@ import {
   editCustomTheme,
   getCustomThemes,
 } from "../../../../queries/custom-themes";
-import { isAuthenticated } from "../../../../states/core";
+import { isAuthenticated } from "../../../../states/auth";
 import {
   showErrorNotification,
   showNoticeNotification,

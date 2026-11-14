@@ -1,14 +1,13 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
-import {
-  getAdditionalUserInfo,
-  sendEmailVerification,
-  updateProfile,
-  type UserCredential,
-} from "firebase/auth";
 
 import Ape from "../../ape";
-import { cancelSignUp, finishSignUp } from "../../firebase";
+import { sendVerificationEmail } from "../../auth/actions";
+import {
+  cancelSignUp,
+  finishSignUp,
+  requireAuthProvider,
+} from "../../auth/provider";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,
@@ -92,24 +91,26 @@ export function GoogleSignupModal() {
 }
 
 async function afterHide(): Promise<void> {
-  const signedInUser = getGoogleSignUpUser();
   // finished, or a failed apply already cancelled it
-  if (signedInUser === undefined) return;
+  if (getGoogleSignUpUser() === undefined) return;
   showNoticeNotification("Sign up process cancelled", {
     durationMs: 5000,
   });
-  await cancelGoogleSignUp(signedInUser);
+  await cancelGoogleSignUp();
 }
 
-/** Deletes the user the sign up created, and signs out of Firebase. */
-async function cancelGoogleSignUp(signedInUser: UserCredential): Promise<void> {
+/**
+ * Deletes the new user the sign up created (the modal only opens for one), and
+ * signs out of the auth provider.
+ */
+async function cancelGoogleSignUp(): Promise<void> {
   try {
-    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      await Ape.users.delete();
-      await signedInUser.user.delete().catch(() => {
+    await Ape.users.delete();
+    await requireAuthProvider()
+      .deleteUser()
+      .catch(() => {
         //user might be deleted already by the server
       });
-    }
   } finally {
     await cancelSignUp();
     setGoogleSignUpUser(undefined);
@@ -140,15 +141,16 @@ async function apply(options: {
       throw new Error(`Failed to create user: ${response.body.message}`);
     }
 
-    await updateProfile(signedInUser.user, { displayName: name });
-    await sendEmailVerification(signedInUser.user);
+    // our server sends it, like for an email sign up; a third party may
+    // already have verified the email
+    if (!signedInUser.emailVerified) await sendVerificationEmail();
     finishSignUp();
     showSuccessNotification("Account created");
     setGoogleSignUpUser(undefined);
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    await cancelGoogleSignUp(signedInUser);
+    await cancelGoogleSignUp();
   } finally {
     hideLoaderBar();
     hideModal(modalId);

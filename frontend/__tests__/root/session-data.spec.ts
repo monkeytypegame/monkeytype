@@ -34,9 +34,9 @@ import {
   getUserDataLoadState,
   reloadUserData,
 } from "../../src/ts/session-data";
-import { setUserId } from "../../src/ts/states/core";
+import { setUserId } from "../../src/ts/states/auth";
 
-// stands in for firebase.ts, the auth signals' writer
+// stands in for auth-provider.ts, the auth signals' writer
 function signIn(uid = "uid"): void {
   setUserId(uid);
 }

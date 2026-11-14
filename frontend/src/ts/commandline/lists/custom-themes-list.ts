@@ -1,5 +1,5 @@
 import { setConfig } from "../../config/setters";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../states/auth";
 import * as ThemeController from "../../controllers/theme-controller";
 import { getCustomThemes } from "../../queries/custom-themes";
 import { Command, CommandsSubgroup } from "../types";

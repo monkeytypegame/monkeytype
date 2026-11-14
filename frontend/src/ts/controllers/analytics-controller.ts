@@ -3,7 +3,7 @@ import {
   logEvent,
   setAnalyticsCollectionEnabled,
 } from "firebase/analytics";
-import { getAnalytics } from "../firebase";
+import { getAnalytics } from "../auth/providers/firebase";
 import { createErrorMessage } from "../utils/error";
 
 let analytics: AnalyticsType;

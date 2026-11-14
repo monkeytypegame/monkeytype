@@ -22,7 +22,7 @@ import {
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
 import { queryClient } from "../../src/ts/queries";
-import { setUserId } from "../../src/ts/states/core";
+import { setUserId } from "../../src/ts/states/auth";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 

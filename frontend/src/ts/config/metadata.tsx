@@ -8,7 +8,7 @@ import { JSXElement } from "solid-js";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../states/auth";
 import { showNoticeNotification } from "../states/notifications";
 import { setRandomTheme } from "../states/theme";
 import { FaObject } from "../types/font-awesome";

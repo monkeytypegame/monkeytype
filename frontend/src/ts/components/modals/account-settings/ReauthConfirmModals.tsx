@@ -5,10 +5,10 @@ import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
   reauthenticate,
-} from "../../../auth";
+} from "../../../auth/actions";
 import { resetConfig } from "../../../config/lifecycle";
 import { resetPersonalBests } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
 import FileStorage from "../../../utils/file-storage";

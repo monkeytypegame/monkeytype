@@ -6,9 +6,9 @@ import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
   reauthenticate,
-} from "../../../auth";
+} from "../../../auth/actions";
 import { updateName, getUserData } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
 

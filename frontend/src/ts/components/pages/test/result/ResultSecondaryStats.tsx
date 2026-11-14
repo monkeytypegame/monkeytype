@@ -17,7 +17,8 @@ import QuotesController, {
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getTags } from "../../../../queries/tags";
 import { setQuoteFavorite, getUserData } from "../../../../queries/user";
-import { getFormatting, isAuthenticated } from "../../../../states/core";
+import { isAuthenticated } from "../../../../states/auth";
+import { getFormatting } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { addNotificationWithLevel } from "../../../../states/notifications";

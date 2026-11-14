@@ -8,7 +8,7 @@ const { config, auth } = vi.hoisted(() => ({
 vi.mock("../../src/ts/config/lifecycle", () => ({
   configLoadPromise: config.promise,
 }));
-vi.mock("../../src/ts/firebase", () => ({ authPromise: auth.promise }));
+vi.mock("../../src/ts/auth/provider", () => ({ authPromise: auth.promise }));
 vi.mock("../../src/ts/elements/merch-banner", () => ({
   showIfNotClosedBefore: vi.fn(),
 }));

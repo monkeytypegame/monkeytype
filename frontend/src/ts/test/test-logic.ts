@@ -41,7 +41,8 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { closeResultWords, toggleResultWords } from "./words-history";
-import { getCustomTextIndicator, isAuthenticated } from "../states/core";
+import { getCustomTextIndicator } from "../states/core";
+import { isAuthenticated } from "../states/auth";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -93,7 +94,7 @@ import { canStartTest } from "./test-page-state";
 import { configEvent } from "../events/config";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { getAuthenticatedUser } from "../firebase";
+import { getAuthenticatedUser } from "../auth/provider";
 import { Mode } from "@monkeytype/schemas/shared";
 import {
   CompletedEvent,

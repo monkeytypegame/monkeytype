@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
 import Ape from "../../../ape";
-import { getPasswordSchema, signUp } from "../../../auth";
+import { getPasswordSchema, signUp } from "../../../auth/actions";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,

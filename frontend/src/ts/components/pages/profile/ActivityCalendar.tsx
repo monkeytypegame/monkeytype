@@ -21,7 +21,7 @@ import {
 } from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getUserData } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { showErrorNotification } from "../../../states/notifications";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";

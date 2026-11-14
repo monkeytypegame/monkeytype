@@ -16,7 +16,7 @@ export async function quickLogin(): Promise<void> {
   showLoaderBar();
   try {
     // lazy: auth reads firebase on import, and the debug handle loads eagerly
-    const { signIn } = await import("../auth");
+    const { signIn } = await import("../auth/actions");
     const result = await signIn(
       envConfig.quickLoginEmail,
       envConfig.quickLoginPassword,

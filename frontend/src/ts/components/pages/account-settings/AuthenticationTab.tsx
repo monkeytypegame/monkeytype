@@ -9,7 +9,7 @@ import {
   hasAdditionalAuthMethodsReactive,
   isUsingAuthenticationReactive,
   ProviderAuthMethod,
-} from "../../../auth";
+} from "../../../auth/actions";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";

@@ -9,7 +9,7 @@ import {
   previewError,
 } from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";

@@ -1,5 +1,5 @@
 import { navigate } from "../../router/navigate";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../states/auth";
 import { toggleFullscreen } from "../../utils/misc";
 import { Command, withValidation } from "../types";
 import { remoteValidation } from "../../utils/remote-validation";

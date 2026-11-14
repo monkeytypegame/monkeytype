@@ -9,7 +9,7 @@ import {
 import type { QueryClient } from "@tanstack/solid-query";
 
 import { queryClient } from "../../src/ts/queries/index";
-import { setUserId } from "../../src/ts/states/core";
+import { setUserId } from "../../src/ts/states/auth";
 
 /**
  * The app drops every user-scoped query/collection when the auth state

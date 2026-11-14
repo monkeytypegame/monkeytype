@@ -5,7 +5,7 @@ import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../states/auth";
 import { showModal } from "../../../states/modals";
 import {
   isTestFinished,

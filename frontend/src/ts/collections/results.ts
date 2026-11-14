@@ -32,7 +32,7 @@ import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../states/auth";
 import { getLastResult, setLastResult } from "../states/last-result";
 import {
   areTagsLoaded,

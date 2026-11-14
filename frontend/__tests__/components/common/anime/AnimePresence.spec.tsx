@@ -50,7 +50,8 @@ vi.mock("animejs", () => ({
   },
 }));
 
-vi.mock("../../../../src/ts/utils/misc", () => ({
+vi.mock("../../../../src/ts/utils/misc", async (importOriginal) => ({
+  ...(await importOriginal()),
   applyReducedMotion: vi.fn((duration: number) => duration),
 }));
 

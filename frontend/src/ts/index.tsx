@@ -10,7 +10,8 @@ import "solid-devtools";
 
 import "./event-handlers/global";
 
-import { initFirebase } from "./firebase";
+import { initAuth } from "./auth/provider";
+import { firebaseAuthProvider } from "./auth/providers/firebase";
 // starts the user data load on sign in, before auth can report one
 import "./session-data";
 import * as Logger from "./utils/logger";
@@ -75,7 +76,7 @@ const accepted = Cookies.getAcceptedCookies();
 if (accepted === null) {
   showModal("Cookies");
 }
-void initFirebase().then(() => {
+void initAuth(firebaseAuthProvider).then(() => {
   if (accepted !== null) {
     Cookies.activateWhatsAccepted();
   }

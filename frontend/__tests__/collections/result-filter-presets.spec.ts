@@ -7,7 +7,7 @@ vi.mock("../../src/ts/ape/user", () => ({
 import { fetchUserFromApi } from "../../src/ts/ape/user";
 import "../../src/ts/collections/result-filter-presets";
 import { queryClient } from "../../src/ts/queries/index";
-import { setUserId } from "../../src/ts/states/core";
+import { setUserId } from "../../src/ts/states/auth";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
 async function flush(): Promise<void> {

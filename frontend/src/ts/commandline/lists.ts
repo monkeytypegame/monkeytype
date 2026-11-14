@@ -26,8 +26,8 @@ import {
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigKey } from "../config/metadata";
-import { isAuthAvailable, signOut } from "../firebase";
-import { isAuthenticated } from "../states/core";
+import { isAuthAvailable, signOut } from "../auth/provider";
+import { isAuthenticated } from "../states/auth";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,

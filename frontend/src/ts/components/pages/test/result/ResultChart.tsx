@@ -30,7 +30,7 @@ import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
 import { getTag } from "../../../../queries/tags";
 import { getLocalPB } from "../../../../queries/user";
-import { isAuthenticated } from "../../../../states/core";
+import { isAuthenticated } from "../../../../states/auth";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
   getSmoothedBurst,

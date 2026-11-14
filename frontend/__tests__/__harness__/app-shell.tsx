@@ -88,7 +88,7 @@ import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
 import type { UserDataLoadState } from "../../src/ts/session-data";
-import type { AuthState } from "../../src/ts/states/core";
+import type { AuthState } from "../../src/ts/states/auth";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";

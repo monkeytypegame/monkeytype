@@ -1,5 +1,5 @@
 import * as PresetController from "../../controllers/preset-controller";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../states/auth";
 import { Command, CommandsSubgroup } from "../types";
 import { getPresets } from "../../queries/presets";
 import { showModal } from "../../states/modals";

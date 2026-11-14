@@ -6,7 +6,7 @@ import {
   getAuthMethodDisplay,
   signIn,
   signInWithProvider,
-} from "../../../auth";
+} from "../../../auth/actions";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,

@@ -1,55 +1,41 @@
 import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
 import { typedKeys } from "@monkeytype/util/objects";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { FirebaseError } from "firebase/app";
-import {
-  AuthProvider,
-  EmailAuthProvider,
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  linkWithCredential,
-  linkWithPopup,
-  reauthenticateWithCredential,
-  reauthenticateWithPopup,
-  unlink,
-  updateEmail,
-  updateProfile,
-  User,
-} from "firebase/auth";
 import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
-import Ape from "./ape";
+import Ape from "../ape";
 import {
+  AuthError,
+  AuthMethod,
+  AuthUser,
   signOut as authSignOut,
-  createUserWithEmailAndPassword,
+  createUser,
   finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
   cancelSignUp,
+  ProviderAuthMethod,
+  requireAuthProvider,
   signInWithEmailAndPassword,
-  signInWithPopup,
-} from "./firebase";
-import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
-import { createEffectOn } from "./hooks/effects";
-import { getUserId, isAuthenticated } from "./states/core";
-import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
+  signInWithProvider as providerSignIn,
+} from "./provider";
+import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
+import { createEffectOn } from "../hooks/effects";
+import { getUserId, isAuthenticated } from "../states/auth";
+import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
-} from "./states/notifications";
-import { FaObject } from "./types/font-awesome";
-import { isDevEnvironment } from "./utils/env";
-import { createErrorMessage } from "./utils/error";
-import { OneOf } from "./utils/types";
+} from "../states/notifications";
+import { FaObject } from "../types/font-awesome";
+import { isDevEnvironment } from "../utils/env";
+import { createErrorMessage } from "../utils/error";
 
 type AuthMethodInfo = {
   display: string;
   fa: FaObject;
-} & OneOf<{
-  provider: AuthProvider;
-  providerId: string;
-}>;
+};
 
 /**
  * auth methods, keep order from most to least preferred.
@@ -58,23 +44,19 @@ type AuthMethodInfo = {
 const authMethods = {
   password: {
     display: "Password",
-    providerId: "password",
     fa: { icon: "fa-lock" },
   },
   github: {
     display: "GitHub",
-    provider: new GithubAuthProvider(),
     fa: { variant: "brand", icon: "fa-github" },
   },
   google: {
     display: "Google",
-    provider: new GoogleAuthProvider(),
     fa: { variant: "brand", icon: "fa-google" },
   },
-} as const satisfies Record<string, AuthMethodInfo>;
+} as const satisfies Record<AuthMethod, AuthMethodInfo>;
 
-export type AuthMethod = keyof typeof authMethods;
-export type ProviderAuthMethod = Exclude<AuthMethod, "password">;
+export type { AuthMethod, ProviderAuthMethod };
 
 export type AuthResult =
   | {
@@ -88,7 +70,7 @@ export type AuthResult =
 type ReauthSuccess = {
   status: "success";
   message: string;
-  user: User;
+  user: AuthUser;
 };
 
 type ReauthFailed = {
@@ -102,13 +84,13 @@ type ReauthenticateOptions = {
 };
 
 const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
-  createSignalWithSetters<Pick<User, "providerData"> | null>(null)({
+  createSignalWithSetters<Pick<AuthUser, "methods"> | null>(null)({
     updateAuthenticatedUser: (set) => {
       const user = getAuthenticatedUser();
       if (user === null) {
         set(null);
       } else {
-        set({ providerData: user.providerData });
+        set({ methods: user.methods });
       }
     },
   });
@@ -124,13 +106,9 @@ const authenticationMemos = createRoot(() =>
   Object.fromEntries(
     typedKeys(authMethods).map((authMethod) => {
       const memo = createMemo(() => {
-        const providerId = getProviderId(authMethod);
-
         const user = getAuthenticatedUserReactive();
         if (user === null) return undefined;
-        const provider = user.providerData.find(
-          (p) => p.providerId === providerId,
-        );
+        const provider = user.methods.find((it) => it.method === authMethod);
         const result = {
           isInUse: provider !== undefined,
           email: provider?.email ?? undefined,
@@ -181,23 +159,15 @@ export async function signIn(
 }
 
 export async function signInWithProvider(
-  authMethod: AuthMethod,
+  authMethod: ProviderAuthMethod,
   options: { rememberMe: boolean },
 ): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
 
-  const provider = getAuthProvider(authMethod);
-  if (provider === undefined) {
-    return {
-      success: false,
-      message: `Authentication ${authMethod} is missing a provider`,
-    };
-  }
-
   const { error } = await tryCatch(
-    signInWithPopup(provider, options.rememberMe),
+    providerSignIn(authMethod, options.rememberMe),
   );
 
   if (error !== null) {
@@ -228,9 +198,9 @@ export async function addAuthProvider(
   showLoaderBar();
   try {
     if (authMethod === "password") {
-      await addPasswordProvider(user, options);
+      await addPasswordProvider(options);
     } else {
-      await addPopupProvider(user, options);
+      await requireAuthProvider().linkProvider(authMethod);
     }
 
     showSuccessNotification(`${providerName} authentication added`);
@@ -244,27 +214,20 @@ export async function addAuthProvider(
   }
 }
 
-async function addPasswordProvider(
-  user: User,
-  options: {
-    email: string;
-    password: string;
-  },
-) {
+async function addPasswordProvider(options: {
+  email: string;
+  password: string;
+}): Promise<void> {
   const reauth = await reauthenticate({ password: options.password });
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
-  const credential = EmailAuthProvider.credential(
-    options.email,
-    options.password,
-  );
-  await linkWithCredential(reauth.user, credential);
-  await updateEmail(user, options.email);
+  await requireAuthProvider().linkPassword(options.email, options.password);
   const response = await Ape.users.updateEmail({
     body: {
       newEmail: options.email,
-      previousEmail: reauth.user.email as string,
+      // read after linking, which updates the account's email
+      previousEmail: getAuthenticatedUser()?.email as string,
     },
   });
   if (response.status !== 200) {
@@ -272,19 +235,6 @@ async function addPasswordProvider(
       "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error",
     );
   }
-}
-
-async function addPopupProvider(
-  user: User,
-  options: { authMethod: ProviderAuthMethod },
-) {
-  const authMethod = options.authMethod;
-  const provider = getAuthProvider(authMethod);
-  if (provider === undefined) {
-    throw new Error(`Authentication ${authMethod} is missing a provider`);
-  }
-
-  await linkWithPopup(user, provider);
 }
 
 export async function removeAuthProvider(
@@ -302,7 +252,7 @@ export async function removeAuthProvider(
     };
   }
   try {
-    await unlink(reauth.user, getProviderId(authMethod));
+    await requireAuthProvider().unlink(authMethod);
     updateAuthenticatedUser();
   } catch (e) {
     const message = createErrorMessage(
@@ -343,24 +293,20 @@ export async function signUp(
   }
 
   try {
-    const createdAuthUser = await createUserWithEmailAndPassword(
-      email,
-      password,
-    );
+    const createdAuthUser = await createUser({ email, password, name });
 
     const signInResponse = await Ape.users.create({
       body: {
         name: name,
         captcha: captchaToken,
         email,
-        uid: createdAuthUser.user.uid,
+        uid: createdAuthUser.uid,
       },
     });
     if (signInResponse.status !== 200) {
       throw new Error(`Failed to sign in: ${signInResponse.body.message}`);
     }
 
-    await updateProfile(createdAuthUser.user, { displayName: name });
     await sendVerificationEmail();
     finishSignUp();
 
@@ -369,26 +315,17 @@ export async function signUp(
   } catch (e) {
     let message = createErrorMessage(e, "Failed to create account");
 
-    if (e instanceof Error) {
-      if ("code" in e && e.code === "auth/email-already-in-use") {
-        message = createErrorMessage(
-          { message: "Email already in use" },
-          "Failed to create account",
-        );
-      }
+    if (e instanceof AuthError && e.code === "emailInUse") {
+      message = createErrorMessage(
+        { message: "Email already in use" },
+        "Failed to create account",
+      );
     }
 
     showErrorNotification(message);
     void cancelSignUp();
     return { success: false, message };
   }
-}
-
-export function getAuthProvider(
-  authMethod: AuthMethod,
-): AuthProvider | undefined {
-  const info = authMethods[authMethod] as AuthMethodInfo;
-  return info.provider;
 }
 
 export async function reauthenticate(
@@ -427,20 +364,12 @@ export async function reauthenticate(
           message: "Failed to reauthenticate using password: password missing.",
         };
       }
-      const credential = EmailAuthProvider.credential(
-        user.email as string,
-        options.password,
-      );
-      await reauthenticateWithCredential(user, credential);
+      await requireAuthProvider().reauthenticate({
+        method: "password",
+        password: options.password,
+      });
     } else {
-      const provider = getAuthProvider(authMethod);
-      if (provider === undefined) {
-        return {
-          status: "error",
-          message: `Authentication ${authMethod} is missing a provider`,
-        };
-      }
-      await reauthenticateWithPopup(user, provider);
+      await requireAuthProvider().reauthenticate({ method: authMethod });
     }
 
     return {
@@ -449,13 +378,13 @@ export async function reauthenticate(
       user,
     };
   } catch (e) {
-    const typedError = e as FirebaseError;
-    if (typedError.code === "auth/wrong-password") {
+    const code = e instanceof AuthError ? e.code : "unknown";
+    if (code === "wrongPassword") {
       return {
         status: "notice",
         message: "Incorrect password",
       };
-    } else if (typedError.code === "auth/invalid-credential") {
+    } else if (code === "invalidCredential") {
       return {
         status: "notice",
         message:
@@ -465,7 +394,7 @@ export async function reauthenticate(
       return {
         status: "error",
         message: `Failed to reauthenticate: ${
-          typedError?.message ?? JSON.stringify(e)
+          (e as Error | undefined)?.message ?? JSON.stringify(e)
         }`,
       };
     }
@@ -483,11 +412,9 @@ function getPreferredAuthenticationMethod(
 }
 
 export function isUsingAuthentication(authMethod: AuthMethod): boolean {
-  const providerId = getProviderId(authMethod);
   return (
-    getAuthenticatedUser()?.providerData.some(
-      (p) => p.providerId === providerId,
-    ) ?? false
+    getAuthenticatedUser()?.methods.some((it) => it.method === authMethod) ??
+    false
   );
 }
 
@@ -514,7 +441,7 @@ export function isUsingPasswordAuthentication(): boolean {
   return isUsingAuthentication("password");
 }
 
-export function hasAdditionalAuthMethods(authMethod: AuthMethod) {
+export function hasAdditionalAuthMethods(authMethod: AuthMethod): boolean {
   return typedKeys(authMethods).some(
     (it) => it !== authMethod && isUsingAuthentication(it),
   );
@@ -526,7 +453,9 @@ export function getAuthMethodEmailReactive(
   return authenticationMemos[authMethod]?.()?.email;
 }
 
-export function hasAdditionalAuthMethodsReactive(authMethod: AuthMethod) {
+export function hasAdditionalAuthMethodsReactive(
+  authMethod: AuthMethod,
+): boolean {
   return authenticationMemos[authMethod]?.()?.hasAdditionalAuthMethods ?? false;
 }
 
@@ -536,13 +465,4 @@ export function getAuthMethodDisplay(authMethod: AuthMethod): string {
 
 export function getAuthMethodIcon(authMethod: AuthMethod): FaObject {
   return authMethods[authMethod].fa;
-}
-
-function getProviderId(authMethod: AuthMethod): string {
-  const info = authMethods[authMethod];
-
-  if ("provider" in info) {
-    return info.provider.providerId;
-  }
-  return info.providerId;
 }

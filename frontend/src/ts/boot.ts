@@ -2,7 +2,7 @@ import * as ServerConfiguration from "./ape/server-configuration";
 import { configLoadPromise } from "./config/lifecycle";
 import * as MerchBanner from "./elements/merch-banner";
 import * as Psa from "./elements/psa";
-import { authPromise } from "./firebase";
+import { authPromise } from "./auth/provider";
 import { initConnection } from "./states/connection";
 import { setAppReady } from "./states/core";
 import { isDevEnvironment } from "./utils/env";

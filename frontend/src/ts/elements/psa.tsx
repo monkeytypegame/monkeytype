@@ -8,8 +8,8 @@ import { z } from "zod";
 
 import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
+import { getAuthState } from "../states/auth";
 import { addBanner } from "../states/banners";
-import { getAuthState } from "../states/core";
 import { addPsa } from "../states/psas";
 import { secondsToString } from "../utils/date-and-time";
 import { isDevEnvironment } from "../utils/env";
