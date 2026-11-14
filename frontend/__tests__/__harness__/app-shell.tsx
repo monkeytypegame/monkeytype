@@ -87,6 +87,9 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
+import type { UserDataLoadState } from "../../src/ts/auth";
+import type { AuthState } from "../../src/ts/states/core";
+
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { getDefaultUserData } from "../../src/ts/constants/user-data";
@@ -99,7 +102,6 @@ import {
 import {
   createRouterAuth,
   type RouterAuth,
-  type UserDataDownload,
 } from "../../src/ts/router/create-router-auth";
 import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
@@ -332,31 +334,62 @@ export function createFakeAuth(
   initial: FakeAuthState,
   options: { available?: boolean } = {},
 ): FakeAuth {
-  let isSignedIn = initial === "signedIn";
+  const [authState, setAuthState] = createSignal<AuthState>(
+    initial === "pending" ? "unknown" : initial,
+  );
+  const [loadState, setLoadState] = createSignal<UserDataLoadState>({
+    status: "idle",
+  });
+  let download: (() => Promise<void>) | undefined;
+  let lastLoad = 0;
+
+  // like the app's load: a load a newer one (or signing out) overtook doesn't set the state
+  async function load(): Promise<void> {
+    if (download === undefined) return;
+    const id = ++lastLoad;
+    setLoadState({ status: "loading" });
+    try {
+      await download();
+      if (id === lastLoad) setLoadState({ status: "loaded" });
+    } catch (error) {
+      if (id === lastLoad) setLoadState({ status: "failed", error });
+    }
+  }
+
   const auth = createRouterAuth({
     isAvailable: () => options.available ?? true,
-    isSignedIn: () => isSignedIn,
+    authState,
+    userDataLoadState: loadState,
+    reloadUserData: load,
   });
-  if (initial !== "pending") auth.stateChanged();
 
-  function setSignedIn(signedIn: boolean, userData?: UserDataDownload): void {
-    isSignedIn = signedIn;
+  function setSignedIn(
+    signedIn: boolean,
+    userData?: () => Promise<void>,
+  ): void {
     // the account route checks the user data downloaded
     userTesting.setUser(signedIn ? getDefaultUserData() : undefined);
-    auth.stateChanged(userData);
+    download = userData;
+    if (userData === undefined) {
+      lastLoad++;
+      setLoadState({ status: "idle" });
+    } else {
+      void load();
+    }
+    setAuthState(signedIn ? "signedIn" : "signedOut");
   }
 
   return {
     ...auth,
     signIn: (signInOptions) => {
-      const download = signInOptions?.userData;
+      const userData = signInOptions?.userData;
       setSignedIn(
         true,
-        download === undefined
+        userData === undefined
           ? undefined
-          : typeof download === "function"
-            ? { download: download(), redownload: download }
-            : { download, redownload: async () => download },
+          : typeof userData === "function"
+            ? userData
+            : async () => userData,
       );
     },
     signOut: () => setSignedIn(false),

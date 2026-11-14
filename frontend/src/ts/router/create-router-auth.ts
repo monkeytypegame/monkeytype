@@ -1,7 +1,14 @@
 // The router's view of auth: the first auth state, change listeners and the
-// user data download of the last sign in. No side effects, so tests drive
-// the real thing - the app feeds it auth events (router/app-router.ts)
+// user data load of the signed in user. Reads signals and has no side effects
+// of its own, so tests drive the real thing (the app passes the auth signals,
+// router/app-router.ts)
 
+import { createRoot } from "solid-js";
+
+import type { UserDataLoadState } from "../auth";
+import type { AuthState } from "../states/core";
+
+import { createEffectOn } from "../hooks/effects";
 import { promiseWithResolvers } from "../utils/misc";
 
 /** What routes need to know about auth. Made by createRouterAuth. */
@@ -12,90 +19,76 @@ export type RouterAuth = {
   /** Resolves once the first auth state is known. */
   waitForFirstState: () => Promise<void>;
   /**
-   * The user data download of the last sign in, until it succeeded. After a
-   * failed one it starts a new one (Retry). undefined if there's none.
+   * The user data load of the signed in user while it runs: resolves once
+   * loaded, rejects if it failed. After a failed one it starts a new one
+   * (Retry). undefined if there's none to wait for.
    */
   userDataDownload: () => Promise<void> | undefined;
   /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
   onChange: (listener: () => void) => () => void;
 };
 
-/** A sign in's user data download; `redownload` starts a new one. */
-export type UserDataDownload = {
-  download: Promise<void>;
-  redownload: () => Promise<void>;
-};
-
-export type RouterAuthSource = RouterAuth & {
-  /**
-   * A new auth state: the first resolves waitForFirstState, later ones notify
-   * the listeners. `userData`: the sign in's download, undefined when there's
-   * nothing to wait for (eg. signed out).
-   */
-  stateChanged: (userData?: UserDataDownload) => void;
-};
-
-export function createRouterAuth(options: {
+export type RouterAuthSource = {
   isAvailable: () => boolean;
-  isSignedIn: () => boolean;
-}): RouterAuthSource {
+  authState: () => AuthState;
+  userDataLoadState: () => UserDataLoadState;
+  /** Starts a new user data load, setting the load state to loading synchronously. */
+  reloadUserData: () => Promise<void>;
+};
+
+export function createRouterAuth(source: RouterAuthSource): RouterAuth {
   const { promise: firstState, resolve: resolveFirstState } =
     promiseWithResolvers();
-  let isFirstState = true;
   const listeners = new Set<() => void>();
 
-  let current:
-    | { promise: Promise<void> | undefined; redownload: () => Promise<void> }
+  // the waiters of the running load
+  let running:
+    | {
+        promise: Promise<void>;
+        resolve: () => void;
+        reject: (error: unknown) => void;
+      }
     | undefined;
 
-  type Entry = NonNullable<typeof current>;
-
-  async function track(entry: Entry, download: Promise<void>): Promise<void> {
-    try {
-      await download;
-      if (current === entry) current = undefined;
-    } catch (error) {
-      if (current === entry) entry.promise = undefined;
-      throw error;
-    }
-  }
-
-  // a failure is reported to whoever waits for it, if anyone
-  function startTracking(entry: Entry, download: Promise<void>): void {
-    entry.promise = track(entry, download);
-    entry.promise.catch(() => undefined);
-  }
-
-  return {
-    isAvailable: options.isAvailable,
-    isSignedIn: options.isSignedIn,
-    waitForFirstState: async () => firstState,
-    userDataDownload: (): Promise<void> | undefined => {
-      if (current === undefined) return undefined;
-      // the last one failed: a Retry starts a new one
-      if (current.promise === undefined) {
-        startTracking(current, current.redownload());
-      }
-      return current.promise;
-    },
-    onChange: (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    stateChanged: (userData) => {
-      if (userData === undefined) {
-        current = undefined;
-      } else {
-        current = { promise: undefined, redownload: userData.redownload };
-        startTracking(current, userData.download);
-      }
-
-      if (isFirstState) {
-        isFirstState = false;
+  createRoot(() => {
+    createEffectOn(source.authState, (state, prev) => {
+      if (state === "unknown") return;
+      if (prev === undefined || prev === "unknown") {
         resolveFirstState();
         return;
       }
       for (const listener of listeners) listener();
+    });
+
+    createEffectOn(source.userDataLoadState, (load) => {
+      if (load.status === "loading" || running === undefined) return;
+      const waiters = running;
+      running = undefined;
+      if (load.status === "failed") waiters.reject(load.error);
+      else waiters.resolve();
+    });
+  });
+
+  return {
+    isAvailable: source.isAvailable,
+    isSignedIn: () => source.authState() === "signedIn",
+    waitForFirstState: async () => firstState,
+    userDataDownload: (): Promise<void> | undefined => {
+      // the last one failed: a Retry starts a new one
+      if (source.userDataLoadState().status === "failed") {
+        void source.reloadUserData();
+      }
+      if (source.userDataLoadState().status !== "loading") return undefined;
+      if (running === undefined) {
+        running = promiseWithResolvers();
+        // a failure is reported to whoever waits for it, if anyone
+        running.promise.catch(() => undefined);
+      }
+      return running.promise;
+    },
+    onChange: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
     },
   };
 }

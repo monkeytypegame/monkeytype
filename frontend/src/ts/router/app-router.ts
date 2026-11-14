@@ -3,10 +3,10 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import * as AdController from "../controllers/ad-controller";
-import { authEvent } from "../events/auth";
+import { getUserDataLoadState, reloadUserData } from "../auth";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
-import { isAuthenticated } from "../states/core";
+import { getAuthState } from "../states/core";
 import { getRoutePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";
@@ -18,19 +18,9 @@ import { setRouter } from "./instance";
 
 const auth = createRouterAuth({
   isAvailable: isAuthAvailable,
-  isSignedIn: isAuthenticated,
-});
-
-authEvent.subscribe((event) => {
-  if (event.type !== "authStateChanged") return;
-  auth.stateChanged(
-    event.data.isUserSignedIn
-      ? {
-          download: event.data.loadPromise,
-          redownload: event.data.reloadUserData,
-        }
-      : undefined,
-  );
+  authState: getAuthState,
+  userDataLoadState: getUserDataLoadState,
+  reloadUserData,
 });
 
 export const router = createAppRouter({ queryClient, auth });

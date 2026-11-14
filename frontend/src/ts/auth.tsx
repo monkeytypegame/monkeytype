@@ -17,12 +17,11 @@ import {
   User,
   User as UserType,
 } from "firebase/auth";
-import { createMemo, createRoot } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import * as RemoteConfig from "./config/remote";
-import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
@@ -39,7 +38,12 @@ import { loadPresets } from "./queries/presets";
 import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
 import * as Sentry from "./sentry";
-import { getUserId, isAuthenticated, setUserId } from "./states/core";
+import {
+  getUserId,
+  isAuthenticated,
+  setAuthState,
+  setUserId,
+} from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
@@ -170,7 +174,20 @@ export async function sendVerificationEmail(): Promise<void> {
   }
 }
 
-async function getDataAndInit(): Promise<boolean> {
+/** The signed in user's data load (user, tags, presets, custom themes, remote config). */
+export type UserDataLoadState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "loaded" }
+  | { status: "failed"; error: unknown };
+
+const [getUserDataLoadState, setUserDataLoadState] =
+  createSignal<UserDataLoadState>({ status: "idle" });
+
+/** idle while signed out or before the first auth state. */
+export { getUserDataLoadState };
+
+async function getDataAndInit(): Promise<void> {
   try {
     console.log("getting account data");
     // fetch everything in parallel, apply in order below
@@ -185,7 +202,6 @@ async function getDataAndInit(): Promise<boolean> {
     void Sentry.setUser(userData.uid, userData.name);
 
     await RemoteConfig.applyFromServer(remoteConfig);
-    return true;
   } catch (error) {
     console.error(error);
     if (error instanceof UserDataLoadError) {
@@ -208,17 +224,28 @@ async function getDataAndInit(): Promise<boolean> {
     } else {
       showErrorNotification("Failed to get user data", { error });
     }
-    return false;
+    throw error;
   }
 }
 
-export async function loadUser(_user: UserType): Promise<void> {
-  if (!(await getDataAndInit())) {
-    signOut();
-    return;
+/**
+ * Downloads the signed in user's data again, eg. after a failed load (the
+ * loading page's Retry). Sets the load state synchronously to loading.
+ */
+export async function reloadUserData(): Promise<void> {
+  if (!isAuthenticated()) return;
+  const load = ++lastLoad;
+  setUserDataLoadState({ status: "loading" });
+  try {
+    await getDataAndInit();
+    if (load === lastLoad) setUserDataLoadState({ status: "loaded" });
+  } catch (error) {
+    if (load === lastLoad) setUserDataLoadState({ status: "failed", error });
   }
-  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
 }
+
+// a load signing out (or a newer load) overtook doesn't set the state
+let lastLoad = 0;
 
 export async function onAuthStateChanged(
   authInitialisedAndConnected: boolean,
@@ -228,42 +255,25 @@ export async function onAuthStateChanged(
 
   let userPromise: Promise<void> = Promise.resolve();
 
-  if (authInitialisedAndConnected) {
-    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
-    if (user) {
-      setUserId(user.uid);
-      userPromise = loadUser(user);
-    } else {
-      // signing out resets the user-scoped queries, the user among them
-      setUserId(null);
+  if (authInitialisedAndConnected && user) {
+    console.debug(`auth state changed, user true`);
+    setUserId(user.uid);
+    // loading before signed in: whoever reacts to signing in sees the load
+    userPromise = reloadUserData();
+    setAuthState("signedIn");
+  } else {
+    if (authInitialisedAndConnected) {
+      console.debug(`auth state changed, user false`);
     }
-  }
-
-  if (!authInitialisedAndConnected || !user) {
+    // signing out resets the user-scoped queries, the user among them
+    setUserId(null);
+    lastLoad++;
+    setUserDataLoadState({ status: "idle" });
+    setAuthState("signedOut");
     void Sentry.clearUser();
   }
 
-  dispatchAuthStateChanged(user, userPromise);
-}
-
-/**
- * Announces a new auth state: `user` signed in (null: signed out), with
- * `loadPromise` downloading their user data.
- */
-export function dispatchAuthStateChanged(
-  user: UserType | null,
-  loadPromise: Promise<void>,
-): void {
-  authEvent.dispatch({
-    type: "authStateChanged",
-    data: {
-      isUserSignedIn: user !== null,
-      loadPromise,
-      reloadUserData: async () => {
-        if (user !== null) await loadUser(user);
-      },
-    },
-  });
+  await userPromise;
 }
 
 export async function signIn(
