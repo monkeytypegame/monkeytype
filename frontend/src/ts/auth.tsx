@@ -15,41 +15,33 @@ import {
   updateEmail,
   updateProfile,
   User,
-  User as UserType,
 } from "firebase/auth";
 import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
-import * as RemoteConfig from "./config/remote";
-import { authEvent } from "./events/auth";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
+  finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
-  resetIgnoreAuthCallback,
+  cancelSignUp,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
-import { loadPresets } from "./queries/presets";
-import { loadTags } from "./queries/tags";
-import { loadUserData } from "./queries/user";
-import * as Sentry from "./sentry";
-import { getUserId, isAuthenticated, setUserId } from "./states/core";
+import { getUserId, isAuthenticated } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
-  showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
 import { OneOf } from "./utils/types";
-import { UserDataLoadError } from "./utils/user-data-load-error";
 
 type AuthMethodInfo = {
   display: string;
@@ -167,101 +159,6 @@ export async function sendVerificationEmail(): Promise<void> {
     hideLoaderBar();
     showSuccessNotification("Verification email sent");
   }
-}
-
-async function getDataAndInit(): Promise<boolean> {
-  try {
-    console.log("getting account data");
-    // fetch everything in parallel, apply in order below
-    const [userData, , , remoteConfig] = await Promise.all([
-      loadUserData(),
-      loadTags(),
-      loadPresets(),
-      RemoteConfig.fetchFromServer(),
-    ]);
-
-    void Sentry.setUser(userData.uid, userData.name);
-
-    await RemoteConfig.applyFromServer(remoteConfig);
-    return true;
-  } catch (error) {
-    console.error(error);
-    if (error instanceof UserDataLoadError) {
-      if (error.responseCode === 429) {
-        showNoticeNotification(
-          "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          {
-            durationMs: 0,
-          },
-        );
-        showNoticeNotification(
-          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          {
-            durationMs: 0,
-          },
-        );
-      }
-
-      showErrorNotification(`Failed to get user data: ${error.message}`);
-    } else {
-      showErrorNotification("Failed to get user data", { error });
-    }
-    return false;
-  }
-}
-
-export async function loadUser(_user: UserType): Promise<void> {
-  if (!(await getDataAndInit())) {
-    signOut();
-    return;
-  }
-  authEvent.dispatch({ type: "userDataLoaded", data: { isInitial: true } });
-}
-
-export async function onAuthStateChanged(
-  authInitialisedAndConnected: boolean,
-  user: UserType | null,
-): Promise<void> {
-  console.debug(`account controller ready`);
-
-  let userPromise: Promise<void> = Promise.resolve();
-
-  if (authInitialisedAndConnected) {
-    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
-    if (user) {
-      setUserId(user.uid);
-      userPromise = loadUser(user);
-    } else {
-      // signing out resets the user-scoped queries, the user among them
-      setUserId(null);
-    }
-  }
-
-  if (!authInitialisedAndConnected || !user) {
-    void Sentry.clearUser();
-  }
-
-  dispatchAuthStateChanged(user, userPromise);
-}
-
-/**
- * Announces a new auth state: `user` signed in (null: signed out), with
- * `loadPromise` downloading their user data.
- */
-export function dispatchAuthStateChanged(
-  user: UserType | null,
-  loadPromise: Promise<void>,
-): void {
-  authEvent.dispatch({
-    type: "authStateChanged",
-    data: {
-      isUserSignedIn: user !== null,
-      loadPromise,
-      reloadUserData: async () => {
-        if (user !== null) await loadUser(user);
-      },
-    },
-  });
 }
 
 export async function signIn(
@@ -465,8 +362,7 @@ export async function signUp(
 
     await updateProfile(createdAuthUser.user, { displayName: name });
     await sendVerificationEmail();
-    await onAuthStateChanged(true, createdAuthUser.user);
-    resetIgnoreAuthCallback();
+    finishSignUp();
 
     showSuccessNotification("Account created");
     return { success: true };
@@ -483,7 +379,7 @@ export async function signUp(
     }
 
     showErrorNotification(message);
-    signOut();
+    void cancelSignUp();
     return { success: false, message };
   }
 }

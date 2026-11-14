@@ -37,11 +37,14 @@ export const [getVisiblePage, setVisiblePage] =
 /**
  * Whether the router shows a pending route: on first load, and once a
  * navigation took longer than its pendingMs. Not for an unknown url, whose
- * routes stay pending behind the 404 page.
+ * routes stay pending behind the 404 page, nor for a failed route, whose
+ * child routes stay pending behind its error (eg. the test page behind a
+ * failed user data load on first load).
  */
 export function isPendingShown(): boolean {
   const matches = getMatches();
   if (isNotFound(matches)) return false;
+  if (matches.some((match) => match.status === "error")) return false;
   return matches.some((match) => match.status === "pending");
 }
 
