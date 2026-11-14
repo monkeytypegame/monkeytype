@@ -127,7 +127,14 @@ async function waitForUserData(
   planLoadingBar((userData === undefined ? 0 : 1) + routeSteps);
   if (userData === undefined) return;
 
-  await runLoadingStep(userDataStep, async () => userData);
+  await runLoadingStep(
+    {
+      ...userDataStep,
+      // a failed load (eg. rate limited) needn't block the site
+      fallback: { text: "Continue signed out", run: auth.signOut },
+    },
+    async () => userData,
+  );
 }
 
 /** The parts of a loader's context running its route's loading step needs. */

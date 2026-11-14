@@ -24,6 +24,7 @@ function setup(initial: AuthState = "unknown"): {
     authState,
     userDataLoadState: loadState,
     reloadUserData,
+    signOut: vi.fn(),
   });
   return { auth, setAuthState, setLoadState, reloadUserData };
 }

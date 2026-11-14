@@ -361,6 +361,7 @@ export function createFakeAuth(
     authState,
     userDataLoadState: loadState,
     reloadUserData: load,
+    signOut: () => setSignedIn(false),
   });
 
   function setSignedIn(

@@ -37,10 +37,14 @@ import {
 
 const serverConfigurationKey = getServerConfigurationQueryOptions().queryKey;
 
+function pageButton(app: App, text: string): HTMLButtonElement | undefined {
+  return [...(app.pageElement()?.querySelectorAll("button") ?? [])].find((el) =>
+    el.textContent?.includes(text),
+  );
+}
+
 function retryButton(app: App): HTMLButtonElement {
-  const button = [
-    ...(app.pageElement()?.querySelectorAll("button") ?? []),
-  ].find((el) => el.textContent?.includes("Retry"));
+  const button = pageButton(app, "Retry");
   if (button === undefined) throw new Error("no Retry button");
   return button;
 }
@@ -706,6 +710,22 @@ describe("app shell routing", () => {
       );
     });
 
+    it("shows the error when the first load's user data fails, on the test page too", async () => {
+      const app = await failUserData("/");
+
+      expect(app.loadingIndicator()).toBe("error");
+    });
+
+    it("continues signed out past a failed user data load", async () => {
+      const app = await failUserData("/settings");
+
+      pageButton(app, "Continue signed out")?.click();
+      await app.settle();
+
+      expect(app.auth.isSignedIn()).toBe(false);
+      expect(app.pagesInDom()).toEqual(["settings"]);
+    });
+
     it("names the page when it fails outside a loading step", async () => {
       const app = renderApp({
         url: "/about",
@@ -784,6 +804,8 @@ describe("app shell routing", () => {
 
         expect(app.loadingIndicator()).toBe("error");
         expect(app.blockingData.requests(download) - before).toBe(1);
+        // only the user data step can be skipped by signing out
+        expect(pageButton(app, "Continue signed out")).toBeUndefined();
       },
     );
 

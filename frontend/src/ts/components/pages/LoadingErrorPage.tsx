@@ -5,13 +5,16 @@ import {
 } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
-import { LoadingStepError } from "../../router/loading-bar";
+import {
+  LoadingStepError,
+  type LoadingStepFallback,
+} from "../../router/loading-bar";
 import { LoadingPage } from "./LoadingPage";
 
 /**
  * The loading page showing why the route failed to load, with a Retry button
- * re-running its loads (the router's error component, see
- * router/create-router.ts).
+ * re-running its loads and the failed step's fallback, if any (the router's
+ * error component, see router/create-router.ts).
  */
 export function LoadingErrorPage(props: ErrorComponentProps): JSXElement {
   const router = useRouter();
@@ -29,11 +32,15 @@ export function LoadingErrorPage(props: ErrorComponentProps): JSXElement {
     return `Failed to load ${name === undefined ? "the page" : `the ${name} page`}: ${text}`;
   };
 
+  const fallback = (): LoadingStepFallback | undefined =>
+    props.error instanceof LoadingStepError ? props.error.fallback : undefined;
+
   return (
     <LoadingPage
       error={{
         message: message(),
         onRetry: () => void router.invalidate(),
+        fallback: fallback(),
       }}
     />
   );

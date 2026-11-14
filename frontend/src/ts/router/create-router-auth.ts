@@ -26,6 +26,8 @@ export type RouterAuth = {
   userDataDownload: () => Promise<void> | undefined;
   /** Calls `listener` on every auth state change after the first. Returns an unsubscribe. */
   onChange: (listener: () => void) => () => void;
+  /** Signs out, eg. to continue past a failed user data load. */
+  signOut: () => void;
 };
 
 export type RouterAuthSource = {
@@ -34,6 +36,7 @@ export type RouterAuthSource = {
   userDataLoadState: () => UserDataLoadState;
   /** Starts a new user data load, setting the load state to loading synchronously. */
   reloadUserData: () => Promise<void>;
+  signOut: () => void;
 };
 
 export function createRouterAuth(source: RouterAuthSource): RouterAuth {
@@ -71,6 +74,7 @@ export function createRouterAuth(source: RouterAuthSource): RouterAuth {
 
   return {
     isAvailable: source.isAvailable,
+    signOut: source.signOut,
     isSignedIn: () => source.authState() === "signedIn",
     waitForFirstState: async () => firstState,
     userDataDownload: (): Promise<void> | undefined => {

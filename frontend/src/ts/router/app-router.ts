@@ -3,7 +3,7 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import * as AdController from "../controllers/ad-controller";
-import { getUserDataLoadState, reloadUserData } from "../auth";
+import { getUserDataLoadState, reloadUserData, signOut } from "../auth";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
 import { getAuthState } from "../states/core";
@@ -21,6 +21,7 @@ const auth = createRouterAuth({
   authState: getAuthState,
   userDataLoadState: getUserDataLoadState,
   reloadUserData,
+  signOut,
 });
 
 export const router = createAppRouter({ queryClient, auth });

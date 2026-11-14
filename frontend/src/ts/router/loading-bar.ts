@@ -30,7 +30,11 @@ export type LoadingStep = {
   label: string;
   /** Shown in order while the step runs. Cut short if the load finishes first. */
   keyframes: LoadingBarKeyframe[];
+  /** A way past the step if it failed, offered next to Retry on the error page. */
+  fallback?: LoadingStepFallback;
 };
+
+export type LoadingStepFallback = { text: string; run: () => void };
 
 // one bar per navigation, split between its loading steps: each gets an equal
 // share of 0-100, the last one stops at barEnd leaving the rest for "Done"
@@ -117,7 +121,7 @@ export async function runLoadingStep(
 
   await updateLoadingPageBar(start, 0);
   await failWithLabel(
-    step.label,
+    step,
     loadWithKeyframes(
       load(),
       step.keyframes.map((keyframe) => ({
@@ -130,18 +134,29 @@ export async function runLoadingStep(
 }
 
 /** A loading step's failure: its message says what failed to load. */
-export class LoadingStepError extends Error {}
+export class LoadingStepError extends Error {
+  constructor(
+    message: string,
+    options: { cause: unknown; fallback?: LoadingStepFallback },
+  ) {
+    super(message, { cause: options.cause });
+    this.fallback = options.fallback;
+  }
+
+  /** The failed step's way past it, if it has one. */
+  readonly fallback?: LoadingStepFallback;
+}
 
 async function failWithLabel(
-  label: string,
+  step: LoadingStep,
   load: Promise<void>,
 ): Promise<void> {
   try {
     await load;
   } catch (error) {
     throw new LoadingStepError(
-      `Failed to load ${label}: ${error instanceof Error ? error.message : String(error)}`,
-      { cause: error },
+      `Failed to load ${step.label}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error, fallback: step.fallback },
     );
   }
 }

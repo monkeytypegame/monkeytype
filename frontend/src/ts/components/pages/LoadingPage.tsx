@@ -12,8 +12,15 @@ import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 
 export type LoadingPageProps = {
-  /** Shows the error state: the failed load's message and a Retry button. */
-  error?: { message: string; onRetry: () => void };
+  /**
+   * Shows the error state: the failed load's message, a Retry button and the
+   * fallback's button, if any.
+   */
+  error?: {
+    message: string;
+    onRetry: () => void;
+    fallback?: { text: string; run: () => void };
+  };
   /**
    * Always shows the spinner with `text`, never the bar (a page suspending:
    * the bar belongs to the navigation).
@@ -87,12 +94,22 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
       <div class={textClass()} innerHTML={text() ?? ""}></div>
       <Show when={props.error}>
         {(error) => (
-          <Button
-            fa={{ icon: "fa-redo-alt" }}
-            text="Retry"
-            class="justify-self-center"
-            onClick={() => error().onRetry()}
-          />
+          <div class="flex flex-wrap justify-center gap-2">
+            <Button
+              fa={{ icon: "fa-redo-alt" }}
+              text="Retry"
+              onClick={() => error().onRetry()}
+            />
+            <Show when={error().fallback}>
+              {(fallback) => (
+                <Button
+                  fa={{ icon: "fa-sign-out-alt" }}
+                  text={fallback().text}
+                  onClick={() => fallback().run()}
+                />
+              )}
+            </Show>
+          </div>
         )}
       </Show>
     </div>
