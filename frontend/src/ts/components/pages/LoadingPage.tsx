@@ -1,6 +1,8 @@
 import { animate } from "animejs";
 import { createEffect, JSXElement, onCleanup, onMount, Show } from "solid-js";
 
+import type { FaSolidIcon } from "../../types/font-awesome";
+
 import {
   getLoadingPageBarStart,
   getLoadingPageBarTarget,
@@ -20,6 +22,10 @@ export type LoadingPageProps = {
     message: string;
     onRetry: () => void;
     fallback?: { text: string; run: () => void };
+    /** Smaller, below the message: eg. the server's reason. */
+    detail?: string;
+    /** Instead of the cross. */
+    icon?: FaSolidIcon;
   };
   /**
    * Always shows the spinner with `text`, never the bar (a page suspending:
@@ -74,7 +80,8 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
       hidden: indicator() !== "bar",
     });
-  const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
+  const textClass = (): string =>
+    cn("min-h-[1.25em]", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
@@ -84,7 +91,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
         <Fa icon="fa-circle-notch" fixedWidth spin />
       </div>
       <div class={errorClass()}>
-        <Fa icon="fa-times" fixedWidth />
+        <Fa icon={props.error?.icon ?? "fa-times"} fixedWidth />
       </div>
       <div class={barClass()}>
         <div ref={(el) => (fillEl = el)} class="h-full rounded bg-main"></div>
@@ -92,12 +99,17 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
       {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}
       <div class={textClass()} innerHTML={text() ?? ""}></div>
+      <Show when={props.error?.detail}>
+        {(detail) => <div class="-mt-3 text-sm text-sub">{detail()}</div>}
+      </Show>
       <Show when={props.error}>
         {(error) => (
-          <div class="flex flex-wrap justify-center gap-2">
+          // large, like the 404 page's button
+          <div class="mt-4 flex flex-wrap justify-center gap-4">
             <Button
               fa={{ icon: "fa-redo-alt" }}
               text="Retry"
+              class="px-8 py-4"
               onClick={() => error().onRetry()}
             />
             <Show when={error().fallback}>
@@ -105,6 +117,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
                 <Button
                   fa={{ icon: "fa-sign-out-alt" }}
                   text={fallback().text}
+                  class="px-8 py-4"
                   onClick={() => fallback().run()}
                 />
               )}

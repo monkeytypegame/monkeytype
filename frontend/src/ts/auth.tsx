@@ -22,7 +22,7 @@ import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import * as RemoteConfig from "./config/remote";
-import { isUserDataLoadFailForced } from "./dev/fail-user-data-load";
+import { getForcedUserDataLoadFail } from "./dev/fail-user-data-load";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
@@ -48,7 +48,6 @@ import {
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
-  showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
 import { FaObject } from "./types/font-awesome";
@@ -189,42 +188,23 @@ const [getUserDataLoadState, setUserDataLoadState] =
 export { getUserDataLoadState };
 
 async function getDataAndInit(): Promise<void> {
-  try {
-    console.log("getting account data");
-    if (isUserDataLoadFailForced()) {
-      throw new UserDataLoadError("forced by dev options", 500);
-    }
-    // fetch everything in parallel, apply in order below
-    const [userData, , , , remoteConfig] = await Promise.all([
-      loadUserData(),
-      loadTags(),
-      loadPresets(),
-      loadCustomThemes(),
-      RemoteConfig.fetchFromServer(),
-    ]);
-
-    void Sentry.setUser(userData.uid, userData.name);
-
-    await RemoteConfig.applyFromServer(remoteConfig);
-  } catch (error) {
-    console.error(error);
-    // no error notification: the loading page shows the error
-    if (error instanceof UserDataLoadError && error.responseCode === 429) {
-      showNoticeNotification(
-        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-        {
-          durationMs: 0,
-        },
-      );
-      showNoticeNotification(
-        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-        {
-          durationMs: 0,
-        },
-      );
-    }
-    throw error;
+  console.log("getting account data");
+  const forcedFail = getForcedUserDataLoadFail();
+  if (forcedFail !== false) {
+    throw new UserDataLoadError("forced by dev options", forcedFail);
   }
+  // fetch everything in parallel, apply in order below
+  const [userData, , , , remoteConfig] = await Promise.all([
+    loadUserData(),
+    loadTags(),
+    loadPresets(),
+    loadCustomThemes(),
+    RemoteConfig.fetchFromServer(),
+  ]);
+
+  void Sentry.setUser(userData.uid, userData.name);
+
+  await RemoteConfig.applyFromServer(remoteConfig);
 }
 
 /**
@@ -239,6 +219,8 @@ export async function reloadUserData(): Promise<void> {
     await getDataAndInit();
     if (load === lastLoad) setUserDataLoadState({ status: "loaded" });
   } catch (error) {
+    // no notification: the loading page shows the error
+    console.error(error);
     if (load === lastLoad) setUserDataLoadState({ status: "failed", error });
   }
 }

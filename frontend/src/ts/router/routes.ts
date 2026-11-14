@@ -14,6 +14,7 @@ import {
   waitForConnectionsReady,
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import { PageSwitcher } from "../components/core/PageSwitcher";
 import { AboutPage } from "../components/pages/AboutPage";
 import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
@@ -98,6 +99,14 @@ const userDataStep: LoadingStep = {
   ],
 };
 
+/** Firebase signed in fine, our server failed: say so, not "login failed". */
+function userDataHint(error: unknown): string {
+  if (error instanceof UserDataLoadError && error.responseCode === 429) {
+    return "You're signed in, but our server got too many requests. Wait a minute before retrying (refreshing to restart a test causes this: use tab instead).";
+  }
+  return "You're signed in, but your account data couldn't be loaded from our server.";
+}
+
 /** Router context: guards and loaders read these instead of module globals. */
 export type RouterContext = {
   auth: RouterAuth;
@@ -132,6 +141,9 @@ async function waitForUserData(
       ...userDataStep,
       // a failed load (eg. rate limited) needn't block the site
       fallback: { text: "Continue signed out", run: auth.signOut },
+      hint: userDataHint,
+      // a warning, not a cross: the sign in itself worked
+      errorIcon: "fa-exclamation-triangle",
     },
     async () => userData,
   );

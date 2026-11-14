@@ -4,26 +4,33 @@ import { z } from "zod";
 import { isDevEnvironment } from "../utils/env";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
+const FailSchema = z.union([z.literal(false), z.literal(500), z.literal(429)]);
+type Fail = z.infer<typeof FailSchema>;
+
 // kept across reloads: a refresh is the main case to test (the first load failing)
 const failUserDataLoadLS = new LocalStorageWithSchema({
   key: "devFailUserDataLoad",
-  schema: z.boolean(),
+  schema: FailSchema,
   fallback: false,
 });
 
-const [isOn, setOn] = createSignal(
-  isDevEnvironment() && failUserDataLoadLS.get(),
+const [getFail, setFail] = createSignal<Fail>(
+  isDevEnvironment() ? failUserDataLoadLS.get() : false,
 );
 
-/** Dev only: whether the user data load fails on purpose (dev options toggle). */
-export function isUserDataLoadFailForced(): boolean {
-  return isOn();
+/**
+ * Dev only: the status the user data load fails with on purpose (dev options
+ * toggle), false when it doesn't.
+ */
+export function getForcedUserDataLoadFail(): Fail {
+  return getFail();
 }
 
-export function toggleUserDataLoadFail(): boolean {
+/** Cycles off → 500 → 429 → off. Returns the new value. */
+export function cycleUserDataLoadFail(): Fail {
   if (!isDevEnvironment()) return false;
-  const next = !isOn();
+  const next = getFail() === false ? 500 : getFail() === 500 ? 429 : false;
   failUserDataLoadLS.set(next);
-  setOn(next);
+  setFail(next);
   return next;
 }

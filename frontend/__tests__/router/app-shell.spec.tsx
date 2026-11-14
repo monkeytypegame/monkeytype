@@ -27,6 +27,7 @@ import {
   __testing,
   getNotificationHistory,
 } from "../../src/ts/states/notifications";
+import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 import {
   App,
   cleanupApp,
@@ -705,15 +706,34 @@ describe("app shell routing", () => {
       const app = await failUserData("/settings");
 
       expect(app.pagesInDom()).toEqual(["loading"]);
-      expect(app.pageElement()?.textContent).toContain(
-        "Failed to load user data: server is down",
+      // the user data step says the sign in worked, the reason goes below
+      const text = app.pageElement()?.textContent ?? "";
+      expect(text).toContain(
+        "You're signed in, but your account data couldn't be loaded from our server.",
       );
+      expect(text).toContain("server is down");
+      expect(text).not.toContain("Failed to load");
     });
 
     it("shows the error when the first load's user data fails, on the test page too", async () => {
       const app = await failUserData("/");
 
       expect(app.loadingIndicator()).toBe("error");
+    });
+
+    it("says to wait when the user data is rate limited", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const userData = Promise.reject(
+        new UserDataLoadError("Too many requests (user)", 429),
+      );
+      userData.catch(() => undefined);
+      app.auth.signIn({ userData });
+      await app.settle();
+
+      expect(app.pageElement()?.textContent).toContain(
+        "Wait a minute before retrying",
+      );
     });
 
     it("continues signed out past a failed user data load", async () => {
@@ -745,10 +765,21 @@ describe("app shell routing", () => {
     });
 
     it("keeps the message of a failed loading step as it is", async () => {
-      const app = await failUserData("/settings");
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        results: "pending",
+        queryData: [[serverConfigurationKey, {}]],
+      });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      app.blockingData.failResults(new Error("server is down"));
+      await app.settle();
 
       const text = app.pageElement()?.textContent ?? "";
       expect(text.match(/Failed to load/g)).toHaveLength(1);
+      expect(text).toContain("server is down");
     });
 
     it("downloads the user data again on Retry and shows the page once it arrived", async () => {

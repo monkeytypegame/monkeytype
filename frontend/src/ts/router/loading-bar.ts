@@ -10,6 +10,7 @@ import {
   setLoadingPageText,
   updateLoadingPageBar,
 } from "../states/loading-page";
+import type { FaSolidIcon } from "../types/font-awesome";
 
 // the "Done" fill that hides the bar once finished. A loading step starting
 // meanwhile cancels the hide
@@ -32,6 +33,10 @@ export type LoadingStep = {
   keyframes: LoadingBarKeyframe[];
   /** A way past the step if it failed, offered next to Retry on the error page. */
   fallback?: LoadingStepFallback;
+  /** The error page's message for a failure, instead of "Failed to load <label>: <reason>" (the reason goes below it). */
+  hint?: (error: unknown) => string;
+  /** The error page's icon if the step failed, instead of the cross. */
+  errorIcon?: FaSolidIcon;
 };
 
 export type LoadingStepFallback = { text: string; run: () => void };
@@ -137,14 +142,25 @@ export async function runLoadingStep(
 export class LoadingStepError extends Error {
   constructor(
     message: string,
-    options: { cause: unknown; fallback?: LoadingStepFallback },
+    options: {
+      cause: unknown;
+      fallback?: LoadingStepFallback;
+      hint?: string;
+      icon?: FaSolidIcon;
+    },
   ) {
     super(message, { cause: options.cause });
     this.fallback = options.fallback;
+    this.hint = options.hint;
+    this.icon = options.icon;
   }
 
   /** The failed step's way past it, if it has one. */
   readonly fallback?: LoadingStepFallback;
+  /** The error page's message, if the failed step explains its failures. */
+  readonly hint?: string;
+  /** The error page's icon, if the failed step sets one. */
+  readonly icon?: FaSolidIcon;
 }
 
 async function failWithLabel(
@@ -156,7 +172,12 @@ async function failWithLabel(
   } catch (error) {
     throw new LoadingStepError(
       `Failed to load ${step.label}: ${error instanceof Error ? error.message : String(error)}`,
-      { cause: error, fallback: step.fallback },
+      {
+        cause: error,
+        fallback: step.fallback,
+        hint: step.hint?.(error),
+        icon: step.errorIcon,
+      },
     );
   }
 }

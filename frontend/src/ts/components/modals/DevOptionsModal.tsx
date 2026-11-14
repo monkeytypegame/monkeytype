@@ -5,8 +5,8 @@ import { z } from "zod";
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
 import {
-  isUserDataLoadFailForced,
-  toggleUserDataLoadFail,
+  cycleUserDataLoadFail,
+  getForcedUserDataLoadFail,
 } from "../../dev/fail-user-data-load";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
@@ -98,13 +98,13 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-bomb",
       label: () =>
-        `Fail User Data Load (${isUserDataLoadFailForced() ? "ON" : "OFF"})`,
+        `Fail User Data Load (${getForcedUserDataLoadFail() === false ? "OFF" : getForcedUserDataLoadFail()})`,
       onClick: () => {
-        const on = toggleUserDataLoadFail();
+        const fail = cycleUserDataLoadFail();
         showNoticeNotification(
-          on
-            ? "User data loads now fail: refresh or sign in to see it"
-            : "User data loads work again: Retry",
+          fail === false
+            ? "User data loads work again: Retry"
+            : `User data loads now fail with ${fail}: refresh or sign in to see it`,
         );
       },
     },

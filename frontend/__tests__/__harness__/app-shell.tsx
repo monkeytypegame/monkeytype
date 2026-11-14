@@ -729,10 +729,11 @@ export function renderApp(options: RenderAppOptions = {}): App {
       const page = container.querySelector("#pageLoading");
       if (page === null) return undefined;
       // the spinner, error icon and bar are toggled, never removed
-      const isShown = (icon: string): boolean =>
-        page.querySelector(icon)?.closest(".hidden") === null;
+      const isShown = (selector: string): boolean =>
+        page.querySelector(selector)?.closest(".hidden") === null;
       if (isShown(".fa-circle-notch")) return "spinner";
-      if (isShown(".fa-times")) return "error";
+      // its icon varies (a step can set its own)
+      if (isShown(".text-error i")) return "error";
       return "bar";
     },
     test: testControls,
