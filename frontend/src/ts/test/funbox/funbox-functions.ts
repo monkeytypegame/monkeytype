@@ -32,6 +32,7 @@ import {
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";
+import { removeVowels } from "./vowelless";
 
 /** Typed input, passed in so funboxes never read the EventLog. */
 export type FunboxInput = {
@@ -683,6 +684,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       );
 
       return new PolyglotWordset(wordsWithLanguage, languageProperties);
+    },
+  },
+  vowelless: {
+    alterText(word: string): string {
+      return removeVowels(word);
     },
   },
 };

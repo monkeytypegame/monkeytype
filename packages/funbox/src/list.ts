@@ -474,6 +474,13 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     name: "no_quit",
   },
+  vowelless: {
+    description: "Vwls? W dn't nd 'm!",
+    canGetPb: false,
+    difficultyLevel: 1,
+    frontendFunctions: ["alterText"],
+    name: "vowelless",
+  },
 };
 
 export function getObject(): Record<FunboxName, FunboxMetadata> {
