@@ -1,18 +1,19 @@
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import objectHash from "object-hash";
-import { createMemo, JSX } from "solid-js";
+import { createMemo, createRoot, JSX } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
+import { getUserDataLoadState } from "../../auth";
 import {
   saveLocalResult,
   SaveLocalResultData,
 } from "../../collections/results";
 import { getConfig } from "../../config/store";
-import { authEvent } from "../../events/auth";
 import { getAuthenticatedUser } from "../../firebase";
+import { createEffectOn } from "../../hooks/effects";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -205,10 +206,14 @@ export function updateUidAndHash(
   return notSignedInLastResult;
 }
 
-authEvent.subscribe((event) => {
-  if (event.type === "userDataLoaded" && event.data.isInitial) {
-    if (getLastSignedOutResult() !== null) {
-      showModal(modalId);
-    }
-  }
-});
+// once the signed in user's data loaded: offer to save the signed out result
+createRoot(() =>
+  createEffectOn(
+    () => getUserDataLoadState().status,
+    (status) => {
+      if (status === "loaded" && getLastSignedOutResult() !== null) {
+        showModal(modalId);
+      }
+    },
+  ),
+);

@@ -1,5 +1,6 @@
 import type { QueryKey } from "@tanstack/solid-query";
 
+import { createEffect, createSignal } from "solid-js";
 import {
   afterEach,
   beforeEach,
@@ -23,10 +24,12 @@ import {
   getTypingStatsQueryOptions,
 } from "../../src/ts/queries/public";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
+import { getRetryCooldown } from "../../src/ts/states/loading-page";
 import {
   __testing,
   getNotificationHistory,
 } from "../../src/ts/states/notifications";
+import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 import {
   App,
   cleanupApp,
@@ -37,10 +40,14 @@ import {
 
 const serverConfigurationKey = getServerConfigurationQueryOptions().queryKey;
 
+function pageButton(app: App, text: string): HTMLButtonElement | undefined {
+  return [...(app.pageElement()?.querySelectorAll("button") ?? [])].find((el) =>
+    el.textContent?.includes(text),
+  );
+}
+
 function retryButton(app: App): HTMLButtonElement {
-  const button = [
-    ...(app.pageElement()?.querySelectorAll("button") ?? []),
-  ].find((el) => el.textContent?.includes("Retry"));
+  const button = pageButton(app, "Retry");
   if (button === undefined) throw new Error("no Retry button");
   return button;
 }
@@ -689,7 +696,9 @@ describe("app shell routing", () => {
     async function failUserData(url: string): Promise<App> {
       const app = renderApp({ url, auth: "pending" });
       await flush();
-      const userData = Promise.reject(new Error("server is down"));
+      const userData = Promise.reject(
+        new UserDataLoadError("server is down", 500),
+      );
       // the router takes the download later - don't flag it as unhandled
       userData.catch(() => undefined);
       app.auth.signIn({ userData });
@@ -701,12 +710,64 @@ describe("app shell routing", () => {
       const app = await failUserData("/settings");
 
       expect(app.pagesInDom()).toEqual(["loading"]);
+      // the user data step says the sign in worked, the reason goes below
+      const text = app.pageElement()?.textContent ?? "";
+      expect(text).toContain(
+        "You're signed in, but your account data couldn't be loaded from our server.",
+      );
+      expect(text).toContain("server is down");
+      expect(text).not.toContain("Failed to load");
+    });
+
+    it("shows the error when the first load's user data fails, on the test page too", async () => {
+      const app = await failUserData("/");
+
+      expect(app.loadingIndicator()).toBe("error");
+    });
+
+    it("doesn't blame the server for a bug while loading the user data", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const userData = Promise.reject(
+        new TypeError("Cannot read properties of undefined"),
+      );
+      userData.catch(() => undefined);
+      app.auth.signIn({ userData });
+      await app.settle();
+
+      const text = app.pageElement()?.textContent ?? "";
+      expect(text).toContain(
+        "You're signed in, but something went wrong loading your account data.",
+      );
+      expect(text).toContain("Cannot read properties of undefined");
+    });
+
+    it("says to wait when the user data is rate limited", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const userData = Promise.reject(
+        new UserDataLoadError("Too many requests (user)", 429),
+      );
+      userData.catch(() => undefined);
+      app.auth.signIn({ userData });
+      await app.settle();
+
       expect(app.pageElement()?.textContent).toContain(
-        "Failed to load user data: server is down",
+        "Wait a minute before retrying",
       );
     });
 
-    it("names the page when it fails outside a loading step", async () => {
+    it("continues signed out past a failed user data load", async () => {
+      const app = await failUserData("/settings");
+
+      pageButton(app, "Continue signed out")?.click();
+      await app.settle();
+
+      expect(app.auth.isSignedIn()).toBe(false);
+      expect(app.pagesInDom()).toEqual(["settings"]);
+    });
+
+    it("names the page when it crashes while rendering", async () => {
       const app = renderApp({
         url: "/about",
         pageContent: {
@@ -720,15 +781,52 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.loadingIndicator()).toBe("error");
       expect(app.pageElement()?.textContent).toContain(
-        "Failed to load the about page: sleep is not defined",
+        "Something went wrong on the about page: sleep is not defined",
+      );
+    });
+
+    it("shows the error page when a page crashes after it mounted", async () => {
+      const [crash, setCrash] = createSignal(false);
+      const app = renderApp({
+        url: "/about",
+        pageContent: {
+          AboutPage: () => {
+            createEffect(() => {
+              if (crash()) throw new Error("sleep is not defined");
+            });
+            return null;
+          },
+        },
+      });
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["about"]);
+
+      setCrash(true);
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.loadingIndicator()).toBe("error");
+      expect(app.pageElement()?.textContent).toContain(
+        "Something went wrong on the about page: sleep is not defined",
       );
     });
 
     it("keeps the message of a failed loading step as it is", async () => {
-      const app = await failUserData("/settings");
+      const app = renderApp({
+        url: "/",
+        auth: "signedIn",
+        results: "pending",
+        queryData: [[serverConfigurationKey, {}]],
+      });
+      await app.settle();
+      void app.navigate({ to: "/account" });
+      await app.settle({ waitForRouter: false });
+      app.blockingData.failResults(new Error("server is down"));
+      await app.settle();
 
       const text = app.pageElement()?.textContent ?? "";
       expect(text.match(/Failed to load/g)).toHaveLength(1);
+      expect(text).toContain("server is down");
     });
 
     it("downloads the user data again on Retry and shows the page once it arrived", async () => {
@@ -749,6 +847,7 @@ describe("app shell routing", () => {
       expect(app.loadingIndicator()).toBe("error");
 
       retryButton(app).click();
+      expect(getRetryCooldown()).toBeGreaterThan(0);
       await vi.waitFor(async () => {
         await app.settle({ waitForRouter: false });
         expect(app.loadingBar()?.text).toBe("Downloading user data...");
@@ -757,6 +856,8 @@ describe("app shell routing", () => {
       retried.resolve();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["settings"]);
+      // it worked: the next failure can be retried at once
+      expect(getRetryCooldown()).toBe(0);
     });
 
     it.each(["results", "friends"] as const)(
@@ -784,6 +885,8 @@ describe("app shell routing", () => {
 
         expect(app.loadingIndicator()).toBe("error");
         expect(app.blockingData.requests(download) - before).toBe(1);
+        // only the user data step can be skipped by signing out
+        expect(pageButton(app, "Continue signed out")).toBeUndefined();
       },
     );
 
