@@ -34,6 +34,7 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
+import { loadCustomThemes } from "./queries/custom-themes";
 import { loadPresets } from "./queries/presets";
 import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
@@ -173,10 +174,11 @@ async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     // fetch everything in parallel, apply in order below
-    const [userData, , , remoteConfig] = await Promise.all([
+    const [userData, , , , remoteConfig] = await Promise.all([
       loadUserData(),
       loadTags(),
       loadPresets(),
+      loadCustomThemes(),
       RemoteConfig.fetchFromServer(),
     ]);
 
