@@ -1,3 +1,4 @@
+import { createComputed, createRoot, on } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { loads } = vi.hoisted(() => ({
@@ -26,83 +27,89 @@ vi.mock("../../src/ts/sentry", () => ({
   setUser: vi.fn(),
   clearUser: vi.fn(),
 }));
-vi.mock("../../src/ts/firebase", () => ({
-  isAuthAvailable: () => true,
-  getAuthenticatedUser: () => null,
-  signOut: vi.fn(),
-}));
-vi.mock("../../src/ts/states/notifications", () => ({
-  showErrorNotification: vi.fn(),
-  showNoticeNotification: vi.fn(),
-  showSuccessNotification: vi.fn(),
-}));
 
-import type { User } from "firebase/auth";
-
+import * as RemoteConfig from "../../src/ts/config/remote";
+import * as Sentry from "../../src/ts/sentry";
 import {
   getUserDataLoadState,
-  onAuthStateChanged,
   reloadUserData,
-} from "../../src/ts/auth";
-import * as RemoteConfig from "../../src/ts/config/remote";
-import * as Firebase from "../../src/ts/firebase";
-import { showErrorNotification } from "../../src/ts/states/notifications";
-import { getAuthState, getUserId } from "../../src/ts/states/core";
+} from "../../src/ts/session-load";
+import { setUserId } from "../../src/ts/states/core";
 
-const user = { uid: "uid" } as User;
+// stands in for firebase.ts, the auth signals' writer
+function signIn(uid = "uid"): void {
+  setUserId(uid);
+}
+function signOut(): void {
+  setUserId(null);
+}
 
 async function settle(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-describe("auth", () => {
-  beforeEach(async () => {
-    await onAuthStateChanged(true, null);
+describe("session load", () => {
+  beforeEach(() => {
+    signOut();
     loads.length = 0;
     vi.clearAllMocks();
   });
 
-  it("signing in sets the auth state and loads the user data", async () => {
-    const signedIn = onAuthStateChanged(true, user);
+  it("signing in loads the user data", async () => {
+    signIn();
 
-    expect(getUserId()).toBe("uid");
-    expect(getAuthState()).toBe("signedIn");
+    expect(loads).toHaveLength(1);
     expect(getUserDataLoadState()).toEqual({ status: "loading" });
 
     loads[0]?.resolve(undefined);
-    await signedIn;
+    await settle();
 
     expect(getUserDataLoadState()).toEqual({ status: "loaded" });
+    expect(Sentry.setUser).toHaveBeenCalledWith("uid", "name");
   });
 
-  it("a failed load is failed, without signing out", async () => {
-    const signedIn = onAuthStateChanged(true, user);
+  it("is loading for whoever reacts to signing in before the load starts", () => {
+    // computations run before effects, so before the load's effect
+    let seen: unknown;
+    createRoot(() =>
+      createComputed(
+        on(
+          () => getUserDataLoadState().status,
+          (status) => (seen = status),
+          { defer: true },
+        ),
+      ),
+    );
+
+    signIn();
+
+    expect(seen).toBe("loading");
+  });
+
+  it("a failed load is failed", async () => {
+    signIn();
     const error = new Error("down");
     loads[0]?.reject(error);
-    await signedIn;
+    await settle();
 
     expect(getUserDataLoadState()).toEqual({ status: "failed", error });
-    expect(getAuthState()).toBe("signedIn");
-    expect(Firebase.signOut).not.toHaveBeenCalled();
-    // the loading page shows the error
-    expect(showErrorNotification).not.toHaveBeenCalled();
   });
 
   it("any exception while loading fails the load, not just a server error", async () => {
     const error = new TypeError("Cannot read properties of undefined");
     vi.mocked(RemoteConfig.applyFromServer).mockRejectedValueOnce(error);
 
-    const signedIn = onAuthStateChanged(true, user);
+    signIn();
     loads[0]?.resolve(undefined);
-    await signedIn;
+    await settle();
 
     expect(getUserDataLoadState()).toEqual({ status: "failed", error });
   });
 
   it("reloadUserData loads again after a failure", async () => {
-    const signedIn = onAuthStateChanged(true, user);
+    signIn();
     loads[0]?.reject(new Error("down"));
-    await signedIn;
+    await settle();
 
     const reloaded = reloadUserData();
     expect(getUserDataLoadState()).toEqual({ status: "loading" });
@@ -112,24 +119,38 @@ describe("auth", () => {
     expect(getUserDataLoadState()).toEqual({ status: "loaded" });
   });
 
-  it("signing out resets the load, and a load it overtook doesn't set it", async () => {
-    void onAuthStateChanged(true, user);
-    await onAuthStateChanged(true, null);
+  it("signing out resets the load and clears the Sentry user, and a load it overtook doesn't set it", async () => {
+    signIn();
+    signOut();
 
-    expect(getUserId()).toBeNull();
-    expect(getAuthState()).toBe("signedOut");
     expect(getUserDataLoadState()).toEqual({ status: "idle" });
+    expect(Sentry.clearUser).toHaveBeenCalled();
 
     loads[0]?.resolve(undefined);
     await settle();
     expect(getUserDataLoadState()).toEqual({ status: "idle" });
   });
 
-  it("auth failing to load is signed out", async () => {
-    await onAuthStateChanged(false, null);
+  it("signing in again loads again, ignoring the load it overtook", async () => {
+    signIn();
+    signOut();
+    signIn();
+    expect(loads).toHaveLength(2);
 
-    expect(getAuthState()).toBe("signedOut");
-    expect(getUserDataLoadState()).toEqual({ status: "idle" });
+    loads[0]?.reject(new Error("stale"));
+    await settle();
+    expect(getUserDataLoadState()).toEqual({ status: "loading" });
+
+    loads[1]?.resolve(undefined);
+    await settle();
+    expect(getUserDataLoadState()).toEqual({ status: "loaded" });
+  });
+
+  it("the same user reported again doesn't load again", () => {
+    signIn();
+    signIn();
+
+    expect(loads).toHaveLength(1);
   });
 
   it("reloadUserData does nothing while signed out", async () => {

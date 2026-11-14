@@ -7,8 +7,8 @@ import {
 } from "firebase/auth";
 
 import Ape from "../../ape";
-import { onAuthStateChanged, signOut } from "../../auth";
-import { resetIgnoreAuthCallback, setUserState } from "../../firebase";
+import { signOut } from "../../auth";
+import { finishSignUp, resetIgnoreAuthCallback } from "../../firebase";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,
@@ -133,11 +133,10 @@ async function apply(options: {
       throw new Error(`Failed to create user: ${response.body.message}`);
     }
 
-    setUserState(signedInUser.user);
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
+    finishSignUp(signedInUser.user);
     showSuccessNotification("Account created");
-    await onAuthStateChanged(true, signedInUser.user);
     setGoogleSignUpUser(undefined);
   } catch (e) {
     console.log(e);
