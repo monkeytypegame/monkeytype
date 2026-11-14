@@ -79,5 +79,11 @@
       "length": 114,
       "id": 12
     }
+    {
+      "text": "local Tablify = require(\"tablify/tablify\")\nlocal Commands = \n{\n\t[\"NORMAL\"] = function(Input)\nif #Input % 2 == 1 then\n\treturn \" > Failed, wrong number of arguments\\n\"\nend\ntable.remove(Input, 1)\nlocal File = io.open(Input[1], \"r\")\nlocal Data = File:read(\"*all\")\nFile:close()\nfor i = 2, #Input, 2 do\n\tData = Data:gsub(Input[i], Input[i+1])\nend\nlocal OutputFile = io.open(\"output.txt\", \"w\")\nOutputFile:write(Data)\nOutputFile:close()\nreturn \" > Complete\\n\"\nend}\nrepeat\n\tio.write(\" < \")\nlocal Input = Tablify.Execute(\"NORMAL\", io.read(\"*line\"), \" \")\nInput[1] = Input[1]:upper()\nif Commands[Input[1]] then\n\tlocal Result = Commands[Input[1]](Input)\nio.write(Result)\nend\nuntil Input[1] == \"EXIT\"",
+      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 1",
+      "length": 751,
+      "id": 13
+    }
   ]
 }
