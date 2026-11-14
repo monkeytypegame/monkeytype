@@ -5,6 +5,7 @@ vi.unmock("../../src/ts/firebase");
 
 const sdk = vi.hoisted(() => ({
   authStateListener: undefined as ((user: unknown) => void) | undefined,
+  currentUser: null as unknown,
   signOut: vi.fn(async () => undefined),
   signInWithPopup: vi.fn(),
   createUserWithEmailAndPassword: vi.fn(),
@@ -18,7 +19,12 @@ vi.mock("firebase/app", () => ({
   initializeApp: vi.fn(() => ({})),
 }));
 vi.mock("firebase/auth", () => ({
-  getAuth: () => ({ signOut: sdk.signOut, currentUser: null }),
+  getAuth: () => ({
+    signOut: sdk.signOut,
+    get currentUser() {
+      return sdk.currentUser;
+    },
+  }),
   setPersistence: vi.fn(async () => undefined),
   browserSessionPersistence: {},
   indexedDBLocalPersistence: {},
@@ -57,6 +63,7 @@ const provider = {} as AuthProvider;
 
 // what Firebase does when a user signs in or out
 function firebaseReports(reported: User | null): void {
+  sdk.currentUser = reported;
   sdk.authStateListener?.(reported);
 }
 
@@ -104,7 +111,7 @@ describe("firebase adapter", () => {
     expect(getUserId()).toBeNull();
     expect(getAuthState()).toBe("signedOut");
 
-    finishSignUp(user);
+    finishSignUp();
     expect(getUserId()).toBe("uid");
     expect(getAuthState()).toBe("signedIn");
   });
@@ -114,7 +121,7 @@ describe("firebase adapter", () => {
 
     expect(getUserId()).toBeNull();
 
-    finishSignUp(user);
+    finishSignUp();
     expect(getUserId()).toBe("uid");
   });
 

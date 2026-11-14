@@ -142,7 +142,7 @@ async function apply(options: {
 
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
-    finishSignUp(signedInUser.user);
+    finishSignUp();
     showSuccessNotification("Account created");
     setGoogleSignUpUser(undefined);
   } catch (e) {

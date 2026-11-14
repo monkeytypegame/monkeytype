@@ -362,7 +362,7 @@ export async function signUp(
 
     await updateProfile(createdAuthUser.user, { displayName: name });
     await sendVerificationEmail();
-    finishSignUp(createdAuthUser.user);
+    finishSignUp();
 
     showSuccessNotification("Account created");
     return { success: true };

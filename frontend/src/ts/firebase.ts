@@ -143,12 +143,12 @@ function setUserState(user: User | null): void {
 }
 
 /**
- * Signs in the user a sign up just created: the auth callback was ignored
- * while the sign up created the user on the backend.
+ * Signs in the user a sign up just created (Firebase's current user): the
+ * auth callback was ignored while the sign up created the user on the backend.
  */
-export function finishSignUp(user: User): void {
+export function finishSignUp(): void {
   ignoreAuthCallback = false;
-  setUserState(user);
+  setUserState(getAuthenticatedUser());
 }
 
 export async function signInWithPopup(
