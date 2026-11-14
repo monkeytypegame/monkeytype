@@ -10,7 +10,7 @@ import * as Persistence from "../../src/ts/config/persistence";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as TestLogic from "../../src/ts/test/test-logic";
 import * as Tags from "../../src/ts/queries/tags";
-import * as Presets from "../../src/ts/collections/presets";
+import * as Presets from "../../src/ts/queries/presets";
 
 describe("PresetController", () => {
   describe("apply", () => {
@@ -21,7 +21,7 @@ describe("PresetController", () => {
       //
     }));
     const getUserMock = vi.spyOn(UserState, "getUserData");
-    const getPresetMock = vi.spyOn(Presets.__nonReactive, "getPreset");
+    const getPresetMock = vi.spyOn(Presets, "getPreset");
     const configApplyMock = vi.spyOn(Lifecycle, "applyConfig");
     const configSaveFullConfigMock = vi.spyOn(
       Persistence,

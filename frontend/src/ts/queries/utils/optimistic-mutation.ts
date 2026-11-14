@@ -3,6 +3,7 @@ import {
   type MutationObserverOptions,
   replaceEqualDeep,
 } from "@tanstack/solid-query";
+import { MonkeyResponseType } from "@monkeytype/contracts/util/api";
 import { Result } from "@monkeytype/util/trycatch";
 
 import { queryClient } from "..";
@@ -82,22 +83,28 @@ export type OptimisticMutation<T, V> = MutationObserverOptions<
   Undo<T>
 >;
 
+/** An API response: every body carries the server's message. */
+export type ApiResponse = { status: number; body: MonkeyResponseType };
+
+/** The data of an API response's 200 variant; `undefined` if it has none. */
+export type OkData<R extends ApiResponse> = Extract<
+  R,
+  { status: 200 }
+>["body"] extends { data: infer D }
+  ? D
+  : undefined;
+
 /**
- * A TanStack mutation on a session query's data: applies `recipe` with its
- * variables at once and sends `request`, which resolves to the values to keep
- * (the server may change them) or throws; the recipe is applied again with
- * those. On failure the change is undone by the query's shape: by field for
- * one record, by id for a list. The recipe must be idempotent: on success it runs
- * again with the kept values, so an insert with a temporary id must replace
- * that item, not add a second one. A list recipe edits the list in place.
+ * A TanStack mutation on a session query's data: runs `applyFn` at once, sends
+ * the change (`mutationFn`), and on a 200 runs `applyFn` again with the
+ * server's values (`reconcileVars`). On failure (a non-200, with the server's
+ * message, or a thrown `mutationFn`) the change is undone by the query's
+ * shape: by field for one record, by id for a list.
  */
-export function optimisticMutation<T extends object, V>(options: {
-  query: SessionQuery<T>;
-  name: string;
-  recipe: (data: T, vars: V) => void;
-  request: (vars: V) => Promise<V>;
-}): OptimisticMutation<T, V> {
-  const { query, recipe } = options;
+export function optimisticMutation<T extends object, V, R extends ApiResponse>(
+  options: MutationOptions<T, V, R> & { query: SessionQuery<T> },
+): OptimisticMutation<T, V> {
+  const { query, applyFn, reconcileVars } = options;
   const rollback = (
     query.id === undefined
       ? rollbackByField<T>()
@@ -105,13 +112,22 @@ export function optimisticMutation<T extends object, V>(options: {
   ) as Rollback<T>;
   return {
     mutationKey: [...query.key, options.name],
-    mutationFn: options.request,
+    mutationFn: async (vars) => {
+      const response = await options.mutationFn(vars);
+      if (response.status !== 200) throw new Error(response.body.message);
+      return reconcileVars === undefined
+        ? vars
+        : reconcileVars(
+            vars,
+            (response.body as { data?: unknown }).data as OkData<R>,
+          );
+    },
     // offline, fail and roll back at once instead of pausing until online
     networkMode: "always",
     onMutate: (vars) => {
       const before = query.copy();
       if (before === undefined) throw new Error("Not signed in");
-      query.update((data) => recipe(data, vars));
+      query.update((data) => applyFn(data, vars));
       const written = query.copy() ?? before;
       return { undo: rollback(before, written) };
     },
@@ -120,19 +136,35 @@ export function optimisticMutation<T extends object, V>(options: {
       query.update(rollbackResult.undo);
     },
     onSuccess: (kept) => {
-      query.update((data) => recipe(data, kept));
+      query.update((data) => applyFn(data, kept));
     },
   };
 }
 
-/** For a mutation's request: `kept` on a 200, else throws the server message. */
-export function keptOrThrow<T>(
-  response: { status: number; body: { message: string } },
-  kept: T,
-): T {
-  if (response.status !== 200) throw new Error(response.body.message);
-  return kept;
-}
+/** What a mutation names, beside its query: see `optimisticMutation`. */
+export type MutationOptions<T, V, R extends ApiResponse> = {
+  /** Unique within the query; the mutation key is the query's key plus it. */
+  name: string;
+  /**
+   * Writes the change into a copy of the query's data: a list in place, a
+   * record by field. Runs twice: at once with the variables as sent, and on a
+   * 200 with `reconcileVars`'s values. So it must be idempotent: an insert
+   * with a temporary id must replace that item on the second run, not add a
+   * second one.
+   */
+  applyFn: (data: T, vars: V) => void;
+  /**
+   * Sends the change; returns the API response unchecked. A non-200 fails the
+   * mutation with the server's message and rolls the change back.
+   */
+  mutationFn: (vars: V) => Promise<R>;
+  /**
+   * The variables `applyFn` runs with on a 200, read from the response's data
+   * (the server may assign an id or sanitize a value). Left out: the variables
+   * as sent.
+   */
+  reconcileVars?: (vars: V, data: OkData<R>) => V;
+};
 
 /**
  * Runs a mutation outside a component (`useMutation` takes the same options
