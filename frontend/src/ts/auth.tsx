@@ -22,6 +22,7 @@ import { z, ZodString } from "zod";
 
 import Ape from "./ape";
 import * as RemoteConfig from "./config/remote";
+import { isUserDataLoadFailForced } from "./dev/fail-user-data-load";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
@@ -190,6 +191,9 @@ export { getUserDataLoadState };
 async function getDataAndInit(): Promise<void> {
   try {
     console.log("getting account data");
+    if (isUserDataLoadFailForced()) {
+      throw new UserDataLoadError("forced by dev options", 500);
+    }
     // fetch everything in parallel, apply in order below
     const [userData, , , , remoteConfig] = await Promise.all([
       loadUserData(),

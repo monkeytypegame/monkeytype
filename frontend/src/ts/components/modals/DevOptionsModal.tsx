@@ -4,6 +4,10 @@ import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
+import {
+  isUserDataLoadFailForced,
+  toggleUserDataLoadFail,
+} from "../../dev/fail-user-data-load";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
@@ -89,6 +93,19 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         void quickLogin();
         hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-bomb",
+      label: () =>
+        `Fail User Data Load (${isUserDataLoadFailForced() ? "ON" : "OFF"})`,
+      onClick: () => {
+        const on = toggleUserDataLoadFail();
+        showNoticeNotification(
+          on
+            ? "User data loads now fail: refresh or sign in to see it"
+            : "User data loads work again: Retry",
+        );
       },
     },
     {
