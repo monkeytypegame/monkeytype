@@ -4,9 +4,14 @@ import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
+import {
+  cycleUserDataLoadFail,
+  getForcedUserDataLoadFail,
+} from "../../dev/fail-user-data-load";
 import { quickLogin } from "../../dev/quick-login";
 import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
+import { addXp } from "../../queries/user";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -18,7 +23,6 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
-import { addXp } from "../../states/user";
 import { disableSlowTimerFail } from "../../test/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
@@ -89,6 +93,19 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         void quickLogin();
         hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-bomb",
+      label: () =>
+        `Fail User Data Load (${getForcedUserDataLoadFail() === false ? "OFF" : getForcedUserDataLoadFail()})`,
+      onClick: () => {
+        const fail = cycleUserDataLoadFail();
+        showNoticeNotification(
+          fail === false
+            ? "User data loads work again: Retry"
+            : `User data loads now fail with ${fail}: refresh or sign in to see it`,
+        );
       },
     },
     {

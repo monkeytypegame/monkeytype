@@ -15,6 +15,7 @@ import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
+import { getUserData } from "../../queries/user";
 import { isAuthenticated } from "../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
@@ -29,7 +30,6 @@ import {
 import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import { setSelectedQuoteId } from "../../states/test";
-import { getUserData } from "../../states/user";
 import * as TestLogic from "../../test/test-logic";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";

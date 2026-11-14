@@ -1,9 +1,9 @@
 import { createMemo } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { getLocalPB, getUserData } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { getCurrentQuote } from "../../../../states/test";
-import { getLocalPB, getUserData } from "../../../../states/user";
 import { getActiveFunboxes } from "../../../../test/funbox/list";
 import { getMode2 } from "../../../../utils/misc";
 import { Notice } from "./Notice";

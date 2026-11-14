@@ -121,6 +121,7 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   }
 
   const howl = await getHowl(safeClickSounds[0]);
+  howl.stop();
   howl.seek(0);
   howl.play();
 }
@@ -134,6 +135,7 @@ export async function previewError(val: PlaySoundOnError): Promise<void> {
   const errorSoundIds = Object.keys(safeErrorSounds);
   if (!errorSoundIds.includes(val)) return;
 
+  errorSounds?.[val]?.[0]?.stop();
   errorSounds?.[val]?.[0]?.seek(0);
   errorSounds?.[val]?.[0]?.play();
 }

@@ -35,12 +35,12 @@ import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
 import { getLastResult, setLastResult } from "../states/last-result";
 import {
-  getActiveTagsOnce,
-  getTagsOnce,
+  areTagsLoaded,
+  getActiveTags,
+  getTags,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  useActiveTagsLiveQuery,
-} from "./tags";
+} from "../queries/tags";
 import {
   blockingDownloadOptions,
   isDownloaded,
@@ -50,7 +50,7 @@ import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
-import { addXp, getUserData, recordResult, setStreak } from "../states/user";
+import { addXp, getUserData, recordResult, setStreak } from "../queries/user";
 import { removeLanguageSize } from "../utils/strings";
 
 export type NormalizedLocalResult<M extends Mode> = Omit<
@@ -270,8 +270,11 @@ const resultsCollection = createCollection({
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
-      const tagIds = await getTagsOnce();
-      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
+      // drops deleted tags from the results; skipped until the tags are
+      // loaded, rather than dropping every tag
+      const knownTagIds = areTagsLoaded()
+        ? new Set(getTags().map((it) => it._id))
+        : undefined;
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -674,8 +677,6 @@ export function useUserAverage10LiveQuery(options: {
     };
   });
 
-  const activeTagsQuery = useActiveTagsLiveQuery();
-
   const average = useLiveQuery((q) => {
     //disable query
     if (!isAuthenticated()) return undefined;
@@ -685,7 +686,7 @@ export function useUserAverage10LiveQuery(options: {
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(settingsFilter(), {
-          tagIds: activeTagsQuery().map((it) => it._id),
+          tagIds: getActiveTags().map((it) => it._id),
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
@@ -707,7 +708,7 @@ export async function getUserAverage10Once(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+  const tagIds = getActiveTags().map((it) => it._id);
 
   const result = await queryOnce((q) =>
     q
@@ -729,7 +730,7 @@ export async function getUserDailyBestOnce(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+  const tagIds = getActiveTags().map((it) => it._id);
 
   const result = await queryOnce(() =>
     buildSettingsResultsQuery(options, { tagIds })

@@ -6,8 +6,8 @@ import { PresetNameSchema, PresetType } from "@monkeytype/schemas/presets";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement } from "solid-js";
 
-import { addPreset } from "../../../collections/presets";
 import { createEffectOn } from "../../../hooks/effects";
+import { addPreset } from "../../../queries/presets";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { hideModal, isModalOpen } from "../../../states/modals";
 import {
@@ -81,18 +81,16 @@ export function AddPresetModal(): JSXElement {
       hideModal("AddPresetModal");
       showLoaderBar();
 
-      try {
-        await addPreset({
-          name: parsedName.data,
-          config: configChanges,
-          settingGroups:
-            presetType() === "partial" ? activeSettingGroups : undefined,
-        });
+      const { error } = await addPreset({
+        name: parsedName.data,
+        config: configChanges,
+        settingGroups:
+          presetType() === "partial" ? activeSettingGroups : undefined,
+      });
+      if (error === null) {
         showSuccessNotification("Preset added", { durationMs: 2000 });
-      } catch (e) {
-        showErrorNotification(
-          e instanceof Error ? e.message : "Failed to add preset",
-        );
+      } else {
+        showErrorNotification("Failed to add preset", { error });
       }
 
       hideLoaderBar();

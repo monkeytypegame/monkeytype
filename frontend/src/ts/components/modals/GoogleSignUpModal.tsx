@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 
 import Ape from "../../ape";
-import { dispatchAuthStateChanged, loadUser, signOut } from "../../auth";
+import { onAuthStateChanged, signOut } from "../../auth";
 import { resetIgnoreAuthCallback, setUserState } from "../../firebase";
 import {
   getGoogleSignUpUser,
@@ -137,8 +137,7 @@ async function apply(options: {
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
     showSuccessNotification("Account created");
-    await loadUser(signedInUser.user);
-    dispatchAuthStateChanged(signedInUser.user, Promise.resolve());
+    await onAuthStateChanged(true, signedInUser.user);
     setGoogleSignUpUser(undefined);
   } catch (e) {
     console.log(e);

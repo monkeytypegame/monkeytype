@@ -1,19 +1,34 @@
 import { animate } from "animejs";
 import { createEffect, JSXElement, onCleanup, onMount, Show } from "solid-js";
 
+import type { FaSolidIcon } from "../../types/font-awesome";
+
 import {
   getLoadingPageBarStart,
   getLoadingPageBarTarget,
   getLoadingPageText,
+  getRetryCooldown,
   isLoadingBarShown,
+  startRetryCooldown,
 } from "../../states/loading-page";
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
 
 export type LoadingPageProps = {
-  /** Shows the error state: the failed load's message and a Retry button. */
-  error?: { message: string; onRetry: () => void };
+  /**
+   * Shows the error state: the failed load's message, a Retry button and the
+   * fallback's button, if any.
+   */
+  error?: {
+    message: string;
+    onRetry: () => void;
+    fallback?: { text: string; run: () => void };
+    /** Smaller, below the message: eg. the server's reason. */
+    detail?: string;
+    /** Instead of the cross. */
+    icon?: FaSolidIcon;
+  };
   /**
    * Always shows the spinner with `text`, never the bar (a page suspending:
    * the bar belongs to the navigation).
@@ -67,7 +82,9 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
     cn("h-2 w-full max-w-80 justify-self-center rounded bg-sub-alt", {
       hidden: indicator() !== "bar",
     });
-  const textClass = (): string => cn("h-[1.25em]", { hidden: text() === null });
+  const textClass = (): string =>
+    // pre-line: messages can break lines with \n
+    cn("min-h-[1.25em] whitespace-pre-line", { hidden: text() === null });
 
   // everything stays mounted and is toggled rather than swapped out, so the bar
   // fill keeps its width between steps and is always there to animate
@@ -77,7 +94,7 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
         <Fa icon="fa-circle-notch" fixedWidth spin />
       </div>
       <div class={errorClass()}>
-        <Fa icon="fa-times" fixedWidth />
+        <Fa icon={props.error?.icon ?? "fa-times"} fixedWidth />
       </div>
       <div class={barClass()}>
         <div ref={(el) => (fillEl = el)} class="h-full rounded bg-main"></div>
@@ -85,14 +102,38 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
       {/* innerHTML because load errors can contain <br> separated messages */}
       {/* oxlint-disable-next-line solid/no-innerhtml */}
       <div class={textClass()} innerHTML={text() ?? ""}></div>
+      <Show when={props.error?.detail}>
+        {(detail) => <div class="-mt-3 text-sm text-sub">{detail()}</div>}
+      </Show>
       <Show when={props.error}>
         {(error) => (
-          <Button
-            fa={{ icon: "fa-redo-alt" }}
-            text="Retry"
-            class="justify-self-center"
-            onClick={() => error().onRetry()}
-          />
+          // large, like the 404 page's button
+          <div class="mt-4 flex flex-wrap justify-center gap-4">
+            <Button
+              fa={{ icon: "fa-redo-alt" }}
+              text={
+                getRetryCooldown() > 0
+                  ? `Retry (${getRetryCooldown()})`
+                  : "Retry"
+              }
+              class="px-8 py-4"
+              disabled={getRetryCooldown() > 0}
+              onClick={() => {
+                startRetryCooldown();
+                error().onRetry();
+              }}
+            />
+            <Show when={error().fallback}>
+              {(fallback) => (
+                <Button
+                  fa={{ icon: "fa-sign-out-alt" }}
+                  text={fallback().text}
+                  class="px-8 py-4"
+                  onClick={() => fallback().run()}
+                />
+              )}
+            </Show>
+          </div>
         )}
       </Show>
     </div>
