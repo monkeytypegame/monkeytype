@@ -102,9 +102,14 @@ const userDataStep: LoadingStep = {
 /** Firebase signed in fine, our server failed: say so, not "login failed". */
 function userDataHint(error: unknown): string {
   if (error instanceof UserDataLoadError && error.responseCode === 429) {
-    return "You're signed in, but our server got too many requests.\nWait a minute before retrying (refreshing to restart a test causes this: use tab instead).";
+    return "You're signed in, but our server got too many requests.\nWait a minute before retrying (refreshing to restart a test causes this - use tab instead).";
   }
-  return "You're signed in, but your account data couldn't be loaded from our server.";
+  // the server (or the network to it) failed: the loads throw UserDataLoadError for any non-200
+  if (error instanceof UserDataLoadError) {
+    return "You're signed in, but your account data couldn't be loaded from our server.";
+  }
+  // a bug in our code, eg. applying the account's config
+  return "You're signed in, but something went wrong loading your account data.";
 }
 
 /** Router context: guards and loaders read these instead of module globals. */

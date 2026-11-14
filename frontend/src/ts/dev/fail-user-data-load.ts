@@ -4,7 +4,13 @@ import { z } from "zod";
 import { isDevEnvironment } from "../utils/env";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-const FailSchema = z.union([z.literal(false), z.literal(500), z.literal(429)]);
+// a status: the server fails; "bug": our code throws while loading
+const FailSchema = z.union([
+  z.literal(false),
+  z.literal(500),
+  z.literal(429),
+  z.literal("bug"),
+]);
 type Fail = z.infer<typeof FailSchema>;
 
 // kept across reloads: a refresh is the main case to test (the first load failing)
@@ -26,10 +32,11 @@ export function getForcedUserDataLoadFail(): Fail {
   return getFail();
 }
 
-/** Cycles off → 500 → 429 → off. Returns the new value. */
+/** Cycles off → 500 → 429 → bug → off. Returns the new value. */
 export function cycleUserDataLoadFail(): Fail {
   if (!isDevEnvironment()) return false;
-  const next = getFail() === false ? 500 : getFail() === 500 ? 429 : false;
+  const order: Fail[] = [false, 500, 429, "bug"];
+  const next = order[(order.indexOf(getFail()) + 1) % order.length] ?? false;
   failUserDataLoadLS.set(next);
   setFail(next);
   return next;

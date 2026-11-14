@@ -694,7 +694,9 @@ describe("app shell routing", () => {
     async function failUserData(url: string): Promise<App> {
       const app = renderApp({ url, auth: "pending" });
       await flush();
-      const userData = Promise.reject(new Error("server is down"));
+      const userData = Promise.reject(
+        new UserDataLoadError("server is down", 500),
+      );
       // the router takes the download later - don't flag it as unhandled
       userData.catch(() => undefined);
       app.auth.signIn({ userData });
@@ -719,6 +721,23 @@ describe("app shell routing", () => {
       const app = await failUserData("/");
 
       expect(app.loadingIndicator()).toBe("error");
+    });
+
+    it("doesn't blame the server for a bug while loading the user data", async () => {
+      const app = renderApp({ url: "/settings", auth: "pending" });
+      await flush();
+      const userData = Promise.reject(
+        new TypeError("Cannot read properties of undefined"),
+      );
+      userData.catch(() => undefined);
+      app.auth.signIn({ userData });
+      await app.settle();
+
+      const text = app.pageElement()?.textContent ?? "";
+      expect(text).toContain(
+        "You're signed in, but something went wrong loading your account data.",
+      );
+      expect(text).toContain("Cannot read properties of undefined");
     });
 
     it("says to wait when the user data is rate limited", async () => {

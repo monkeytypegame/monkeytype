@@ -190,6 +190,9 @@ export { getUserDataLoadState };
 async function getDataAndInit(): Promise<void> {
   console.log("getting account data");
   const forcedFail = getForcedUserDataLoadFail();
+  if (forcedFail === "bug") {
+    throw new TypeError("forced by dev options (bug)");
+  }
   if (forcedFail !== false) {
     throw new UserDataLoadError("forced by dev options", forcedFail);
   }

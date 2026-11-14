@@ -44,6 +44,7 @@ import {
   onAuthStateChanged,
   reloadUserData,
 } from "../../src/ts/auth";
+import * as RemoteConfig from "../../src/ts/config/remote";
 import * as Firebase from "../../src/ts/firebase";
 import { showErrorNotification } from "../../src/ts/states/notifications";
 import { getAuthState, getUserId } from "../../src/ts/states/core";
@@ -85,6 +86,17 @@ describe("auth", () => {
     expect(Firebase.signOut).not.toHaveBeenCalled();
     // the loading page shows the error
     expect(showErrorNotification).not.toHaveBeenCalled();
+  });
+
+  it("any exception while loading fails the load, not just a server error", async () => {
+    const error = new TypeError("Cannot read properties of undefined");
+    vi.mocked(RemoteConfig.applyFromServer).mockRejectedValueOnce(error);
+
+    const signedIn = onAuthStateChanged(true, user);
+    loads[0]?.resolve(undefined);
+    await signedIn;
+
+    expect(getUserDataLoadState()).toEqual({ status: "failed", error });
   });
 
   it("reloadUserData loads again after a failure", async () => {
