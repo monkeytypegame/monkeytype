@@ -26,6 +26,7 @@ import {
   logTestEvent,
 } from "../../test/events/data";
 import { getTestEventCode } from "../../test/events/helpers";
+import { cancelDeadKeyOnBackspace, onDeadKeyDown } from "../helpers/dead-key";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -167,6 +168,19 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
       event.preventDefault();
       return;
     }
+  }
+
+  if (event.key === "Dead") {
+    onDeadKeyDown();
+    return;
+  }
+
+  // firefox reports the accent as the key, so check the code too
+  if (
+    (event.key === "Backspace" || event.code === "Backspace") &&
+    cancelDeadKeyOnBackspace(event)
+  ) {
+    return;
   }
 
   if (event.key === "Tab") {
