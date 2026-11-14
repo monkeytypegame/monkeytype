@@ -1,6 +1,7 @@
 import * as ServerConfiguration from "./ape/server-configuration";
 import { configLoadPromise } from "./config/lifecycle";
 import * as MerchBanner from "./elements/merch-banner";
+import * as PwaInstallBanner from "./elements/pwa-install-banner";
 import * as Psa from "./elements/psa";
 import { authPromise } from "./firebase";
 import { initConnection } from "./states/connection";
@@ -17,6 +18,7 @@ export async function boot(): Promise<void> {
   await authPromise;
 
   MerchBanner.showIfNotClosedBefore();
+  PwaInstallBanner.init();
 
   setAppReady(true);
 

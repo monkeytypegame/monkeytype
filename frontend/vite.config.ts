@@ -130,8 +130,16 @@ function getPlugins({
       manifest: {
         short_name: "Monkeytype",
         name: "Monkeytype",
+        description:
+          "The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed.",
         start_url: "/",
         icons: [
+          {
+            src: "/images/favicon/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
           {
             src: "/images/icons/maskable_icon_x512.png",
             sizes: "512x512",
