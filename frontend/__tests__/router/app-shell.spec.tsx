@@ -24,6 +24,7 @@ import {
   getTypingStatsQueryOptions,
 } from "../../src/ts/queries/public";
 import { getServerConfigurationQueryOptions } from "../../src/ts/queries/server-configuration";
+import { getRetryCooldown } from "../../src/ts/states/loading-page";
 import {
   __testing,
   getNotificationHistory,
@@ -846,6 +847,7 @@ describe("app shell routing", () => {
       expect(app.loadingIndicator()).toBe("error");
 
       retryButton(app).click();
+      expect(getRetryCooldown()).toBeGreaterThan(0);
       await vi.waitFor(async () => {
         await app.settle({ waitForRouter: false });
         expect(app.loadingBar()?.text).toBe("Downloading user data...");
@@ -854,6 +856,8 @@ describe("app shell routing", () => {
       retried.resolve();
       await app.settle();
       expect(app.pagesInDom()).toEqual(["settings"]);
+      // it worked: the next failure can be retried at once
+      expect(getRetryCooldown()).toBe(0);
     });
 
     it.each(["results", "friends"] as const)(

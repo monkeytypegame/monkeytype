@@ -49,7 +49,7 @@ export function resetLoadingPage(): void {
   setLoadingPageText(null);
   setLoadingPageBarStart(0);
   setLoadingPageBarTarget(null);
-  setRetriedAt(null);
+  clearRetryCooldown();
 }
 
 // how long the error page's Retry stays disabled after a press: retrying a
@@ -67,6 +67,13 @@ export function getRetryCooldown(): number {
   const at = retriedAt();
   if (at === null) return 0;
   return Math.max(0, Math.ceil((at + retryCooldownMs - now()) / 1000));
+}
+
+/** Enables Retry again at once, eg. once a retry worked. */
+export function clearRetryCooldown(): void {
+  clearInterval(ticker);
+  ticker = undefined;
+  setRetriedAt(null);
 }
 
 /** Call on a Retry press: disables Retry for the cooldown. */

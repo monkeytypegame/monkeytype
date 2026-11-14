@@ -3,6 +3,7 @@
 // page renders it from the state in states/loading-page.ts
 
 import {
+  clearRetryCooldown,
   isLoadingBarShown,
   resetLoadingPage,
   setLoadingBarShown,
@@ -83,6 +84,8 @@ export function planLoadingBar(steps: number): void {
  */
 export function finishLoadingBar(options: { failed: boolean }): void {
   barPlan = emptyPlan();
+  // a retry that worked: the next failure can be retried at once
+  if (!options.failed) clearRetryCooldown();
   if (!isLoadingBarShown()) return;
   if (options.failed) {
     finishing = undefined;
