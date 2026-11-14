@@ -11,11 +11,10 @@ import { isDevEnvironment } from "../utils/env";
 window.addEventListener(
   "keydown",
   (e) => {
-    const keyEvent = e as KeyboardEvent;
-    if (keyEvent.isComposing) return;
-    const key = keyEvent.key;
+    if (e.isComposing) return;
+    const key = e.key;
     if (key !== undefined && key !== "" && key !== "Unidentified") return;
-    const target = keyEvent.target as HTMLElement | null;
+    const target = e.target as HTMLElement | null;
     if (!target) return;
     const tag = target.tagName;
     if (!(tag === "INPUT" || tag === "TEXTAREA")) return;
