@@ -73,6 +73,11 @@ function handleHotkeyOnInteractiveElement(
     getCompositionData() !== ""
   ) {
     return true;
+  } else if (hotkey === "Escape" && isInteractiveElementFocused()) {
+    // browsers fire a stray Escape keydown on the page when an autofill
+    // suggestion is picked, which would trigger a quick restart navigation
+    // while the user is filling in a form field
+    return true;
   }
 
   return false;
