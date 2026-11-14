@@ -1,6 +1,30 @@
 import { showErrorNotification } from "../states/notifications";
 import { isDevEnvironment } from "../utils/env";
 
+// Browsers fire a synthetic keydown (empty or missing key, often keyCode 229,
+// not from the keyboard) when an autofill suggestion is picked. Acting on it
+// can cancel pending route transitions or trigger hotkeys, which kicks the
+// user off the login page before the value is filled in (issue #8579).
+// Swallow it inside form fields: IME composition is driven by composition
+// events (not keydowns) and its keydowns carry a real "Process" key, and the
+// words input has its own handling, so this does not affect real input.
+window.addEventListener(
+  "keydown",
+  (e) => {
+    const keyEvent = e as KeyboardEvent;
+    if (keyEvent.isComposing) return;
+    const key = keyEvent.key;
+    if (key !== undefined && key !== "" && key !== "Unidentified") return;
+    const target = keyEvent.target as HTMLElement | null;
+    if (!target) return;
+    const tag = target.tagName;
+    if (!(tag === "INPUT" || tag === "TEXTAREA")) return;
+    if (target.id === "wordsInput") return;
+    e.stopImmediatePropagation();
+  },
+  { capture: true },
+);
+
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
   if (
