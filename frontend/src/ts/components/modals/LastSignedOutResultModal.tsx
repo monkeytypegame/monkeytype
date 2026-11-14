@@ -6,7 +6,6 @@ import { createMemo, createRoot, JSX } from "solid-js";
 import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
-import { getUserDataLoadState } from "../../auth";
 import {
   saveLocalResult,
   SaveLocalResultData,
@@ -14,6 +13,7 @@ import {
 import { getConfig } from "../../config/store";
 import { getAuthenticatedUser } from "../../firebase";
 import { createEffectOn } from "../../hooks/effects";
+import { getUserDataLoadState } from "../../session-data";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,

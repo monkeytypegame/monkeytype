@@ -87,7 +87,7 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
-import type { UserDataLoadState } from "../../src/ts/auth";
+import type { UserDataLoadState } from "../../src/ts/session-data";
 import type { AuthState } from "../../src/ts/states/core";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
@@ -569,8 +569,9 @@ const testControls: TestControls = {
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
 
-// stops the browser history listening to window popstate (see cleanupApp)
-let destroyHistory: (() => void) | undefined;
+// stops the browser history listening to window popstate, and the router's
+// listeners (see cleanupApp)
+let destroyRouter: (() => void) | undefined;
 
 function createHistory(options: RenderAppOptions): RouterHistory {
   const url = options.url ?? "/";
@@ -613,7 +614,12 @@ export function renderApp(options: RenderAppOptions = {}): App {
     { auth, queryClient },
     { history: createHistory(options) },
   );
-  destroyHistory = () => router.history.destroy();
+  destroyRouter = () => {
+    router.history.destroy();
+    // a load still running fires onLoad later, and finishing the loading bar
+    // (module state) would hide the next test's bar
+    router.subscribers.clear();
+  };
   // vanilla modules and router state memos read the router through this holder
   setRouter(router);
 
@@ -747,8 +753,8 @@ export function renderApp(options: RenderAppOptions = {}): App {
 /** Unmounts the app and resets shared state. Call in afterEach. */
 export function cleanupApp(): void {
   cleanup();
-  destroyHistory?.();
-  destroyHistory = undefined;
+  destroyRouter?.();
+  destroyRouter = undefined;
   pageMounts.length = 0;
   pageContent.clear();
   setRouter(undefined);

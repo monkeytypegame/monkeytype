@@ -3,7 +3,8 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import * as AdController from "../controllers/ad-controller";
-import { getUserDataLoadState, reloadUserData, signOut } from "../auth";
+import { signOut } from "../auth";
+import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
 import { getAuthState } from "../states/core";

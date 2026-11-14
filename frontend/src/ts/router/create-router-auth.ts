@@ -5,7 +5,7 @@
 
 import { createRoot } from "solid-js";
 
-import type { UserDataLoadState } from "../auth";
+import type { UserDataLoadState } from "../session-data";
 import type { AuthState } from "../states/core";
 
 import { createEffectOn } from "../hooks/effects";
