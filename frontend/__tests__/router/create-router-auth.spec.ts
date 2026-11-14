@@ -95,6 +95,20 @@ describe("createRouterAuth", () => {
     await expect(retry).resolves.toBeUndefined();
   });
 
+  it("a load that failed before the router asked rejects without loading again", async () => {
+    const { auth, setLoadState, reloadUserData } = setup("signedIn");
+    const error = new Error("down");
+    setLoadState({ status: "loading" });
+    setLoadState({ status: "failed", error });
+
+    await expect(auth.userDataDownload()).rejects.toBe(error);
+    expect(reloadUserData).not.toHaveBeenCalled();
+
+    // asking again after seeing the failure is a Retry
+    expect(auth.userDataDownload()).toBeDefined();
+    expect(reloadUserData).toHaveBeenCalledOnce();
+  });
+
   it("signing out mid-load resolves the download", async () => {
     const { auth, setLoadState } = setup("signedIn");
     setLoadState({ status: "loading" });

@@ -208,25 +208,20 @@ async function getDataAndInit(): Promise<void> {
     await RemoteConfig.applyFromServer(remoteConfig);
   } catch (error) {
     console.error(error);
-    if (error instanceof UserDataLoadError) {
-      if (error.responseCode === 429) {
-        showNoticeNotification(
-          "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          {
-            durationMs: 0,
-          },
-        );
-        showNoticeNotification(
-          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          {
-            durationMs: 0,
-          },
-        );
-      }
-
-      showErrorNotification(`Failed to get user data: ${error.message}`);
-    } else {
-      showErrorNotification("Failed to get user data", { error });
+    // no error notification: the loading page shows the error
+    if (error instanceof UserDataLoadError && error.responseCode === 429) {
+      showNoticeNotification(
+        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
+        {
+          durationMs: 0,
+        },
+      );
+      showNoticeNotification(
+        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
+        {
+          durationMs: 0,
+        },
+      );
     }
     throw error;
   }

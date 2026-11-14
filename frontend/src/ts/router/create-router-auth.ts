@@ -44,6 +44,9 @@ export function createRouterAuth(source: RouterAuthSource): RouterAuth {
     promiseWithResolvers();
   const listeners = new Set<() => void>();
 
+  // the failure the router saw last: asking again for it is a Retry
+  let reportedFailure: UserDataLoadState | undefined;
+
   // the waiters of the running load
   let running:
     | {
@@ -67,8 +70,12 @@ export function createRouterAuth(source: RouterAuthSource): RouterAuth {
       if (load.status === "loading" || running === undefined) return;
       const waiters = running;
       running = undefined;
-      if (load.status === "failed") waiters.reject(load.error);
-      else waiters.resolve();
+      if (load.status === "failed") {
+        reportedFailure = load;
+        waiters.reject(load.error);
+      } else {
+        waiters.resolve();
+      }
     });
   });
 
@@ -78,8 +85,16 @@ export function createRouterAuth(source: RouterAuthSource): RouterAuth {
     isSignedIn: () => source.authState() === "signedIn",
     waitForFirstState: async () => firstState,
     userDataDownload: (): Promise<void> | undefined => {
-      // the last one failed: a Retry starts a new one
-      if (source.userDataLoadState().status === "failed") {
+      const load = source.userDataLoadState();
+      if (load.status === "failed") {
+        // failed before the router asked: report it, don't load again
+        if (reportedFailure !== load) {
+          reportedFailure = load;
+          const failed = Promise.reject(load.error);
+          failed.catch(() => undefined);
+          return failed;
+        }
+        // asked again after seeing it fail: a Retry starts a new one
         void source.reloadUserData();
       }
       if (source.userDataLoadState().status !== "loading") return undefined;

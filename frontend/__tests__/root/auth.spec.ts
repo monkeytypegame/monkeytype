@@ -45,6 +45,7 @@ import {
   reloadUserData,
 } from "../../src/ts/auth";
 import * as Firebase from "../../src/ts/firebase";
+import { showErrorNotification } from "../../src/ts/states/notifications";
 import { getAuthState, getUserId } from "../../src/ts/states/core";
 
 const user = { uid: "uid" } as User;
@@ -82,6 +83,8 @@ describe("auth", () => {
     expect(getUserDataLoadState()).toEqual({ status: "failed", error });
     expect(getAuthState()).toBe("signedIn");
     expect(Firebase.signOut).not.toHaveBeenCalled();
+    // the loading page shows the error
+    expect(showErrorNotification).not.toHaveBeenCalled();
   });
 
   it("reloadUserData loads again after a failure", async () => {
