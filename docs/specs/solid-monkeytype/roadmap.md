@@ -29,7 +29,7 @@ Each step can start once the previous step's **bold** items are done. Everything
    TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
  C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T6)
- U: user data         U1 ─► U2, U3 ─► U3a ─► U8, U4 (parallel);  U7 ─► U5a ─► U5b, U5c, U5d ────► U6 delete __nonReactive (needs T6a, T6c)
+ U: user data         U1 ─► U2, U3 ─► U3a ─► U8a ─► U8b, U8c, U8d, U4 (parallel);  U7 ─► U5a ─► U5b, U5c, U5d ────► U6 delete __nonReactive (needs T6a, T6c)
  EP: engine prep      EP1, EP2 (parallel, before T5);  EP3 after T1;  EP4 anytime
  L: leaves            L1 L2 before T5;  L3 after T3;  L12 after T1+T3;  L4–L11 anytime
  CL: final cleanup (needs everything)  ─►  TR: tribe (after CL)
@@ -58,7 +58,7 @@ Every track can start now. These are the only steps that wait on another track:
 | **CL3** remove legacy theme selectors | T1, L11, L12 | Bundled themes must be moved over first |
 | **TR1** tribe | CL | Lands after everything else |
 
-Fully independent from start to finish: H, U1–U5d, U7, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
+Fully independent from start to finish: H, U1–U5d, U7, U8a–U8d, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
 
 ## Track H: housekeeping (now, minutes)
 
@@ -120,7 +120,10 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | U5d | M · PR | Custom themes become a session query, downloaded on sign in; actions as by-id optimistic mutations; the custom-themes check in config metadata reads the getter; delete the custom-themes collection | U5a | Done in [#8581](https://github.com/monkeytypegame/monkeytype/pull/8581): `queries/custom-themes.ts`; custom themes join the blocking user-data step (`loadCustomThemes()` beside `loadPresets()`; a failed download throws `UserDataLoadError`, so sign-in shows the retry). Reads `getCustomThemes()` / `getCustomTheme(id)`; `addCustomTheme` / `editCustomTheme` / `deleteCustomTheme` return a `Result`. All callers use the getters |
 | [ ] | U6 | S · commit | Delete `__nonReactive` from every module once no caller is left | U5b, U5c, U5d, T6a, T6c | Pure deletion: a caller still left means a step missed it |
 | [x] | U7 | M · PR | The user moves from the Solid store to a TanStack Query (spec Q31): `queries/user.ts` replaces `states/user.ts`; `getUserData()` reads the cache, `useUser()` gives its status, actions become TanStack mutations; sign-out clears it through the `["user"]` reset | U1 | Done in [#8568](https://github.com/monkeytypegame/monkeytype/pull/8568): `createSessionQuery` (user-scoped key from a name, never stale, `networkMode: "always"`) and `optimisticMutation`/`runMutation` (field-level rollback) in `queries/utils/`, for later session queries. `ape/user.ts` still caches the raw user response for tags and filter presets. Effects needing one user field key on it (Nav level on `uid`, the calendar on a `testActivity` memo) |
-| [ ] | U8 | L · PR | Auth provider interface, so self-hosting works without Firebase: frontend `auth.tsx`, the Google sign-up modal and the API token (`ape/adapters/ts-rest-adapter.ts`) talk to an interface (init, sign in with email or provider, sign up, sign out, token, reauth, link/unlink, an own user type) with `firebase.ts` as one implementation; backend token checks (`middlewares/auth.ts`) and user admin (`firebase-admin`) behind a matching interface. Decide first: which methods a non-Firebase backend supports, and email verification / password reset without Firebase | U3a | Cheaper first step: an offline-only (no auth) mode, which mostly exists already as the Firebase-failed-to-load path |
+| [ ] | U8a | M · PR | Frontend auth provider interface: `auth-provider.ts` defines `AuthProvider` (init with a user-change callback, current user, token, sign in with password or a provider popup, create user, display name, verification email, delete, sign out, reauth, link/unlink, update email) and an own `AuthUser` (uid, email, verified, linked auth methods with their emails) and `AuthError` (codes the UI branches on); it holds the provider-neutral session logic: the only writer of the auth signal, init failure → auth unavailable, the sign-up hold (#8046), the Google sign-up modal hand-off, the auth promise. `firebase.ts` becomes the Firebase implementation and the only `firebase/auth` importer; `auth.tsx`, the Google sign-up modal and state, the API token, test-logic and the other callers talk to `auth-provider.ts` | U3a | No behaviour change. Firebase analytics stays exported from `firebase.ts` until U8d |
+| [ ] | U8b | S · PR | No-auth provider: boot picks a provider (env flag, or Firebase failing to load falls back to no-auth); the UI hides auth methods the provider doesn't offer (`methods`); self-hosting runs without a Firebase config | U8a | Formalises today's Firebase-failed-to-initialize path. Decide first: does a provider declare verification email / password reset support, or must every provider have them |
+| [ ] | U8c | M · PR | Backend auth admin interface: token verification (`middlewares/auth.ts`, `utils/auth.ts`; the token cache stays outside it), user lookup, create (dev), update email/password, delete, revoke tokens, password-reset and verification links, own error codes in place of `FirebaseError`; `firebase-admin` becomes one implementation and its only importer | U8a | Decide first: whether a real non-Firebase backend is built here, or only the interface |
+| [ ] | U8d | S · commit | Firebase analytics leaves the auth adapter: its own module initialises (or reuses) the Firebase app; the analytics controller imports it, not `firebase.ts` | U8a | Analytics isn't auth; after this `firebase.ts` exports only the auth provider |
 
 ## Track EP: engine prep (small, parallel)
 
