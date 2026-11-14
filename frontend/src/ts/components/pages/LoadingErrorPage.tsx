@@ -35,8 +35,10 @@ export function LoadingErrorPage(props: ErrorComponentProps): JSXElement {
       props.error instanceof Error ? props.error.message : String(props.error);
     // a loading step's message says what failed to load already
     if (props.error instanceof LoadingStepError) return text;
+    // not a loading step: a route loader, or the page crashing while it
+    // rendered or any time after (its effects) - "load" would be wrong then
     const name = page();
-    return `Failed to load ${name === undefined ? "the page" : `the ${name} page`}: ${text}`;
+    return `Something went wrong on ${name === undefined ? "the page" : `the ${name} page`}: ${text}`;
   };
   // the failure's own reason, eg. the server's message
   const detail = (): string | undefined => {

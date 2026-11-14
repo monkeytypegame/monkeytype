@@ -766,7 +766,7 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["settings"]);
     });
 
-    it("names the page when it fails outside a loading step", async () => {
+    it("names the page when it crashes while rendering", async () => {
       const app = renderApp({
         url: "/about",
         pageContent: {
@@ -780,7 +780,7 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.loadingIndicator()).toBe("error");
       expect(app.pageElement()?.textContent).toContain(
-        "Failed to load the about page: sleep is not defined",
+        "Something went wrong on the about page: sleep is not defined",
       );
     });
 
@@ -806,7 +806,7 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["loading"]);
       expect(app.loadingIndicator()).toBe("error");
       expect(app.pageElement()?.textContent).toContain(
-        "Failed to load the about page: sleep is not defined",
+        "Something went wrong on the about page: sleep is not defined",
       );
     });
 
