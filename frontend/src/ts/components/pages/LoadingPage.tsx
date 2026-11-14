@@ -7,7 +7,9 @@ import {
   getLoadingPageBarStart,
   getLoadingPageBarTarget,
   getLoadingPageText,
+  getRetryCooldown,
   isLoadingBarShown,
+  startRetryCooldown,
 } from "../../states/loading-page";
 import { cn } from "../../utils/cn";
 import { Button } from "../common/Button";
@@ -108,9 +110,17 @@ export function LoadingPage(props: LoadingPageProps): JSXElement {
           <div class="mt-4 flex flex-wrap justify-center gap-4">
             <Button
               fa={{ icon: "fa-redo-alt" }}
-              text="Retry"
+              text={
+                getRetryCooldown() > 0
+                  ? `Retry (${getRetryCooldown()})`
+                  : "Retry"
+              }
               class="px-8 py-4"
-              onClick={() => error().onRetry()}
+              disabled={getRetryCooldown() > 0}
+              onClick={() => {
+                startRetryCooldown();
+                error().onRetry();
+              }}
             />
             <Show when={error().fallback}>
               {(fallback) => (

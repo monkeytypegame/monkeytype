@@ -49,4 +49,36 @@ export function resetLoadingPage(): void {
   setLoadingPageText(null);
   setLoadingPageBarStart(0);
   setLoadingPageBarTarget(null);
+  setRetriedAt(null);
+}
+
+// how long the error page's Retry stays disabled after a press: retrying a
+// failing (eg. rate limited) server at once rarely helps
+const retryCooldownMs = 15_000;
+
+// module level: the error page unmounts while the retry loads and mounts
+// again if it fails
+const [retriedAt, setRetriedAt] = createSignal<number | null>(null);
+const [now, setNow] = createSignal(Date.now());
+let ticker: ReturnType<typeof setInterval> | undefined;
+
+/** Whole seconds until Retry can be pressed again, 0 once it can. Reactive. */
+export function getRetryCooldown(): number {
+  const at = retriedAt();
+  if (at === null) return 0;
+  return Math.max(0, Math.ceil((at + retryCooldownMs - now()) / 1000));
+}
+
+/** Call on a Retry press: disables Retry for the cooldown. */
+export function startRetryCooldown(): void {
+  setNow(Date.now());
+  setRetriedAt(Date.now());
+  clearInterval(ticker);
+  ticker = setInterval(() => {
+    setNow(Date.now());
+    if (getRetryCooldown() === 0) {
+      clearInterval(ticker);
+      ticker = undefined;
+    }
+  }, 250);
 }
