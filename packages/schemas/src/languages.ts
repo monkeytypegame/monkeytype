@@ -95,6 +95,7 @@ export const LanguageSchema = z.enum(
     "kurdish_central_4k",
     "german",
     "german_1k",
+    "german_2k",
     "german_10k",
     "german_250k",
     "swiss_german",
