@@ -26,7 +26,7 @@ import {
   finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
-  resetIgnoreAuthCallback,
+  cancelSignUp,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "./firebase";
@@ -379,10 +379,7 @@ export async function signUp(
     }
 
     showErrorNotification(message);
-    // the auth callback was ignored since the user was created: listen again,
-    // and sign out of Firebase directly (the app never saw this user sign in)
-    resetIgnoreAuthCallback();
-    void authSignOut();
+    void cancelSignUp();
     return { success: false, message };
   }
 }

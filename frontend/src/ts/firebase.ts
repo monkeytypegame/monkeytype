@@ -250,8 +250,14 @@ function translateFirebaseError(
   return new Error(message, { cause: error });
 }
 
-export function resetIgnoreAuthCallback(): void {
+/**
+ * Ends a sign up that won't finish (failed or cancelled): listens to the auth
+ * callback again and signs out of Firebase. The app never saw the user sign
+ * in, so its own sign out would do nothing.
+ */
+export async function cancelSignUp(): Promise<void> {
   ignoreAuthCallback = false;
+  await Auth?.signOut();
 }
 
 export { authPromise };

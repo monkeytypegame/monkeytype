@@ -4,11 +4,11 @@ import {
   getAdditionalUserInfo,
   sendEmailVerification,
   updateProfile,
+  type UserCredential,
 } from "firebase/auth";
 
 import Ape from "../../ape";
-import { signOut } from "../../auth";
-import { finishSignUp, resetIgnoreAuthCallback } from "../../firebase";
+import { cancelSignUp, finishSignUp } from "../../firebase";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,
@@ -92,19 +92,26 @@ export function GoogleSignupModal() {
 }
 
 async function afterHide(): Promise<void> {
-  resetIgnoreAuthCallback();
   const signedInUser = getGoogleSignUpUser();
-  if (signedInUser !== undefined) {
-    showNoticeNotification("Sign up process cancelled", {
-      durationMs: 5000,
-    });
+  // finished, or a failed apply already cancelled it
+  if (signedInUser === undefined) return;
+  showNoticeNotification("Sign up process cancelled", {
+    durationMs: 5000,
+  });
+  await cancelGoogleSignUp(signedInUser);
+}
+
+/** Deletes the user the sign up created, and signs out of Firebase. */
+async function cancelGoogleSignUp(signedInUser: UserCredential): Promise<void> {
+  try {
     if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
-      await signedInUser?.user.delete().catch(() => {
+      await signedInUser.user.delete().catch(() => {
         //user might be deleted already by the server
       });
     }
-    signOut();
+  } finally {
+    await cancelSignUp();
     setGoogleSignUpUser(undefined);
   }
 }
@@ -141,14 +148,7 @@ async function apply(options: {
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      await Ape.users.delete();
-      await signedInUser?.user.delete().catch(() => {
-        //user might be deleted already by the server
-      });
-    }
-    signOut();
-    setGoogleSignUpUser(undefined);
+    await cancelGoogleSignUp(signedInUser);
   } finally {
     hideLoaderBar();
     hideModal(modalId);
