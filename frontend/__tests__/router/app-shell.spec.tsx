@@ -1,5 +1,6 @@
 import type { QueryKey } from "@tanstack/solid-query";
 
+import { createEffect, createSignal } from "solid-js";
 import {
   afterEach,
   beforeEach,
@@ -774,6 +775,32 @@ describe("app shell routing", () => {
           },
         },
       });
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["loading"]);
+      expect(app.loadingIndicator()).toBe("error");
+      expect(app.pageElement()?.textContent).toContain(
+        "Failed to load the about page: sleep is not defined",
+      );
+    });
+
+    it("shows the error page when a page crashes after it mounted", async () => {
+      const [crash, setCrash] = createSignal(false);
+      const app = renderApp({
+        url: "/about",
+        pageContent: {
+          AboutPage: () => {
+            createEffect(() => {
+              if (crash()) throw new Error("sleep is not defined");
+            });
+            return null;
+          },
+        },
+      });
+      await app.settle();
+      expect(app.pagesInDom()).toEqual(["about"]);
+
+      setCrash(true);
       await app.settle();
 
       expect(app.pagesInDom()).toEqual(["loading"]);
