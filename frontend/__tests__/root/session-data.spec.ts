@@ -33,7 +33,7 @@ import * as Sentry from "../../src/ts/sentry";
 import {
   getUserDataLoadState,
   reloadUserData,
-} from "../../src/ts/session-load";
+} from "../../src/ts/session-data";
 import { setUserId } from "../../src/ts/states/core";
 
 // stands in for firebase.ts, the auth signals' writer
@@ -48,7 +48,7 @@ async function settle(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-describe("session load", () => {
+describe("session data", () => {
   beforeEach(() => {
     signOut();
     loads.length = 0;

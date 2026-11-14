@@ -4,7 +4,7 @@
 
 import * as AdController from "../controllers/ad-controller";
 import { signOut } from "../auth";
-import { getUserDataLoadState, reloadUserData } from "../session-load";
+import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
 import { getAuthState } from "../states/core";

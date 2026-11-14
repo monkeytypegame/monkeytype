@@ -13,7 +13,7 @@ import {
 import { getConfig } from "../../config/store";
 import { getAuthenticatedUser } from "../../firebase";
 import { createEffectOn } from "../../hooks/effects";
-import { getUserDataLoadState } from "../../session-load";
+import { getUserDataLoadState } from "../../session-data";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,

@@ -12,7 +12,7 @@ import "./event-handlers/global";
 
 import { initFirebase } from "./firebase";
 // starts the user data load on sign in, before auth can report one
-import "./session-load";
+import "./session-data";
 import * as Logger from "./utils/logger";
 import "./controllers/ad-controller";
 import { Config } from "./config/store";

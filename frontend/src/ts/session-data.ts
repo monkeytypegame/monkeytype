@@ -1,5 +1,6 @@
-// The signed in user's data load: user, tags, presets, custom themes, remote
-// config and the Sentry user. Starts whenever the signed in user changes
+// Loads the session data of the signed in user: user, tags, presets, custom
+// themes (the session queries, which hold it), remote config and the Sentry
+// user. Starts whenever the signed in user changes
 // (firebase.ts writes the auth signals); the router's auth context reads its
 // state for the blocking user-data step.
 

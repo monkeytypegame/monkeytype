@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { describe, expect, it, vi } from "vitest";
 
-import type { UserDataLoadState } from "../../src/ts/session-load";
+import type { UserDataLoadState } from "../../src/ts/session-data";
 import type { AuthState } from "../../src/ts/states/core";
 
 import { createRouterAuth } from "../../src/ts/router/create-router-auth";
