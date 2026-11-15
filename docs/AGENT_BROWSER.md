@@ -38,7 +38,7 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 
 Members and their usage: the JSDoc in `expose.ts` (the `mt` object and the functions it lists). Read it before scripting.
 
-Older globals: the `addToGlobal` calls in `frontend/src/ts/index.tsx` (all envs).
+Older globals: `frontend/src/ts/console-globals.ts` (all envs).
 
 ## Console
 
