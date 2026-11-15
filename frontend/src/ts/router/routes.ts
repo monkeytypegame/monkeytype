@@ -14,6 +14,7 @@ import {
   waitForConnectionsReady,
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import { PageSwitcher } from "../components/core/PageSwitcher";
 import { AboutPage } from "../components/pages/AboutPage";
 import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
@@ -98,6 +99,19 @@ const userDataStep: LoadingStep = {
   ],
 };
 
+/** Firebase signed in fine, our server failed: say so, not "login failed". */
+function userDataHint(error: unknown): string {
+  if (error instanceof UserDataLoadError && error.responseCode === 429) {
+    return "You're signed in, but our server got too many requests.\nWait a minute before retrying (refreshing to restart a test causes this - use tab instead).";
+  }
+  // the server (or the network to it) failed: the loads throw UserDataLoadError for any non-200
+  if (error instanceof UserDataLoadError) {
+    return "You're signed in, but your account data couldn't be loaded from our server.";
+  }
+  // a bug in our code, eg. applying the account's config
+  return "You're signed in, but something went wrong loading your account data.";
+}
+
 /** Router context: guards and loaders read these instead of module globals. */
 export type RouterContext = {
   auth: RouterAuth;
@@ -127,7 +141,17 @@ async function waitForUserData(
   planLoadingBar((userData === undefined ? 0 : 1) + routeSteps);
   if (userData === undefined) return;
 
-  await runLoadingStep(userDataStep, async () => userData);
+  await runLoadingStep(
+    {
+      ...userDataStep,
+      // a failed load (eg. rate limited) needn't block the site
+      fallback: { text: "Continue signed out", run: auth.signOut },
+      hint: userDataHint,
+      // a warning, not a cross: the sign in itself worked
+      errorIcon: "fa-exclamation-triangle",
+    },
+    async () => userData,
+  );
 }
 
 /** The parts of a loader's context running its route's loading step needs. */
