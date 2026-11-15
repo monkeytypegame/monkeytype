@@ -687,4 +687,19 @@ export function getTotalInlineMargin(element: HTMLElement): number {
   );
 }
 
+export function isIos(): boolean {
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+  );
+}
+
+export function isSafari(): boolean {
+  const ua = navigator.userAgent;
+  return (
+    ua.includes("Safari") &&
+    !/Chrome|CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|Ddg|DuckDuckGo|Brave/i.test(ua)
+  );
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

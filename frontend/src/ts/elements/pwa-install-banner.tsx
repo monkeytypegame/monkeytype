@@ -1,15 +1,17 @@
+import { JSXElement } from "solid-js";
 import { z } from "zod";
 
+import { Button } from "../components/common/Button";
+import { Fa } from "../components/common/Fa";
 import { addBanner, removeBanner } from "../states/banners";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { isIos, isSafari } from "../utils/misc";
 
 /**
- * Extends the standard BeforeInstallPromptEvent interface.
- * This event is not part of any spec but is supported by Chromium-based browsers.
+ * Extends the standard Event interface for the beforeinstallprompt event.
+ * Supported by Chromium-based browsers.
  */
 type BeforeInstallPromptEvent = Event & {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
   prompt(): Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
@@ -29,6 +31,7 @@ const dismissed = new LocalStorageWithSchema({
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 let bannerId: number | null = null;
+let canShow = false;
 
 function isRunningStandalone(): boolean {
   return (
@@ -37,104 +40,95 @@ function isRunningStandalone(): boolean {
   );
 }
 
-function isIos(): boolean {
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-  );
+function showBanner(customContent: JSXElement): void {
+  if (bannerId !== null) return;
+
+  bannerId = addBanner({
+    level: "notice",
+    icon: "fas fa-fw fa-download",
+    customContent,
+    onClose: () => {
+      dismissed.set(true);
+      bannerId = null;
+    },
+  });
 }
 
-function isSafari(): boolean {
-  const ua = navigator.userAgent;
-  return ua.includes("Safari") && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
+function removeBannerIfShown(): void {
+  if (bannerId !== null) {
+    const id = bannerId;
+    bannerId = null;
+    // removeBanner triggers the banner's onClose callback, which persists dismissed=true
+    removeBanner(id);
+  }
 }
 
 async function handleInstallClick(): Promise<void> {
   if (deferredPrompt === null) return;
 
-  const { outcome } = await deferredPrompt.prompt();
-
-  if (outcome === "accepted") {
-    removeBannerIfShown();
-  }
-
+  const promptEvent = deferredPrompt;
   deferredPrompt = null;
-}
+  // Always remove the banner when prompt is triggered, since deferredPrompt
+  // cannot be re-used whether accepted or dismissed
+  removeBannerIfShown();
 
-function removeBannerIfShown(): void {
-  if (bannerId !== null) {
-    removeBanner(bannerId);
-    bannerId = null;
-  }
+  await promptEvent.prompt();
 }
 
 function showInstallBanner(): void {
-  if (bannerId !== null) return;
-
-  bannerId = addBanner({
-    level: "notice",
-    icon: "fas fa-fw fa-download",
-    customContent: (
-      <>
-        Install Monkeytype as an app for a better experience.{" "}
-        <button
-          type="button"
-          class="rounded-sm bg-bg px-2 py-0.5 text-text hover:bg-main hover:text-bg"
-          onClick={() => void handleInstallClick()}
-        >
-          Install
-        </button>
-      </>
-    ),
-    onClose: () => {
-      dismissed.set(true);
-      bannerId = null;
-    },
-  });
+  showBanner(
+    <>
+      Install Monkeytype as an app for a better experience.{" "}
+      <Button
+        variant="button"
+        class="ml-2 px-2 py-0.5"
+        onClick={() => void handleInstallClick()}
+      >
+        Install
+      </Button>
+    </>,
+  );
 }
 
 function showIosSafariInstructions(): void {
-  if (bannerId !== null) return;
-
-  bannerId = addBanner({
-    level: "notice",
-    icon: "fas fa-fw fa-download",
-    customContent: (
-      <>
-        Install Monkeytype: tap <i class="fas fa-share-square"></i> Share, then{" "}
-        <i class="fas fa-plus-square"></i> Add to Home Screen.
-      </>
-    ),
-    onClose: () => {
-      dismissed.set(true);
-      bannerId = null;
-    },
-  });
+  showBanner(
+    <>
+      Install Monkeytype: tap <Fa icon="fa-share-square" /> Share, then{" "}
+      <Fa icon="fa-plus-square" /> Add to Home Screen.
+    </>,
+  );
 }
 
+/**
+ * Registers event listeners early during startup, before awaiting config or auth.
+ * This ensures beforeinstallprompt is never missed if it fires early.
+ */
 export function init(): void {
-  // Don't show anything if already running as a standalone app
-  if (isRunningStandalone()) return;
-
-  // Don't show if the user has already dismissed the banner
-  if (dismissed.get()) return;
-
-  // Listen for the browser's install prompt (Chromium-based browsers)
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredPrompt = event;
-    showInstallBanner();
+    if (canShow) {
+      showInstallBanner();
+    }
   });
 
-  // Hide the banner once the app is installed
   window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
     removeBannerIfShown();
   });
+}
 
-  // For iOS Safari (which doesn't fire beforeinstallprompt),
-  // show manual "Add to Home Screen" instructions
-  if (isIos() && isSafari()) {
+/**
+ * Evaluates whether to show the install banner after app initialization completes.
+ */
+export function showIfNotClosedBefore(): void {
+  if (isRunningStandalone() || dismissed.get()) return;
+
+  canShow = true;
+
+  if (deferredPrompt !== null) {
+    showInstallBanner();
+  } else if (isIos() && isSafari()) {
     showIosSafariInstructions();
   }
 }

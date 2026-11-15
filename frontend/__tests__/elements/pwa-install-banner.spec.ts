@@ -1,4 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  beforeEach,
+  afterEach,
+  Mock,
+} from "vitest";
 
 // Track mock instances
 const mockGet = vi.fn().mockReturnValue(false);
@@ -21,9 +30,15 @@ vi.mock("../../src/ts/states/banners", () => ({
 import { addBanner, removeBanner } from "../../src/ts/states/banners";
 
 describe("pwa-install-banner", () => {
+  const originalUserAgent = navigator.userAgent;
   let matchMediaResult: { matches: boolean };
   let addEventListenerSpy: Mock;
   let listeners: Map<string, EventListener>;
+
+  beforeAll(async () => {
+    // Warm up the module and its component imports so first test doesn't time out during transform
+    await loadModule();
+  }, 20000);
 
   beforeEach(() => {
     vi.resetModules();
@@ -40,7 +55,7 @@ describe("pwa-install-banner", () => {
     });
     vi.stubGlobal("addEventListener", addEventListenerSpy);
 
-    // Default: not iOS, not Safari
+    // Default: desktop Chrome
     Object.defineProperty(navigator, "userAgent", {
       value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
       configurable: true,
@@ -49,21 +64,15 @@ describe("pwa-install-banner", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    Object.defineProperty(navigator, "userAgent", {
+      value: originalUserAgent,
+      configurable: true,
+    });
   });
 
   async function loadModule(): Promise<
     typeof import("../../src/ts/elements/pwa-install-banner")
   > {
-    vi.doMock("../../src/ts/states/banners", () => ({
-      addBanner: addBanner,
-      removeBanner: removeBanner,
-    }));
-    vi.doMock("../../src/ts/utils/local-storage-with-schema", () => ({
-      LocalStorageWithSchema: class {
-        get = mockGet;
-        set = mockSet;
-      },
-    }));
     return import("../../src/ts/elements/pwa-install-banner");
   }
 
@@ -73,6 +82,7 @@ describe("pwa-install-banner", () => {
 
     const mod = await loadModule();
     mod.init();
+    mod.showIfNotClosedBefore();
 
     expect(addBanner).not.toHaveBeenCalled();
   });
@@ -82,11 +92,12 @@ describe("pwa-install-banner", () => {
 
     const mod = await loadModule();
     mod.init();
+    mod.showIfNotClosedBefore();
 
     expect(addBanner).not.toHaveBeenCalled();
   });
 
-  it("should listen for beforeinstallprompt event", async () => {
+  it("should listen for beforeinstallprompt event on init", async () => {
     const mod = await loadModule();
     mod.init();
 
@@ -96,7 +107,7 @@ describe("pwa-install-banner", () => {
     );
   });
 
-  it("should listen for appinstalled event", async () => {
+  it("should listen for appinstalled event on init", async () => {
     const mod = await loadModule();
     mod.init();
 
@@ -106,9 +117,38 @@ describe("pwa-install-banner", () => {
     );
   });
 
-  it("should show install banner when beforeinstallprompt fires", async () => {
+  it("should buffer early beforeinstallprompt and show once showIfNotClosedBefore runs", async () => {
     const mod = await loadModule();
     mod.init();
+
+    // Event fires BEFORE app initialization awaits finish
+    const handler = listeners.get("beforeinstallprompt");
+    expect(handler).toBeDefined();
+
+    const mockEvent = {
+      preventDefault: vi.fn(),
+      prompt: vi.fn().mockResolvedValue({ outcome: "dismissed" }),
+    };
+    handler?.(mockEvent as unknown as Event);
+
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    // Not shown yet because showIfNotClosedBefore hasn't run
+    expect(addBanner).not.toHaveBeenCalled();
+
+    // Now app finishes booting
+    mod.showIfNotClosedBefore();
+    expect(addBanner).toHaveBeenCalledWith(
+      expect.objectContaining({
+        level: "notice",
+        icon: "fas fa-fw fa-download",
+      }),
+    );
+  });
+
+  it("should show banner immediately if beforeinstallprompt fires after showIfNotClosedBefore", async () => {
+    const mod = await loadModule();
+    mod.init();
+    mod.showIfNotClosedBefore();
 
     const handler = listeners.get("beforeinstallprompt");
     expect(handler).toBeDefined();
@@ -131,8 +171,8 @@ describe("pwa-install-banner", () => {
   it("should remove banner when appinstalled fires", async () => {
     const mod = await loadModule();
     mod.init();
+    mod.showIfNotClosedBefore();
 
-    // First trigger beforeinstallprompt to show the banner
     const bipHandler = listeners.get("beforeinstallprompt");
     const mockEvent = {
       preventDefault: vi.fn(),
@@ -140,7 +180,6 @@ describe("pwa-install-banner", () => {
     };
     bipHandler?.(mockEvent as unknown as Event);
 
-    // Then trigger appinstalled
     const aiHandler = listeners.get("appinstalled");
     aiHandler?.(new Event("appinstalled"));
 
@@ -156,6 +195,7 @@ describe("pwa-install-banner", () => {
 
     const mod = await loadModule();
     mod.init();
+    mod.showIfNotClosedBefore();
 
     expect(addBanner).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -165,17 +205,28 @@ describe("pwa-install-banner", () => {
     );
   });
 
-  it("should not show iOS instructions on Chrome for iOS", async () => {
-    Object.defineProperty(navigator, "userAgent", {
-      value:
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.0.0 Mobile/15E148 Safari/604.1",
-      configurable: true,
-    });
+  it("should not show iOS instructions on third-party iOS browsers (Chrome, Opera, DuckDuckGo)", async () => {
+    const nonSafariUas = [
+      // Chrome on iOS
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.0.0 Mobile/15E148 Safari/604.1",
+      // Opera on iOS
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 OPiOS/20.0.0",
+      // DuckDuckGo on iOS
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Ddg/7.0",
+    ];
 
-    const mod = await loadModule();
-    mod.init();
+    for (const ua of nonSafariUas) {
+      vi.clearAllMocks();
+      Object.defineProperty(navigator, "userAgent", {
+        value: ua,
+        configurable: true,
+      });
 
-    // Chrome on iOS can't install PWAs and shouldn't show Safari instructions
-    expect(addBanner).not.toHaveBeenCalled();
+      const mod = await loadModule();
+      mod.init();
+      mod.showIfNotClosedBefore();
+
+      expect(addBanner).not.toHaveBeenCalled();
+    }
   });
 });

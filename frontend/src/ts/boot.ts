@@ -13,12 +13,13 @@ export async function boot(): Promise<void> {
   // before awaiting: PSAs show on the first auth state change
   initConnection();
   Psa.init();
+  PwaInstallBanner.init();
 
   await configLoadPromise;
   await authPromise;
 
   MerchBanner.showIfNotClosedBefore();
-  PwaInstallBanner.init();
+  PwaInstallBanner.showIfNotClosedBefore();
 
   setAppReady(true);
 
