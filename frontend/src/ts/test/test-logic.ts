@@ -511,7 +511,7 @@ async function init(): Promise<boolean> {
     console.debug("Custom text", CustomText.getData());
   }
 
-  console.log("Inializing test", {
+  console.log("Initializing test", {
     language: {
       ...language,
       words: `${language.words.length} words`,
