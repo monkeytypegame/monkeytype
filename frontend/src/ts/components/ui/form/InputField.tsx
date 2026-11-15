@@ -24,6 +24,10 @@ export function InputField(props: {
    * If user inputs empty string the field is resetted to the default value
    */
   resetToDefaultIfEmptyOnBlur?: boolean;
+  /**
+   * Submits the form when the input blurs
+   */
+  submitOnBlur?: boolean;
   schema?: ZodTypeAny;
   min?: number;
   max?: number;
@@ -109,6 +113,9 @@ export function InputField(props: {
           }
           shakeItIfYouWantIt();
           props.field().handleBlur();
+          if (props.submitOnBlur) {
+            void props.field().form.handleSubmit();
+          }
         }}
         onInput={(e) => {
           const value: unknown = convertStringToValue(

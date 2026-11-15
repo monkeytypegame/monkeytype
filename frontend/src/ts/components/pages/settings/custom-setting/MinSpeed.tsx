@@ -51,14 +51,12 @@ export function MinSpeed(): JSXElement {
               name="minWpmCustomSpeed"
               validators={{
                 onChange: fromSchema(MinWpmCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MinWpmCustomSpeedSchema}
                     placeholder={
                       configMetadata.minWpm.displayString ?? "min speed"
