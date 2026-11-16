@@ -58,14 +58,12 @@ export function PaceCaret(): JSXElement {
               name="paceCaretCustomSpeed"
               validators={{
                 onChange: fromSchema(PaceCaretCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={PaceCaretCustomSpeedSchema}
                     placeholder={"pace caret speed"}
                     type="number"
