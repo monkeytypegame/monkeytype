@@ -138,14 +138,12 @@ export function CustomBackground(): JSXElement {
                   name="customBackground"
                   validators={{
                     onChange: fromSchema(CustomBackgroundSchema),
-                    onBlur: () => {
-                      void form.handleSubmit();
-                    },
                   }}
                   children={(field) => (
                     <div class="relative">
                       <InputField
                         field={field}
+                        submitOnBlur
                         placeholder={"image url"}
                         type="text"
                       />
