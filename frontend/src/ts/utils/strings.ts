@@ -383,6 +383,7 @@ export function countChars(
   inputWord: string,
   targetWord: string,
   creditPartial: boolean,
+  committed: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -398,8 +399,14 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
+      // matching space on a wrong word: incorrect if it committed the word
+      // (legacy parity), extra if it was a literal space (stopOnError=word)
       if (targetChar === " " && !wordCorrect) {
-        extra += 1;
+        if (committed && i === inputWord.length - 1) {
+          incorrect += 1;
+        } else {
+          extra += 1;
+        }
       } else {
         allCorrect += 1;
       }
