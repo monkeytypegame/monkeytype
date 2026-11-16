@@ -1,6 +1,6 @@
 // static json (layouts...) read from disk, the test state module loads some
 import "../../../../__harness__/mock-static";
-import { render } from "@solidjs/testing-library";
+import { cleanup, render } from "@solidjs/testing-library";
 import { userEvent } from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -22,7 +22,19 @@ import {
   setWordsHaveTab,
 } from "../../../../../src/ts/states/test";
 
+// as if the user left the tab (eg. opened another tab, then closed it):
+// the browser drops focus to the body and returns it when they come back
+// (jsdom: blurring the focused element leaves focus on the body)
+function dropFocusToBody(): void {
+  (document.activeElement as HTMLElement)?.blur();
+  expect(document.activeElement).toBe(document.body);
+}
+
 describe("ResultButtons", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("when result page is mounted, resultButtonsPrefocusTarget receives focus", () => {
     const { container } = render(() => <ResultButtons glarses={false} />);
 
@@ -74,6 +86,41 @@ describe("ResultButtons", () => {
       await userEvent.tab();
 
       expect(restartMock).toHaveBeenCalledWith({ isQuickRestart: true });
+    });
+  });
+
+  describe("after the browser dropped focus to the body (eg. a tab round trip)", () => {
+    it("restores the prefocus when the window regains focus", () => {
+      const { container } = render(() => <ResultButtons glarses={false} />);
+      const prefocusTarget = container.firstElementChild as HTMLElement;
+
+      dropFocusToBody();
+      window.dispatchEvent(new FocusEvent("focus"));
+
+      expect(document.activeElement).toBe(prefocusTarget);
+    });
+
+    it("restores the prefocus when the page becomes visible again", () => {
+      const { container } = render(() => <ResultButtons glarses={false} />);
+      const prefocusTarget = container.firstElementChild as HTMLElement;
+
+      dropFocusToBody();
+      document.dispatchEvent(new Event("visibilitychange"));
+
+      expect(document.activeElement).toBe(prefocusTarget);
+    });
+
+    it("keeps focus on an element the user focused", () => {
+      const { container } = render(() => <ResultButtons glarses={false} />);
+      const button = container.querySelector<HTMLElement>(
+        '[data-ui-element="restartTestButton"]',
+      );
+      button?.focus();
+
+      window.dispatchEvent(new FocusEvent("focus"));
+      document.dispatchEvent(new Event("visibilitychange"));
+
+      expect(document.activeElement).toBe(button);
     });
   });
 });

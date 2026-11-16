@@ -1,5 +1,5 @@
 import { createKeyHold } from "@tanstack/solid-hotkeys";
-import { JSXElement, onMount, Show } from "solid-js";
+import { JSXElement, onCleanup, onMount, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { getIsScreenshotting } from "../../../../states/core";
@@ -21,7 +21,28 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
   const isShiftHeld = createKeyHold("Shift");
   let prefocusRef: HTMLDivElement | undefined;
 
-  onMount(() => prefocusRef?.focus({ preventScroll: true }));
+  onMount(() => {
+    prefocusRef?.focus({ preventScroll: true });
+
+    // the browser drops focus to the body when a tab is hidden and restored
+    // (eg. the user opens and closes another tab), so the mount-time prefocus
+    // is gone and the next tab press lands on the first result stat instead of
+    // the first button; restore it, but only when nothing is focused
+    const restorePrefocus = (): void => {
+      if (document.activeElement === document.body) {
+        prefocusRef?.focus({ preventScroll: true });
+      }
+    };
+    const onVisibilityChange = (): void => {
+      if (document.visibilityState === "visible") restorePrefocus();
+    };
+    window.addEventListener("focus", restorePrefocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    onCleanup(() => {
+      window.removeEventListener("focus", restorePrefocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    });
+  });
 
   return (
     <>
