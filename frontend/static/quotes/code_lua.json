@@ -85,7 +85,7 @@
       "length": 686,
       "id": 13
     },
-	{
+    {
       "text": "io.write(\"What is your name: \")\nlocal input = io.read(\"*line\")\nio.write(\"Hello there, \" input, \"\n\")",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 2",
       "length": 99,
