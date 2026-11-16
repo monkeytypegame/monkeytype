@@ -445,7 +445,17 @@ function countCharsForWordIndex(
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 
-  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+  const lastInput = wordEvents.findLast((e) => e.type === "input");
+  const committed =
+    lastInput?.data.inputType === "insertText" &&
+    lastInput.data.commitsWord === true;
+
+  return countChars(
+    simulatedInput,
+    targetWord,
+    lastWord && countPartial,
+    committed,
+  );
 }
 
 function inferActiveWordIndex(
