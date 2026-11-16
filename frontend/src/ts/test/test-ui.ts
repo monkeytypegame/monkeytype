@@ -28,8 +28,6 @@ import {
 } from "../states/words-render";
 import { skipBreakdownEvent } from "../states/header";
 import {
-  isDirectionReversed,
-  isRtlCheckedByLetter,
   getActiveWordIndex,
   isTestActive,
   setCurrentLiveStats,
@@ -273,13 +271,10 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   AdController.destroyResult();
   void SoundController.clearAllSounds();
   replaceWords(
-    Config.mode === "zen"
-      ? [""]
-      : TestWords.words.get().map((word) => word.display),
+    Config.mode === "zen" ? [{ display: "" }] : TestWords.words.get(),
     {
       activeWordIndex: getActiveWordIndex(),
       zen: Config.mode === "zen",
-      marksRtlWords: !isRtlCheckedByLetter() && !isDirectionReversed(),
     },
   );
 }

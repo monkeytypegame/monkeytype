@@ -1,7 +1,7 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import * as DB from "../db";
-import { getActiveTagsPB } from "../collections/tags";
+import { getLocalPB } from "../queries/user";
+import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
@@ -12,9 +12,8 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
   getActiveWordIndex,
+  getTestDirection,
   getCurrentQuote,
   isTestFinished,
   isPaceRepeat,
@@ -74,8 +73,7 @@ export function resetCaretPosition(): void {
   caret?.goTo({
     wordIndex: 0,
     letterIndex: 0,
-    isLanguageRightToLeft: isLanguageRightToLeft(),
-    isDirectionReversed: isDirectionReversed(),
+    testDirection: getTestDirection(),
     animate: false,
   });
 }
@@ -86,7 +84,7 @@ export async function init(): Promise<void> {
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =
-      DB.getLocalPB(
+      getLocalPB(
         Config.mode,
         mode2,
         Config.punctuation,
@@ -158,8 +156,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     caret?.goTo({
       wordIndex: currentSettings.currentWordIndex,
       letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: isLanguageRightToLeft(),
-      isDirectionReversed: isDirectionReversed(),
+      testDirection: getTestDirection(),
       animate: true,
       animationOptions: {
         duration,

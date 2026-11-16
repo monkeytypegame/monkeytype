@@ -15,17 +15,18 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
-import { Snapshot } from "../../../constants/default-snapshot";
+import { UserData } from "../../../constants/user-data";
 import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
+import { getLastResult } from "../../../states/last-result";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
-import { getLastResult } from "../../../states/snapshot";
 import { setUserToReport } from "../../../states/user-report";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
+import { DeepReadonly } from "../../../utils/types";
 import { AutoShrink } from "../../common/AutoShrink";
 import { Balloon, BalloonProps } from "../../common/Balloon";
 import { Bar } from "../../common/Bar";
@@ -38,7 +39,7 @@ import { EditProfile } from "../../modals/EditProfileModal";
 type Variant = "basic" | "hasSocials" | "hasBioOrKeyboard" | "full";
 
 export function UserDetails(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   isAccountPage?: true;
 }): JSXElement {
   const variant = () => {
@@ -104,7 +105,7 @@ export function UserDetails(props: {
 }
 
 function ActionButtons(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   isAccountPage?: true;
 }): JSXElement {
   const isUsersProfile = () =>
@@ -197,7 +198,7 @@ function ActionButtons(props: {
 }
 
 function AvatarAndName(props: {
-  profile: UserProfile;
+  profile: DeepReadonly<UserProfile>;
   variant: Variant;
   isAccountPage?: true;
 }): JSXElement {
@@ -217,7 +218,7 @@ function AvatarAndName(props: {
     const lastResult = getLastResult();
     if (lastResult === undefined) return "";
 
-    const streakOffset = (props.profile as Snapshot).streakHourOffset;
+    const streakOffset = (props.profile as UserData).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 

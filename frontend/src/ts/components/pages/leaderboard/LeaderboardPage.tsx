@@ -7,13 +7,13 @@ import {
   Show,
 } from "solid-js";
 
-import { getSnapshot, updateLbMemory } from "../../../db";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
+import { getUserData, updateLbMemory } from "../../../queries/user";
 import { isAuthenticated } from "../../../states/core";
 import { pageSize, Selection } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
@@ -147,7 +147,7 @@ export function LeaderboardPage(): JSXElement {
       return undefined;
     }
     const oldRank =
-      getSnapshot()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
+      getUserData()?.lbMemory?.time?.[selection.mode2]?.english ?? 0;
     const diff = oldRank - currentRank;
 
     return diff;
@@ -218,13 +218,13 @@ export function LeaderboardPage(): JSXElement {
                     getSelection(),
                     rankQueryData()?.rank,
                   )}
-                  isLbOptOut={getSnapshot()?.lbOptOut ?? false}
-                  isBanned={getSnapshot()?.banned ?? false}
+                  isLbOptOut={getUserData()?.lbOptOut ?? false}
+                  isBanned={getUserData()?.banned ?? false}
                   minTimeTyping={
                     serverConfigurationQueryData()?.leaderboards
                       .minTimeTyping ?? 0
                   }
-                  userTimeTyping={getSnapshot()?.typingStats.timeTyping ?? 0}
+                  userTimeTyping={getUserData()?.typingStats.timeTyping ?? 0}
                 />
               );
             }}

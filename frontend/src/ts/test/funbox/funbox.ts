@@ -26,6 +26,9 @@ import {
   setWordsWrapperHidden,
 } from "../../states/test";
 import { getFunboxUnsupportedReason } from "../../config/funbox-validation";
+import { createRoot } from "solid-js";
+import { createEffectOn } from "../../hooks/effects";
+import { getVisiblePage } from "../../states/router";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox.length === 0) return;
@@ -63,6 +66,14 @@ export async function clear(): Promise<boolean> {
   setMemoryTimerDuration(null);
   return true;
 }
+
+// when the page unmounts it stays visible through its animation
+// this clears funboxes only after it finished animating
+createRoot(() => {
+  createEffectOn(getVisiblePage, (page) => {
+    if (page !== "test") void clear();
+  });
+});
 
 export async function activate(
   funbox?: FunboxName[],

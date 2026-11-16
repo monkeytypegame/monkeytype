@@ -173,7 +173,7 @@ export function CustomTextModal(): JSXElement {
     },
   }));
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   const isDisabled = () => longTextWarning() || challengeWarning();
   const isLimitDisabled = () => formValues().mode === "simple" || isDisabled();

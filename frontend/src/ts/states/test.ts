@@ -22,6 +22,7 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 import { isTestPageMounted } from "../test/test-page-state";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
+import type { Direction } from "../utils/strings";
 import { mirrorLayoutKeys } from "../utils/key-converter";
 import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
@@ -390,13 +391,8 @@ export function isTestRightToLeft(): boolean {
     : isLanguageRightToLeft();
 }
 
-/** zen, custom and polyglot words can mix directions: check per letter */
-export function isRtlCheckedByLetter(): boolean {
-  return (
-    getConfig.mode === "zen" ||
-    getConfig.mode === "custom" ||
-    getConfig.funbox.includes("polyglot")
-  );
+export function getTestDirection(): Direction {
+  return isTestRightToLeft() ? "rtl" : "ltr";
 }
 
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);

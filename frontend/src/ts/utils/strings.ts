@@ -1,4 +1,5 @@
 import { Language } from "@monkeytype/schemas/languages";
+import { STRONG_RTL_CHARACTER } from "./direction-regex";
 
 /**
  * Removes accents from a string.
@@ -227,67 +228,31 @@ export function replaceControlCharacters(textToClear: string): string {
   return textToClear;
 }
 
-/**
- * Detect if a word contains RTL (Right-to-Left) characters.
- * This is for test scenarios where individual words may have different directions.
- * Uses a simple regex pattern that covers all common RTL scripts.
- * @param word the word to check for RTL characters
- * @returns true if the word contains RTL characters, false otherwise
- */
-function hasRTLCharacters(word: string): [boolean, number] {
-  if (!word || word.length === 0) {
-    return [false, 0];
-  }
+export type Direction = "ltr" | "rtl";
 
-  // This covers Arabic, Farsi, Urdu, and other RTL scripts
-  const rtlPattern =
-    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/;
-
-  const result = rtlPattern.exec(word);
-  return [result !== null, result?.[0].length ?? 0];
-}
+const FIRST_STRONG_CHARACTER = new RegExp(
+  `${STRONG_RTL_CHARACTER.source}|\\p{L}`,
+  "u",
+);
 
 /**
- * Cache for word direction to avoid repeated calculations per word
- * Keyed by the stripped core of the word; can be manually cleared when needed
+ * The direction of the word's first strongly directional character. Without
+ * one, numerals read left to right and anything else (punctuation, symbols,
+ * emoji, an empty word) takes `fallback`.
  */
-let wordDirectionCache: Map<string, [boolean, number]> = new Map();
-
-export function clearWordDirectionCache(): void {
-  wordDirectionCache.clear();
+export function getWordDirection(
+  word = "",
+  fallback: Direction = "ltr",
+): Direction {
+  const firstStrong = FIRST_STRONG_CHARACTER.exec(word)?.[0];
+  if (firstStrong !== undefined) {
+    return STRONG_RTL_CHARACTER.test(firstStrong) ? "rtl" : "ltr";
+  }
+  return /\p{N}/u.test(word) ? "ltr" : fallback;
 }
 
-export function isWordRightToLeft(
-  word: string | undefined,
-  languageRTL: boolean,
-  reverseDirection?: boolean,
-): [boolean, boolean] {
-  if (word === undefined || word.length === 0) {
-    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
-  }
-
-  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
-  // punctuation like "word؟" or "،word" doesn't flip the direction detection
-  // and if only punctuation/symbols/whitespace, use main language direction
-  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0) {
-    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
-  }
-
-  // cache by core to handle variants like "word" vs "word؟"
-  const cached = wordDirectionCache.get(core);
-  if (cached !== undefined) {
-    return reverseDirection
-      ? [!cached[0], false]
-      : [cached[0], cached[1] === word.length];
-  }
-
-  const result = hasRTLCharacters(core);
-  wordDirectionCache.set(core, result);
-
-  return reverseDirection
-    ? [!result[0], false]
-    : [result[0], result[1] === word.length];
+export function reverseDirection(direction: Direction): Direction {
+  return direction === "ltr" ? "rtl" : "ltr";
 }
 
 export const CHAR_EQUIVALENCE_SETS = [
@@ -466,8 +431,3 @@ export function countChars(
     missed,
   };
 }
-
-// Export testing utilities for unit tests
-export const __testing = {
-  hasRTLCharacters,
-};

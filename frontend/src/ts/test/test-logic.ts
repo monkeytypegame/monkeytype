@@ -1,3 +1,4 @@
+import { getLocalPB, getUserData } from "../queries/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,
@@ -22,9 +23,9 @@ import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./test-timer";
-import * as DB from "../db";
+import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
-import { __nonReactive } from "../collections/tags";
+import { getActiveTags } from "../queries/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
@@ -107,7 +108,7 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
-import { SnapshotResult } from "../constants/default-snapshot";
+import type { NormalizedLocalResult } from "../collections/results";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
@@ -216,7 +217,6 @@ function resetTestState(): void {
   clearQuoteStats();
   setComposing(false);
   setCompositionData("");
-  Strings.clearWordDirectionCache();
   testReinitCount = 0;
   failReason = "";
 }
@@ -526,9 +526,14 @@ async function init(): Promise<boolean> {
     currentQuote: getCurrentQuote(),
   });
 
+  // words resolve their direction from these as they're pushed
+  setIsLanguageRightToLeft(language.rightToLeft ?? false);
+  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
+
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
-  let allRightToLeft: boolean | undefined = undefined;
+  let wordsHaveNumbers = false;
+  let wordsKoreanStatus = false;
   let allJoiningScript: boolean | undefined = undefined;
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
@@ -538,7 +543,9 @@ async function init(): Promise<boolean> {
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
     wordsHaveNewline = gen.hasNewline;
-    ({ allRightToLeft, allJoiningScript } = gen);
+    wordsHaveNumbers = gen.hasNumbers;
+    wordsKoreanStatus = gen.hasKorean;
+    ({ allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
     if (e instanceof WordGenError || e instanceof Error) {
@@ -561,28 +568,10 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  let hasNumbers = false;
-
-  for (const word of generatedWords) {
-    if (/\d/g.test(word) && !hasNumbers) {
-      hasNumbers = true;
-    }
-  }
-
-  setWordsHaveNumbers(hasNumbers);
+  setWordsHaveNumbers(wordsHaveNumbers);
   setWordsHaveTab(wordsHaveTab);
   setWordsHaveNewline(wordsHaveNewline);
-
-  if (
-    generatedWords
-      .join()
-      .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
-      )
-  ) {
-    setKoreanStatus(true);
-  }
+  setKoreanStatus(wordsKoreanStatus);
 
   for (let i = 0; i < generatedWords.length; i++) {
     TestWords.words.push(
@@ -613,10 +602,6 @@ async function init(): Promise<boolean> {
       Config.mode === "zen",
   );
 
-  const isLanguageRTL = allRightToLeft ?? language.rightToLeft ?? false;
-  setIsLanguageRightToLeft(isLanguageRTL);
-  setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
-
   console.debug("Test initialized with words", TestWords.words.get());
   console.debug(
     "Test initialized with section indexes",
@@ -628,7 +613,7 @@ async function init(): Promise<boolean> {
 //add word during the test
 export async function addWord(): Promise<void> {
   if (Config.mode === "zen") {
-    appendRenderedWord("");
+    appendRenderedWord({ display: "" });
     return;
   }
 
@@ -679,7 +664,7 @@ export async function addWord(): Promise<void> {
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
-        appendRenderedWord(newWord.display);
+        appendRenderedWord(newWord);
       }
     }
   }
@@ -696,7 +681,7 @@ export async function addWord(): Promise<void> {
       randomWord.word,
       randomWord.sectionIndex,
     );
-    appendRenderedWord(newWord.display);
+    appendRenderedWord(newWord);
   } catch (e) {
     fail("word generation error");
     showErrorNotification(
@@ -747,9 +732,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   const chars = getChars(eventLog);
 
   //tags
-  const activeTagsIds: string[] = __nonReactive
-    .getActiveTags()
-    .map((tag) => tag._id);
+  const activeTagsIds: string[] = getActiveTags().map((tag) => tag._id);
 
   let language = Config.language;
   if (Config.mode === "quote") {
@@ -1008,9 +991,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
-    (!DB.getSnapshot()?.lbOptOut &&
+    (!getUserData()?.lbOptOut &&
       (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (DB.getSnapshot()?.lbOptOut === true &&
+    (getUserData()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");
@@ -1276,7 +1259,7 @@ async function saveResult(
   const data = response.body.data;
   setResultState("resultId", data.insertedId);
 
-  const localDataToSave: DB.SaveLocalResultData = {};
+  const localDataToSave: SaveLocalResultData = {};
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
@@ -1292,20 +1275,20 @@ async function saveResult(
   if (data.insertedId !== undefined) {
     //TODO - this type cast was not needed before because we were using JSON cloning
     // but now with the stronger types it shows that we are forcing completed event
-    // into a snapshot result - might not cuase issues but worth investigating
-    const snapshotResult = structuredClone(
+    // into a NormalizedLocalResult - might not cuase issues but worth investigating
+    const userResult = structuredClone(
       result,
-    ) as unknown as SnapshotResult<Mode>;
-    snapshotResult._id = data.insertedId;
+    ) as unknown as NormalizedLocalResult<Mode>;
+    userResult._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
-      snapshotResult.isPb = true;
+      userResult.isPb = true;
     }
-    localDataToSave.result = snapshotResult;
+    localDataToSave.result = userResult;
   }
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
-    const localPb = DB.getLocalPB(
+    const localPb = getLocalPB(
       result.mode,
       result.mode2,
       result.punctuation,
@@ -1333,7 +1316,7 @@ async function saveResult(
   if (isRetrying) {
     showSuccessNotification("Result saved", { important: true });
   }
-  DB.saveLocalResult(localDataToSave);
+  saveLocalResult(localDataToSave);
   return response;
 }
 

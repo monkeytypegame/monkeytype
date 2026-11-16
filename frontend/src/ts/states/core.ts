@@ -23,9 +23,13 @@ export const [getThemeIndicator, setThemeIndicator] = createSignal<{
 });
 
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
-// #app stays hidden until the config and auth are loaded (see ready.ts)
+// #app stays hidden until the config and auth are loaded (see boot.ts)
 export const [isAppReady, setAppReady] = createSignal(false);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
+
+export type AuthState = "unknown" | "signedIn" | "signedOut";
+/** unknown until Firebase reports the first auth state (or fails to load). */
+export const [getAuthState, setAuthState] = createSignal<AuthState>("unknown");
 
 export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;

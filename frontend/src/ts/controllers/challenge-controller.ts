@@ -1,3 +1,4 @@
+import { createRoot } from "solid-js";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -7,8 +8,8 @@ import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 
 import { setConfig } from "../config/setters";
-import { Config } from "../config/store";
-import { configEvent } from "../events/config";
+import { Config, getConfig } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
@@ -360,26 +361,26 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   }
 }
 
-configEvent.subscribe(({ key }) => {
-  if (
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  createEffectOn(
     [
-      "difficulty",
-      "numbers",
-      "punctuation",
-      "mode",
-      "funbox",
-      "paceCaret",
-      "showAllLines",
-      "showLiveWpm",
-      "highlightMode",
-      "time",
-      "words",
-      "keymapMode",
-      "keymapLayout",
-      "layout",
-      "fontFamily",
-    ].includes(key)
-  ) {
-    clearActive();
-  }
+      () => getConfig.difficulty,
+      () => getConfig.numbers,
+      () => getConfig.punctuation,
+      () => getConfig.mode,
+      () => [...getConfig.funbox],
+      () => getConfig.paceCaret,
+      () => getConfig.showAllLines,
+      () => getConfig.highlightMode,
+      () => getConfig.time,
+      () => getConfig.words,
+      () => getConfig.keymapMode,
+      () => getConfig.keymapLayout,
+      () => getConfig.layout,
+      () => getConfig.fontFamily,
+    ],
+    () => clearActive(),
+    { defer: true },
+  );
 });

@@ -28,7 +28,7 @@ export function ShareTestSettings(): JSXElement {
     },
   }));
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   const url = () => {
     const values = formValues();

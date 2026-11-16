@@ -14,9 +14,9 @@ import {
   rejectConnection,
 } from "../../../collections/connections";
 import { getFriendsListQuery } from "../../../queries/friends";
+import { getUserData } from "../../../queries/user";
 import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getSnapshot } from "../../../states/snapshot";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
@@ -28,7 +28,11 @@ import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 
 export function FriendsList() {
   const query = useQuery(() => getFriendsListQuery());
@@ -60,7 +64,7 @@ export function FriendsList() {
 
                   validation: {
                     isValid: async (name: string) => {
-                      if (name === getSnapshot()?.name) {
+                      if (name === getUserData()?.name) {
                         return "That is not how you make friends.";
                       }
 
@@ -125,7 +129,7 @@ function getColumns({
 }: {
   format: Formatting;
 }): DataTableColumnDef<Friend>[] {
-  const defineColumn = createColumnHelper<Friend>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, Friend>().accessor;
   const cols = [
     defineColumn("name", {
       enableSorting: true,
@@ -136,7 +140,7 @@ function getColumns({
           flagsColor="sub"
           user={info.row.original}
           isFriend={false}
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
           linkToProfile
           hideBadgeTextOnWidth="lg"
         />

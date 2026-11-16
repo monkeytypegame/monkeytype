@@ -6,10 +6,12 @@ import {
   unregisterWordElement,
 } from "../../../states/word-elements";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
-import { isWordRightToLeft } from "../../../utils/strings";
+import { cn } from "../../../utils/cn";
 import { createLetters, createZenLetters } from "./letters";
 import { TypoHints } from "./TypoHints";
 import { WordLetter } from "./WordLetter";
+
+export type WordStatus = "untyped" | "typed" | "typedIncorrectly";
 
 /** A rendered word: its letters and hints container. */
 export function Word(props: {
@@ -26,12 +28,6 @@ export function Word(props: {
           replaceComposition: getConfig.compositionDisplay === "replace",
         }),
   );
-  // whole word right-to-left: bidi override keeps its letters in order
-  const isRtl = createMemo(
-    () =>
-      wordsRenderState.marksRtlWords &&
-      isWordRightToLeft(props.word.text, false)[1],
-  );
   // committed input (trailing space stripped) differs from the word, same as
   // the commit check. Blind CSS hides it. Zen words have no text to compare
   // against
@@ -39,6 +35,10 @@ export function Word(props: {
     props.word.isTyped &&
     !wordsRenderState.rendersLettersFromInput &&
     props.word.input !== props.word.text;
+  const status = (): WordStatus => {
+    if (isIncorrect()) return "typedIncorrectly";
+    return props.word.isTyped ? "typed" : "untyped";
+  };
   let wordRef: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -52,17 +52,18 @@ export function Word(props: {
   return (
     <div
       ref={(el) => (wordRef = el)}
-      class="word"
       data-wordindex={props.word.index}
-      // per-class toggles: classes and styles added imperatively
-      // (break-joining, caret) must survive re-renders
-      // oxlint-disable-next-line monkeytype-rules/no-classlist
-      classList={{
+      data-ui-element="word"
+      dir={props.word.direction}
+      data-ui-state={status()}
+      data-ui-active={props.isActive(props.word.index) ? "" : undefined}
+      class={cn("word", {
         active: props.isActive(props.word.index),
         typed: props.word.isTyped,
         error: isIncorrect(),
-        wordRtl: isRtl(),
-      }}
+        // letters run in the word's direction, so the caret can rely on it
+        "[unicode-bidi:bidi-override]": props.word.direction !== undefined,
+      })}
     >
       <Index each={letters()}>
         {(letter) => <WordLetter letter={letter()} />}

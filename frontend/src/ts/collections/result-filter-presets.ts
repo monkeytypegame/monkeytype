@@ -5,14 +5,16 @@ import {
   createOptimisticAction,
   useLiveQuery,
 } from "@tanstack/solid-db";
+import { createRoot } from "solid-js";
 import Ape from "../ape";
+import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import {
   replaceSpacesWithUnderscores,
   replaceUnderscoresWithSpaces,
 } from "../utils/strings";
-import { tempId } from "./utils/misc";
+import { tempId, keepForever } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
 import { isAuthenticated } from "../states/core";
 
@@ -20,8 +22,9 @@ const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],
 };
 
-const resultFilterPresetsCollection = createCollection(
-  queryCollectionOptions({
+const resultFilterPresetsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: Infinity,
     startSync: true,
     queryKey: queryKeys.root(),
@@ -37,6 +40,18 @@ const resultFilterPresetsCollection = createCollection(
         name: replaceUnderscoresWithSpaces(it.name),
       }));
     },
+  }),
+  ...keepForever,
+});
+
+// Its query is created disabled: startSync runs at module load, before the
+// auth state resolves, and the query never re-evaluates `enabled` on its own.
+// Kick the download when the user signs in, like the other user collections.
+createRoot(() =>
+  createEffectOn(isAuthenticated, (hasUser) => {
+    if (hasUser) {
+      void resultFilterPresetsCollection.utils.refetch();
+    }
   }),
 );
 

@@ -13,7 +13,6 @@ import { Config, setFullConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
-import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
 import { typedKeys } from "@monkeytype/util/objects";
@@ -51,7 +50,6 @@ export async function loadFromLocalStorage(): Promise<void> {
     await applyConfig(newConfig);
     saveFullConfigToLocalStorage(true);
   }
-  loadDone();
 }
 
 const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
@@ -67,6 +65,7 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "numbers",
   "punctuation",
   "funbox",
+  "autoSwitchTheme", // theme, customTheme and customThemeColors disable it
 ]);
 
 export async function applyConfig(
@@ -117,8 +116,3 @@ export async function resetConfig(): Promise<void> {
   await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
-
-const { promise: configLoadPromise, resolve: loadDone } =
-  promiseWithResolvers();
-
-export { configLoadPromise };
