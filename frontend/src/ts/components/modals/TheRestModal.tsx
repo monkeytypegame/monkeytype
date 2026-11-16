@@ -163,6 +163,7 @@ function Setting(props: { setting: SettingDefinition }): JSXElement {
               invalid() && "text-error",
             )}
             type={typeof value() === "number" ? "number" : "text"}
+            autocomplete="off"
             value={String(value())}
             onInput={() => setInvalid(false)}
             onBlur={(e) => {

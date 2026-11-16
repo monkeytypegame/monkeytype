@@ -549,6 +549,7 @@ function Picker(props: { color: ColorName }): JSXElement {
       <input
         class="w-full"
         type="text"
+        autocomplete="off"
         value={getTheme()[props.color]}
         onChange={(e) => {
           const value = e.currentTarget.value;
