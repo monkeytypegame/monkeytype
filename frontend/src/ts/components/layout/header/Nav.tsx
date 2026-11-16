@@ -11,6 +11,7 @@ import { usePendingConnectionsQuery } from "../../../collections/connections";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
+import { getUserData } from "../../../queries/user";
 import {
   getAccountButtonSpinner,
   getAnimatedLevel,
@@ -18,7 +19,6 @@ import {
 } from "../../../states/header";
 import { showModal } from "../../../states/modals";
 import { getRoutePage } from "../../../states/router";
-import { getUserData } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
@@ -52,23 +52,27 @@ export function Nav(): JSXElement {
       "opacity-(--nav-focus-opacity)": isFocusMode(),
     });
 
-  createEffectOn(getUserData, (snapshot) => {
-    if (snapshot === undefined) {
-      setAnimatedLevel(0);
-      return;
-    }
-    setAnimatedLevel(getLevelFromTotalXp(snapshot.xp ?? 0));
-  });
+  // on sign in and out only: XP gains animate the level through the XP bar
+  createEffectOn(
+    () => getUserData()?.uid,
+    (uid) => {
+      if (uid === undefined) {
+        setAnimatedLevel(0);
+        return;
+      }
+      setAnimatedLevel(getLevelFromTotalXp(getUserData()?.xp ?? 0));
+    },
+  );
 
   const showFriendsNotificationBubble = createMemo((): boolean => {
     return pendingConnections().length > 0;
   });
 
   const showAlertsNotificationBubble = createMemo((): boolean => {
-    const snapshot = getUserData();
-    if (snapshot === undefined) return false;
+    const userData = getUserData();
+    if (userData === undefined) return false;
 
-    return snapshot.inboxUnreadSize > 0;
+    return userData.inboxUnreadSize > 0;
   });
 
   const serverConfig = useQuery(() => getServerConfigurationQueryOptions());

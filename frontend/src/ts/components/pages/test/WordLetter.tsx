@@ -89,6 +89,8 @@ export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
       data-ui-element="letter"
       data-ui-state={props.letter.status}
       data-ui-variant={letterVariant(props.letter.text)}
+      // the dots typed effect draws it again, to shrink it (joining scripts)
+      data-char={props.letter.text}
     >
       <Show
         when={getCharIconProps(props.letter.text)}

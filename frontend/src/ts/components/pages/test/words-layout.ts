@@ -38,7 +38,6 @@ import {
   type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
-import * as Joining from "../../../test/break-joining";
 import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
 import { getCurrentInput } from "../../../test/events/data";
@@ -370,23 +369,11 @@ export function createWordsLayout(options: {
       // in zen mode, going back removes the previous word, so check for null
       previousActiveWordTop =
         getWordElement(laidOutActiveWordIndex)?.getOffsetTop() ?? null;
-      // several word changes can land in one frame: every word passed is
-      // typed, every word gone back over is not
-      for (let i = laidOutActiveWordIndex; i < newActiveWordIndex; i++) {
-        const passedWord = getWordElement(i);
-        if (passedWord !== null) Joining.set(passedWord, true);
-      }
-      for (let i = newActiveWordIndex + 1; i < laidOutActiveWordIndex; i++) {
-        const untypedWord = getWordElement(i);
-        if (untypedWord !== null) Joining.set(untypedWord, false);
-      }
     }
 
     const newActiveWord = getActiveWordElement();
     laidOutActiveWordIndex = newActiveWordIndex;
     if (newActiveWord === null) return;
-
-    Joining.set(newActiveWord, false);
 
     activeWordTop = newActiveWord.getOffsetTop();
 
@@ -895,16 +882,8 @@ export function createWordsLayout(options: {
   );
   createEffect(
     on(
-      () => getConfig.typedEffect,
-      () => Joining.update("typedEffect", wordsEl()),
-      { defer: true },
-    ),
-  );
-  createEffect(
-    on(
       () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
-        Joining.update("fontSize", wordsEl());
         if (isTestFinished()) return;
         invalidateTypoHintsLayout();
         // letter widths changed once the new font is applied (next frame) and

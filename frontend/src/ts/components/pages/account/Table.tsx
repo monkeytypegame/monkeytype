@@ -4,8 +4,9 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
-import { SnapshotResult } from "../../../constants/default-snapshot";
+import type { NormalizedLocalResult } from "../../../collections/results";
+
+import { getTags, type Tag } from "../../../queries/tags";
 import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
@@ -23,12 +24,12 @@ import {
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
-  field: keyof SnapshotResult<Mode>;
+  field: keyof NormalizedLocalResult<Mode>;
   direction: "asc" | "desc";
 };
 
 export function Table<M extends Mode>(props: {
-  data: SnapshotResult<M>[];
+  data: NormalizedLocalResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
   selectedRowId: Accessor<string | null>;
   /** Tracked: each change scrolls the selected row into view */
@@ -38,12 +39,10 @@ export function Table<M extends Mode>(props: {
     undefined,
   );
 
-  const tags = useTagsLiveQuery();
-
   const columns = createMemo(() =>
     getColumns<M>({
       format: getFormatting(),
-      tags: tags(),
+      tags: getTags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
         if (id !== undefined) showModal("MiniResultChartModal");
@@ -63,7 +62,7 @@ export function Table<M extends Mode>(props: {
             props.onSortingChange({ field: "timestamp", direction: "desc" });
           } else {
             props.onSortingChange({
-              field: val[0]?.id as keyof SnapshotResult<Mode>,
+              field: val[0]?.id as keyof NormalizedLocalResult<Mode>,
               direction: val[0]?.desc ? "desc" : "asc",
             });
           }
@@ -94,12 +93,12 @@ function getColumns<M extends Mode>({
   onMiniResultChartSelected,
 }: {
   format: Formatting;
-  tags: TagItem[];
+  tags: readonly Tag[];
   onMiniResultChartSelected(val: string): void;
-}): DataTableColumnDef<SnapshotResult<M>>[] {
+}): DataTableColumnDef<NormalizedLocalResult<M>>[] {
   const defineColumn = createColumnHelper<
     DataTableFeatures,
-    SnapshotResult<M>
+    NormalizedLocalResult<M>
   >().accessor;
   const columns = [
     defineColumn("isPb", {

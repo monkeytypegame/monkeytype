@@ -4,11 +4,8 @@ export const LETTER_SELECTOR = '[data-ui-element="letter"]';
 /**
  * Rendered word elements by word index, registered by the Word component
  * while mounted. Lets imperative code (caret, layout) find a word without
- * querying the DOM.
- *
- * Exposes the whole element because some callers still write to it: hints
- * (.hints container) and break-joining (classes/styles). Once those move into
- * the component, narrow this to read-only measurements.
+ * querying the DOM. Callers only measure; the registry becomes private to
+ * Words (T4).
  */
 const wordElements = new Map<number, HTMLElement>();
 

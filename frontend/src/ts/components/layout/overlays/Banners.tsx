@@ -3,6 +3,7 @@ import { debounce } from "throttle-debounce";
 
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
+import { getUserData } from "../../../queries/user";
 import {
   Banner as BannerType,
   addBanner,
@@ -10,7 +11,6 @@ import {
   removeBanner,
 } from "../../../states/banners";
 import { setGlobalOffsetTop } from "../../../states/core";
-import { getUserData } from "../../../states/snapshot";
 import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
 import { isProfilerMode } from "../../../utils/profiler-mode";

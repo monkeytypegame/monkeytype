@@ -22,12 +22,6 @@ vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
   getCurrentInput: (): string => currentInput,
 }));
 
-// records which words get their joining broken
-const joiningSet = vi.hoisted(() => vi.fn());
-vi.mock("../../src/ts/test/break-joining", async (importOriginal) => ({
-  ...(await importOriginal()),
-  set: joiningSet,
-}));
 const caretUpdatePosition = vi.hoisted(() => vi.fn());
 vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
   ...(await importOriginal()),
@@ -162,7 +156,6 @@ describe("test-ui words rendering", () => {
     });
     resetActiveWordIndex();
     currentInput = "";
-    joiningSet.mockClear();
     caretUpdatePosition.mockClear();
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
@@ -256,14 +249,12 @@ describe("test-ui words rendering", () => {
     expect(activeWordIndex(words)).toBe("0");
   });
 
-  it("breaks the joining of every word passed within one frame", () => {
+  it("lands on the last of several words passed within one frame", () => {
     const { words } = mount();
-    // new words: lays out the first active word
     replaceWords(
       Array.from({ length: 5 }, () => ({ display: "word" })),
       { activeWordIndex: 0 },
     );
-    joiningSet.mockClear();
 
     for (let i = 0; i < 2; i++) {
       increaseActiveWordIndex();
@@ -271,10 +262,6 @@ describe("test-ui words rendering", () => {
     }
     runFrames();
 
-    const brokenWords = joiningSet.mock.calls
-      .filter(([, broken]) => broken === true)
-      .map(([el]) => (el as ElementWithUtils).native.dataset["wordindex"]);
-    expect(brokenWords).toEqual(["0", "1"]);
     expect(activeWordIndex(words)).toBe("2");
   });
 
@@ -342,14 +329,6 @@ describe("test-ui words rendering", () => {
         expect(isWordRendered(0)).toBe(true);
         expect(activeWordIndex(words)).toBe("0");
         expect(words.style.marginTop).toBe("0px");
-
-        // the new words are laid out from their first word on
-        joiningSet.mockClear();
-        await goForward();
-        const brokenWords = joiningSet.mock.calls
-          .filter(([, broken]) => broken === true)
-          .map(([el]) => (el as ElementWithUtils).native.dataset["wordindex"]);
-        expect(brokenWords).toEqual(["0"]);
       },
     );
     it("ignores a line jump completing after the words are freed", async () => {

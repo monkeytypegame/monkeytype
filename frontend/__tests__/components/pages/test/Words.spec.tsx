@@ -652,26 +652,6 @@ describe("Words", () => {
         false,
       );
     });
-
-    it("keeps imperatively added classes and styles across re-renders", () => {
-      const container = renderWords();
-      appendRenderedWord({ display: "abc" });
-      setActiveWord(0);
-      flush();
-      const word = wordEls(container)[0] as HTMLElement;
-      word.classList.add("broken-joining", "needs-wrap");
-      word.style.width = "10px";
-
-      setWordInput(0, "ab");
-      setWordTyped(0, true);
-      setActiveWord(1);
-      flush();
-
-      expect(wordEls(container)[0]).toBe(word);
-      expect(word.classList.contains("broken-joining")).toBe(true);
-      expect(word.classList.contains("needs-wrap")).toBe(true);
-      expect(word.style.width).toBe("10px");
-    });
   });
 
   describe("zen", () => {
