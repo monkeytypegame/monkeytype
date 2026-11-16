@@ -88,7 +88,7 @@
 	{
       "text": "io.write(\"What is your name: \")\nlocal input = io.read(\"*line\")\nio.write(\"Hello there, \" input, \"\n\")",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 2",
-      "length": 108,
+      "length": 99,
       "id": 14
     }
   ]
