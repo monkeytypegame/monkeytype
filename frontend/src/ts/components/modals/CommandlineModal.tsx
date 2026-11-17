@@ -771,6 +771,7 @@ export function CommandlineModal(): JSXElement {
           <input
             ref={(el) => (inputEl = el)}
             type="text"
+            autocomplete="off"
             class="w-full rounded-(--roundness) border-none bg-bg py-4 pr-4 pl-0 text-base text-text outline-none focus-visible:shadow-none"
             placeholder={placeholder()}
             onInput={handleInput}
