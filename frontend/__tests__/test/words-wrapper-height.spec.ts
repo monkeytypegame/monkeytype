@@ -57,7 +57,8 @@ function renderWords(count: number): HTMLElement {
       "beforeend",
       `<div class="word" data-wordindex="${i}"><letter data-ui-element="letter">a</letter></div>`,
     );
-    registry.registerWord(i, words.lastElementChild as HTMLElement);
+    const word = words.lastElementChild as HTMLElement;
+    registry.registerWord(i, word, [word.firstElementChild as HTMLElement]);
   }
   wordsWrapper.append(words);
   document.body.append(wordsWrapper);

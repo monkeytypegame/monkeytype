@@ -1,7 +1,6 @@
 import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LETTER_SELECTOR } from "../../../../src/ts/components/pages/test/selectors";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
@@ -24,6 +23,8 @@ import {
   wordsRenderState,
 } from "../../../../src/ts/states/words-render";
 import { renderWords } from "../../../__harness__/render-words";
+
+const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 let frames: Map<number, FrameRequestCallback>;
 let nextFrameId: number;

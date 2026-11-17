@@ -39,7 +39,6 @@ import { ElementWithUtils } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
 import * as Strings from "../../../utils/strings";
 import { Caret, getTapeLetterShift } from "./caret";
-import { LETTER_SELECTOR } from "./selectors";
 import type { WordRegistry } from "./word-registry";
 
 type WordChange = "forward" | "back" | "initial";
@@ -142,18 +141,19 @@ function getLineAboveTop(
 // and sometimes we want it to be shifted to the left
 // (for example if the newline is typed incorrectly, or there are any extra letters after it)
 function getNlCharWidth(
-  lastWordInLine: { index: number; el: ElementWithUtils } | undefined,
+  registry: WordRegistry,
+  /** undefined: its line's words are removed */
+  lastWordInLineIndex: number | undefined,
 ): number {
-  // no word: its line's words are removed
-  if (lastWordInLine === undefined) return 0;
-  const word = wordsRenderState.words[lastWordInLine.index];
+  if (lastWordInLineIndex === undefined) return 0;
+  const word = wordsRenderState.words[lastWordInLineIndex];
   if (word === undefined) return 0;
   // the line break's own letter, not a typed newline (extra or typo) after it
   const chars = Strings.splitIntoCharacters(
     wordsRenderState.rendersLettersFromInput ? word.input : word.text,
   );
   if (chars[chars.length - 1] !== "\n") return 0;
-  const nlChar = lastWordInLine.el.qsa(LETTER_SELECTOR)[chars.length - 1];
+  const nlChar = registry.getLetters(lastWordInLineIndex)?.[chars.length - 1];
   const nlStatus = nlChar?.getAttribute("data-ui-state");
   if (
     nlChar === undefined ||
@@ -162,11 +162,11 @@ function getNlCharWidth(
   ) {
     return 0;
   }
-  const letterComputedStyle = window.getComputedStyle(nlChar.native);
+  const letterComputedStyle = window.getComputedStyle(nlChar);
   const letterMargin =
     parseFloat(letterComputedStyle.marginLeft) +
     parseFloat(letterComputedStyle.marginRight);
-  return nlChar.getOffsetWidth() + letterMargin;
+  return nlChar.offsetWidth + letterMargin;
 }
 
 function getMarginLeft(el: ElementWithUtils): number {
@@ -190,13 +190,14 @@ function setMarginLeft(
 
 function getTopAndHeightWithDifferentData(
   activeWord: ElementWithUtils,
+  /** the active word's rendered letters */
+  letters: readonly HTMLElement[],
   data: string,
 ): {
   top: number;
   height: number;
 } {
-  const lettersEls = activeWord.qsa(LETTER_SELECTOR);
-  const domLettersCount = lettersEls.length;
+  const domLettersCount = letters.length;
   const nodes = [];
   for (let i = domLettersCount; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
@@ -206,7 +207,7 @@ function getTopAndHeightWithDifferentData(
     nodes.push(tempLetter);
   }
 
-  lettersEls[domLettersCount - 1]?.native.after(...nodes);
+  letters[domLettersCount - 1]?.after(...nodes);
 
   const top = activeWord.getOffsetTop();
   const height = activeWord.getOffsetHeight();
@@ -225,14 +226,15 @@ export function wouldActiveWordOverflow(
   inputValue: string,
   data: string,
 ): boolean {
-  const activeWordEl = mountedRegistry?.getWord(getActiveWordIndex());
-  const activeWord =
-    activeWordEl === undefined ? null : new ElementWithUtils(activeWordEl);
+  const activeWordIndex = getActiveWordIndex();
+  const activeWordEl = mountedRegistry?.getWord(activeWordIndex);
+  const letters = mountedRegistry?.getLetters(activeWordIndex);
   // Active word not rendered yet (word change and append in the same frame),
   // or no Words mounted. Rendering here would put a reactive render on the
   // input path, so assume the worst: this guard only runs for extra letters,
   // blocking one is cheap, letting it wrap the word is not.
-  if (activeWord === null) return true;
+  if (activeWordEl === undefined || letters === undefined) return true;
+  const activeWord = new ElementWithUtils(activeWordEl);
 
   // measured now, like the probe below: a line jump may be moving the word.
   // Its rendered letters are a lower bound for its unrendered input, so this
@@ -241,9 +243,10 @@ export function wouldActiveWordOverflow(
   const baseHeight = activeWord.getOffsetHeight();
 
   // pending (not yet rendered) input has to be accounted for
-  const pending = getPendingWordInput(getActiveWordIndex());
+  const pending = getPendingWordInput(activeWordIndex);
   const { top, height } = getTopAndHeightWithDifferentData(
     activeWord,
+    letters,
     (pending ?? inputValue) + data,
   );
   // word jumped to next line, or letters wrapped to next line
@@ -344,6 +347,7 @@ export function createWordsLayout(options: {
     caret()?.goTo({
       wordIndex,
       wordEl: registry.getWord(wordIndex),
+      letters: registry.getLetters(wordIndex),
       letterIndex: typed.length,
       testDirection,
       ...(Config.mode === "zen" && {
@@ -369,6 +373,7 @@ export function createWordsLayout(options: {
     pace.goTo({
       wordIndex: 0,
       wordEl: registry.getWord(0),
+      letters: registry.getLetters(0),
       letterIndex: 0,
       testDirection: getTestDirection(),
       animate: false,
@@ -703,7 +708,8 @@ export function createWordsLayout(options: {
         // lines stay in place relative to each other
         const lineEnd = items[i - 1];
         const nlCharWidth = getNlCharWidth(
-          lineEnd?.kind === "word" ? lineEnd : undefined,
+          registry,
+          lineEnd?.kind === "word" ? lineEnd.index : undefined,
         );
         fullLineWidths -= nlCharWidth + wordRightMargin;
         if (i < activeItemIndex) wordsWidthBeforeActive = fullLineWidths;
@@ -754,7 +760,7 @@ export function createWordsLayout(options: {
     const inputLength = getRenderedInput(activeItem.index).input.length;
     if (Config.tapeMode === "letter" && inputLength > 0) {
       currentWordWidth = getTapeLetterShift(
-        activeWordEl.qsa(LETTER_SELECTOR),
+        registry.getLetters(activeItem.index) ?? [],
         inputLength,
       );
     }
@@ -1072,6 +1078,7 @@ export function createWordsLayout(options: {
           paceCaret()?.goTo({
             wordIndex: target.wordIndex,
             wordEl: registry.getWord(target.wordIndex),
+            letters: registry.getLetters(target.wordIndex),
             letterIndex: target.letterIndex,
             testDirection: getTestDirection(),
             animate: true,

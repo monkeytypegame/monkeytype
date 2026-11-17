@@ -3,7 +3,6 @@ import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
 
 import { Config } from "../../../config/store";
-import { LETTER_SELECTOR } from "./selectors";
 import * as TestWords from "../../../test/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
@@ -11,23 +10,23 @@ import type { Direction } from "../../../utils/strings";
 
 const lockedMainCaretInTape = true;
 const [isCaretDebug, setCaretDebug] = createSignal(false);
-/** Dev options: outlines the pace caret and marks the letters it targets. */
-export { isCaretDebug };
+const [caretDebugTarget, setCaretDebugTarget] = createSignal<
+  | {
+      /** the letter the pace caret targets */
+      letter: HTMLElement;
+      /** the visible letter it goes to instead, if the target has no width */
+      visibleLetter?: HTMLElement;
+    }
+  | undefined
+>();
+/**
+ * Dev options: outlines the pace caret and the letters, marking the ones it
+ * targets (set while caret debug is on).
+ */
+export { isCaretDebug, caretDebugTarget };
 
 export function toggleCaretDebug(): void {
-  const caretDebug = !isCaretDebug();
-  setCaretDebug(caretDebug);
-  if (!caretDebug) {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.remove("debugCaret");
-      l.classList.remove("debugCaretTarget");
-      l.classList.remove("debugCaretTarget2");
-    }
-  } else {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.add("debugCaret");
-    }
-  }
+  setCaretDebug((debug) => !debug);
 }
 
 /**
@@ -36,7 +35,7 @@ export function toggleCaretDebug(): void {
  * the next letter has none.
  */
 export function getTapeLetterShift(
-  letters: ArrayLike<ElementWithUtils>,
+  letters: ArrayLike<HTMLElement>,
   inputLength: number,
 ): number {
   let shift = 0;
@@ -49,12 +48,12 @@ export function getTapeLetterShift(
     ) {
       continue;
     }
-    const letterOuterWidth = letter?.getOffsetWidth() ?? 0;
+    const letterOuterWidth = letter?.offsetWidth ?? 0;
     shift += letterOuterWidth;
     if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
   }
   // if current letter has zero width move the tape to previous positive width letter
-  if (letters[inputLength]?.getOffsetWidth() === 0) {
+  if (letters[inputLength]?.offsetWidth === 0) {
     shift -= lastPositiveLetterWidth;
   }
   return shift;
@@ -280,6 +279,8 @@ export class Caret {
     wordIndex: number;
     /** word `wordIndex`'s element, undefined when it's not rendered */
     wordEl: HTMLElement | undefined;
+    /** word `wordIndex`'s rendered letters, in order */
+    letters: readonly HTMLElement[] | undefined;
     letterIndex: number;
     testDirection: Direction;
     /** zen words have no direction of their own, it comes from the input */
@@ -328,10 +329,11 @@ export class Caret {
       options.letterIndex = 0;
     }
 
-    if (word === null) return;
+    if (word === null || options.letters === undefined) return;
 
     const { left, top, width } = this.getTargetPositionAndWidth({
       word,
+      letters: options.letters,
       letterIndex: options.letterIndex,
       inputLength,
       side,
@@ -398,13 +400,14 @@ export class Caret {
 
   private getTargetPositionAndWidth(options: {
     word: ElementWithUtils;
+    letters: readonly HTMLElement[];
     letterIndex: number;
     inputLength: number;
     side: "beforeLetter" | "afterLetter";
     testDirection: Direction;
     wordDirection: Direction;
   }): { left: number; top: number; width: number } {
-    const letters = options.word?.qsa(LETTER_SELECTOR);
+    const letters = options.letters;
 
     if (letters.length === 0) {
       throw new Error(
@@ -420,37 +423,33 @@ export class Caret {
       );
     }
 
-    const caretDebug = isCaretDebug();
-    if (caretDebug && !this.isMainCaret) {
-      for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-        l.classList.remove("debugCaretTarget");
-        l.classList.remove("debugCaretTarget2");
-        l.classList.add("debugCaret");
-      }
-      letter?.addClass("debugCaretTarget");
-    }
+    const targetLetter = letter;
 
     //if the letter is not visible, use the closest visible letter
-    const isLetterVisible = letter.getOffsetWidth() > 0;
+    const isLetterVisible = letter.offsetWidth > 0;
     if (!isLetterVisible) {
       for (let i = options.letterIndex - 1; i >= 0; i--) {
-        const loopLetter = letters[i] as ElementWithUtils;
+        const loopLetter = letters[i] as HTMLElement;
 
         // find the closest visible letter before the current letter
-        if (loopLetter.getOffsetWidth() > 0) {
+        if (loopLetter.offsetWidth > 0) {
           letter = loopLetter;
           break;
         }
       }
-      if (caretDebug) {
-        letter.addClass("debugCaretTarget2");
-      }
+    }
+
+    if (isCaretDebug() && !this.isMainCaret) {
+      setCaretDebugTarget({
+        letter: targetLetter,
+        ...(letter !== targetLetter && { visibleLetter: letter }),
+      });
     }
 
     const spaceWidth = getTotalInlineMargin(options.word.native);
     let width = spaceWidth;
     if (this.isFullWidth() && options.side === "beforeLetter") {
-      width = letter.getOffsetWidth();
+      width = letter.offsetWidth;
     }
 
     let left = 0;
@@ -491,22 +490,22 @@ export class Caret {
         if (this.isFullWidth()) {
           afterLetterCorrection += spaceWidth * -1;
         } else {
-          afterLetterCorrection += letter.getOffsetWidth() * -1;
+          afterLetterCorrection += letter.offsetWidth * -1;
         }
       }
       if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
         if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
+          left += letter.offsetWidth;
         }
-        left += letter.getOffsetLeft();
+        left += letter.offsetLeft;
         left += wordLeft;
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
+          left += letter.offsetWidth;
         }
         left += options.word.getOffsetWidth() * -1;
-        left += letter.getOffsetLeft();
+        left += letter.offsetLeft;
         left += afterLetterCorrection;
         if (tapeAnchorsLetter) {
           left += tapeOffset;
@@ -521,7 +520,7 @@ export class Caret {
         if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += letter.getOffsetLeft();
+          left += letter.offsetLeft;
           left += options.word.getOffsetLeft();
           left += afterLetterCorrection;
           left += width;
@@ -530,14 +529,14 @@ export class Caret {
     } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        afterLetterCorrection += letter.getOffsetWidth();
+        afterLetterCorrection += letter.offsetWidth;
       }
       if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
-        left += letter.getOffsetLeft();
+        left += letter.offsetLeft;
         left += wordLeft;
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
-        left += letter.getOffsetLeft();
+        left += letter.offsetLeft;
         left += afterLetterCorrection;
         if (tapeAnchorsLetter) {
           left += tapeOffset;
@@ -548,7 +547,7 @@ export class Caret {
         if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += letter.getOffsetLeft();
+          left += letter.offsetLeft;
           left += options.word.getOffsetLeft();
           left += afterLetterCorrection;
         }
@@ -556,15 +555,15 @@ export class Caret {
     }
 
     //top position
-    top += letter.getOffsetTop();
+    top += letter.offsetTop;
     top += options.word.getOffsetTop();
 
     if (this.style === "underline") {
       // if style is underline, add the height of the letter to the top
-      top += letter.getOffsetHeight();
+      top += letter.offsetHeight;
     } else {
       // else center vertically in the letter
-      top += (letter.getOffsetHeight() - this.getHeight()) / 2;
+      top += (letter.offsetHeight - this.getHeight()) / 2;
     }
 
     // also center horizontally
