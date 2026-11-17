@@ -47,7 +47,7 @@
 
 [data-ui-element="logoSubtext"],
 [data-ui-element="logo"]:hover h1,
-#result .stats .group .bottom,
+[data-ui-element="resultStatValue"],
 [data-nav-item]:hover,
 footer button:hover,
 a:not(.button):not([data-ui-variant="button"]):hover {
@@ -64,29 +64,57 @@ a:not(.button):not([data-ui-variant="button"]):hover {
   animation: fire 5s linear infinite;
 }
 
-#words {
+[data-ui-element="words"] {
   --correct-letter-animation: fire 5s linear infinite;
-}
 
-#words.flipped {
-  --untyped-letter-color: var(--sub-color);
-  --correct-letter-animation: none;
-  --untyped-letter-animation: fire 5s linear infinite;
-}
+  &[data-ui-flipped] {
+    --untyped-letter-color: var(--sub-color);
+    --correct-letter-animation: none;
+    --untyped-letter-animation: fire 5s linear infinite;
+  }
 
-#words.highlight-off .word letter,
-#words.highlight-off .word.typed letter {
-  animation: fire 5s linear infinite;
-}
+  &[data-ui-word-highlight="off"]
+    [data-ui-element="word"]
+    [data-ui-element="letter"],
+  &[data-ui-word-highlight="off"]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: fire 5s linear infinite;
+  }
 
-#words .word.typed letter.correct,
-#words.highlight-word .word.typed letter,
-#words.highlight-next-word .word.typed letter,
-#words.highlight-next-two-words .word.typed letter,
-#words.highlight-next-three-words .word.typed letter {
-  animation: fire 5s linear infinite;
-}
+  &
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"]:is(
+      [data-ui-state="correct"],
+      [data-ui-state="deadCorrect"]
+    ),
+  &:is(
+      [data-ui-blind],
+      [data-ui-word-highlight="word"],
+      [data-ui-word-highlight="next-word"],
+      [data-ui-word-highlight="next-two-words"],
+      [data-ui-word-highlight="next-three-words"]
+    )
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: fire 5s linear infinite;
+  }
 
-#words.flipped .word.typed letter {
-  animation: none;
+  &[data-ui-flipped]
+    [data-ui-element="word"]:is(
+      [data-ui-state="typed"],
+      [data-ui-state="typedIncorrectly"]
+    )
+    [data-ui-element="letter"] {
+    animation: none;
+  }
 }

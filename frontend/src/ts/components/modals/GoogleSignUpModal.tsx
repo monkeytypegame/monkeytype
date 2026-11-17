@@ -4,16 +4,17 @@ import {
   getAdditionalUserInfo,
   sendEmailVerification,
   updateProfile,
-  UserCredential,
+  type UserCredential,
 } from "firebase/auth";
 
 import Ape from "../../ape";
-import { loadUser, signOut } from "../../auth";
-import { authEvent } from "../../events/auth";
-import { googleSignUpEvent } from "../../events/google-sign-up";
-import { resetIgnoreAuthCallback, setUserState } from "../../firebase";
+import { cancelSignUp, finishSignUp } from "../../firebase";
+import {
+  getGoogleSignUpUser,
+  setGoogleSignUpUser,
+} from "../../states/google-sign-up";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
-import { hideModal, ModalId, showModal } from "../../states/modals";
+import { hideModal, ModalId } from "../../states/modals";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -27,7 +28,6 @@ import { SubmitButton } from "../ui/form/SubmitButton";
 import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
 
 const modalId: ModalId = "GoogleSignup";
-let signedInUser: UserCredential | undefined = undefined;
 
 export function GoogleSignupModal() {
   const form = createForm(() => ({
@@ -92,19 +92,27 @@ export function GoogleSignupModal() {
 }
 
 async function afterHide(): Promise<void> {
-  resetIgnoreAuthCallback();
-  if (signedInUser !== undefined) {
-    showNoticeNotification("Sign up process cancelled", {
-      durationMs: 5000,
-    });
+  const signedInUser = getGoogleSignUpUser();
+  // finished, or a failed apply already cancelled it
+  if (signedInUser === undefined) return;
+  showNoticeNotification("Sign up process cancelled", {
+    durationMs: 5000,
+  });
+  await cancelGoogleSignUp(signedInUser);
+}
+
+/** Deletes the user the sign up created, and signs out of Firebase. */
+async function cancelGoogleSignUp(signedInUser: UserCredential): Promise<void> {
+  try {
     if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
-      await signedInUser?.user.delete().catch(() => {
+      await signedInUser.user.delete().catch(() => {
         //user might be deleted already by the server
       });
     }
-    signOut();
-    signedInUser = undefined;
+  } finally {
+    await cancelSignUp();
+    setGoogleSignUpUser(undefined);
   }
 }
 async function apply(options: {
@@ -112,6 +120,7 @@ async function apply(options: {
   captcha: string;
 }): Promise<void> {
   const { username: name, captcha } = options;
+  const signedInUser = getGoogleSignUpUser();
   if (!signedInUser) {
     showErrorNotification(
       "Missing user credential. Please close the popup and try again.",
@@ -131,37 +140,17 @@ async function apply(options: {
       throw new Error(`Failed to create user: ${response.body.message}`);
     }
 
-    setUserState(signedInUser.user);
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
+    finishSignUp();
     showSuccessNotification("Account created");
-    await loadUser(signedInUser.user);
-
-    authEvent.dispatch({
-      type: "authStateChanged",
-      data: { isUserSignedIn: true, loadPromise: Promise.resolve() },
-    });
-    signedInUser = undefined;
+    setGoogleSignUpUser(undefined);
   } catch (e) {
     console.log(e);
     showErrorNotification("Failed to sign in with Google", { error: e });
-    if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      await Ape.users.delete();
-      await signedInUser?.user.delete().catch(() => {
-        //user might be deleted already by the server
-      });
-    }
-    signOut();
-    signedInUser = undefined;
+    await cancelGoogleSignUp(signedInUser);
   } finally {
     hideLoaderBar();
     hideModal(modalId);
   }
 }
-
-googleSignUpEvent.subscribe((data) => {
-  if (data.signedInUser !== undefined && data.isNewUser) {
-    signedInUser = data.signedInUser;
-    showModal(modalId);
-  }
-});

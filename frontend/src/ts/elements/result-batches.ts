@@ -1,4 +1,4 @@
-import * as DB from "../db";
+import { getUserData } from "../queries/user";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import { mapRange } from "@monkeytype/util/numbers";
@@ -28,7 +28,7 @@ export async function update(): Promise<void> {
 
   enableButton();
 
-  const completedTests = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
+  const completedTests = getUserData()?.typingStats?.completedTests ?? 0;
   const percentageDownloaded = Math.round(
     (results.length / completedTests) * 100,
   );
@@ -36,7 +36,7 @@ export async function update(): Promise<void> {
     regularUser: 0,
     premiumUser: 0,
   };
-  const currentLimit = DB.getSnapshot()?.isPremium
+  const currentLimit = getUserData()?.isPremium
     ? limits.premiumUser
     : limits.regularUser;
   const percentageLimit = Math.round((results?.length / currentLimit) * 100);
@@ -87,7 +87,7 @@ export async function update(): Promise<void> {
     disableButton();
     updateButtonText("limit reached");
 
-    // if (DB.getSnapshot()?.isPremium === false) {
+    // if (getUser()?.isPremium === false) {
     //   text.html(
     //     `<br>Want to load up to ${limits?.premiumUser} results and gain access to more perks? Join Monkeytype Premium.<br>`
     //   );
@@ -109,13 +109,13 @@ export function updateButtonText(text: string): void {
 
 export function showOrHideIfNeeded(): void {
   //for now, just hide if not premium - will show this to everyone later
-  const isPremium = DB.getSnapshot()?.isPremium ?? false;
+  const isPremium = getUserData()?.isPremium ?? false;
   if (!isPremium) {
     hide();
     return;
   }
 
-  const completed = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
+  const completed = getUserData()?.typingStats?.completedTests ?? 0;
   const batchSize = ServerConfiguration.get()?.results.maxBatchSize ?? 0;
 
   //no matter if premium or not, if the user is below the initial batch, hide the element

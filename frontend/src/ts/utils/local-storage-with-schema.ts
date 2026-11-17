@@ -87,6 +87,15 @@ export class LocalStorageWithSchema<T> {
     return structuredClone(this.cache);
   }
 
+  /**
+   * Deletes the entry, making subsequent reads return the fallback value.
+   */
+  public remove(): void {
+    console.debug(`LS ${this.key} Removing from localStorage`);
+    window.localStorage.removeItem(this.key);
+    this.cache = undefined;
+  }
+
   public set(data: T): boolean {
     try {
       console.debug(`LS ${this.key} Parsing to set in localStorage`);

@@ -104,12 +104,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       numbers: [false],
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: [
-      "getWord",
-      "rememberSettings",
-      "getEmulatedChar",
-      "getWordHtml",
-    ],
+    frontendFunctions: ["getWord", "rememberSettings", "getEmulatedChar"],
     name: "arrows",
   },
   rAnDoMcAsE: {
@@ -399,8 +394,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Go back to the 1980s",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile", "noJoiningScript"],
-    frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
+    properties: ["noJoiningScript"],
     name: "crt",
     cssModifications: ["body"],
   },

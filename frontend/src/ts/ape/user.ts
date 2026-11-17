@@ -1,8 +1,9 @@
+import { createRoot } from "solid-js";
 import { GetUserResponse } from "@monkeytype/contracts/users";
 import Ape from ".";
 import { createEffectOn } from "../hooks/effects";
 import { isAuthenticated } from "../states/core";
-import { SnapshotInitError } from "../utils/snapshot-init-error";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 
 type CacheType = GetUserResponse["data"];
 
@@ -25,7 +26,7 @@ async function sync(): Promise<void> {
     const response = await Ape.users.get();
 
     if (response.status !== 200) {
-      throw new SnapshotInitError(
+      throw new UserDataLoadError(
         `${response.body.message} (user)`,
         response.status,
       );
@@ -47,8 +48,10 @@ function reset(): void {
 }
 
 // clear cache + reset promise on logout
-createEffectOn(isAuthenticated, (isAuthenticated) => {
-  if (!isAuthenticated) {
-    reset();
-  }
-});
+createRoot(() =>
+  createEffectOn(isAuthenticated, (isAuthenticated) => {
+    if (!isAuthenticated) {
+      reset();
+    }
+  }),
+);

@@ -145,7 +145,7 @@ export type EventLogContext = {
   customTextLimitValue?: number;
   isFunboxWithNospacePropertyActive?: boolean;
   bailedOut: boolean;
-  koreanStatus: boolean;
+  hasKorean: boolean;
 };
 
 export const EVENT_LOG_VERSION = 1;

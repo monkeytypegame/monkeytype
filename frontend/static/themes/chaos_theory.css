@@ -13,7 +13,7 @@
   transition: 0.5s;
 }
 
-#words .incorrect.extra {
+[data-ui-element="words"] [data-ui-element="letter"][data-ui-state="extra"] {
   transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;

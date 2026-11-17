@@ -1,13 +1,13 @@
+import { getCompositionData } from "../../states/test";
 import {
   CreateHotkeyOptions,
   Hotkey,
   HotkeyCallback,
   HotkeyCallbackContext,
-  createHotkey as registerHotkey,
+  createHotkeys as registerHotkeys,
 } from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
 import { isInputElementFocused } from "../input-element";
-import * as CompositionState from "../../legacy-states/composition";
 
 export const NoKey = "" as Hotkey;
 
@@ -21,24 +21,30 @@ export function createHotkey(
     >
   > = () => ({}),
 ): void {
-  registerHotkey(
-    hotkey,
-    (e, context) => {
-      if (handleHotkeyOnInteractiveElement(e, context)) return;
-      e.stopPropagation();
-      e.preventDefault();
-      callback(e, context);
-    },
-    () => ({
-      ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
-      stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
-      preventDefault: false, //we set preventDefault in the callback if the hotkey executes
-      requireReset: true,
-      conflictBehavior: "replace",
-      enabled: (typeof hotkey === "function" ? hotkey() : hotkey) !== NoKey,
-      ...options(),
-    }),
-  );
+  //NoKey matches keydowns without a key (e.g. browser autofill), so it is never registered
+  registerHotkeys(() => {
+    const key = typeof hotkey === "function" ? hotkey() : hotkey;
+    if (key === NoKey) return [];
+    return [
+      {
+        hotkey: key,
+        callback: (e, context) => {
+          if (handleHotkeyOnInteractiveElement(e, context)) return;
+          e.stopPropagation();
+          e.preventDefault();
+          callback(e, context);
+        },
+        options: {
+          ignoreInputs: false, //hotkeys are active on the words input, but not on other interactive elements
+          stopPropagation: false, //we set stopPropagation in the callback if the hotkey executes
+          preventDefault: false, //we set preventDefault in the callback if the hotkey executes
+          requireReset: true,
+          conflictBehavior: "replace",
+          ...options(),
+        },
+      },
+    ];
+  });
 }
 
 function isInteractiveElementFocused(): boolean {
@@ -70,7 +76,7 @@ function handleHotkeyOnInteractiveElement(
   } else if (
     hotkey === "Escape" &&
     isInputElementFocused() &&
-    CompositionState.getData() !== ""
+    getCompositionData() !== ""
   ) {
     return true;
   }

@@ -51,14 +51,12 @@ export function MinAcc(): JSXElement {
               name="minAccCustom"
               validators={{
                 onChange: fromSchema(MinimumAccuracyCustomSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MinimumAccuracyCustomSchema}
                     placeholder={
                       configMetadata.minAcc.displayString ?? "min accuracy"

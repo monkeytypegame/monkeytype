@@ -6,10 +6,11 @@ import { deleteLocalTag } from "../../../../collections/results";
 import {
   clearTagPBs,
   deleteTag,
+  getTags,
+  isTagActive,
   toggleTagActive,
   updateTagName,
-  useTagsLiveQuery,
-} from "../../../../collections/tags";
+} from "../../../../queries/tags";
 import { showSimpleModal } from "../../../../states/simple-modal";
 import { normalizeName } from "../../../../utils/strings";
 import { Button } from "../../../common/Button";
@@ -17,8 +18,6 @@ import { showAddTagModal } from "../../../modals/AddTagModal";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function Tags(): JSXElement {
-  const tags = useTagsLiveQuery();
-
   return (
     <SearchableSetting
       key="tags"
@@ -29,14 +28,14 @@ export function Tags(): JSXElement {
       }}
       inputs={
         <div class="grid gap-2">
-          <For each={tags()}>
+          <For each={getTags()}>
             {(tag) => (
               <div class="grid grid-cols-[1fr_auto_auto_auto] gap-2">
                 <Button
                   text={tag.name}
-                  active={tag.active}
+                  active={isTagActive(tag._id)}
                   onClick={() => {
-                    void toggleTagActive({ tagId: tag._id });
+                    toggleTagActive(tag._id);
                   }}
                 />
                 <Button
@@ -49,7 +48,14 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to clear personal bests for tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "clear",
                       execFn: async () => {
-                        await clearTagPBs({ tagId: tag._id });
+                        const { error } = await clearTagPBs(tag._id);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to clear personal bests",
+                            notificationOptions: { error },
+                          };
+                        }
 
                         return {
                           status: "success",
@@ -77,10 +83,14 @@ export function Tags(): JSXElement {
                         },
                       },
                       execFn: async ({ tagName }) => {
-                        await updateTagName({
-                          tagId: tag._id,
-                          newName: tagName,
-                        });
+                        const { error } = await updateTagName(tag._id, tagName);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to update tag name",
+                            notificationOptions: { error },
+                          };
+                        }
 
                         return {
                           status: "success",
@@ -100,7 +110,14 @@ export function Tags(): JSXElement {
                       text: `Are you sure you want to delete tag "${tag.name}"? This action cannot be undone.`,
                       buttonText: "delete",
                       execFn: async () => {
-                        await deleteTag({ tagId: tag._id });
+                        const { error } = await deleteTag(tag._id);
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to delete tag",
+                            notificationOptions: { error },
+                          };
+                        }
                         await deleteLocalTag({ tagId: tag._id });
 
                         return {

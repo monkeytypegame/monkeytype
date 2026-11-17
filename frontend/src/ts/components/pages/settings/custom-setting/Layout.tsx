@@ -8,6 +8,12 @@ import { LayoutsList } from "../../../../constants/layouts";
 import SlimSelect from "../../../ui/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
+// built once - a new array on every read would make SlimSelect rebuild its options
+const layoutOptions = LayoutsList.map((layout) => ({
+  text: layout.replace(/_/g, " "),
+  value: layout,
+}));
+
 export function Layout(): JSXElement {
   return (
     <SearchableSetting
@@ -17,10 +23,7 @@ export function Layout(): JSXElement {
       fa={configMetadata.layout.fa}
       inputs={
         <SlimSelect
-          options={LayoutsList.map((layout) => ({
-            text: layout.replace(/_/g, " "),
-            value: layout,
-          }))}
+          options={layoutOptions}
           selected={getConfig.layout}
           onChange={(val) => {
             if (getConfig.layout === (val as LayoutSchema)) return;

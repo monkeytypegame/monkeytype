@@ -84,6 +84,7 @@ import {
   getCorrectedWordsHistory,
   getKeypressSpacing,
   getMissedWords,
+  getMsSinceLastInputEvent,
 } from "../../../src/ts/test/events/stats";
 import type {
   InputEventData,
@@ -910,9 +911,9 @@ describe("stats.ts", () => {
       expect(acc.percentage).toBeCloseTo(66.67, 1);
     });
 
-    it("returns 0% for no events", () => {
+    it("returns null percentage for no events", () => {
       const acc = getAccuracy(buildEventLog());
-      expect(acc.percentage).toBe(0);
+      expect(acc.percentage).toBeNull();
     });
 
     it("ignores delete events", () => {
@@ -1027,6 +1028,23 @@ describe("stats.ts", () => {
       expect(Math.abs(getTestDurationMs(buildEventLog()) - total)).toBeLessThan(
         100,
       );
+    });
+  });
+
+  describe("getMsSinceLastInputEvent", () => {
+    it("returns the gap between the last two inputs", () => {
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent("input", 1000, input());
+      logTestEvent("input", 1100, input({ charIndex: 1 }));
+      logTestEvent("input", 1350.25, input({ charIndex: 2 }));
+
+      expect(getMsSinceLastInputEvent(buildEventLog())).toBe(250.25);
+    });
+
+    it("returns null with fewer than two inputs", () => {
+      logTestEvent("input", 1000, input());
+
+      expect(getMsSinceLastInputEvent(buildEventLog())).toBeNull();
     });
   });
 
@@ -1301,6 +1319,45 @@ describe("stats.ts", () => {
       // word 0 "しり " is fully correct (2 chars + separator)
       expect(chars.correctWord).toBe(3);
       expect(chars.incorrect).toBe(0);
+      expect(chars.extra).toBe(0);
+    });
+
+    it("counts the commit space of a wrong word as incorrect, not extra", () => {
+      // regression: every wrong word committed with space added 1 extra char
+      pushWords("ab", "cd");
+      mockState.activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "x", correct: false }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          charIndex: 2,
+          wordIndex: 0,
+          data: " ",
+          correct: false,
+          commitsWord: true,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "c" }),
+      );
+
+      const chars = getChars(buildEventLog());
+      // word 0 "ax " vs "ab " → 1 correct, x + commit space incorrect
+      expect(chars.incorrect).toBe(2);
       expect(chars.extra).toBe(0);
     });
   });

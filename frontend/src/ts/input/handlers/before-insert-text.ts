@@ -1,15 +1,14 @@
 import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
+import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import * as SlowTimer from "../../legacy-states/slow-timer";
 import {
   isTestRestarting,
-  getActiveWordIndex,
   isResultCalculating,
   wordsHaveNewline,
+  isSlowTimer,
 } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
@@ -97,7 +96,7 @@ export function onBeforeInsertText(data: string): boolean {
     getCurrentInput().length >= currentWordTextDisplay.length;
 
   if (
-    !SlowTimer.get() && // don't do this check if slow timer is active
+    !isSlowTimer() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
@@ -109,18 +108,7 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    // if there is pending word data, we need to account for that
-    const pendingWordData = TestUI.pendingWordData.get(getActiveWordIndex());
-    const { top: topAfterAppend, height: heightAfterAppend } =
-      TestUI.getActiveWordTopAndHeightWithDifferentData(
-        (pendingWordData ?? inputValue) + data,
-      );
-    if (topAfterAppend > TestUI.activeWordTop) {
-      //word jumped to next line
-      return true;
-    }
-    if (heightAfterAppend > TestUI.activeWordHeight) {
-      // letters wrapped to next line
+    if (wouldActiveWordOverflow(inputValue, data)) {
       return true;
     }
   }
