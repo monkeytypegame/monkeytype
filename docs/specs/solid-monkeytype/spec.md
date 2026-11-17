@@ -187,7 +187,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 - The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints, including the typed input that layout and the caret position from.
 - **Words owns all layout**: after each flush it runs one layout pass: line jump, tape scroll, input positioning and caret updates. Joining-script dots (dots typed effect) are CSS only: letters stay inline, so nothing is measured and nothing writes into Word. The word-element registry becomes private to Words; only the overflow check is exported.
 - **Words keeps the active line in view** as part of that layout pass: during a test, when the words wrapper is taller than the window, it scrolls the window to the active word (down only while typing, both ways when recentering after a re-layout or on request). The focus flow asks for a recenter through a request signal. Before the test, TestPage keeps the test block in view.
-- **Carets: boundary fixed, internals decided during the caret rewrite.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Whether a caret animates through fully reactive props, imperative calls on a private handle, or a mix is decided during that step, based on what gets the movement looking right. Tribe carets follow whatever is chosen.
+- **Carets: Words renders and drives both.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Decided in T3, a mix: Words renders the caret elements with their style class, visibility (caret: words input focused, test not ending or finished, window not resizing; pace caret: has a target) and blinking (off in focus mode) reactively; movement (position, line-jump and tape-scroll margins) stays anime.js animations on a private imperative handle the words layout owns, so it looks as before. The pace caret's timing is a DOM-free module whose output is a target signal (word, letter, step end). Tribe carets follow the pace caret: Words renders one per player from the room store, each heading for a target (`stepEnd` = now + the room's update rate), and the layout's caret list (`allCarets`) carries their line-jump and tape-scroll handoff; nothing outside Words moves them.
 - **TestPage runs all fades**, driven by the engine's phase: words fade out on finish; when the fade-out completes, the result fades in if the result signal has a value, otherwise a spinner fades in and is swapped for the result when it arrives. Restart fades follow the restart flow above.
 - **test-ui is deleted.** Sound, keymap highlight and monkey-power triggers become effects on engine/input signals or direct calls from the input layer.
 - **Focus mode**: a signal. The root layout binds focus state on the app, header, footer and banners; cursor hiding is CSS keyed off that state. One component owns the mouse-move exit listener.
@@ -199,7 +199,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 
 ### Theming and styling
 
-- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (one value from the component's status type, eg. a letter's `LetterStatus`, a word's `WordStatus`) and `data-ui-variant` (one value, eg. a letter's `tab`/`newline`). Facts independent of the state get their own attribute, one per fact, never a space-separated list: `data-ui-active` on the active word; `data-ui-word-highlight` (the highlight mode, eg. `next-two-words`), `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script` and `data-ui-rtl` on words; `data-ui-corrected` and `data-ui-extra-corrected` on result letters. The result words containers are `wordsHistory` and `replayWords`; their words and letters share the `word`/`letter` names, and words share `WordStatus` (typed means committed, in the replay too). Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words wrapper, words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
+- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (one value from the component's status type, eg. a letter's `LetterStatus`, a word's `WordStatus`) and `data-ui-variant` (one value, eg. a letter's `tab`/`newline`). Facts independent of the state get their own attribute, one per fact, never a space-separated list: `data-ui-active` on the active word; `data-ui-word-highlight` (the highlight mode, eg. `next-two-words`), `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script` and `data-ui-rtl` on words; `data-ui-corrected` and `data-ui-extra-corrected` on result letters; the caret and pace caret carry their caret style as `data-ui-variant`. The result words containers are `wordsHistory` and `replayWords`; their words and letters share the `word`/`letter` names, and words share `WordStatus` (typed means committed, in the replay too). Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words wrapper, words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
 - **`<letter>` goes away**: letters render as `<span data-ui-element="letter" data-ui-state="…">` (inline by default, so no extra CSS). Any other made-up elements (`<hint>`) get the same treatment. The attributes come first (T1), on the old tags with their classes, so legacy selectors keep working; the tags become spans in CL3, the single announced break. Code finds letters by `LETTER_SELECTOR`, never the tag.
 - **Migration of themes**: each conversion PR adds the attributes and moves the bundled themes and funbox CSS over. Old ids/classes/`letter` selectors keep working until one announced removal step at the end, which is the single break for user custom CSS.
 - **Styling**: all component styling is Tailwind through the class-merge helper. SCSS remains only for keyframes and base styles that must target `data-ui-*` (eg. letter colours from theme variables, blind mode); the test, caret and letter SCSS is rewritten against `data-ui-*` and the SCSS files are deleted by the end.
@@ -275,6 +275,14 @@ From joining-script dots (T2): break joining is gone. With the dots typed effect
 - The shrink animation matches other scripts but shows the letter's standalone form (a `::before` copy from the letter's new `data-char` attribute); the text stays joined before and after.
 - The `broken-joining` and `needs-wrap` word classes are gone.
 
+From the caret boundary (T3):
+
+- The caret hides as soon as a test ends, in every mode (it used to hide at once only when the time ran out, otherwise after the fade out).
+- A window resize no longer shows the caret while the words input is out of focus.
+- The caret stops blinking on the frame typing applies focus mode, with the letters, instead of synchronously on input.
+- Caret debug (dev options) outlines the pace caret for as long as it's on.
+- Seam bug fixed: in tape mode, the caret sits on its letter in a word whose direction differs from the test's (it was up to ~105px off, ~194px in word tape). The tape scroll itself is unchanged: in letter tape such a word still moves by its typed letters' width.
+
 From user data (U1):
 
 - Resetting PBs updates the PBs shown straight away (the reactive copy used to keep the old ones).
@@ -292,7 +300,7 @@ From commandline metadata (C5): generated config commands use the settings label
 | # | Decision |
 |---|---|
 | Q1 | DOM-free test engine is part of the final state |
-| Q2 | Deferred: caret internals decided during the caret rewrite; only the boundary is fixed |
+| Q2 | Caret internals decided in T3: reactive style, visibility and blinking; movement on a private imperative handle (see Carets) |
 | Q3 | Single config store; mutable config and config bus deleted |
 | Q4 | No global event buses; `createEvent` only for local use |
 | Q5 | Superseded by Q22, then reinstated by Q30, then superseded by Q31: the user is a session query |

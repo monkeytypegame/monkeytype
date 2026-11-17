@@ -1,4 +1,4 @@
-import { getCompositionData } from "../../states/test";
+import { getCompositionData, isWordsInputFocused } from "../../states/test";
 import {
   CreateHotkeyOptions,
   Hotkey,
@@ -7,7 +7,6 @@ import {
   createHotkeys as registerHotkeys,
 } from "@tanstack/solid-hotkeys";
 import { isAnyPopupVisible } from "../../utils/misc";
-import { isInputElementFocused } from "../input-element";
 
 export const NoKey = "" as Hotkey;
 
@@ -48,7 +47,7 @@ export function createHotkey(
 }
 
 function isInteractiveElementFocused(): boolean {
-  if (isInputElementFocused()) return false;
+  if (isWordsInputFocused()) return false;
 
   return (
     document.activeElement?.tagName === "A" ||
@@ -75,7 +74,7 @@ function handleHotkeyOnInteractiveElement(
     return true;
   } else if (
     hotkey === "Escape" &&
-    isInputElementFocused() &&
+    isWordsInputFocused() &&
     getCompositionData() !== ""
   ) {
     return true;

@@ -1,6 +1,14 @@
 import { batch, createRoot } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
 vi.mock("../../src/ts/controllers/theme-controller", () => ({
@@ -22,12 +30,7 @@ vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
   getCurrentInput: (): string => currentInput,
 }));
 
-const caretUpdatePosition = vi.hoisted(() => vi.fn());
-vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
-  ...(await importOriginal()),
-  updatePosition: caretUpdatePosition,
-}));
-
+import { Caret } from "../../src/ts/components/pages/test/caret";
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
@@ -56,6 +59,14 @@ const wordsPerLine = 5;
 const lineHeight = 30;
 
 let frames: Map<number, FrameRequestCallback>;
+// main caret moves: snapped (animate false) or animated
+let caretGoTo: MockInstance<Caret["goTo"]>;
+const caretMoves = (animate: boolean): number =>
+  caretGoTo.mock.contexts.filter(
+    (caret, i) =>
+      (caret as Caret).native.id === "caret" &&
+      (caretGoTo.mock.calls[i]?.[0].animate ?? false) === animate,
+  ).length;
 let nextFrameId: number;
 
 function runFrames(): void {
@@ -156,7 +167,9 @@ describe("test-ui words rendering", () => {
     });
     resetActiveWordIndex();
     currentInput = "";
-    caretUpdatePosition.mockClear();
+    caretGoTo = vi.spyOn(Caret.prototype, "goTo").mockImplementation(() => {
+      // jsdom has no layout to measure
+    });
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
   });
@@ -280,12 +293,12 @@ describe("test-ui words rendering", () => {
 
     it("snaps the caret to the new words instead of animating", () => {
       mount();
-      caretUpdatePosition.mockClear();
+      caretGoTo.mockClear();
 
       startTest(10);
 
-      expect(caretUpdatePosition).toHaveBeenCalledWith(true);
-      expect(caretUpdatePosition).not.toHaveBeenCalledWith(false);
+      expect(caretMoves(false)).toBeGreaterThan(0);
+      expect(caretMoves(true)).toBe(0);
     });
 
     it.each([
@@ -303,10 +316,13 @@ describe("test-ui words rendering", () => {
         const completions: (() => void)[] = [];
         const cancel = vi.fn();
         vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
-          (params) => {
-            completions.push(() => {
-              params.onComplete?.({} as never, {} as never);
-            });
+          function (this: ElementWithUtils, params) {
+            // the line jump's, not the carets' following it
+            if (this.native.id === "words") {
+              completions.push(() => {
+                params.onComplete?.({} as never, {} as never);
+              });
+            }
             return { cancel } as never;
           },
         );
@@ -340,10 +356,13 @@ describe("test-ui words rendering", () => {
       });
       const completions: (() => void)[] = [];
       vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
-        (params) => {
-          completions.push(() => {
-            params.onComplete?.({} as never, {} as never);
-          });
+        function (this: ElementWithUtils, params) {
+          // the line jump's, not the carets' following it
+          if (this.native.id === "words") {
+            completions.push(() => {
+              params.onComplete?.({} as never, {} as never);
+            });
+          }
           return { cancel: vi.fn() } as never;
         },
       );
@@ -367,8 +386,7 @@ describe("test-ui words rendering", () => {
 
   describe("config changes", () => {
     // each full layout snaps the caret once
-    const layoutsAll = (): number =>
-      caretUpdatePosition.mock.calls.filter(([snap]) => snap === true).length;
+    const layoutsAll = (): number => caretMoves(false);
 
     // Words only: with test-ui mounted, applyConfig's language event also
     // restarts the test (async, outliving the test). That restart's layout of
@@ -387,7 +405,7 @@ describe("test-ui words rendering", () => {
       replaceWords([{ display: "a" }, { display: "b" }, { display: "c" }], {
         activeWordIndex: 0,
       });
-      caretUpdatePosition.mockClear();
+      caretGoTo.mockClear();
     }
 
     it("lays out once per changed layout key set on its own", () => {

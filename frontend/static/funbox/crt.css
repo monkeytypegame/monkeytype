@@ -65,13 +65,13 @@ body.crtmode #bannerCenter .banner {
     0 0 3px;
 }
 
-body.crtmode #caret {
+body.crtmode [data-ui-element="caret"] {
   box-shadow:
     3px 0 1px var(--crt-caret-color-glow),
     -3px 0 var(--crt-caret-color-glow);
 }
 
-body.crtmode #paceCaret,
+body.crtmode [data-ui-element="paceCaret"],
 body.crtmode kbd,
 body.crtmode #bannerCenter .banner {
   box-shadow:
@@ -79,10 +79,10 @@ body.crtmode #bannerCenter .banner {
     -3px 0 var(--crt-sub-color-glow);
 }
 
-body.crtmode #caret.banana,
-body.crtmode #caret.carrot,
-body.crtmode #paceCaret.banana,
-body.crtmode #paceCaret.carrot {
+body.crtmode [data-ui-element="caret"][data-ui-variant="banana"],
+body.crtmode [data-ui-element="caret"][data-ui-variant="carrot"],
+body.crtmode [data-ui-element="paceCaret"][data-ui-variant="banana"],
+body.crtmode [data-ui-element="paceCaret"][data-ui-variant="carrot"] {
   box-shadow: none;
 }
 

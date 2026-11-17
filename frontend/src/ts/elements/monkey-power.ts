@@ -222,7 +222,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
     }
 
     // Sparks
-    // looked up each time - #caret is re-rendered if TestPage remounts
+    // looked up each time - #caret is re-rendered if Words remounts
     const caretEl = qs("#caret");
     const offset = caretEl?.native.getBoundingClientRect();
     const coords = [

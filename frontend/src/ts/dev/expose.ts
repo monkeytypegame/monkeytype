@@ -60,7 +60,7 @@ function wordsSnapshot(): ChildSnapshot[] {
  * right to left words). Within a few px is on.
  */
 function caretOffset(): { dx: number; dy: number } | undefined {
-  const caret = document.querySelector("#caret");
+  const caret = document.querySelector('[data-ui-element="caret"]');
   const letters = document.querySelectorAll(
     `#words .word.active ${LETTER_SELECTOR}`,
   );

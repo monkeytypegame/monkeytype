@@ -68,6 +68,8 @@ function renderWords(count: number): HTMLElement {
     createWordsLayout({
       words: () => words,
       wordsWrapper: () => wordsWrapper,
+      caret: () => undefined,
+      paceCaret: () => undefined,
     });
     return dispose;
   });
