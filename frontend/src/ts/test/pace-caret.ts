@@ -1,7 +1,7 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import { getLocalPB } from "../states/user";
-import { getActiveTagsPB } from "../collections/tags";
+import { getLocalPB } from "../queries/user";
+import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";

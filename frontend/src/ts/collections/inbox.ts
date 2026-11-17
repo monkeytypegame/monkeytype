@@ -19,7 +19,7 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as BadgeController from "../controllers/badge-controller";
-import { addBadge, addXp } from "../states/user";
+import { addBadge, addXp } from "../queries/user";
 import { keepForever } from "./utils/misc";
 
 const flushStrategy = flushDebounceStrategy({ maxWait: 1000 * 60 * 5 });

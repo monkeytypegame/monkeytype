@@ -4,29 +4,20 @@ import { render } from "@solidjs/testing-library";
 import { Suspense } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// tags() suspends until the tags load (never, here), tags.state fills in when they do
+// the tags load after the result shows
 const tagNames = vi.hoisted(() => ({
   set: undefined as ((id: string, name: string) => void) | undefined,
 }));
-vi.mock("../../../../../src/ts/collections/tags", async () => {
-  const { createResource } = await import("solid-js");
+vi.mock("../../../../../src/ts/queries/tags", async () => {
+  const { createRoot } = await import("solid-js");
   const { createStore } = await import("solid-js/store");
-  return {
-    useTagsLiveQuery: () => {
-      const [names, setNames] = createStore<Record<string, { name: string }>>(
-        {},
-      );
-      tagNames.set = (id, name) => setNames(id, { name });
-      const [pending] = createResource(
-        async () => new Promise<never>(() => undefined),
-      );
-      return Object.assign(() => pending(), {
-        state: { get: (id: string) => names[id] },
-      });
-    },
-  };
+  const [names, setNames] = createRoot(() =>
+    createStore<Record<string, { name: string }>>({}),
+  );
+  tagNames.set = (id, name) => setNames(id, { name });
+  return { getTag: (id: string) => names[id] };
 });
-vi.mock("../../../../../src/ts/states/user", async (importOriginal) => ({
+vi.mock("../../../../../src/ts/queries/user", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   getLocalPB: () => undefined,
 }));

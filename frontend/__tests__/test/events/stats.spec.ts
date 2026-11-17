@@ -1321,6 +1321,45 @@ describe("stats.ts", () => {
       expect(chars.incorrect).toBe(0);
       expect(chars.extra).toBe(0);
     });
+
+    it("counts the commit space of a wrong word as incorrect, not extra", () => {
+      // regression: every wrong word committed with space added 1 extra char
+      pushWords("ab", "cd");
+      mockState.activeWordIndex = 1;
+
+      logTestEvent("timer", 1000, timer("start", 0));
+      logTestEvent(
+        "input",
+        1100,
+        input({ charIndex: 0, wordIndex: 0, data: "a" }),
+      );
+      logTestEvent(
+        "input",
+        1150,
+        input({ charIndex: 1, wordIndex: 0, data: "x", correct: false }),
+      );
+      logTestEvent(
+        "input",
+        1200,
+        input({
+          charIndex: 2,
+          wordIndex: 0,
+          data: " ",
+          correct: false,
+          commitsWord: true,
+        }),
+      );
+      logTestEvent(
+        "input",
+        1300,
+        input({ charIndex: 0, wordIndex: 1, data: "c" }),
+      );
+
+      const chars = getChars(buildEventLog());
+      // word 0 "ax " vs "ab " → 1 correct, x + commit space incorrect
+      expect(chars.incorrect).toBe(2);
+      expect(chars.extra).toBe(0);
+    });
   });
 
   describe("getWpmHistory", () => {

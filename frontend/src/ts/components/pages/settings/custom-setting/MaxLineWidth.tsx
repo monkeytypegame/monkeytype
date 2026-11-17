@@ -45,14 +45,12 @@ export function MaxLineWidth(): JSXElement {
               name="maxLineWidth"
               validators={{
                 onChange: fromSchema(MaxLineWidthSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MaxLineWidthSchema}
                     placeholder={
                       configMetadata.maxLineWidth.displayString ??

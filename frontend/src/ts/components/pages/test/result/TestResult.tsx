@@ -12,12 +12,12 @@ import {
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
+import { getUserData } from "../../../../queries/user";
 import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { getUserData } from "../../../../states/user";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";

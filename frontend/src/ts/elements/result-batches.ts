@@ -1,4 +1,4 @@
-import { getUserData } from "../states/user";
+import { getUserData } from "../queries/user";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import { mapRange } from "@monkeytype/util/numbers";

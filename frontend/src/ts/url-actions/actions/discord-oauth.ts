@@ -2,7 +2,7 @@
 // its hash carries the token. A url action (../action.ts)
 
 import Ape from "../../ape";
-import { setDiscordLink } from "../../states/user";
+import { setDiscordLink } from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   showErrorNotification,

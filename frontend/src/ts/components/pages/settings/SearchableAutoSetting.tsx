@@ -59,14 +59,12 @@ export function SearchableAutoSetting<T extends ConfigKey>(props: {
                 onChange: fromSchema(
                   ConfigSchema.shape[props.key] as z.ZodNumber,
                 ),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={ConfigSchema.shape[props.key]}
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key
@@ -98,9 +96,12 @@ export function SearchableAutoSetting<T extends ConfigKey>(props: {
               <Button
                 active={getConfig[props.key] === option}
                 onClick={() => {
-                  if (getConfig[props.key] === option) return;
+                  const selected = getConfig[props.key] === option;
+                  // always preview, even for the selected option, so sounds can be re-triggered
                   props.onOptionClick?.(option);
-                  setConfig(props.key, option);
+                  if (!selected) {
+                    setConfig(props.key, option);
+                  }
                 }}
               >
                 {getOptionLabel(props.key, option)}

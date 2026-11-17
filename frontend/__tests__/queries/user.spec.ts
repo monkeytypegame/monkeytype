@@ -6,21 +6,22 @@ import {
   __testing,
   addBadge,
   addXp,
-  clearUserData,
   getUserData,
   loadUserData,
   recordResult,
   resetPersonalBests,
   setDiscordLink,
   setInboxUnreadSize,
-  setQuoteFavorite,
   setStreak,
   updateLbMemory,
+  setQuoteFavorite,
   updateName,
   updateProfile,
-} from "../../src/ts/states/user";
+  useUser,
+} from "../../src/ts/queries/user";
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
+import { queryClient } from "../../src/ts/queries";
 import { setUserId } from "../../src/ts/states/core";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
@@ -95,7 +96,7 @@ afterEach(() => {
 
 describe("getUserData", () => {
   it("is undefined without a user", () => {
-    clearUserData();
+    __testing.setUser(undefined);
     expect(getUserData()).toBeUndefined();
   });
 });
@@ -104,7 +105,7 @@ describe("loadUserData", () => {
   afterEach(() => setUserId(null));
 
   it("downloads the user into the store", async () => {
-    clearUserData();
+    __testing.setUser(undefined);
     setUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(
       ok({
@@ -148,6 +149,52 @@ describe("loadUserData", () => {
 
     await expect(loadUserData()).rejects.toBeInstanceOf(UserDataLoadError);
     expect(getUserData()).toBeUndefined();
+  });
+});
+
+describe("query cache", () => {
+  it("clears the user when the user-scoped queries reset (sign out)", async () => {
+    expect(getUserData()?.name).toBe("bob");
+
+    await queryClient.resetQueries({ queryKey: ["user"] });
+    await vi.waitFor(() => expect(getUserData()).toBeUndefined());
+  });
+});
+
+describe("useUser", () => {
+  it("shows the cached user and its updates, and never fetches", async () => {
+    const get = vi.spyOn(Ape.users, "get");
+    const { user, dispose } = createRoot((dispose) => ({
+      user: useUser(),
+      dispose,
+    }));
+
+    expect(user.isSuccess).toBe(true);
+    expect(user.data?.name).toBe("bob");
+
+    addXp(5);
+    await vi.waitFor(() => expect(user.data?.xp).toBe(5));
+
+    // the sign-out reset doesn't refetch it
+    await queryClient.resetQueries({ queryKey: ["user"] });
+    await vi.waitFor(() => expect(user.isPending).toBe(true));
+    expect(get).not.toHaveBeenCalled();
+
+    dispose();
+  });
+
+  it("keeps the unchanged parts' identity while mounted", () => {
+    const dispose = createRoot((dispose) => {
+      useUser();
+      return dispose;
+    });
+    const before = getUserData();
+
+    addXp(5);
+
+    expect(getUserData()).not.toBe(before);
+    expect(getUserData()?.personalBests).toBe(before?.personalBests);
+    dispose();
   });
 });
 
@@ -218,7 +265,7 @@ describe("direct writes", () => {
   });
 
   it("does nothing without a user", () => {
-    clearUserData();
+    __testing.setUser(undefined);
     addXp(5);
     setStreak(5);
     expect(getUserData()).toBeUndefined();
@@ -310,6 +357,8 @@ describe("optimistic actions", () => {
 
     const first = updateName("carl");
     const second = updateName("dave");
+    // mutations send their request a few microtasks after the call
+    await vi.waitFor(() => expect(responses).toHaveLength(2));
     responses[0]?.(fail("taken"));
     expect((await first).error?.message).toBe("taken");
     expect(getUserData()?.name).toBe("dave");
@@ -335,6 +384,8 @@ describe("optimistic actions", () => {
       quoteId: "6",
       favorite: true,
     });
+    // mutations send their request a few microtasks after the call
+    await vi.waitFor(() => expect(responses).toHaveLength(2));
     responses[0]?.(fail("nope"));
     expect((await first).error?.message).toBe("nope");
     responses[1]?.(ok());

@@ -30,6 +30,10 @@ Missing either → modal never shows.
 
 - When migrating a module, convert its importers to named imports too, and rename overly generic exports (`getState` → `getClientState`) so named imports stay readable.
 
+## Types
+
+- API request/response shapes come from `@monkeytype/contracts` (bodies: `<Name>Response`, base: `util/api`); domain shapes from `@monkeytype/schemas`. A diff that writes such a shape inline reuses or derives from those instead.
+
 ## Comments
 
 - A diff that changes behaviour updates the comments describing it: search comments for every name the diff removes or renames (functions, components, files, docs).

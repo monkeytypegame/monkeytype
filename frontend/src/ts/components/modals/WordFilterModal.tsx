@@ -321,14 +321,18 @@ export function WordFilterModal(props: {
               <LabeledField label="regex">
                 <form.Field name="regex">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>
 
               <LabeledField label="include">
                 <form.Field name="include">
-                  {(field) => <InputField field={field} />}
+                  {(field) => <InputField field={field} autocomplete="off" />}
                 </form.Field>
                 <form.Field
                   name="exactMatch"
@@ -354,7 +358,11 @@ export function WordFilterModal(props: {
               <LabeledField label="exclude">
                 <form.Field name="exclude">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>

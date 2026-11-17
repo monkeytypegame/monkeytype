@@ -13,9 +13,9 @@ import {
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
+import { getUserData, updateLbMemory } from "../../../queries/user";
 import { isAuthenticated } from "../../../states/core";
 import { pageSize, Selection } from "../../../states/leaderboard-selection";
-import { getUserData, updateLbMemory } from "../../../states/user";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";

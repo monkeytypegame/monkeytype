@@ -51,14 +51,12 @@ export function MinBurst(): JSXElement {
               name="minBurstCustomSpeed"
               validators={{
                 onChange: fromSchema(MinimumBurstCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MinimumBurstCustomSpeedSchema}
                     placeholder={
                       configMetadata.minBurst.displayString ?? "min burst"

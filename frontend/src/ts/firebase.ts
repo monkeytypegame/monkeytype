@@ -33,7 +33,8 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { showGoogleSignUpModal } from "./states/google-sign-up";
 import { addBanner } from "./states/banners";
-import { setUserId, setUserVerified } from "./states/core";
+import { setAuthState, setUserId, setUserVerified } from "./states/core";
+import { batch } from "solid-js";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
@@ -43,13 +44,10 @@ let Auth: AuthType | undefined;
  */
 let ignoreAuthCallback: boolean = false;
 
-type ReadyCallback = (success: boolean, user: User | null) => Promise<void>;
-let readyCallback: ReadyCallback | undefined;
-
 const { promise: authPromise, resolve: resolveAuthPromise } =
   promiseWithResolvers();
 
-export async function init(callback: ReadyCallback): Promise<void> {
+export async function initFirebase(): Promise<void> {
   try {
     let firebaseConfig: FirebaseOptions | null;
 
@@ -59,7 +57,6 @@ export async function init(callback: ReadyCallback): Promise<void> {
       }
     ).firebaseConfig;
 
-    readyCallback = callback;
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     Auth = getAuth(app);
 
@@ -67,17 +64,13 @@ export async function init(callback: ReadyCallback): Promise<void> {
       window.localStorage.getItem("firebasePersistence") === "LOCAL";
     await setPersistence(rememberMe, false);
 
-    onAuthStateChanged(Auth, async (user) => {
-      if (!ignoreAuthCallback) {
-        setUserState(user);
-        await callback(true, user);
-      }
+    onAuthStateChanged(Auth, (user) => {
+      if (!ignoreAuthCallback) setUserState(user);
     });
   } catch (e) {
     app = undefined;
     Auth = undefined;
     console.error("Firebase failed to initialize", e);
-    await callback(false, null);
     setUserState(null);
     if (isDevEnvironment()) {
       addBanner({
@@ -134,19 +127,28 @@ export async function signInWithEmailAndPassword(
   return result;
 }
 
-export function setUserState(
-  options: {
-    uid: string;
-    emailVerified: boolean;
-  } | null,
-): void {
-  if (options === null) {
-    setUserId(null);
-    setUserVerified(false);
-  } else {
-    setUserId(options.uid);
-    setUserVerified(options.emailVerified);
-  }
+/** The only writer of the auth signals (auth state, user id, verified). */
+function setUserState(user: User | null): void {
+  batch(() => {
+    if (user === null) {
+      setUserId(null);
+      setUserVerified(false);
+      setAuthState("signedOut");
+    } else {
+      setUserId(user.uid);
+      setUserVerified(user.emailVerified);
+      setAuthState("signedIn");
+    }
+  });
+}
+
+/**
+ * Signs in the user a sign up just created (Firebase's current user): the
+ * auth callback was ignored while the sign up created the user on the backend.
+ */
+export function finishSignUp(): void {
+  ignoreAuthCallback = false;
+  setUserState(getAuthenticatedUser());
 }
 
 export async function signInWithPopup(
@@ -169,9 +171,8 @@ export async function signInWithPopup(
   if (additionalUserInfo?.isNewUser) {
     showGoogleSignUpModal(signedInUser);
   } else {
-    setUserState(signedInUser.user);
     ignoreAuthCallback = false;
-    await readyCallback?.(true, signedInUser.user);
+    setUserState(signedInUser.user);
   }
 }
 
@@ -249,8 +250,14 @@ function translateFirebaseError(
   return new Error(message, { cause: error });
 }
 
-export function resetIgnoreAuthCallback(): void {
+/**
+ * Ends a sign up that won't finish (failed or cancelled): listens to the auth
+ * callback again and signs out of Firebase. The app never saw the user sign
+ * in, so its own sign out would do nothing.
+ */
+export async function cancelSignUp(): Promise<void> {
   ignoreAuthCallback = false;
+  await Auth?.signOut();
 }
 
 export { authPromise };

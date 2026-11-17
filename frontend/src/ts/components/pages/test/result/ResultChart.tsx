@@ -23,12 +23,13 @@ import {
 } from "solid-js";
 import { z } from "zod";
 
-import { useTagsLiveQuery } from "../../../../collections/tags";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
 import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { getTag } from "../../../../queries/tags";
+import { getLocalPB } from "../../../../queries/user";
 import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import {
@@ -38,7 +39,6 @@ import {
 } from "../../../../states/result";
 import { CompletedResult, getLastEventLog } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
-import { getLocalPB } from "../../../../states/user";
 import {
   getRawHistory,
   getTimerBoundaryLabels,
@@ -563,7 +563,6 @@ export function ResultChart(props: {
   result: CompletedResult;
   eventLog: EventLog;
 }): JSXElement {
-  const tags = useTagsLiveQuery();
   let chart: Chart<"line" | "scatter", number[]> | undefined;
 
   // read once per result - saveResult() overwrites the local pb with this result
@@ -588,10 +587,9 @@ export function ResultChart(props: {
 
     const result = props.result;
     const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
-    // state, not tags(): reading tags() suspends until the collection is ready.
-    // draw the chart now, tag pb lines show up once their tag has loaded
+    // tag pb lines show up once their tag has loaded
     const tagPbs = resultState.tags.flatMap((tag) => {
-      const name = tags.state.get(tag.id)?.name;
+      const name = getTag(tag.id)?.name;
       return tag.chartPb !== undefined && name !== undefined
         ? [{ name, pb: tag.chartPb }]
         : [];

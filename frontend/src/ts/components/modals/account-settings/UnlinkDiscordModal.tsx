@@ -1,5 +1,5 @@
+import { unlinkDiscord } from "../../../queries/user";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { unlinkDiscord } from "../../../states/user";
 
 export function showUnlinkDiscordModal(): void {
   showSimpleModal({

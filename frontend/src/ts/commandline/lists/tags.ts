@@ -1,8 +1,9 @@
 import {
-  clearActiveTags,
+  getTags,
+  isTagActive,
+  setActiveTags,
   toggleTagActive,
-  __nonReactive,
-} from "../../collections/tags";
+} from "../../queries/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../states/core";
@@ -30,7 +31,7 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const tags = __nonReactive.getTags();
+  const tags = getTags();
   subgroup.list = [];
 
   if (tags.length > 0) {
@@ -40,7 +41,7 @@ function update(): void {
       fa: { icon: "fa-times" },
       sticky: true,
       exec: async (): Promise<void> => {
-        await clearActiveTags();
+        setActiveTags([]);
         if (
           Config.paceCaret === "average" ||
           Config.paceCaret === "tagPb" ||
@@ -57,10 +58,10 @@ function update(): void {
         display: tag.name,
         sticky: true,
         active: () => {
-          return __nonReactive.getTag(tag._id)?.active ?? false;
+          return isTagActive(tag._id);
         },
         exec: async (): Promise<void> => {
-          await toggleTagActive({ tagId: tag._id });
+          toggleTagActive(tag._id);
 
           if (
             Config.paceCaret === "average" ||

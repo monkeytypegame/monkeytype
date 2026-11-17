@@ -726,6 +726,40 @@ describe("string utils", () => {
           },
         },
         {
+          // regression: a committed wrong word's space was counted as extra
+          description:
+            "incorrect word committed with space — space is incorrect",
+          input: {
+            inputWord: "xello ",
+            targetWord: "hello ",
+            creditPartial: false,
+            committed: true,
+          },
+          expected: {
+            allCorrect: 4,
+            correctWord: 0,
+            incorrect: 2,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
+          description: "correct word committed with space",
+          input: {
+            inputWord: "hello ",
+            targetWord: "hello ",
+            creditPartial: false,
+            committed: true,
+          },
+          expected: {
+            allCorrect: 6,
+            correctWord: 6,
+            incorrect: 0,
+            extra: 0,
+            missed: 0,
+          },
+        },
+        {
           description: "empty input with creditPartial",
           input: {
             inputWord: "",
@@ -778,6 +812,7 @@ describe("string utils", () => {
             input.inputWord,
             input.targetWord,
             input.creditPartial,
+            input.committed ?? false,
           ),
         ).toEqual(expected);
       });
