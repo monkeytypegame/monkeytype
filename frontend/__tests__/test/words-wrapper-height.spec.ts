@@ -61,8 +61,8 @@ function renderWords(count: number): HTMLElement {
     const letter = word.firstElementChild as HTMLElement;
     registry.registerWord(i, {
       el: word,
-      letter: (index) => (index === 0 ? letter : undefined),
-      letterCount: () => 1,
+      getLetter: (index) => (index === 0 ? letter : undefined),
+      getLetterCount: () => 1,
     });
   }
   wordsWrapper.append(words);

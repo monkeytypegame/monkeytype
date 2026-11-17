@@ -9,8 +9,8 @@ import {
 function mountedWord(letters: HTMLElement[] = []): MountedWord {
   return {
     el: document.createElement("div"),
-    letter: (index) => letters[index],
-    letterCount: () => letters.length,
+    getLetter: (index) => letters[index],
+    getLetterCount: () => letters.length,
   };
 }
 

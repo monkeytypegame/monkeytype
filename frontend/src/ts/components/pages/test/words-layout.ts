@@ -159,7 +159,7 @@ function getNlCharWidth(
   if (chars[chars.length - 1] !== "\n") return 0;
   const nlChar = registry
     .getWord(lastWordInLineIndex)
-    ?.letter(chars.length - 1);
+    ?.getLetter(chars.length - 1);
   const nlStatus = nlChar?.getAttribute("data-ui-state");
   if (
     nlChar === undefined ||
@@ -201,7 +201,7 @@ function getTopAndHeightWithDifferentData(
   top: number;
   height: number;
 } {
-  const domLettersCount = activeWord.letterCount();
+  const domLettersCount = activeWord.getLetterCount();
   const nodes = [];
   for (let i = domLettersCount; i < data.length; i++) {
     const tempLetter = document.createElement("letter");
@@ -211,7 +211,7 @@ function getTopAndHeightWithDifferentData(
     nodes.push(tempLetter);
   }
 
-  activeWord.letter(domLettersCount - 1)?.after(...nodes);
+  activeWord.getLetter(domLettersCount - 1)?.after(...nodes);
 
   const top = activeWord.el.offsetTop;
   const height = activeWord.el.offsetHeight;

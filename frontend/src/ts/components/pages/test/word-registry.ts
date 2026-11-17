@@ -11,8 +11,8 @@ export type LineBreakElements = {
 export type MountedWord = {
   readonly el: HTMLElement;
   /** Letter `index`, undefined past the last one. */
-  letter(index: number): HTMLElement | undefined;
-  letterCount(): number;
+  getLetter(index: number): HTMLElement | undefined;
+  getLetterCount(): number;
 };
 
 /**

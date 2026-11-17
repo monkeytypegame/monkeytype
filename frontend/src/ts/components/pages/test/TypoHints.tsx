@@ -66,7 +66,7 @@ function toSingleLetterHints(hints: TypoHint[]): MergedTypoHint[] {
 export function TypoHints(props: {
   word: RenderedWord;
   /** the word's rendered letter `index` */
-  letter: (index: number) => HTMLElement | undefined;
+  getLetter: (index: number) => HTMLElement | undefined;
 }): JSXElement {
   const hints = createMemo(
     () =>
@@ -112,7 +112,7 @@ export function TypoHints(props: {
       if (container === undefined || singleHints.length === 0) return;
       const hintElements = container.children;
       const boxes = singleHints.map((hint, i): TypoHintBox => {
-        const letter = props.letter(hint.letterIndex);
+        const letter = props.getLetter(hint.letterIndex);
         const hintElement = hintElements[i] as HTMLElement | undefined;
         return {
           letterLeft: letter?.offsetLeft ?? 0,

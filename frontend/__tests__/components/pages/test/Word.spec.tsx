@@ -52,8 +52,8 @@ function renderWord(): { registry: WordRegistry; container: HTMLElement } {
 function registeredLetters(registry: WordRegistry): Element[] | undefined {
   const word = registry.getWord(0);
   if (word === undefined) return undefined;
-  return Array.from({ length: word.letterCount() }, (_, i) =>
-    word.letter(i),
+  return Array.from({ length: word.getLetterCount() }, (_, i) =>
+    word.getLetter(i),
   ).filter((l) => l !== undefined);
 }
 

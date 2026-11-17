@@ -42,7 +42,7 @@ export function getTapeLetterShift(
   let shift = 0;
   let lastPositiveLetterWidth = 0;
   for (let i = 0; i < inputLength; i++) {
-    const letter = word.letter(i);
+    const letter = word.getLetter(i);
     if (
       (Config.blindMode || Config.hideExtraLetters) &&
       letter?.getAttribute("data-ui-state") === "extra"
@@ -54,7 +54,7 @@ export function getTapeLetterShift(
     if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
   }
   // if current letter has zero width move the tape to previous positive width letter
-  if (word.letter(inputLength)?.offsetWidth === 0) {
+  if (word.getLetter(inputLength)?.offsetWidth === 0) {
     shift -= lastPositiveLetterWidth;
   }
   return shift;
@@ -405,7 +405,7 @@ export class Caret {
     wordDirection: Direction;
   }): { left: number; top: number; width: number } {
     const { word } = options;
-    const letterCount = word.letterCount();
+    const letterCount = word.getLetterCount();
     const wordEl = new ElementWithUtils(word.el);
 
     if (letterCount === 0) {
@@ -415,7 +415,7 @@ export class Caret {
     }
 
     let letter =
-      word.letter(options.letterIndex) ?? word.letter(letterCount - 1);
+      word.getLetter(options.letterIndex) ?? word.getLetter(letterCount - 1);
 
     if (!letter) {
       throw new Error(
@@ -429,7 +429,7 @@ export class Caret {
     const isLetterVisible = letter.offsetWidth > 0;
     if (!isLetterVisible) {
       for (let i = options.letterIndex - 1; i >= 0; i--) {
-        const loopLetter = word.letter(i) as HTMLElement;
+        const loopLetter = word.getLetter(i) as HTMLElement;
 
         // find the closest visible letter before the current letter
         if (loopLetter.offsetWidth > 0) {
