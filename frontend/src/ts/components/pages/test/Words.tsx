@@ -21,10 +21,6 @@ import {
   showOutOfFocusWarning,
 } from "../../../states/test";
 import {
-  registerLineBreakElements,
-  unregisterLineBreakElements,
-} from "../../../states/word-elements";
-import {
   firstMountedIndex,
   isWordRendered,
   wordsRenderState,
@@ -33,6 +29,7 @@ import { paceCaretTarget } from "../../../test/pace-caret";
 import { cn } from "../../../utils/cn";
 import { isCaretDebug } from "./caret";
 import { Word } from "./Word";
+import { createWordRegistry, type WordRegistry } from "./word-registry";
 import { createWordsLayout } from "./words-layout";
 
 function prefixedClass(
@@ -64,8 +61,10 @@ export function Words(props: {
   let wordsRef: HTMLDivElement | undefined;
   let caretRef: HTMLDivElement | undefined;
   let paceCaretRef: HTMLDivElement | undefined;
+  const registry = createWordRegistry();
   // reads its elements lazily, they mount after it
   const layout = createWordsLayout({
+    registry,
     words: () => wordsRef,
     wordsWrapper: () => props.wordsWrapperRef?.(),
     caret: () => caretRef,
@@ -141,10 +140,17 @@ export function Words(props: {
           {(word) => (
             <>
               <Show when={isWordRendered(word.index)}>
-                <Word word={word} isActive={isActive} />
+                <Word
+                  word={word}
+                  isActive={isActive}
+                  register={registry.registerWord}
+                />
               </Show>
               <Show when={word.endsLine}>
-                <LineBreak index={word.index} />
+                <LineBreak
+                  index={word.index}
+                  register={registry.registerLineBreak}
+                />
               </Show>
             </>
           )}
@@ -189,16 +195,17 @@ function Caret(props: {
 }
 
 /** The line break after word `index`, registered for the layout. */
-function LineBreak(props: { index: number }): JSXElement {
+function LineBreak(props: {
+  index: number;
+  register: WordRegistry["registerLineBreak"];
+}): JSXElement {
   let beforeRef: HTMLDivElement | undefined;
   let afterRef: HTMLDivElement | undefined;
 
   onMount(() => {
     if (beforeRef === undefined || afterRef === undefined) return;
     const index = props.index;
-    const els = { before: beforeRef, after: afterRef };
-    registerLineBreakElements(index, els);
-    onCleanup(() => unregisterLineBreakElements(index, els));
+    onCleanup(props.register(index, { before: beforeRef, after: afterRef }));
   });
 
   return (

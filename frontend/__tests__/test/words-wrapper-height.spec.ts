@@ -6,10 +6,7 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 }));
 
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import {
-  registerWordElement,
-  unregisterWordElement,
-} from "../../src/ts/states/word-elements";
+import { createWordRegistry } from "../../src/ts/components/pages/test/word-registry";
 import { replaceWords } from "../../src/ts/states/words-render";
 import { createWordsLayout } from "../../src/ts/components/pages/test/words-layout";
 import { createRoot } from "solid-js";
@@ -54,18 +51,20 @@ function fakeLayout(): void {
 function renderWords(count: number): HTMLElement {
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
+  const registry = createWordRegistry();
   for (let i = 0; i < count; i++) {
     words.insertAdjacentHTML(
       "beforeend",
       `<div class="word" data-wordindex="${i}"><letter data-ui-element="letter">a</letter></div>`,
     );
-    registerWordElement(i, words.lastElementChild as HTMLElement);
+    registry.registerWord(i, words.lastElementChild as HTMLElement);
   }
   wordsWrapper.append(words);
   document.body.append(wordsWrapper);
 
   const dispose = createRoot((dispose) => {
     createWordsLayout({
+      registry,
       words: () => words,
       wordsWrapper: () => wordsWrapper,
       caret: () => undefined,
@@ -78,12 +77,6 @@ function renderWords(count: number): HTMLElement {
   replaceWords([], { activeWordIndex: 0 });
   cleanups.push(() => {
     dispose();
-    for (const el of words.children) {
-      unregisterWordElement(
-        Number((el as HTMLElement).dataset["wordindex"]),
-        el as HTMLElement,
-      );
-    }
     wordsWrapper.remove();
   });
   return wordsWrapper;

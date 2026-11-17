@@ -1,10 +1,8 @@
 import { createMemo, Index, JSXElement, onCleanup, onMount } from "solid-js";
 
+import type { WordRegistry } from "./word-registry";
+
 import { getConfig } from "../../../config/store";
-import {
-  registerWordElement,
-  unregisterWordElement,
-} from "../../../states/word-elements";
 import { RenderedWord, wordsRenderState } from "../../../states/words-render";
 import { cn } from "../../../utils/cn";
 import { createLetters, createZenLetters } from "./letters";
@@ -17,6 +15,8 @@ export type WordStatus = "untyped" | "typed" | "typedIncorrectly";
 export function Word(props: {
   word: RenderedWord;
   isActive: (index: number) => boolean;
+  /** registers its element while mounted, for the layout */
+  register: WordRegistry["registerWord"];
 }): JSXElement {
   const letters = createMemo(() =>
     wordsRenderState.rendersLettersFromInput
@@ -44,9 +44,7 @@ export function Word(props: {
   onMount(() => {
     const el = wordRef;
     if (el === undefined) return;
-    const index = props.word.index;
-    registerWordElement(index, el);
-    onCleanup(() => unregisterWordElement(index, el));
+    onCleanup(props.register(props.word.index, el));
   });
 
   return (

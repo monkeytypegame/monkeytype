@@ -3,7 +3,7 @@ import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
 
 import { Config } from "../../../config/store";
-import { getWordElement, LETTER_SELECTOR } from "../../../states/word-elements";
+import { LETTER_SELECTOR } from "./selectors";
 import * as TestWords from "../../../test/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
@@ -278,6 +278,8 @@ export class Caret {
 
   public goTo(options: {
     wordIndex: number;
+    /** word `wordIndex`'s element, undefined when it's not rendered */
+    wordEl: HTMLElement | undefined;
     letterIndex: number;
     testDirection: Direction;
     /** zen words have no direction of their own, it comes from the input */
@@ -289,8 +291,10 @@ export class Caret {
     };
   }): void {
     if (this.style === "off") return;
-    const wordEl = getWordElement(options.wordIndex);
-    const word = wordEl === undefined ? null : new ElementWithUtils(wordEl);
+    const word =
+      options.wordEl === undefined
+        ? null
+        : new ElementWithUtils(options.wordEl);
     const testWord = TestWords.words.get(options.wordIndex);
     const wordLength = Array.from(testWord?.display ?? "").length;
     // the typed letters, before clamping to the word's letters below
