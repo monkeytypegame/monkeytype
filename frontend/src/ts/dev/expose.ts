@@ -16,6 +16,8 @@ import { quickLogin, signOut } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
 
+// app code reads letters through the Words instance's registry, which dev
+// tools can't reach: query the DOM instead (spec Q33 exempts dev/)
 const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // Modules hot-updated since the page loaded. Kept on window: it survives this

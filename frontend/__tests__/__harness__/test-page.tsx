@@ -77,6 +77,8 @@ import {
 import * as CustomText from "../../src/ts/test/custom-text";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 
+// tests check the rendered DOM itself, not the registry's refs, so they
+// query letters directly (spec Q33 exempts tests)
 const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // fake timers, then jsdom gaps: matchMedia (ad controller, on import; no

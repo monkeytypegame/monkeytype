@@ -24,6 +24,8 @@ import {
 } from "../../../../src/ts/states/words-render";
 import { renderWords } from "../../../__harness__/render-words";
 
+// tests check the rendered DOM itself, not the registry's refs, so they
+// query letters directly (spec Q33 exempts tests)
 const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 let frames: Map<number, FrameRequestCallback>;
