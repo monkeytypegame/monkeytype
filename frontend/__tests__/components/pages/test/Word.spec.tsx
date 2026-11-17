@@ -48,6 +48,15 @@ function renderWord(): { registry: WordRegistry; container: HTMLElement } {
   return { registry, container };
 }
 
+/** Word 0's letters as the registry hands them out, undefined if unregistered. */
+function registeredLetters(registry: WordRegistry): Element[] | undefined {
+  const word = registry.getWord(0);
+  if (word === undefined) return undefined;
+  return Array.from({ length: word.letterCount() }, (_, i) =>
+    word.letter(i),
+  ).filter((l) => l !== undefined);
+}
+
 function renderedLetters(container: HTMLElement): Element[] {
   return [...container.querySelectorAll(`.word > ${LETTER_SELECTOR}`)];
 }
@@ -77,9 +86,9 @@ describe("Word", () => {
       flush();
       const { registry, container } = renderWord();
 
-      expect(registry.getWord(0)).toBe(container.querySelector(".word"));
-      expect(registry.getLetters(0)).toEqual(renderedLetters(container));
-      expect(registry.getLetters(0)).toHaveLength(3);
+      expect(registry.getWord(0)?.el).toBe(container.querySelector(".word"));
+      expect(registeredLetters(registry)).toEqual(renderedLetters(container));
+      expect(registeredLetters(registry)).toHaveLength(3);
     });
 
     it("follows extra letters and backspace", () => {
@@ -89,13 +98,13 @@ describe("Word", () => {
 
       setWordInput(0, "abcd");
       flush();
-      expect(registry.getLetters(0)).toHaveLength(4);
-      expect(registry.getLetters(0)).toEqual(renderedLetters(container));
+      expect(registeredLetters(registry)).toHaveLength(4);
+      expect(registeredLetters(registry)).toEqual(renderedLetters(container));
 
       setWordInput(0, "a");
       flush();
-      expect(registry.getLetters(0)).toHaveLength(2);
-      expect(registry.getLetters(0)).toEqual(renderedLetters(container));
+      expect(registeredLetters(registry)).toHaveLength(2);
+      expect(registeredLetters(registry)).toEqual(renderedLetters(container));
     });
 
     it("follows the input in zen", () => {
@@ -106,25 +115,24 @@ describe("Word", () => {
 
       setWordInput(0, "hey");
       flush();
-      expect(registry.getLetters(0)).toHaveLength(3);
-      expect(registry.getLetters(0)).toEqual(renderedLetters(container));
+      expect(registeredLetters(registry)).toHaveLength(3);
+      expect(registeredLetters(registry)).toEqual(renderedLetters(container));
 
       setWordInput(0, "h");
       flush();
-      expect(registry.getLetters(0)).toEqual(renderedLetters(container));
+      expect(registeredLetters(registry)).toEqual(renderedLetters(container));
     });
 
     it("unregisters when unmounted", () => {
       appendRenderedWord({ display: "abc" });
       flush();
       const { registry, container } = renderWord();
-      expect(registry.getLetters(0)).toHaveLength(3);
+      expect(registeredLetters(registry)).toHaveLength(3);
 
       resetWordsRender();
       flush();
       expect(container.querySelector(".word")).toBeNull();
-      expect(registry.getLetters(0)).toBeUndefined();
-      expect(registry.getLetters(0)).toBeUndefined();
+      expect(registry.getWord(0)).toBeUndefined();
     });
   });
 
@@ -145,14 +153,9 @@ describe("Word", () => {
         isMainCaret: false,
         style: () => "default",
         wordsWrapper: () => wordsWrapper,
+        words: registry,
       });
-      paceCaret.goTo({
-        wordIndex: 0,
-        wordEl: registry.getWord(0),
-        letters: registry.getLetters(0),
-        letterIndex: 0,
-        testDirection: "ltr",
-      });
+      paceCaret.goTo({ wordIndex: 0, letterIndex: 0, testDirection: "ltr" });
       expect(letters[0]?.classList.contains("debugCaretTarget")).toBe(true);
       expect(letters[1]?.classList.contains("debugCaretTarget")).toBe(false);
 

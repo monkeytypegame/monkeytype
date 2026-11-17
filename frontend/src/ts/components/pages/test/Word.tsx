@@ -42,11 +42,18 @@ export function Word(props: {
   let wordRef: HTMLDivElement | undefined;
   // the rendered letters in order, filled by their refs
   const letterRefs: HTMLElement[] = [];
+  const letter = (index: number): HTMLElement | undefined => letterRefs[index];
 
   onMount(() => {
     const el = wordRef;
     if (el === undefined) return;
-    onCleanup(props.register(props.word.index, el, letterRefs));
+    onCleanup(
+      props.register(props.word.index, {
+        el,
+        letter,
+        letterCount: () => letterRefs.length,
+      }),
+    );
   });
 
   return (
@@ -76,7 +83,7 @@ export function Word(props: {
           );
         }}
       </Index>
-      <TypoHints word={props.word} letters={letterRefs} />
+      <TypoHints word={props.word} letter={letter} />
     </div>
   );
 }

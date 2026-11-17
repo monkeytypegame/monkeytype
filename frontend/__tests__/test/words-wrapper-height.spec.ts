@@ -58,7 +58,12 @@ function renderWords(count: number): HTMLElement {
       `<div class="word" data-wordindex="${i}"><letter data-ui-element="letter">a</letter></div>`,
     );
     const word = words.lastElementChild as HTMLElement;
-    registry.registerWord(i, word, [word.firstElementChild as HTMLElement]);
+    const letter = word.firstElementChild as HTMLElement;
+    registry.registerWord(i, {
+      el: word,
+      letter: (index) => (index === 0 ? letter : undefined),
+      letterCount: () => 1,
+    });
   }
   wordsWrapper.append(words);
   document.body.append(wordsWrapper);

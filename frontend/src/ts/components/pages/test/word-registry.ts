@@ -5,27 +5,26 @@ export type LineBreakElements = {
 };
 
 /**
+ * A rendered word's elements. Letters are live (as of the last words flush):
+ * read them when needed, don't keep them across flushes.
+ */
+export type WordElements = {
+  readonly el: HTMLElement;
+  /** Letter `index`, undefined past the last one. */
+  letter(index: number): HTMLElement | undefined;
+  letterCount(): number;
+};
+
+/**
  * Rendered word, letter and line break elements by word index, owned by the
  * Words component: its words and line breaks register while mounted, its
- * layout and caret find them without querying the DOM.
+ * layout and carets find them without querying the DOM.
  */
 export type WordRegistry = {
-  /**
-   * Registers word `index`'s element and its letters (an array the word keeps
-   * filled with its rendered letters, in order); returns its unregister.
-   */
-  registerWord(
-    index: number,
-    el: HTMLElement,
-    letters: readonly HTMLElement[],
-  ): () => void;
-  /** The word's element, as of the last words flush. */
-  getWord(index: number): HTMLElement | undefined;
-  /**
-   * The word's rendered letters, as of the last words flush. Live: read it
-   * again after the next flush instead of keeping it.
-   */
-  getLetters(index: number): readonly HTMLElement[] | undefined;
+  /** Registers word `index`'s elements; returns its unregister. */
+  registerWord(index: number, word: WordElements): () => void;
+  /** The word's elements, as of the last words flush. */
+  getWord(index: number): WordElements | undefined;
   /**
    * Registers the line break ending word `index`'s line; returns its
    * unregister.
@@ -36,10 +35,7 @@ export type WordRegistry = {
 };
 
 export function createWordRegistry(): WordRegistry {
-  const words = new Map<
-    number,
-    { el: HTMLElement; letters: readonly HTMLElement[] }
-  >();
+  const words = new Map<number, WordElements>();
   const lineBreaks = new Map<number, LineBreakElements>();
 
   /** Sets `key` to `value`; the returned unregister leaves a newer value. */
@@ -52,10 +48,8 @@ export function createWordRegistry(): WordRegistry {
   }
 
   return {
-    registerWord: (index, el, letters) =>
-      register(words, index, { el, letters }),
-    getWord: (index) => words.get(index)?.el,
-    getLetters: (index) => words.get(index)?.letters,
+    registerWord: (index, word) => register(words, index, word),
+    getWord: (index) => words.get(index),
     registerLineBreak: (index, els) => register(lineBreaks, index, els),
     getLineBreak: (index) => lineBreaks.get(index),
   };
