@@ -11,23 +11,23 @@ import type { Direction } from "../../../utils/strings";
 
 const lockedMainCaretInTape = true;
 const [isCaretDebug, setCaretDebug] = createSignal(false);
-/** Dev options: outlines the pace caret and marks the letters it targets. */
-export { isCaretDebug };
+const [caretDebugTarget, setCaretDebugTarget] = createSignal<
+  | {
+      /** the letter the pace caret targets */
+      letter: HTMLElement;
+      /** the visible letter it goes to instead, if the target has no width */
+      visibleLetter?: HTMLElement;
+    }
+  | undefined
+>();
+/**
+ * Dev options: outlines the pace caret and the letters, marking the ones it
+ * targets (set while caret debug is on).
+ */
+export { isCaretDebug, caretDebugTarget };
 
 export function toggleCaretDebug(): void {
-  const caretDebug = !isCaretDebug();
-  setCaretDebug(caretDebug);
-  if (!caretDebug) {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.remove("debugCaret");
-      l.classList.remove("debugCaretTarget");
-      l.classList.remove("debugCaretTarget2");
-    }
-  } else {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.add("debugCaret");
-    }
-  }
+  setCaretDebug((debug) => !debug);
 }
 
 /**
@@ -416,15 +416,7 @@ export class Caret {
       );
     }
 
-    const caretDebug = isCaretDebug();
-    if (caretDebug && !this.isMainCaret) {
-      for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-        l.classList.remove("debugCaretTarget");
-        l.classList.remove("debugCaretTarget2");
-        l.classList.add("debugCaret");
-      }
-      letter?.addClass("debugCaretTarget");
-    }
+    const targetLetter = letter;
 
     //if the letter is not visible, use the closest visible letter
     const isLetterVisible = letter.getOffsetWidth() > 0;
@@ -438,9 +430,13 @@ export class Caret {
           break;
         }
       }
-      if (caretDebug) {
-        letter.addClass("debugCaretTarget2");
-      }
+    }
+
+    if (isCaretDebug() && !this.isMainCaret) {
+      setCaretDebugTarget({
+        letter: targetLetter.native,
+        ...(letter !== targetLetter && { visibleLetter: letter.native }),
+      });
     }
 
     const spaceWidth = getTotalInlineMargin(options.word.native);
