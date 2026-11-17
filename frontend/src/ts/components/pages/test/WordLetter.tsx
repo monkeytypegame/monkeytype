@@ -1,6 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
 import { Fa, type FaProps } from "../../common/Fa";
+import { caretDebugTarget, isCaretDebug } from "./caret";
 
 declare module "solid-js" {
   // oxlint-disable-next-line typescript/no-namespace
@@ -83,9 +84,22 @@ function letterVariant(text: string): string | undefined {
 }
 
 export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
+  let letterRef: HTMLElement | undefined;
+  // dev options caret debug: outlines letters, the pace caret's target in
+  // red, the visible letter it goes to instead in yellow
+  const debugClass = (): string => {
+    if (!isCaretDebug()) return "";
+    const target = caretDebugTarget();
+    let cls = " debugCaret";
+    if (target === undefined || letterRef === undefined) return cls;
+    if (target.letter === letterRef) cls += " debugCaretTarget";
+    if (target.visibleLetter === letterRef) cls += " debugCaretTarget2";
+    return cls;
+  };
   return (
     <letter
-      class={letterClass(props.letter)}
+      ref={(el) => (letterRef = el)}
+      class={letterClass(props.letter) + debugClass()}
       data-ui-element="letter"
       data-ui-state={props.letter.status}
       data-ui-variant={letterVariant(props.letter.text)}

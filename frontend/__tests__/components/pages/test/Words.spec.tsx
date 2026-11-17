@@ -1,6 +1,11 @@
 import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  Caret,
+  isCaretDebug,
+  toggleCaretDebug,
+} from "../../../../src/ts/components/pages/test/caret";
 import { LETTER_SELECTOR } from "../../../../src/ts/components/pages/test/selectors";
 import { setConfigStore } from "../../../../src/ts/config/store";
 import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
@@ -84,6 +89,7 @@ afterEach(() => {
   setTestFocusState("focused");
   setJoiningScript(false);
   setIsLanguageRightToLeft(false);
+  if (isCaretDebug()) toggleCaretDebug();
   resetWordsRender();
   frames.clear();
   vi.unstubAllGlobals();
@@ -775,6 +781,43 @@ describe("Words", () => {
       expect(wordsRenderState.keepsLineBreaks).toBe(true);
       replaceWords([{ display: "a\n" }], { activeWordIndex: 0, zen: true });
       expect(wordsRenderState.keepsLineBreaks).toBe(false);
+    });
+  });
+
+  describe("caret debug", () => {
+    it("outlines the letters and marks the pace caret's target", () => {
+      const container = renderWords();
+      appendRenderedWord({ display: "abc" });
+      flush();
+      const letters = [
+        ...(wordEls(container)[0]?.querySelectorAll(LETTER_SELECTOR) ?? []),
+      ];
+
+      toggleCaretDebug();
+      expect(letters.every((l) => l.classList.contains("debugCaret"))).toBe(
+        true,
+      );
+
+      const wordsWrapper = document.createElement("div");
+      const paceCaret = new Caret(document.createElement("div"), {
+        isMainCaret: false,
+        style: () => "default",
+        wordsWrapper: () => wordsWrapper,
+      });
+      paceCaret.goTo({
+        wordIndex: 0,
+        wordEl: wordEls(container)[0],
+        letterIndex: 0,
+        testDirection: "ltr",
+      });
+      expect(letters[0]?.classList.contains("debugCaretTarget")).toBe(true);
+      expect(letters[1]?.classList.contains("debugCaretTarget")).toBe(false);
+
+      toggleCaretDebug();
+      for (const l of letters) {
+        expect(l.classList.contains("debugCaret")).toBe(false);
+        expect(l.classList.contains("debugCaretTarget")).toBe(false);
+      }
     });
   });
 });
