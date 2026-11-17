@@ -7,7 +7,7 @@ import * as TestWords from "../../../test/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
 import type { Direction } from "../../../utils/strings";
-import type { WordElements, WordRegistry } from "./word-registry";
+import type { MountedWord, WordRegistry } from "./word-registry";
 
 const lockedMainCaretInTape = true;
 const [isCaretDebug, setCaretDebug] = createSignal(false);
@@ -36,7 +36,7 @@ export function toggleCaretDebug(): void {
  * the next letter has none.
  */
 export function getTapeLetterShift(
-  word: WordElements,
+  word: MountedWord,
   inputLength: number,
 ): number {
   let shift = 0;
@@ -397,7 +397,7 @@ export class Caret {
   }
 
   private getTargetPositionAndWidth(options: {
-    word: WordElements;
+    word: MountedWord;
     letterIndex: number;
     inputLength: number;
     side: "beforeLetter" | "afterLetter";

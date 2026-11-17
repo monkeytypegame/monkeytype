@@ -5,10 +5,10 @@ export type LineBreakElements = {
 };
 
 /**
- * A rendered word's elements. Letters are live (as of the last words flush):
- * read them when needed, don't keep them across flushes.
+ * A word on screen: its element and letters. Letters are live (as of the
+ * last words flush): read them when needed, don't keep them across flushes.
  */
-export type WordElements = {
+export type MountedWord = {
   readonly el: HTMLElement;
   /** Letter `index`, undefined past the last one. */
   letter(index: number): HTMLElement | undefined;
@@ -21,10 +21,10 @@ export type WordElements = {
  * layout and carets find them without querying the DOM.
  */
 export type WordRegistry = {
-  /** Registers word `index`'s elements; returns its unregister. */
-  registerWord(index: number, word: WordElements): () => void;
-  /** The word's elements, as of the last words flush. */
-  getWord(index: number): WordElements | undefined;
+  /** Registers word `index` while it's mounted; returns its unregister. */
+  registerWord(index: number, word: MountedWord): () => void;
+  /** The mounted word, as of the last words flush. */
+  getWord(index: number): MountedWord | undefined;
   /**
    * Registers the line break ending word `index`'s line; returns its
    * unregister.
@@ -35,7 +35,7 @@ export type WordRegistry = {
 };
 
 export function createWordRegistry(): WordRegistry {
-  const words = new Map<number, WordElements>();
+  const words = new Map<number, MountedWord>();
   const lineBreaks = new Map<number, LineBreakElements>();
 
   /** Sets `key` to `value`; the returned unregister leaves a newer value. */

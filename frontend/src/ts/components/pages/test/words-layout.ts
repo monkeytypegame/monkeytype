@@ -39,7 +39,7 @@ import { ElementWithUtils } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
 import * as Strings from "../../../utils/strings";
 import { Caret, getTapeLetterShift } from "./caret";
-import type { WordElements, WordRegistry } from "./word-registry";
+import type { MountedWord, WordRegistry } from "./word-registry";
 
 type WordChange = "forward" | "back" | "initial";
 
@@ -195,7 +195,7 @@ function setMarginLeft(
 }
 
 function getTopAndHeightWithDifferentData(
-  activeWord: WordElements,
+  activeWord: MountedWord,
   data: string,
 ): {
   top: number;
