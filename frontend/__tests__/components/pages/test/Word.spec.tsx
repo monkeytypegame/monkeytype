@@ -153,7 +153,7 @@ describe("Word", () => {
         isMainCaret: false,
         style: () => "default",
         wordsWrapper: () => wordsWrapper,
-        words: registry,
+        wordRegistry: registry,
       });
       paceCaret.goTo({ wordIndex: 0, letterIndex: 0, testDirection: "ltr" });
       expect(letters[0]?.classList.contains("debugCaretTarget")).toBe(true);

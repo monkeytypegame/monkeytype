@@ -69,7 +69,7 @@ export function getTapeLetterShift(
 export class Caret {
   private element: ElementWithUtils;
   private getWordsWrapper: () => HTMLElement;
-  private words: WordRegistry;
+  private wordRegistry: WordRegistry;
   private getStyle: () => CaretStyle;
   private readyToResetMarginTop: boolean = false;
   private readyToResetMarginLeft: boolean = false;
@@ -88,11 +88,11 @@ export class Caret {
       style: () => CaretStyle;
       wordsWrapper: () => HTMLElement;
       /** the elements of the words it goes to */
-      words: WordRegistry;
+      wordRegistry: WordRegistry;
     },
   ) {
     this.element = new ElementWithUtils(element);
-    this.words = options.words;
+    this.wordRegistry = options.wordRegistry;
     this.isMainCaret = options.isMainCaret;
     this.getStyle = options.style;
     this.getWordsWrapper = options.wordsWrapper;
@@ -327,7 +327,7 @@ export class Caret {
     }
 
     // not rendered (eg. removed by a line jump)
-    const word = this.words.getWord(options.wordIndex);
+    const word = this.wordRegistry.getWord(options.wordIndex);
     if (word === undefined) return;
 
     const { left, top, width } = this.getTargetPositionAndWidth({

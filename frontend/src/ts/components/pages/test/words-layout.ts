@@ -313,7 +313,7 @@ export function createWordsLayout(options: {
         isMainCaret: true,
         style: () => Config.caretStyle,
         wordsWrapper: () => wordsWrapperEl().native,
-        words: registry,
+        wordRegistry: registry,
       });
     }
     return caretHandle;
@@ -327,7 +327,7 @@ export function createWordsLayout(options: {
         isMainCaret: false,
         style: () => Config.paceCaretStyle,
         wordsWrapper: () => wordsWrapperEl().native,
-        words: registry,
+        wordRegistry: registry,
       });
     }
     return paceCaretHandle;
