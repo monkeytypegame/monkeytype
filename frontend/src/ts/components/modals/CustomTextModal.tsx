@@ -351,8 +351,17 @@ export function CustomTextModal(): JSXElement {
     const file = fileInputRef?.files?.[0];
     if (!file) return;
 
-    if (file.type !== "text/plain") {
-      showErrorNotification("File is not a text file", { durationMs: 5000 });
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() ?? "";
+
+    const isTextFile = file.type === "text/plain" || fileExtension === "txt";
+
+    const isMarkdownFile =
+      file.type === "text/markdown" ||
+      file.type === "text/x-markdown" ||
+      fileExtension === "md";
+
+    if (!isMarkdownFile && !isTextFile) {
+      showErrorNotification("Unsupported file type", { durationMs: 5000 });
       return;
     }
 
@@ -360,7 +369,8 @@ export function CustomTextModal(): JSXElement {
     reader.readAsText(file, "UTF-8");
     reader.onload = (e) => {
       const content = e.target?.result as string;
-      form.setFieldValue("text", content);
+      const text = isMarkdownFile ? Strings.stripMarkdown(content) : content;
+      form.setFieldValue("text", text);
       fileInputRef.value = "";
     };
     reader.onerror = () => {
@@ -649,7 +659,7 @@ export function CustomTextModal(): JSXElement {
                 ref={fileInputRef}
                 type="file"
                 class="hidden"
-                accept=".txt"
+                accept=".txt,.md"
                 onChange={handleFileOpen}
               />
               <Button
