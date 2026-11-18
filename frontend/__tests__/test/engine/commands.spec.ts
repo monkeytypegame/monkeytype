@@ -10,8 +10,8 @@ import {
   getFrozenLog,
   getPhase,
   liveStats,
-  nextWord,
-  previousWord,
+  incrementActiveWordIndex,
+  decrementActiveWordIndex,
   publishFrozenLog,
   resetActiveWordIndex,
   setLastBurst,
@@ -104,9 +104,9 @@ describe("engine", () => {
 
   describe("word navigation", () => {
     it("moves the active word index", () => {
-      nextWord();
-      nextWord();
-      previousWord();
+      incrementActiveWordIndex();
+      incrementActiveWordIndex();
+      decrementActiveWordIndex();
       expect(getActiveWordIndex()).toBe(1);
       resetActiveWordIndex();
       expect(getActiveWordIndex()).toBe(0);

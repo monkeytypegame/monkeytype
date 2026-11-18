@@ -47,7 +47,10 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import { nextWord, resetActiveWordIndex } from "../../src/ts/test/engine/state";
+import {
+  incrementActiveWordIndex,
+  resetActiveWordIndex,
+} from "../../src/ts/test/engine/state";
 import * as TestWords from "../../src/ts/test/engine/test-words";
 import {
   focusWordsEvent,
@@ -125,7 +128,7 @@ function childClasses(words: HTMLElement): string[] {
 
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
-  nextWord();
+  incrementActiveWordIndex();
   afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
@@ -188,11 +191,11 @@ describe("after-input words rendering", () => {
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
-      nextWord();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
     }
     runFrames();
-    nextWord();
+    incrementActiveWordIndex();
     const topBefore = input.style.top;
 
     afterTestWordChange("forward");
@@ -224,7 +227,7 @@ describe("after-input words rendering", () => {
 
     // committed with a typo
     setWordInput(0, "wrod");
-    nextWord();
+    incrementActiveWordIndex();
     afterTestWordChange("forward");
 
     const first = (): Element | null =>
@@ -242,7 +245,7 @@ describe("after-input words rendering", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
-    nextWord();
+    incrementActiveWordIndex();
     appendRenderedWord({ display: "" });
     afterTestWordChange("forward");
     runFrames();
@@ -266,7 +269,7 @@ describe("after-input words rendering", () => {
     );
 
     for (let i = 0; i < 2; i++) {
-      nextWord();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
     }
     runFrames();
@@ -452,7 +455,7 @@ describe("after-input words rendering", () => {
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
 
       // to the first word of the second line, same frame
-      nextWord();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
@@ -460,7 +463,7 @@ describe("after-input words rendering", () => {
 
     it("blocks the extra letter while the active word isn't rendered yet", () => {
       mountTwoLetterWords(3);
-      for (let i = 0; i < 3; i++) nextWord();
+      for (let i = 0; i < 3; i++) incrementActiveWordIndex();
       appendRenderedWord({ display: "ab" });
       afterTestWordChange("forward");
 
@@ -506,7 +509,7 @@ describe("after-input words rendering", () => {
       await goForward();
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
-        nextWord();
+        incrementActiveWordIndex();
         afterTestWordChange("forward");
       }
       runFrames();

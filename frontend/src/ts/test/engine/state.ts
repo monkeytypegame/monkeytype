@@ -32,10 +32,10 @@ export const [getPhase, setPhase] = createSignal<Phase>("idle");
 // steps by one only; resetActiveWordIndex: words reset or regenerated
 export const [
   getActiveWordIndex,
-  { nextWord, previousWord, resetActiveWordIndex },
+  { incrementActiveWordIndex, decrementActiveWordIndex, resetActiveWordIndex },
 ] = createSignalWithSetters(0)({
-  nextWord: (set) => set((i) => i + 1),
-  previousWord: (set) => set((i) => i - 1),
+  incrementActiveWordIndex: (set) => set((i) => i + 1),
+  decrementActiveWordIndex: (set) => set((i) => i - 1),
   resetActiveWordIndex: (set) => set(0),
 });
 

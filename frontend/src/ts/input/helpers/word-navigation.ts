@@ -3,8 +3,8 @@ import { afterTestWordChange, beforeTestWordChange } from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
   getActiveWordIndex,
-  nextWord,
-  previousWord,
+  incrementActiveWordIndex,
+  decrementActiveWordIndex,
 } from "../../test/engine/state";
 import * as TestLogic from "../../test/test-logic";
 import * as TestWords from "../../test/engine/test-words";
@@ -77,7 +77,7 @@ export async function goToNextWord({
     Config.mode === "zen"
   ) {
     ret.increasedWordIndex = true;
-    nextWord();
+    incrementActiveWordIndex();
   }
 
   setInputElementValue("");
@@ -94,7 +94,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
 
   beforeTestWordChange("back");
 
-  previousWord();
+  decrementActiveWordIndex();
 
   const word = TestWords.words.get(getActiveWordIndex())?.text;
   if (word !== undefined) Funbox.toggleScript(word);
