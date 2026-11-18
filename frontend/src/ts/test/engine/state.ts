@@ -1,6 +1,7 @@
 import { batch, createMemo, createRoot, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { createSignalWithSetters } from "../../hooks/createSignalWithSetters";
 import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
@@ -28,21 +29,15 @@ export const [getPhase, setPhase] = createSignal<Phase>("idle");
 
 // ---- words
 
-const [getActiveWordIndex, setActiveWordIndex] = createSignal(0);
-export { getActiveWordIndex };
-
-export function nextWord(): void {
-  setActiveWordIndex((i) => i + 1);
-}
-
-export function previousWord(): void {
-  setActiveWordIndex((i) => i - 1);
-}
-
-/** Back to the first word (words reset or regenerated). */
-export function resetActiveWordIndex(): void {
-  setActiveWordIndex(0);
-}
+// steps by one only; resetActiveWordIndex: words reset or regenerated
+export const [
+  getActiveWordIndex,
+  { nextWord, previousWord, resetActiveWordIndex },
+] = createSignalWithSetters(0)({
+  nextWord: (set) => set((i) => i + 1),
+  previousWord: (set) => set((i) => i - 1),
+  resetActiveWordIndex: (set) => set(0),
+});
 
 // Facts about the generated words. Words aren't reactive (T6b regenerates
 // them from the test settings), so these are set with them, not derived.
