@@ -59,7 +59,6 @@ body.aismode::before {
 }
 
 /* cards: border + glow + inner haze */
-body.aismode #result,
 body.aismode [data-ui-element="keymap"],
 body.aismode [data-ui-element="notificationBubble"],
 body.aismode .balloon,
@@ -71,10 +70,22 @@ body.aismode .modal {
     inset 0 0 2rem color-mix(in srgb, var(--main-color) 8%, transparent);
 }
 
+/* the result glows, but its invisible container gets no border */
+body.aismode #result {
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    inset 0 0 2rem color-mix(in srgb, var(--main-color) 8%, transparent);
+}
+
 /* glassmorphism for modals */
 body.aismode .modal {
   background: color-mix(in srgb, var(--bg-color) 72%, transparent);
   backdrop-filter: blur(0.75rem);
+}
+
+/* test config cards lose their background, the glows do the work */
+body.aismode [data-ui-element="testConfig"] .card {
+  background: transparent;
 }
 
 /* interactive elements: resting state */
