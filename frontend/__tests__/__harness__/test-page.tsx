@@ -63,7 +63,6 @@ import { vi } from "vitest";
 import type { WordStatus } from "../../src/ts/components/pages/test/Word";
 import type { LetterStatus } from "../../src/ts/components/pages/test/WordLetter";
 
-import { LETTER_SELECTOR } from "../../src/ts/components/pages/test/selectors";
 import { TestPage } from "../../src/ts/components/pages/test/TestPage";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
@@ -77,6 +76,10 @@ import {
 } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
+
+// tests check the rendered DOM itself, not the registry's refs, so they
+// query letters directly (spec Q33 exempts tests)
+const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // fake timers, then jsdom gaps: matchMedia (ad controller, on import; no
 // query matches) and scrolling (the test keeps itself in view)

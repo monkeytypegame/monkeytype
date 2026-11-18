@@ -40,11 +40,21 @@ export function Word(props: {
     return props.word.isTyped ? "typed" : "untyped";
   };
   let wordRef: HTMLDivElement | undefined;
+  // the rendered letters in order, filled by their refs
+  const letterRefs: HTMLElement[] = [];
+  const getLetter = (index: number): HTMLElement | undefined =>
+    letterRefs[index];
 
   onMount(() => {
     const el = wordRef;
     if (el === undefined) return;
-    onCleanup(props.register(props.word.index, el));
+    onCleanup(
+      props.register(props.word.index, {
+        el,
+        getLetter,
+        getLetterCount: () => letterRefs.length,
+      }),
+    );
   });
 
   return (
@@ -64,9 +74,17 @@ export function Word(props: {
       })}
     >
       <Index each={letters()}>
-        {(letter) => <WordLetter letter={letter()} />}
+        {(letter, i) => {
+          // removed letters are always the last ones
+          onCleanup(() => {
+            letterRefs.length = Math.min(letterRefs.length, i);
+          });
+          return (
+            <WordLetter letter={letter()} ref={(el) => (letterRefs[i] = el)} />
+          );
+        }}
       </Index>
-      <TypoHints word={props.word} />
+      <TypoHints word={props.word} getLetter={getLetter} />
     </div>
   );
 }

@@ -8,7 +8,6 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { LETTER_SELECTOR } from "../components/pages/test/selectors";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/events/data";
@@ -16,6 +15,10 @@ import { restartTest } from "../test/test-logic";
 import { quickLogin, signOut } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
+
+// app code reads letters through the Words instance's registry, which dev
+// tools can't reach: query the DOM instead (spec Q33 exempts dev/)
+const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // Modules hot-updated since the page loaded. Kept on window: it survives this
 // module's own hot update, and the listener registers once per page.

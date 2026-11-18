@@ -83,7 +83,10 @@ function letterVariant(text: string): string | undefined {
   return undefined;
 }
 
-export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
+export function WordLetter(props: {
+  letter: RenderedLetter;
+  ref: (el: HTMLElement) => void;
+}): JSXElement {
   let letterRef: HTMLElement | undefined;
   // dev options caret debug: outlines letters, the pace caret's target in
   // red, the visible letter it goes to instead in yellow
@@ -98,7 +101,10 @@ export function WordLetter(props: { letter: RenderedLetter }): JSXElement {
   };
   return (
     <letter
-      ref={(el) => (letterRef = el)}
+      ref={(el) => {
+        letterRef = el;
+        props.ref(el);
+      }}
       class={letterClass(props.letter) + debugClass()}
       data-ui-element="letter"
       data-ui-state={props.letter.status}
