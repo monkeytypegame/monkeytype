@@ -37,7 +37,15 @@ import { ResultReplay } from "./ResultReplay";
 import { ResultSecondaryStats } from "./ResultSecondaryStats";
 import { ResultWordsHistory } from "./ResultWordsHistory";
 
+// clicks on these keep their own focus
+const INTERACTIVE_SELECTOR =
+  'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
+
 export function TestResult(): JSXElement {
+  let prefocusRef: HTMLDivElement | undefined;
+
+  onMount(() => prefocusRef?.focus({ preventScroll: true }));
+
   const lastTest = createMemo(() => {
     const result = getLastResult();
     const eventLog = getLastEventLog();
@@ -60,7 +68,18 @@ export function TestResult(): JSXElement {
   });
 
   return (
-    <div id="result" ref={resultRef} class={cn("content-grid full-width")}>
+    <div
+      id="result"
+      ref={resultRef}
+      class={cn("content-grid full-width")}
+      onClick={(e) => {
+        // a click on plain content drops focus to the body, and Tab would
+        // then skip the next test button: put focus back on the prefocus
+        if (!(e.target instanceof Element)) return;
+        if (e.target.closest(INTERACTIVE_SELECTOR) !== null) return;
+        prefocusRef?.focus({ preventScroll: true });
+      }}
+    >
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">
           <Fa icon="fa-check" />
@@ -99,6 +118,11 @@ export function TestResult(): JSXElement {
               <RetrySavingButton />
               <LoginPrompt />
             </Show>
+            <div
+              ref={(el) => (prefocusRef = el)}
+              class="focus:outline-none focus-visible:outline-none"
+              tabIndex="-1"
+            ></div>
             <ResultButtons glarses={getGlarsesMode()} />
 
             <Watermark />

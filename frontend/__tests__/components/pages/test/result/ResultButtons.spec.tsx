@@ -23,15 +23,6 @@ import {
 } from "../../../../../src/ts/states/test";
 
 describe("ResultButtons", () => {
-  it("when result page is mounted, resultButtonsPrefocusTarget receives focus", () => {
-    const { container } = render(() => <ResultButtons glarses={false} />);
-
-    // the prefocus target has no id - it's the unfocusable-by-tab div first in the component
-    const prefocusTarget = container.firstElementChild as HTMLElement;
-    expect(prefocusTarget.tabIndex).toBe(-1);
-    expect(document.activeElement).toBe(prefocusTarget);
-  });
-
   describe("tab with quick restart off", () => {
     beforeEach(() => {
       setConfigStore("quickRestart", "off");
