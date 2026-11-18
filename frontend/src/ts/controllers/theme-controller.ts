@@ -9,6 +9,7 @@ import { getCustomTheme, getCustomThemes } from "../queries/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
+import { areSortedArraysEqual } from "@monkeytype/util/arrays";
 import { Theme, themes, ThemesList } from "../constants/themes";
 import { setThemeIndicator } from "../states/core";
 import {
@@ -90,7 +91,7 @@ function updateThemeIndicator(nameOverride?: string): void {
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
     const matchedTheme = getCustomThemes().find((ct) =>
-      Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
+      areSortedArraysEqual(ct.colors, Config.customThemeColors),
     );
 
     if (matchedTheme) {

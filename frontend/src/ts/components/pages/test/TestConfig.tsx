@@ -1,3 +1,4 @@
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
 import { configMetadata } from "../../../config/metadata";
@@ -14,7 +15,6 @@ import {
 } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
-import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";

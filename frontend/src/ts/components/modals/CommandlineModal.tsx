@@ -1,4 +1,4 @@
-import { intersect } from "@monkeytype/util/arrays";
+import { areUnsortedArraysEqual, intersect } from "@monkeytype/util/arrays";
 import {
   For,
   JSXElement,
@@ -42,7 +42,6 @@ import {
 } from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
-import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
