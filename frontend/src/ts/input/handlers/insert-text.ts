@@ -1,4 +1,4 @@
-import * as TestUI from "../../test/test-ui";
+import { afterTestTextInput } from "../helpers/after-input";
 import * as TestWords from "../../test/test-words";
 import {
   getInputElementValue,
@@ -310,7 +310,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
+    afterTestTextInput(correct, visualInputOverride, goingToNextWord);
   }
 
   // going to next word

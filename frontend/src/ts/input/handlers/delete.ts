@@ -1,4 +1,4 @@
-import * as TestUI from "../../test/test-ui";
+import { afterTestDelete } from "../helpers/after-input";
 import * as TestWords from "../../test/test-words";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
@@ -50,7 +50,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
       inputValue: postNavInputValue,
     });
 
-    TestUI.afterTestDelete();
+    afterTestDelete();
     return;
   }
 
@@ -84,5 +84,5 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     });
   }
 
-  TestUI.afterTestDelete();
+  afterTestDelete();
 }

@@ -19,7 +19,7 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
-import { setResultElement } from "../../../../test/test-ui";
+import { registerFade } from "../../../../test/test-page-bridge";
 import { cn } from "../../../../utils/cn";
 import {
   applyReducedMotion,
@@ -56,9 +56,6 @@ export function TestResult(): JSXElement {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restartTest
-    setResultElement(el);
-    onCleanup(() => setResultElement(undefined));
 
     void el.promiseAnimate({
       opacity: [0, 1],
@@ -66,6 +63,15 @@ export function TestResult(): JSXElement {
     });
     scrollToCenterOrTop(el.native);
   });
+
+  // restartTest fades it out
+  const unregisterFade = registerFade("result", async (direction, duration) => {
+    await resultEl()?.promiseAnimate({
+      opacity: direction === "in" ? [0, 1] : 0,
+      duration,
+    });
+  });
+  onCleanup(unregisterFade);
 
   return (
     <div

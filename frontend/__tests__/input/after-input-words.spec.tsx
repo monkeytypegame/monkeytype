@@ -23,7 +23,7 @@ vi.mock("../../src/ts/utils/json-data", async (importOriginal) => ({
   ...(await importOriginal()),
   getLayout: vi.fn(async () => new Promise(() => undefined)),
 }));
-// input source for test-ui's letter updates
+// input source for after-input's letter updates
 let currentInput = "";
 vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
   ...(await importOriginal()),
@@ -37,6 +37,7 @@ import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
+import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
@@ -50,7 +51,10 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import * as TestUI from "../../src/ts/test/test-ui";
+import {
+  focusWordsEvent,
+  markTestPageMounted,
+} from "../../src/ts/test/test-page-bridge";
 import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
@@ -79,7 +83,7 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts WordsInput and Words (#words), bound to test-ui like TestPage does. */
+/** Mounts WordsInput and Words (#words), marking the test page mounted like TestPage does. */
 function mount(): {
   words: HTMLElement;
   input: HTMLTextAreaElement;
@@ -102,12 +106,7 @@ function mount(): {
     throw new Error("Words not mounted");
   }
   createRoot((dispose) => {
-    TestUI.init(
-      {
-        typingTest: new ElementWithUtils(typingTest),
-      },
-      controller.signal,
-    );
+    markTestPageMounted(controller.signal);
     cleanups.push(() => {
       controller.abort();
       dispose();
@@ -130,7 +129,7 @@ function childClasses(words: HTMLElement): string[] {
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
   increaseActiveWordIndex();
-  void TestUI.afterTestWordChange("forward");
+  afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -140,7 +139,7 @@ function activeWordIndex(words: HTMLElement): string | undefined {
   return words.querySelector<HTMLElement>(".word.active")?.dataset["wordindex"];
 }
 
-describe("test-ui words rendering", () => {
+describe("after-input words rendering", () => {
   beforeEach(() => {
     frames = new Map();
     nextFrameId = 1;
@@ -193,13 +192,13 @@ describe("test-ui words rendering", () => {
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
     increaseActiveWordIndex();
     const topBefore = input.style.top;
 
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     // nothing rendered or laid out synchronously
     expect(activeWordIndex(words)).toBe("4");
@@ -229,7 +228,7 @@ describe("test-ui words rendering", () => {
     // committed with a typo
     setWordInput(0, "wrod");
     increaseActiveWordIndex();
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     const first = (): Element | null =>
       words.querySelector(".word[data-wordindex='0']");
@@ -248,12 +247,12 @@ describe("test-ui words rendering", () => {
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
     appendRenderedWord({ display: "" });
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
     runFrames();
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     resetActiveWordIndex();
-    void TestUI.afterTestWordChange("back");
+    afterTestWordChange("back");
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     runFrames();
@@ -271,7 +270,7 @@ describe("test-ui words rendering", () => {
 
     for (let i = 0; i < 2; i++) {
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
 
@@ -288,7 +287,12 @@ describe("test-ui words rendering", () => {
       TestWords.words.reset();
       for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
       resetActiveWordIndex();
-      TestUI.onTestRestart("testPage");
+      // restartTest's render step
+      focusWordsEvent.dispatch({ force: true });
+      replaceWords(TestWords.words.get(), {
+        activeWordIndex: 0,
+        zen: false,
+      });
     }
 
     it("snaps the caret to the new words instead of animating", () => {
@@ -388,7 +392,7 @@ describe("test-ui words rendering", () => {
     // each full layout snaps the caret once
     const layoutsAll = (): number => caretMoves(false);
 
-    // Words only: with test-ui mounted, applyConfig's language event also
+    // Words only: with the test page mounted, applyConfig's language event also
     // restarts the test (async, outliving the test). That restart's layout of
     // the new words isn't the config effect's
     function mountWithWords(): void {
@@ -452,7 +456,7 @@ describe("test-ui words rendering", () => {
 
       // to the first word of the second line, same frame
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
     });
@@ -461,7 +465,7 @@ describe("test-ui words rendering", () => {
       mountTwoLetterWords(3);
       for (let i = 0; i < 3; i++) increaseActiveWordIndex();
       appendRenderedWord({ display: "ab" });
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
     });
@@ -506,7 +510,7 @@ describe("test-ui words rendering", () => {
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
         increaseActiveWordIndex();
-        void TestUI.afterTestWordChange("forward");
+        afterTestWordChange("forward");
       }
       runFrames();
       await new Promise((resolve) => setTimeout(resolve, 0));

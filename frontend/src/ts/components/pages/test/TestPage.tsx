@@ -1,8 +1,19 @@
-import { JSXElement, onCleanup, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  JSXElement,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
+import * as AdController from "../../../controllers/ad-controller";
+import * as SoundController from "../../../controllers/sound-controller";
+import * as ThemeController from "../../../controllers/theme-controller";
 import { getCustomTextIndicator } from "../../../states/core";
+import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
 import { isResultShown } from "../../../states/result";
@@ -26,9 +37,13 @@ import {
   restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
-import * as TestUI from "../../../test/test-ui";
+import {
+  focusWordsEvent,
+  markTestPageMounted,
+  registerFade,
+  testRestartedEvent,
+} from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
-import { ElementWithUtils } from "../../../utils/dom";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
@@ -45,6 +60,7 @@ import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
+import * as ResultWordHighlight from "./result/result-word-highlight";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
@@ -75,12 +91,7 @@ export function TestPage(): JSXElement {
       throw new Error("TestPage refs not set");
     }
 
-    TestUI.init(
-      {
-        typingTest: new ElementWithUtils(typingTestRef),
-      },
-      signal,
-    );
+    markTestPageMounted(signal);
     listenForModifierKeys(signal);
     listenForMonkeyKeys(signal);
     // any previously rendered words are gone, start a fresh test
@@ -139,6 +150,51 @@ export function TestPage(): JSXElement {
     );
   });
 
+  const unregisterFade = registerFade(
+    "typingTest",
+    async (direction, duration) => {
+      if (typingTestRef === undefined) return;
+      // synchronous, so the shown test can't paint before the fade starts
+      if (direction === "in") typingTestRef.style.opacity = "0";
+      await Misc.promiseAnimate(typingTestRef, {
+        opacity: direction === "in" ? [0, 1] : 0,
+        duration,
+      });
+    },
+  );
+  onCleanup(unregisterFade);
+
+  // WordsInput takes the focus; during a test Words keeps the active line in
+  // view
+  focusWordsEvent.useListener(() => {
+    if (isTestActive()) return;
+    Misc.scrollToCenterOrTop(typingTestRef ?? null);
+  });
+
+  testRestartedEvent.useListener((source) => {
+    ResultWordHighlight.destroy();
+    if (source === "resultPage") {
+      if (Config.randomTheme !== "off") {
+        void ThemeController.randomizeTheme();
+      }
+      skipBreakdownEvent.dispatch();
+    }
+    AdController.destroyResult();
+    void SoundController.clearAllSounds();
+  });
+
+  createEffect(
+    on(
+      isTestFinished,
+      (finished) => {
+        if (finished && Config.playSoundOnClick === "16") {
+          void SoundController.playFartReverb();
+        }
+      },
+      { defer: true },
+    ),
+  );
+
   const isFullWidth = (): boolean =>
     getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
   const fontSize = (): string => `${getConfig.fontSize}rem`;
@@ -189,9 +245,7 @@ export function TestPage(): JSXElement {
             hidden: isWordsWrapperHidden(),
           })}
           translate="no"
-          onClick={() => {
-            TestUI.focusWords();
-          }}
+          onClick={() => focusWordsEvent.dispatch({ force: false })}
         >
           <WordsInput />
           <div class="contents">

@@ -18,6 +18,24 @@
       }
     },
     {
+      // input layer: browser input → engine commands and render buffer
+      // writes, never UI (docs/specs/solid-monkeytype/spec.md)
+      "files": ["src/ts/input/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/components/**", "**/elements/**"],
+                "message": "The input layer never imports UI: write to states or the render buffer instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
       "files": ["src/**/*.tsx"],
       "rules": {

@@ -19,7 +19,7 @@ import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { isTestPageMounted } from "../test/test-page-state";
+import { isTestPageMounted } from "../test/test-page-bridge";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";

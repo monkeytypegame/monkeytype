@@ -2,7 +2,8 @@
 /* oxlint-disable react/no-unknown-property */
 import { JSXElement, onCleanup, onMount } from "solid-js";
 
-import { getConfig } from "../../../config/store";
+import { Config, getConfig } from "../../../config/store";
+import { ModifierKeys } from "../../../constants/modifier-keys";
 import { registerInputElement } from "../../../input/input-element";
 import {
   onCompositionEnd,
@@ -18,12 +19,18 @@ import {
 } from "../../../input/listeners/misc";
 import {
   isRealWordsInputShown,
+  isTestActive,
   isTestFinished,
+  isWordsInputFocused,
   setTestFocusState,
   setWordsInputFocused,
+  triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
+import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
+import { isDevEnvironment } from "../../../utils/env";
+import { isAnyPopupVisible } from "../../../utils/misc";
 
 /**
  * The hidden textarea the typing test reads input from (#wordsInput). Follows
@@ -37,6 +44,16 @@ export function WordsInput(): JSXElement {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
     onCleanup(registerInputElement(inputRef));
     onCleanup(() => setWordsInputFocused(false));
+
+    // autofocus the words when typing anywhere on the page
+    document.addEventListener("keydown", autofocusWords);
+    onCleanup(() => document.removeEventListener("keydown", autofocusWords));
+  });
+
+  focusWordsEvent.useListener(({ force }) => {
+    if (force) inputRef?.blur();
+    inputRef?.focus({ preventScroll: true });
+    if (isTestActive()) triggerScrollWindowToActiveWord();
   });
 
   const px = (value: number | undefined): string | undefined =>
@@ -105,4 +122,33 @@ export function WordsInput(): JSXElement {
       on:selectionchange={onSelectionChange}
     ></textarea>
   );
+}
+
+function autofocusWords(e: KeyboardEvent): void {
+  if (e.key === undefined) return;
+
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  if (isTestFinished() || isWordsInputFocused()) return;
+  // checked last, isAnyPopupVisible is a bit expensive
+  if (
+    ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
+    e.metaKey ||
+    e.ctrlKey ||
+    isAnyPopupVisible()
+  ) {
+    return;
+  }
+  focusWordsEvent.dispatch({ force: false });
+  if (Config.showOutOfFocusWarning) {
+    e.preventDefault();
+  }
 }
