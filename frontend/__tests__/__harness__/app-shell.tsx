@@ -106,13 +106,13 @@ import {
 import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
+import { canStartTest } from "../../src/ts/states/router";
 import {
   isTestActive,
   setIsTestRestarting,
   setResultCalculating,
   setTestActive,
 } from "../../src/ts/states/test";
-import { canStartTest } from "../../src/ts/test/test-page-bridge";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };

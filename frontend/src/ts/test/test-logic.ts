@@ -89,13 +89,17 @@ import {
   setLayoutfluidTimerVisible,
   setTestFocusState,
   setWordsInputPosition,
-  requestFocusWords,
-  testRestartedEvent,
 } from "../states/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import { canStartTest, fadeTest, isTestPageMounted } from "./test-page-bridge";
+import {
+  fadeTest,
+  focusWordsEvent,
+  isTestPageMounted,
+  testRestartedEvent,
+} from "./test-page-bridge";
 import { configEvent } from "../events/config";
+import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
@@ -430,7 +434,7 @@ export async function restartTest(
   setLayoutfluidTimerVisible(false);
   setTestInitFailed(false);
   setTestInitError(null);
-  requestFocusWords(true);
+  focusWordsEvent.dispatch({ force: true });
   if (!isOnline()) {
     showOfflineBanner();
   }

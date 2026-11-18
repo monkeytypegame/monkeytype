@@ -40,7 +40,6 @@ import { __testing as configTesting } from "../../src/ts/config/testing";
 import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
 import {
   increaseActiveWordIndex,
-  requestFocusWords,
   resetActiveWordIndex,
 } from "../../src/ts/states/test";
 import {
@@ -52,7 +51,10 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import { markTestPageMounted } from "../../src/ts/test/test-page-bridge";
+import {
+  focusWordsEvent,
+  markTestPageMounted,
+} from "../../src/ts/test/test-page-bridge";
 import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
@@ -286,7 +288,7 @@ describe("after-input words rendering", () => {
       for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
       resetActiveWordIndex();
       // restartTest's render step
-      requestFocusWords(true);
+      focusWordsEvent.dispatch({ force: true });
       replaceWords(TestWords.words.get(), {
         activeWordIndex: 0,
         zen: false,

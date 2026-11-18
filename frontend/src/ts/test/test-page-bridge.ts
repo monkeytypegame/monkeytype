@@ -1,12 +1,14 @@
 // Test page bridge: what imperative test code needs from the Solid TestPage:
-// whether a test may start, whether the page is mounted, and its fades. The
-// mount tracking and fades are temporary: remove the mount tracking once no
-// imperative code needs to know, the fades once they follow the engine's
-// phase (spec: "TestPage runs all fades").
+// whether the page is mounted, its fades, focus requests and restarts. All
+// temporary: each item says when it goes.
 import { createSignal, untrack } from "solid-js";
 
-import { getRoutePage, isLeavingPage } from "../states/router";
+import { createEvent } from "../hooks/createEvent";
 import { applyReducedMotion } from "../utils/misc";
+
+// Removed once test-logic stops asking (no roadmap row yet): its restart
+// guard and config subscriber go in T6b, the funbox activation check with
+// the engine split (T6).
 
 // the current mount's signal - a remount can register before the old one aborts
 const [getMountSignal, setMountSignal] = createSignal<AbortSignal>();
@@ -24,15 +26,8 @@ export function isTestPageMounted(): boolean {
   return getMountSignal() !== undefined;
 }
 
-/**
- * Whether typing may start a test: the test page is shown, and no
- * navigation is leaving it (eg. typing while it fades out). A reload in
- * place (eg. signing in) doesn't stop it.
- */
-export function canStartTest(): boolean {
-  return getRoutePage() === "test" && !isLeavingPage();
-}
-
+// Removed in T6b (restart fades) and T6c (finish fade): TestPage runs fades
+// from the engine's phase.
 export type FadeTarget = "typingTest" | "result";
 
 /** Animates the target's element; resolves when the animation ends. */
@@ -59,3 +54,17 @@ export async function fadeTest(
 ): Promise<void> {
   await fades.get(target)?.(direction, noAnim ? 0 : applyReducedMotion(125));
 }
+
+// test-logic's dispatch goes in T6b, when TestPage focuses on the restart's
+// phase; the event then moves into TestPage, for WordsInput's autofocus and
+// the wrapper click (no roadmap row yet).
+/**
+ * Focuses the words input (WordsInput), then brings the test into view: the
+ * active line during a test (Words), the test block before it (TestPage).
+ * `force` blurs first.
+ */
+export const focusWordsEvent = createEvent<{ force: boolean }>();
+
+// Removed in T6a/T6b: listeners follow the engine's restart instead.
+/** Dispatched by a restart, once the new test is ready, with its source. */
+export const testRestartedEvent = createEvent<"testPage" | "resultPage">();

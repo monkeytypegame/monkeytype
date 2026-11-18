@@ -1,6 +1,7 @@
 // What follows each test input: render buffer writes, live stats, keymap
 // highlight, focus mode and sounds. Buffered, rendered in the next words frame.
 import { Config } from "../../config/store";
+import { createEvent } from "../../hooks/createEvent";
 import * as SoundController from "../../controllers/sound-controller";
 import {
   getActiveWordIndex,
@@ -8,7 +9,6 @@ import {
   highlightKeymapKey,
   setCurrentLiveStats,
   setFocusMode,
-  textInsertedEvent,
 } from "../../states/test";
 import {
   setActiveWord,
@@ -20,6 +20,9 @@ import { getCurrentInput } from "../../test/events/data";
 import { getLiveCachedAccuracy } from "../../test/events/live-cache";
 import * as TestWords from "../../test/test-words";
 import * as Numbers from "@monkeytype/util/numbers";
+
+/** Dispatched after each typed character, with whether it was correct. */
+export const textInsertedEvent = createEvent<boolean>();
 
 function updateWordLetters(input: string): void {
   setWordInput(getActiveWordIndex(), input, getCompositionData());

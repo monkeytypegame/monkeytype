@@ -22,13 +22,12 @@ import {
   isTestActive,
   isTestFinished,
   isWordsInputFocused,
-  onFocusWordsRequest,
-  requestFocusWords,
   setTestFocusState,
   setWordsInputFocused,
   triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
+import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 import { isAnyPopupVisible } from "../../../utils/misc";
@@ -51,7 +50,7 @@ export function WordsInput(): JSXElement {
     onCleanup(() => document.removeEventListener("keydown", autofocusWords));
   });
 
-  onFocusWordsRequest(({ force }) => {
+  focusWordsEvent.useListener(({ force }) => {
     if (force) inputRef?.blur();
     inputRef?.focus({ preventScroll: true });
     if (isTestActive()) triggerScrollWindowToActiveWord();
@@ -148,7 +147,7 @@ function autofocusWords(e: KeyboardEvent): void {
   ) {
     return;
   }
-  requestFocusWords();
+  focusWordsEvent.dispatch({ force: false });
   if (Config.showOutOfFocusWarning) {
     e.preventDefault();
   }

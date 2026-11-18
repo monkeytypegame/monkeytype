@@ -1,8 +1,6 @@
-import {
-  isSlowTimer,
-  testRestartedEvent,
-  textInsertedEvent,
-} from "../states/test";
+import { textInsertedEvent } from "../input/helpers/after-input";
+import { testRestartedEvent } from "../test/test-page-bridge";
+import { isSlowTimer } from "../states/test";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";

@@ -27,11 +27,8 @@ import {
   isTestInitFailed,
   isTypingTestHidden,
   isWordsWrapperHidden,
-  onFocusWordsRequest,
-  requestFocusWords,
   resetIncompleteTests,
   setTestFocusState,
-  testRestartedEvent,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
 import {
@@ -41,8 +38,10 @@ import {
   restartIfNotStarted,
 } from "../../../test/test-logic";
 import {
+  focusWordsEvent,
   markTestPageMounted,
   registerFade,
+  testRestartedEvent,
 } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
@@ -167,7 +166,7 @@ export function TestPage(): JSXElement {
 
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view
-  onFocusWordsRequest(() => {
+  focusWordsEvent.useListener(() => {
     if (isTestActive()) return;
     Misc.scrollToCenterOrTop(typingTestRef ?? null);
   });
@@ -246,7 +245,7 @@ export function TestPage(): JSXElement {
             hidden: isWordsWrapperHidden(),
           })}
           translate="no"
-          onClick={() => requestFocusWords()}
+          onClick={() => focusWordsEvent.dispatch({ force: false })}
         >
           <WordsInput />
           <div class="contents">
