@@ -1,6 +1,5 @@
 import { createMemo } from "solid-js";
 
-import { getConfig } from "../../../../config/store";
 import { getActiveTags } from "../../../../queries/tags";
 import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
@@ -14,7 +13,7 @@ import {
   wordsHaveNewline,
   wordsHaveTab,
 } from "../../../../states/test";
-import { getActiveFunboxNames } from "../../../../test/funbox/list";
+import { testConfigView as config } from "../../../../states/test-config-view";
 import { cn } from "../../../../utils/cn";
 import {
   getLanguageDisplayString,
@@ -65,7 +64,7 @@ export function TestModesNotice() {
 function Repeated() {
   return (
     <Notice
-      when={isRepeated() && getConfig.mode !== "quote"}
+      when={isRepeated() && config.mode !== "quote"}
       class="text-error"
       icon="fa-sync-alt"
       text="repeated"
@@ -76,7 +75,7 @@ function Repeated() {
 function ResultSaving() {
   return (
     <Notice
-      when={!getConfig.resultSaving}
+      when={!config.resultSaving}
       icon="fa-save"
       openCommandline="resultSaving"
       class="text-error"
@@ -88,13 +87,13 @@ function ResultSaving() {
 function QuickRestart() {
   return (
     <>
-      <Notice when={wordsHaveTab() && getConfig.quickRestart === "esc"}>
+      <Notice when={wordsHaveTab() && config.quickRestart === "esc"}>
         <Kbd hotkey={hotkeys.commandline} /> to open commandline
       </Notice>
       <Notice
         when={
           wordsHaveTab() &&
-          (getConfig.quickRestart === "tab" || getConfig.quickRestart === "esc")
+          (config.quickRestart === "tab" || config.quickRestart === "esc")
         }
       >
         <Kbd hotkey={hotkeys.quickRestart} /> to restart
@@ -102,8 +101,8 @@ function QuickRestart() {
 
       <Notice
         when={
-          getConfig.quickRestart === "enter" &&
-          (wordsHaveNewline() || getConfig.funbox.includes("58008"))
+          config.quickRestart === "enter" &&
+          (wordsHaveNewline() || config.funbox.includes("58008"))
         }
       >
         <Kbd hotkey={hotkeys.quickRestart} /> to restart
@@ -115,7 +114,7 @@ function QuickRestart() {
 function LongText() {
   return (
     <Notice
-      when={getConfig.mode === "custom" && getCustomTextIndicator()?.isLong}
+      when={config.mode === "custom" && getCustomTextIndicator()?.isLong}
       icon="fa-book"
     >
       {getCustomTextIndicator()?.name} (
@@ -137,37 +136,33 @@ function LoadedChallenge() {
 
 function ZenMode() {
   return (
-    <Notice when={getConfig.mode === "zen"}>
+    <Notice when={config.mode === "zen"}>
       <Kbd hotkey="Shift+Enter" /> to finish zen
     </Notice>
   );
 }
 
 function Language() {
-  const isUsingPolyglot = createMemo(() => {
-    //react on config.funbox
-    const _ = getConfig.funbox;
-    return getActiveFunboxNames().includes("polyglot");
-  });
+  const isUsingPolyglot = (): boolean => config.funbox.includes("polyglot");
 
   return (
     <>
       <Notice
-        when={getConfig.mode !== "zen" && !isUsingPolyglot()}
+        when={config.mode !== "zen" && !isUsingPolyglot()}
         icon="fa-globe-americas"
         openCommandline="language"
         text={getLanguageDisplayString(
-          getConfig.language,
-          getConfig.mode === "quote",
+          config.language,
+          config.mode === "quote",
         )}
       />
       <Notice
-        when={getConfig.funbox.includes("polyglot")}
+        when={config.funbox.includes("polyglot")}
         icon="fa-globe-americas"
         onClick={() =>
           showCommandline({ commandOverride: "setCustomPolyglotCustom" })
         }
-        text={getConfig.customPolyglot
+        text={config.customPolyglot
           .map((lang) => getLanguageDisplayString(lang, true))
           .join(", ")}
       />
@@ -178,12 +173,10 @@ function Language() {
 function Difficulty() {
   return (
     <Notice
-      when={
-        getConfig.difficulty === "expert" || getConfig.difficulty === "master"
-      }
-      icon={getConfig.difficulty === "expert" ? "fa-star-half-alt" : "fa-star"}
+      when={config.difficulty === "expert" || config.difficulty === "master"}
+      icon={config.difficulty === "expert" ? "fa-star-half-alt" : "fa-star"}
       onClick={() => showCommandline({ subgroupOverride: "difficulty" })}
-      text={getConfig.difficulty}
+      text={config.difficulty}
     />
   );
 }
@@ -191,7 +184,7 @@ function Difficulty() {
 function BlindMode() {
   return (
     <Notice
-      when={getConfig.blindMode}
+      when={config.blindMode}
       icon="fa-eye-slash"
       openCommandline="blindMode"
       text="blind"
@@ -202,7 +195,7 @@ function BlindMode() {
 function LazyMode() {
   return (
     <Notice
-      when={getConfig.lazyMode}
+      when={config.lazyMode}
       icon="fa-couch"
       openCommandline="lazyMode"
       text="lazy"
@@ -212,14 +205,14 @@ function LazyMode() {
 
 function PaceCaretNotice() {
   const displaySpeed = createMemo(() => {
-    let type: string = getConfig.paceCaret;
+    let type: string = config.paceCaret;
     if (type === "off") type = "custom";
     else if (type === "tagPb") type = "tag pb";
 
     const format = getFormatting();
     const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
-      suffix: ` ${getConfig.typingSpeedUnit}`,
+      suffix: ` ${config.typingSpeedUnit}`,
     });
 
     return `${type} pace ${speed}`;
@@ -228,8 +221,7 @@ function PaceCaretNotice() {
   return (
     <Notice
       when={
-        getConfig.paceCaret !== "off" ||
-        (getConfig.repeatedPace && isPaceRepeat())
+        config.paceCaret !== "off" || (config.repeatedPace && isPaceRepeat())
       }
       icon="fa-tachometer-alt"
       openCommandline="paceCaret"
@@ -241,9 +233,9 @@ function PaceCaretNotice() {
 function MinSpeed() {
   const displaySpeed = createMemo(() => {
     const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
+    const speed = format.typingSpeed(config.minWpmCustomSpeed ?? 0, {
       showDecimalPlaces: false,
-      suffix: ` ${getConfig.typingSpeedUnit}`,
+      suffix: ` ${config.typingSpeedUnit}`,
     });
 
     return `min ${speed}`;
@@ -251,7 +243,7 @@ function MinSpeed() {
 
   return (
     <Notice
-      when={getConfig.minWpm !== "off"}
+      when={config.minWpm !== "off"}
       icon="fa-bomb"
       openCommandline="minWpm"
       text={displaySpeed()}
@@ -262,7 +254,7 @@ function MinSpeed() {
 function MinAcc() {
   const displayAcc = createMemo(() => {
     const format = getFormatting();
-    const acc = format.accuracy(getConfig.minAccCustom, {
+    const acc = format.accuracy(config.minAccCustom, {
       showDecimalPlaces: false,
       suffix: " acc",
     });
@@ -272,7 +264,7 @@ function MinAcc() {
 
   return (
     <Notice
-      when={getConfig.minAcc !== "off"}
+      when={config.minAcc !== "off"}
       icon="fa-bomb"
       openCommandline="minAcc"
       text={displayAcc()}
@@ -283,17 +275,17 @@ function MinAcc() {
 function MinBurst() {
   const displaySpeed = createMemo(() => {
     const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
+    const speed = format.typingSpeed(config.minBurstCustomSpeed ?? 0, {
       showDecimalPlaces: false,
-      suffix: ` ${getConfig.typingSpeedUnit}`,
+      suffix: ` ${config.typingSpeedUnit}`,
     });
 
-    return `min ${speed} burst ${getConfig.minBurst === "flex" ? "(flex)" : ""}`;
+    return `min ${speed} burst ${config.minBurst === "flex" ? "(flex)" : ""}`;
   });
 
   return (
     <Notice
-      when={getConfig.minBurst !== "off"}
+      when={config.minBurst !== "off"}
       icon="fa-bomb"
       openCommandline="minBurst"
       text={displaySpeed()}
@@ -303,9 +295,9 @@ function MinBurst() {
 
 function Funbox() {
   const funboxes = createMemo(() => {
-    //getConfig.funbox doesn't work reactive, wrapping in a memo
-    if (getConfig.funbox.length === 0) return undefined;
-    return [...getConfig.funbox].map(replaceUnderscoresWithSpaces).join(", ");
+    //config.funbox doesn't work reactive, wrapping in a memo
+    if (config.funbox.length === 0) return undefined;
+    return [...config.funbox].map(replaceUnderscoresWithSpaces).join(", ");
   });
 
   return (
@@ -321,12 +313,10 @@ function Funbox() {
 function ConfidenceMode() {
   return (
     <Notice
-      when={getConfig.confidenceMode !== "off"}
+      when={config.confidenceMode !== "off"}
       icon="fa-backspace"
       openCommandline="confidenceMode"
-      text={
-        getConfig.confidenceMode === "max" ? "max confidence" : "confidence"
-      }
+      text={config.confidenceMode === "max" ? "max confidence" : "confidence"}
     />
   );
 }
@@ -334,10 +324,10 @@ function ConfidenceMode() {
 function StopOnError() {
   return (
     <Notice
-      when={getConfig.stopOnError !== "off"}
+      when={config.stopOnError !== "off"}
       icon="fa-hand-paper"
       openCommandline="stopOnError"
-      text={`stop on ${getConfig.stopOnError}`}
+      text={`stop on ${config.stopOnError}`}
     />
   );
 }
@@ -345,12 +335,10 @@ function StopOnError() {
 function DeleteOnError() {
   return (
     <Notice
-      when={getConfig.deleteOnError !== "off"}
+      when={config.deleteOnError !== "off"}
       icon="fa-eraser"
       openCommandline="deleteOnError"
-      text={`delete on ${replaceUnderscoresWithSpaces(
-        getConfig.deleteOnError,
-      )}`}
+      text={`delete on ${replaceUnderscoresWithSpaces(config.deleteOnError)}`}
     />
   );
 }
@@ -358,10 +346,10 @@ function DeleteOnError() {
 function Layout() {
   return (
     <Notice
-      when={getConfig.layout !== "default"}
+      when={config.layout !== "default"}
       icon="fa-keyboard"
       openCommandline="layout"
-      text={`emulating ${replaceUnderscoresWithSpaces(getConfig.layout)}`}
+      text={`emulating ${replaceUnderscoresWithSpaces(config.layout)}`}
     />
   );
 }
@@ -369,10 +357,10 @@ function Layout() {
 function OppositeShift() {
   return (
     <Notice
-      when={getConfig.oppositeShiftMode !== "off"}
+      when={config.oppositeShiftMode !== "off"}
       icon="fa-exchange-alt"
       openCommandline="oppositeShiftMode"
-      text={`opposite shift${getConfig.oppositeShiftMode === "keymap" ? " (keymap)" : ""}`}
+      text={`opposite shift${config.oppositeShiftMode === "keymap" ? " (keymap)" : ""}`}
     />
   );
 }

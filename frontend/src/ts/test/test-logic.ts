@@ -96,6 +96,7 @@ import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
 import { canStartTest, isTestPageMounted } from "./test-page-state";
 import { fadeTest } from "../states/test-fade";
+import { updateTestConfigView } from "../states/test-config-view";
 import { configEvent } from "../events/config";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
@@ -444,6 +445,8 @@ export async function restartTest(
     },
   );
 
+  // still hidden: the notices catch up with the config changes
+  updateTestConfigView();
   // sets the typing test's opacity to 0 at once, before anything paints
   await fadeTest("typingTest", "in", noAnim);
   setIsTestRestarting(false);

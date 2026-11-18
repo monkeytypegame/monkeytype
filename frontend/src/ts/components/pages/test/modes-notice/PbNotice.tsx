@@ -1,10 +1,10 @@
 import { createMemo } from "solid-js";
 
-import { getConfig } from "../../../../config/store";
 import { getLocalPB, getUserData } from "../../../../queries/user";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
 import { getCurrentQuote } from "../../../../states/test";
-import { getActiveFunboxes } from "../../../../test/funbox/list";
+import { testConfigView as config } from "../../../../states/test-config-view";
+import { get as getFunboxes } from "../../../../test/funbox/list";
 import { getMode2 } from "../../../../utils/misc";
 import { Notice } from "./Notice";
 
@@ -13,28 +13,26 @@ export function PbNotice() {
     if (!isAuthenticated()) return "";
     const format = getFormatting();
 
-    //react on config.funbox
-    const _funbox = getConfig.funbox;
     //react on new localPB
     const _userData = getUserData();
 
-    const mode2 = getMode2(getConfig, getCurrentQuote());
+    const mode2 = getMode2(config, getCurrentQuote());
     const pb = getLocalPB(
-      getConfig.mode,
+      config.mode,
       mode2,
-      getConfig.punctuation,
-      getConfig.numbers,
-      getConfig.language,
-      getConfig.difficulty,
-      getConfig.lazyMode,
-      getActiveFunboxes(),
+      config.punctuation,
+      config.numbers,
+      config.language,
+      config.difficulty,
+      config.lazyMode,
+      getFunboxes(config.funbox),
     );
 
     if (pb === undefined) return "no pb";
 
     const speed = format.typingSpeed(pb.wpm, {
       showDecimalPlaces: true,
-      suffix: ` ${getConfig.typingSpeedUnit}`,
+      suffix: ` ${config.typingSpeedUnit}`,
     });
 
     const acc = format.accuracy(pb.acc, { suffix: ` acc` });
@@ -44,7 +42,7 @@ export function PbNotice() {
 
   return (
     <Notice
-      when={isAuthenticated() && getConfig.showPb}
+      when={isAuthenticated() && config.showPb}
       icon="fa-crown"
       openCommandline="showPb"
       text={displayText()}
