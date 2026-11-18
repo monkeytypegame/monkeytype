@@ -13,10 +13,11 @@ import {
   TimerColorSchema,
   TimerOpacitySchema,
   StopOnErrorSchema,
+  DeleteOnErrorSchema,
   KeymapModeSchema,
   KeymapStyleSchema,
   KeymapLegendStyleSchema,
-  KeymapShowTopRowSchema,
+  KeymapKeysSchema,
   SingleListCommandLineSchema,
   PlaySoundOnErrorSchema,
   PlaySoundOnClickSchema,
@@ -339,6 +340,27 @@ describe("configs schemas", () => {
     });
   });
 
+  describe("DeleteOnErrorSchema", () => {
+    it.each([
+      {
+        description: "valid value 'word'",
+        input: "word",
+      },
+      {
+        description: "invalid value",
+        input: "invalid",
+        expectedError:
+          "Invalid enum value. Expected 'off' | 'letter' | 'letter_hard' | 'word' | 'word_hard', received 'invalid'",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(DeleteOnErrorSchema).toReject(input, expectedError);
+      } else {
+        expect(DeleteOnErrorSchema).toValidate(input);
+      }
+    });
+  });
+
   describe("KeymapModeSchema", () => {
     it.each([
       {
@@ -402,23 +424,23 @@ describe("configs schemas", () => {
     });
   });
 
-  describe("KeymapShowTopRowSchema", () => {
+  describe("KeymapKeysSchema", () => {
     it.each([
       {
-        description: "valid value 'layout'",
-        input: "layout",
+        description: "valid value 'minimal'",
+        input: "minimal",
       },
       {
         description: "invalid value",
         input: "invalid",
         expectedError:
-          "Invalid enum value. Expected 'always' | 'layout' | 'never', received 'invalid'",
+          "Invalid enum value. Expected 'minimal' | 'minimal_numrow' | 'full', received 'invalid'",
       },
     ] as const)("$description", ({ input, expectedError }) => {
       if (expectedError) {
-        expect(KeymapShowTopRowSchema).toReject(input, expectedError);
+        expect(KeymapKeysSchema).toReject(input, expectedError);
       } else {
-        expect(KeymapShowTopRowSchema).toValidate(input);
+        expect(KeymapKeysSchema).toValidate(input);
       }
     });
   });
@@ -1458,6 +1480,7 @@ describe("configs schemas", () => {
           strictSpace: false,
           oppositeShiftMode: "off",
           stopOnError: "off",
+          deleteOnError: "off",
           confidenceMode: "off",
           quickEnd: false,
           indicateTypos: "off",
@@ -1498,7 +1521,7 @@ describe("configs schemas", () => {
           keymapLayout: "overrideSync",
           keymapStyle: "staggered",
           keymapLegendStyle: "lowercase",
-          keymapShowTopRow: "always",
+          keymapKeys: "minimal",
           keymapSize: 1,
           flipTestColors: false,
           colorfulMode: false,

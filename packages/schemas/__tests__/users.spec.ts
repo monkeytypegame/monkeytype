@@ -36,6 +36,7 @@ import {
   MonkeyMailSchema,
   ReportUserReasonSchema,
   PasswordSchema,
+  NewPasswordSchema,
   FriendSchema,
 } from "../src/users";
 
@@ -877,20 +878,64 @@ describe("users schemas", () => {
     it.each([
       { description: "valid password", input: validPassword } as const,
       {
-        description: "too short",
-        input: "Pass1!",
-        expectedError: "must be at least 8 characters",
+        description: "valid lenient existing password",
+        input: "pw",
       } as const,
       {
-        description: "no uppercase letter",
-        input: "password123!",
-        expectedError: "must contain at least one capital letter",
+        description: "empty string",
+        input: "",
+        expectedError: "Required",
+      } as const,
+      {
+        description: "non-string input",
+        input: 123,
+        expectedError: "Expected string, received number",
       } as const,
     ])("$description", ({ input, expectedError }) => {
       if (expectedError !== undefined) {
         expect(PasswordSchema).toReject(input, expectedError);
       } else {
         expect(PasswordSchema).toValidate(input);
+      }
+    });
+  });
+
+  describe("NewPasswordSchema", () => {
+    it.each([
+      {
+        description: "valid password",
+        input: validPassword,
+      } as const,
+      {
+        description: "too short",
+        input: "Pass1!",
+        expectedError: "must be at least 8 characters",
+      } as const,
+      {
+        description: "too long",
+        input: `A1!${"a".repeat(62)}`,
+        expectedError: "must be at most 64 characters",
+      } as const,
+      {
+        description: "no uppercase letter",
+        input: "password123!",
+        expectedError: "must contain at least one capital letter",
+      } as const,
+      {
+        description: "no number",
+        input: "Password!!",
+        expectedError: "must contain at least one number",
+      } as const,
+      {
+        description: "no special character",
+        input: "Password123",
+        expectedError: "must contain at least one special character",
+      } as const,
+    ])("$description", ({ input, expectedError }) => {
+      if (expectedError !== undefined) {
+        expect(NewPasswordSchema).toReject(input, expectedError);
+      } else {
+        expect(NewPasswordSchema).toValidate(input);
       }
     });
   });

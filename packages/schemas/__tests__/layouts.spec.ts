@@ -130,52 +130,11 @@ const validIsoLayout = {
   },
 };
 
-const validMatrixLayout = {
-  keymapShowTopRow: true,
-  matrixShowRightColumn: false,
-  type: "matrix",
-  keys: {
-    row1: [],
-    row2: [
-      ["q", "Q"],
-      ["w", "W"],
-      ["e", "E"],
-      ["r", "R"],
-      ["t", "T"],
-      ["y", "Y"],
-      ["u", "U"],
-      ["i", "I"],
-      ["o", "O"],
-      ["p", "P"],
-    ],
-    row3: [
-      ["a", "A"],
-      ["s", "S"],
-      ["d", "D"],
-      ["f", "F"],
-      ["g", "G"],
-      ["h", "H"],
-      ["j", "J"],
-      ["k", "K"],
-      ["l", "L"],
-      [";", ":"],
-    ],
-    row4: [
-      ["z", "Z"],
-      ["x", "X"],
-      ["c", "C"],
-      ["v", "V"],
-    ],
-    row5: [],
-  },
-};
-
 describe("layouts schemas", () => {
   describe("LayoutObjectSchema", () => {
     it.each([
       { description: "valid ansi layout", input: validAnsILayout },
       { description: "valid iso layout", input: validIsoLayout },
-      { description: "valid matrix layout", input: validMatrixLayout },
       {
         description: "invalid - missing required field",
         input: { keymapShowTopRow: true },

@@ -1,7 +1,23 @@
 import { it, expect, describe } from "vitest";
-import { FontNameSchema } from "../src/fonts";
+import { FontNameSchema, KnownFontNameSchema } from "../src/fonts";
 
 describe("fonts schemas", () => {
+  describe("KnownFontNameSchema", () => {
+    it.each([
+      { description: "valid known font Roboto_Mono", input: "Roboto_Mono" },
+      {
+        description: "invalid known font",
+        input: "Unknown_Font",
+        expectedError: "Must be a known font family",
+      },
+    ] as const)("$description", ({ input, expectedError }) => {
+      if (expectedError) {
+        expect(KnownFontNameSchema).toReject(input, expectedError);
+      } else {
+        expect(KnownFontNameSchema).toValidate(input);
+      }
+    });
+  });
   describe("FontNameSchema", () => {
     it.each([
       { description: "valid known font Roboto_Mono", input: "Roboto_Mono" },
