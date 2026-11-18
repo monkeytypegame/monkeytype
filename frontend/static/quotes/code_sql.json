@@ -1,0 +1,251 @@
+{
+  "language": "code_sql",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "SELECT id, name, email FROM users WHERE active = 1 ORDER BY name ASC;",
+      "source": "SQL SELECT",
+      "length": 69,
+      "id": 1
+    },
+    {
+      "text": "SELECT * FROM products WHERE price > 100 AND stock > 0 ORDER BY price DESC;",
+      "source": "SQL SELECT",
+      "length": 75,
+      "id": 2
+    },
+    {
+      "text": "SELECT department, COUNT(*) AS total FROM employees GROUP BY department;",
+      "source": "SQL GROUP BY",
+      "length": 72,
+      "id": 3
+    },
+    {
+      "text": "SELECT department, AVG(salary) AS avg_salary FROM employees GROUP BY department HAVING AVG(salary) > 50000;",
+      "source": "SQL HAVING",
+      "length": 107,
+      "id": 4
+    },
+    {
+      "text": "SELECT u.name, o.total FROM users u INNER JOIN orders o ON u.id = o.user_id;",
+      "source": "SQL INNER JOIN",
+      "length": 76,
+      "id": 5
+    },
+    {
+      "text": "SELECT u.name, o.total FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE o.id IS NULL;",
+      "source": "SQL LEFT JOIN",
+      "length": 94,
+      "id": 6
+    },
+    {
+      "text": "SELECT p.name, c.name AS category FROM products p JOIN categories c ON p.category_id = c.id ORDER BY c.name;",
+      "source": "SQL JOIN",
+      "length": 108,
+      "id": 7
+    },
+    {
+      "text": "INSERT INTO users (name, email, created_at) VALUES ('Alice', 'alice@example.com', NOW());",
+      "source": "SQL INSERT",
+      "length": 89,
+      "id": 8
+    },
+    {
+      "text": "INSERT INTO orders (user_id, product_id, quantity, total) VALUES (1, 42, 3, 59.99);",
+      "source": "SQL INSERT",
+      "length": 83,
+      "id": 9
+    },
+    {
+      "text": "INSERT INTO logs (event, message, created_at) SELECT 'login', name, NOW() FROM users WHERE active = 1;",
+      "source": "SQL INSERT SELECT",
+      "length": 102,
+      "id": 10
+    },
+    {
+      "text": "UPDATE users SET email = 'newemail@example.com', updated_at = NOW() WHERE id = 5;",
+      "source": "SQL UPDATE",
+      "length": 81,
+      "id": 11
+    },
+    {
+      "text": "UPDATE products SET stock = stock - 1 WHERE id = 10 AND stock > 0;",
+      "source": "SQL UPDATE",
+      "length": 66,
+      "id": 12
+    },
+    {
+      "text": "UPDATE orders SET status = 'shipped' WHERE created_at < NOW() - INTERVAL 2 DAY AND status = 'pending';",
+      "source": "SQL UPDATE",
+      "length": 102,
+      "id": 13
+    },
+    {
+      "text": "DELETE FROM sessions WHERE expired_at < NOW() - INTERVAL 7 DAY AND user_id IS NOT NULL;",
+      "source": "SQL DELETE",
+      "length": 87,
+      "id": 14
+    },
+    {
+      "text": "DELETE FROM users WHERE id = 7 AND created_at < '2020-01-01' AND active = 0;",
+      "source": "SQL DELETE",
+      "length": 76,
+      "id": 15
+    },
+    {
+      "text": "CREATE TABLE users (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100) NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+      "source": "SQL CREATE TABLE",
+      "length": 167,
+      "id": 16
+    },
+    {
+      "text": "CREATE TABLE orders (id INT PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL, total DECIMAL(10, 2) NOT NULL, status VARCHAR(50) DEFAULT 'pending', FOREIGN KEY (user_id) REFERENCES users(id));",
+      "source": "SQL CREATE TABLE",
+      "length": 191,
+      "id": 17
+    },
+    {
+      "text": "CREATE TABLE products (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL, price DECIMAL(10, 2) NOT NULL, stock INT DEFAULT 0, category_id INT, INDEX (category_id));",
+      "source": "SQL CREATE TABLE",
+      "length": 176,
+      "id": 18
+    },
+    {
+      "text": "CREATE INDEX idx_users_email ON users (email) USING BTREE; CREATE INDEX idx_users_name ON users (name);",
+      "source": "SQL CREATE INDEX",
+      "length": 103,
+      "id": 19
+    },
+    {
+      "text": "ALTER TABLE users ADD COLUMN phone VARCHAR(20) AFTER email, ADD COLUMN verified BOOLEAN DEFAULT FALSE;",
+      "source": "SQL ALTER TABLE",
+      "length": 102,
+      "id": 20
+    },
+    {
+      "text": "ALTER TABLE products ADD COLUMN description TEXT, ADD COLUMN image_url VARCHAR(500);",
+      "source": "SQL ALTER TABLE",
+      "length": 84,
+      "id": 21
+    },
+    {
+      "text": "ALTER TABLE orders ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;",
+      "source": "SQL ALTER TABLE",
+      "length": 103,
+      "id": 22
+    },
+    {
+      "text": "DROP TABLE IF EXISTS temp_logs; DROP TABLE IF EXISTS temp_sessions; DROP TABLE IF EXISTS temp_cache;",
+      "source": "SQL DROP",
+      "length": 100,
+      "id": 23
+    },
+    {
+      "text": "TRUNCATE TABLE sessions; TRUNCATE TABLE rate_limits; ALTER TABLE sessions AUTO_INCREMENT = 1;",
+      "source": "SQL TRUNCATE",
+      "length": 93,
+      "id": 24
+    },
+    {
+      "text": "SELECT name, salary, RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS rank FROM employees;",
+      "source": "SQL Window Function",
+      "length": 103,
+      "id": 25
+    },
+    {
+      "text": "SELECT id, name, SUM(amount) OVER (ORDER BY created_at ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM sales;",
+      "source": "SQL Window Function",
+      "length": 133,
+      "id": 26
+    },
+    {
+      "text": "WITH high_value AS (SELECT user_id FROM orders WHERE total > 500) SELECT u.name FROM users u JOIN high_value h ON u.id = h.user_id;",
+      "source": "SQL CTE",
+      "length": 131,
+      "id": 27
+    },
+    {
+      "text": "WITH RECURSIVE cte AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c JOIN cte ON c.parent_id = cte.id) SELECT * FROM cte;",
+      "source": "SQL Recursive CTE",
+      "length": 203,
+      "id": 28
+    },
+    {
+      "text": "SELECT name, salary, CASE WHEN salary > 80000 THEN 'High' WHEN salary > 50000 THEN 'Mid' ELSE 'Low' END AS salary_band FROM employees;",
+      "source": "SQL CASE",
+      "length": 134,
+      "id": 29
+    },
+    {
+      "text": "SELECT id, COALESCE(phone, email, 'N/A') AS contact FROM users WHERE active = 1 ORDER BY id;",
+      "source": "SQL COALESCE",
+      "length": 92,
+      "id": 30
+    },
+    {
+      "text": "SELECT * FROM users WHERE id IN (SELECT user_id FROM orders WHERE total > 1000);",
+      "source": "SQL Subquery",
+      "length": 80,
+      "id": 31
+    },
+    {
+      "text": "SELECT name FROM products WHERE price > (SELECT AVG(price) FROM products) ORDER BY price ASC;",
+      "source": "SQL Subquery",
+      "length": 93,
+      "id": 32
+    },
+    {
+      "text": "SELECT u.name, COUNT(o.id) AS order_count, SUM(o.total) AS total_spent FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id, u.name ORDER BY total_spent DESC LIMIT 10;",
+      "source": "SQL Complex Query",
+      "length": 180,
+      "id": 33
+    },
+    {
+      "text": "CREATE VIEW active_users AS SELECT id, name, email FROM users WHERE active = 1 AND last_login > NOW() - INTERVAL 30 DAY;",
+      "source": "SQL VIEW",
+      "length": 120,
+      "id": 34
+    },
+    {
+      "text": "CREATE PROCEDURE get_user_orders(IN user_id INT) BEGIN SELECT o.id, o.total, o.status FROM orders o WHERE o.user_id = user_id ORDER BY o.created_at DESC; END;",
+      "source": "SQL Stored Procedure",
+      "length": 158,
+      "id": 35
+    },
+    {
+      "text": "START TRANSACTION; UPDATE accounts SET balance = balance - 500 WHERE id = 1; UPDATE accounts SET balance = balance + 500 WHERE id = 2; COMMIT;",
+      "source": "SQL Transaction",
+      "length": 142,
+      "id": 36
+    },
+    {
+      "text": "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(total) AS revenue FROM orders WHERE status = 'completed' GROUP BY month ORDER BY month;",
+      "source": "SQL Date Functions",
+      "length": 141,
+      "id": 37
+    },
+    {
+      "text": "SELECT p.name, ROUND(AVG(r.rating), 2) AS avg_rating, COUNT(r.id) AS review_count FROM products p JOIN reviews r ON p.id = r.product_id GROUP BY p.id HAVING COUNT(r.id) >= 5 ORDER BY avg_rating DESC;",
+      "source": "SQL Complex JOIN",
+      "length": 199,
+      "id": 38
+    },
+    {
+      "text": "EXPLAIN SELECT u.name, COUNT(o.id) FROM users u JOIN orders o ON u.id = o.user_id WHERE o.created_at > '2024-01-01' GROUP BY u.id;",
+      "source": "SQL EXPLAIN",
+      "length": 130,
+      "id": 39
+    },
+    {
+      "text": "SELECT t1.id, t1.value, t2.value AS next_value FROM table1 t1 LEFT JOIN table1 t2 ON t2.id = t1.id + 1 ORDER BY t1.id;",
+      "source": "SQL Self JOIN",
+      "length": 118,
+      "id": 40
+    }
+  ]
+}

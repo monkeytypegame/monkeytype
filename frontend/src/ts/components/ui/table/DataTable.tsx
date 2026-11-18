@@ -2,11 +2,15 @@ import {
   AccessorFnColumnDef,
   AccessorKeyColumnDef,
   ColumnDef,
-  createSolidTable,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
+  columnVisibilityFeature,
+  createSortedRowModel,
+  createTable,
+  FlexRender,
+  rowSelectionFeature,
+  rowSortingFeature,
+  tableFeatures,
+  type RowData,
+  type SortingState,
 } from "@tanstack/solid-table";
 import {
   Accessor,
@@ -16,14 +20,17 @@ import {
   For,
   JSXElement,
   Match,
+  onCleanup,
   Show,
   splitProps,
   Switch,
 } from "solid-js";
 import { z } from "zod";
 
+import { createEffectOn } from "../../../hooks/effects";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
+import { qs } from "../../../utils/dom";
 import { Fa } from "../../common/Fa";
 import {
   Table,
@@ -41,13 +48,25 @@ const SortingStateSchema = z.array(
   }),
 );
 
-// oxlint-disable-next-line typescript/no-explicit-any
-export type DataTableColumnDef<TData, TValue = any> =
-  | ColumnDef<TData, TValue>
-  | AccessorFnColumnDef<TData, TValue>
-  | AccessorKeyColumnDef<TData, TValue>;
+// Features used by every DataTable; keep the definition static (outside any
+// component) so all tables share one features type and one row model factory.
+const dataTableFeatures = tableFeatures({
+  rowSortingFeature,
+  rowSelectionFeature,
+  // getVisibleCells() is feature-gated in v9; v8 always provided it
+  columnVisibilityFeature,
+  sortedRowModel: createSortedRowModel(),
+});
 
-export type DataTableProps<TData, TValue> = {
+export type DataTableFeatures = typeof dataTableFeatures;
+
+// oxlint-disable-next-line typescript/no-explicit-any
+export type DataTableColumnDef<TData extends RowData, TValue = any> =
+  | ColumnDef<DataTableFeatures, TData, TValue>
+  | AccessorFnColumnDef<DataTableFeatures, TData, TValue>
+  | AccessorKeyColumnDef<DataTableFeatures, TData, TValue>;
+
+export type DataTableProps<TData extends RowData, TValue> = {
   id: string;
   columns: DataTableColumnDef<TData, TValue>[];
   data: TData[];
@@ -57,7 +76,10 @@ export type DataTableProps<TData, TValue> = {
     getRowId: (row: TData) => string;
     class: string;
     activeRow: Accessor<string | null>;
+    /** Tracked: each change scrolls the active row into view (after a frame) */
+    scrollToActiveRow?: Accessor<unknown>;
   };
+  scrollToSelectedRow?: Accessor<boolean>;
   class?: string;
   headerCellClass?: string;
   bodyCellClass?: string;
@@ -70,7 +92,7 @@ export type DataTableProps<TData, TValue> = {
 };
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export function DataTable<TData, TValue = any>(
+export function DataTable<TData extends RowData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
   const [sorting, setSorting] = useLocalStorage<SortingState>({
@@ -95,36 +117,64 @@ export function DataTable<TData, TValue = any>(
 
   const [rowSelection, setRowSelection] = createSignal({});
   createEffect(() => {
-    if (!props.rowSelection || props.rowSelection.activeRow === undefined) {
+    const scrollToSelectedRow = props.scrollToSelectedRow?.();
+    if (props.rowSelection?.activeRow === undefined) {
       setRowSelection({});
     } else {
       const activeId = props.rowSelection.activeRow();
       setRowSelection(activeId !== null ? { [activeId]: true } : {});
+      if (scrollToSelectedRow) {
+        requestAnimationFrame(() => {
+          qs(`#${props.id} tr[data-state="selected"]`)?.scrollIntoView({
+            block: "center",
+          });
+        });
+      }
     }
   });
 
-  const table = createSolidTable<TData>({
-    get data() {
-      return props.data;
+  const rowElements = new Map<string, HTMLTableRowElement>();
+  createEffectOn(
+    () => props.rowSelection?.scrollToActiveRow?.(),
+    () => {
+      requestAnimationFrame(() => {
+        const activeId = props.rowSelection?.activeRow();
+        if (activeId === null || activeId === undefined) return;
+        rowElements.get(activeId)?.scrollIntoView({ block: "center" });
+      });
     },
-    get columns() {
+    { defer: true },
+  );
+
+  // Ensure reactivity: always produce a fresh array reference
+  // oxlint-disable-next-line typescript/no-misused-spread
+  const data = createMemo(() => props.data.map((it) => ({ ...it })));
+
+  // A single persistent table instance; data and columns are passed as
+  // getters so v9's options store stays reactive.
+  const table = createTable<DataTableFeatures, TData>({
+    features: dataTableFeatures,
+    get data() {
+      return data();
+    },
+    // oxlint-disable-next-line typescript/no-explicit-any
+    get columns(): ColumnDef<DataTableFeatures, TData, any>[] {
       return props.columns;
     },
-    getCoreRowModel: getCoreRowModel(),
     onSortingChange: (it) => {
       setSorting(it);
       props.onSortingChange?.(sorting());
     },
 
     //oxlint-disable-next-line solid/reactivity
-    ...(props.onSortingChange
-      ? { manualSorting: true }
-      : { getSortedRowModel: getSortedRowModel() }),
+    ...(props.onSortingChange ? { manualSorting: true } : {}),
     enableRowSelection: () => props.rowSelection !== undefined,
     getRowId: (row, index) =>
       props.rowSelection !== undefined
         ? props.rowSelection.getRowId(row)
-        : index.toString(),
+        : typeof (row as Record<string, unknown>)["_id"] === "string"
+          ? ((row as Record<string, unknown>)["_id"] as string)
+          : index.toString(),
     onRowSelectionChange: setRowSelection,
 
     state: {
@@ -217,10 +267,7 @@ export function DataTable<TData, TValue = any>(
                               {})}
                           >
                             <Show when={!header.isPlaceholder}>
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              <FlexRender header={header} />
                             </Show>
                           </TableHead>
                         }
@@ -265,10 +312,7 @@ export function DataTable<TData, TValue = any>(
                               {})}
                           >
                             <Show when={!header.isPlaceholder}>
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              <FlexRender header={header} />
                             </Show>
 
                             <Switch fallback={<i class="fa-fw"></i>}>
@@ -303,57 +347,68 @@ export function DataTable<TData, TValue = any>(
         </Show>
         <TableBody>
           <For each={table.getRowModel().rows}>
-            {(row) => (
-              <TableRow
-                {...{
-                  "data-state": row.getIsSelected() ? "selected" : undefined,
-                }}
-                class={
-                  row.getIsSelected() && props.rowSelection
-                    ? props.rowSelection.class
-                    : ""
+            {(row) => {
+              let rowElement: HTMLTableRowElement | undefined;
+              // a recreated table recreates rows with the same id: keep the newest
+              onCleanup(() => {
+                if (rowElements.get(row.id) === rowElement) {
+                  rowElements.delete(row.id);
                 }
-              >
-                <For each={row.getVisibleCells()}>
-                  {(cell) => {
-                    const [cellClass, cellMeta] = splitProps(
-                      typeof cell.column.columnDef.meta?.cellMeta === "function"
-                        ? cell.column.columnDef.meta.cellMeta({
-                            value: cell.getValue(),
-                            row: cell.row.original,
-                          })
-                        : (cell.column.columnDef.meta?.cellMeta ?? {}),
-                      ["class"],
-                    );
-                    return (
-                      <TableCell
-                        {...cellMeta}
-                        class={cn(
-                          "",
-                          {
-                            "text-left":
-                              (cell.column.columnDef.meta?.align ?? "left") ===
-                              "left",
-                            "text-center":
-                              cell.column.columnDef.meta?.align === "center",
-                            "text-right":
-                              cell.column.columnDef.meta?.align === "right",
-                          },
-                          columnVisibility()[cell.column.id],
-                          props.bodyCellClass,
-                          cellClass.class,
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    );
+              });
+              return (
+                <TableRow
+                  ref={(el) => {
+                    rowElement = el;
+                    rowElements.set(row.id, el);
                   }}
-                </For>
-              </TableRow>
-            )}
+                  {...{
+                    "data-state": row.getIsSelected() ? "selected" : undefined,
+                  }}
+                  class={
+                    row.getIsSelected() && props.rowSelection
+                      ? props.rowSelection.class
+                      : ""
+                  }
+                >
+                  <For each={row.getVisibleCells()}>
+                    {(cell) => {
+                      const [cellClass, cellMeta] = splitProps(
+                        typeof cell.column.columnDef.meta?.cellMeta ===
+                          "function"
+                          ? cell.column.columnDef.meta.cellMeta({
+                              value: cell.getValue(),
+                              row: cell.row.original,
+                            })
+                          : (cell.column.columnDef.meta?.cellMeta ?? {}),
+                        ["class"],
+                      );
+                      return (
+                        <TableCell
+                          {...cellMeta}
+                          class={cn(
+                            "",
+                            {
+                              "text-left":
+                                (cell.column.columnDef.meta?.align ??
+                                  "left") === "left",
+                              "text-center":
+                                cell.column.columnDef.meta?.align === "center",
+                              "text-right":
+                                cell.column.columnDef.meta?.align === "right",
+                            },
+                            columnVisibility()[cell.column.id],
+                            props.bodyCellClass,
+                            cellClass.class,
+                          )}
+                        >
+                          <FlexRender cell={cell} />
+                        </TableCell>
+                      );
+                    }}
+                  </For>
+                </TableRow>
+              );
+            }}
           </For>
           <Show
             when={

@@ -73,6 +73,7 @@
     "stylelint.lintFiles.glob": "**/*.{css,scss}",
     "stylelint.snippet": ["css", "postcss", "scss"],
     "stylelint.validate": ["css", "postcss", "scss"],
+    "js/ts.experimental.useTsgo": true,
   },
 
   "launch": {

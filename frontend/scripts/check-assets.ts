@@ -2,7 +2,6 @@
  * Example usage in root or frontend:
  * pnpm check-assets (npm run check-assets)
  * pnpm check-assets -- -- quotes others (npm run check-assets -- -- quotes others)
- * pnpm check-assets -- -- challenges sound -p (npm run check-assets -- -- challenges sound -p)
  */
 
 import * as fs from "fs";
@@ -18,7 +17,6 @@ import { KnownFontName } from "@monkeytype/schemas/fonts";
 import { Fonts } from "../src/ts/constants/fonts";
 import { themes, ThemeSchema, ThemesList } from "../src/ts/constants/themes";
 import { z } from "zod";
-import { ChallengeSchema, Challenge } from "@monkeytype/schemas/challenges";
 import { LayoutObject, LayoutObjectSchema } from "@monkeytype/schemas/layouts";
 import { QuoteDataSchema, QuoteData } from "@monkeytype/schemas/quotes";
 import { clickSoundConfig } from "../src/ts/constants/sounds";
@@ -84,6 +82,11 @@ class Problems<K extends string, T extends string> {
   }
 }
 
+// skip dotfiles like .DS_Store or tool folders like .claude
+function readdirNoDotfiles(path: string): string[] {
+  return fs.readdirSync(path).filter((it) => !it.startsWith("."));
+}
+
 function findDuplicates<T>(items: T[]): T[] {
   const seen = new Set<T>();
   const duplicates = new Set<T>();
@@ -97,24 +100,6 @@ function findDuplicates<T>(items: T[]): T[] {
   }
 
   return Array.from(duplicates);
-}
-
-async function validateChallenges(): Promise<void> {
-  const problems = new Problems<"_list.json", never>("Challenges", {});
-
-  const challengesData = JSON.parse(
-    fs.readFileSync("./static/challenges/_list.json", {
-      encoding: "utf8",
-      flag: "r",
-    }),
-  ) as Challenge;
-  const validationResult = z.array(ChallengeSchema).safeParse(challengesData);
-  problems.addValidation("_list.json", validationResult);
-
-  console.log(problems.toString());
-  if (problems.hasError()) {
-    throw new Error("challenges with errors");
-  }
 }
 
 async function validateLayouts(): Promise<void> {
@@ -149,9 +134,9 @@ async function validateLayouts(): Promise<void> {
   }
 
   //no files not defined in LayoutsList
-  const additionalLayoutFiles = fs
-    .readdirSync("./static/layouts")
-    .filter((it) => !LayoutsList.some((layout) => `${layout}.json` === it));
+  const additionalLayoutFiles = readdirNoDotfiles("./static/layouts").filter(
+    (it) => !LayoutsList.some((layout) => `${layout}.json` === it),
+  );
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -170,7 +155,7 @@ async function validateQuotes(): Promise<void> {
     fs.readFileSync("./scripts/short-quotes.json", "utf8"),
   ) as Record<QuoteData["language"], number[]>;
 
-  const quotesFiles = fs.readdirSync("./static/quotes/");
+  const quotesFiles = readdirNoDotfiles("./static/quotes/");
   for (let quotefilename of quotesFiles) {
     quotefilename = quotefilename.split(".")[0] as string;
     let quoteData;
@@ -307,7 +292,7 @@ async function validateLanguages(): Promise<void> {
   }
 
   //no files not defined in LanguageList
-  fs.readdirSync("./static/languages")
+  readdirNoDotfiles("./static/languages")
     .filter((it) => !LanguageList.some((language) => `${language}.json` === it))
     .forEach((it) => problems.add("_additional", it));
 
@@ -361,9 +346,9 @@ async function validateFonts(): Promise<void> {
     "Vazirharf-NL-Regular.woff2", //default font
   ]);
 
-  const fontFiles = fs
-    .readdirSync("./static/webfonts")
-    .filter((it) => !ignoredFonts.has(it));
+  const fontFiles = readdirNoDotfiles("./static/webfonts").filter(
+    (it) => !ignoredFonts.has(it),
+  );
 
   //missing font files
   Object.entries(Fonts)
@@ -401,7 +386,7 @@ async function validateThemes(): Promise<void> {
   });
 
   //no missing files
-  const themeFiles = fs.readdirSync("./static/themes");
+  const themeFiles = readdirNoDotfiles("./static/themes");
 
   //missing or additional theme files (mismatch in hasCss)
   ThemesList.filter(
@@ -443,13 +428,12 @@ async function validateSounds(): Promise<void> {
   });
 
   const soundFiles = new Set(
-    fs
-      .readdirSync("./static/sounds")
+    readdirNoDotfiles("./static/sounds")
       .filter((it) => it.startsWith("click"))
       .flatMap((folder) =>
-        fs
-          .readdirSync(`./static/sounds/${folder}`)
-          .map((it) => `${folder}/${it}`),
+        readdirNoDotfiles(`./static/sounds/${folder}`).map(
+          (it) => `${folder}/${it}`,
+        ),
       ),
   );
 
@@ -496,17 +480,10 @@ async function main(): Promise<void> {
     quotes: [validateQuotes],
     languages: [validateLanguages],
     layouts: [validateLayouts],
-    challenges: [validateChallenges],
     fonts: [validateFonts],
     themes: [validateThemes],
     sounds: [validateSounds],
-    others: [
-      validateChallenges,
-      validateLayouts,
-      validateFonts,
-      validateThemes,
-      validateSounds,
-    ],
+    others: [validateLayouts, validateFonts, validateThemes, validateSounds],
   };
 
   // flags

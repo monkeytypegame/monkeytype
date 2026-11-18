@@ -1,5 +1,4 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { Component } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -25,7 +24,7 @@ function createFieldMock(options: {
     isValid: true,
     isValidating: false,
     errors: [],
-    ...(options.meta ?? {}),
+    ...options.meta,
   };
   return {
     name: options.name ?? "test",
@@ -49,7 +48,7 @@ function createFieldMock(options: {
 
 const meta = preview.meta({
   title: "UI/Form/InputField",
-  component: InputField as Component,
+  component: InputField,
   parameters: {
     layout: "centered",
   },

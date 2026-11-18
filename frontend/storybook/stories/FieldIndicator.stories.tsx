@@ -1,5 +1,4 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { Component } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -41,7 +40,7 @@ function createFieldMock(meta: MetaState) {
 
 const meta = preview.meta({
   title: "UI/Form/FieldIndicator",
-  component: FieldIndicator as Component,
+  component: FieldIndicator,
   parameters: {
     layout: "centered",
   },

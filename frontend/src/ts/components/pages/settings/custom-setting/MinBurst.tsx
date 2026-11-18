@@ -10,7 +10,7 @@ import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { Button } from "../../../common/Button";
 import { InputField } from "../../../ui/form/InputField";
 import { fromSchema } from "../../../ui/form/utils";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function MinBurst(): JSXElement {
   const savedIndicator = useSavedIndicator();
@@ -20,7 +20,7 @@ export function MinBurst(): JSXElement {
       minBurstCustomSpeed: getConfig.minBurstCustomSpeed,
     },
     onSubmit: ({ value }) => {
-      const val = parseFloat(String(value.minBurstCustomSpeed));
+      const val = value.minBurstCustomSpeed;
       if (val === getConfig.minBurstCustomSpeed) return;
       if (getConfig.minBurst !== "off") {
         //
@@ -33,7 +33,7 @@ export function MinBurst(): JSXElement {
   }));
 
   return (
-    <Setting
+    <SearchableSetting
       key="minBurst"
       title={configMetadata.minBurst.displayString ?? "min burst"}
       fa={configMetadata.minBurst.fa}
@@ -50,23 +50,13 @@ export function MinBurst(): JSXElement {
             <form.Field
               name="minBurstCustomSpeed"
               validators={{
-                onChange: ({ value }) => {
-                  const val = parseFloat(String(value));
-                  if (isNaN(val)) {
-                    return "Must be a number";
-                  }
-                  return fromSchema(MinimumBurstCustomSpeedSchema)({
-                    value: val,
-                  });
-                },
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
+                onChange: fromSchema(MinimumBurstCustomSpeedSchema),
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MinimumBurstCustomSpeedSchema}
                     placeholder={
                       configMetadata.minBurst.displayString ?? "min burst"

@@ -5,6 +5,7 @@ import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
 import { getZodType, unwrapSchema } from "../../../utils/zod";
+import { Button } from "../../common/Button";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {
@@ -23,12 +24,21 @@ export function InputField(props: {
    * If user inputs empty string the field is resetted to the default value
    */
   resetToDefaultIfEmptyOnBlur?: boolean;
+  /**
+   * Submits the form when the input blurs
+   */
+  submitOnBlur?: boolean;
   schema?: ZodTypeAny;
   min?: number;
   max?: number;
   step?: string | number;
+  alwaysShowFieldIndicator?: boolean;
+  ref?: (el: HTMLInputElement) => void;
 }): JSXElement {
   const [shake, setShake] = createSignal(false);
+  const [showPassword, setShowPassword] = createSignal(false);
+  const isPasswordType = () => props.type === "password";
+  const hasValidators = () => !!props.field().options.validators;
 
   const shakeItIfYouWantIt = () => {
     if (
@@ -48,31 +58,53 @@ export function InputField(props: {
           props.type === "date" ? "yyyy-MM-dd" : "yyyy-MM-dd'T'HH:mm:ss",
         );
 
+  const inputRightPadding = () => {
+    // password button only shown while focused
+    if (isPasswordType() && hasValidators()) {
+      return "pr-[2em] group-focus-within:pr-[3.75em]";
+    }
+    if (isPasswordType()) {
+      return "group-focus-within:pr-[2em]";
+    }
+    if (hasValidators()) {
+      return "pr-[2em]";
+    }
+    return "";
+  };
+
   return (
     <div
-      class="grid w-full"
+      class="group grid w-full"
       style={
         shake() ? { animation: "shake 0.1s ease-in-out infinite" } : undefined
       }
     >
       <input
+        ref={props.ref}
         class={cn(
           "col-start-1 row-start-1 w-full",
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",
           "focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
           "autofill-fix",
-          props.field().options.validators ? "pr-[1.85em]" : "",
+          inputRightPadding(),
           props.class,
         )}
-        type={props.type ?? "text"}
+        type={
+          isPasswordType()
+            ? showPassword()
+              ? "text"
+              : "password"
+            : (props.type ?? "text")
+        }
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
-        value={(props.field().state.value as string) ?? ""}
+        value={convertValueToString(props.field().state.value)}
         onBlur={() => {
           if (
             props.resetToDefaultIfEmptyOnBlur &&
-            props.field().state.value === ""
+            (props.field().state.value === undefined ||
+              props.field().state.value === "")
           ) {
             props.field().setValue(
               // oxlint-disable-next-line typescript/no-unsafe-member-access
@@ -81,9 +113,16 @@ export function InputField(props: {
           }
           shakeItIfYouWantIt();
           props.field().handleBlur();
+          if (props.submitOnBlur) {
+            void props.field().form.handleSubmit();
+          }
         }}
         onInput={(e) => {
-          props.field().handleChange(e.target.value);
+          const value: unknown = convertStringToValue(
+            props.field(),
+            e.target.value,
+          );
+          props.field().handleChange(value);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -105,7 +144,29 @@ export function InputField(props: {
         step={props.step?.toString()}
       />
       <Show when={props.field().options.validators}>
-        <FieldIndicator field={props.field()} />
+        <FieldIndicator
+          field={props.field()}
+          alwaysShow={props.alwaysShowFieldIndicator}
+        />
+      </Show>
+      <Show when={isPasswordType()}>
+        <Button
+          tabIndex={-1}
+          variant="text"
+          balloon={{ text: showPassword() ? "hide password" : "show password" }}
+          fa={{
+            icon: showPassword() ? "fa-eye-slash" : "fa-eye",
+            fixedWidth: true,
+          }}
+          class={cn(
+            "text-sub hover:text-text",
+            "col-start-1 row-start-1 self-center justify-self-end",
+            "pointer-events-none opacity-0 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
+            // "cursor-pointer self-center justify-self-end text-em-base hover:text-text text-sub focus-visible:shadow-[0_0_0_0.1rem_var(--bg-color),0_0_0_0.2rem_var(--text-color)]",
+            hasValidators() ? "mr-[1.5em]" : "mr-[0.4em]",
+          )}
+          onClick={() => setShowPassword((v) => !v)}
+        />
       </Show>
     </div>
   );
@@ -146,4 +207,28 @@ function getDateOptions(
     min: applyFormat((schema as ZodDate).minDate),
     max: applyFormat((schema as ZodDate).maxDate),
   };
+}
+
+function convertValueToString(input: unknown | undefined): string {
+  if (input === undefined || input === null) return "";
+  if (typeof input === "number") {
+    if (isFinite(input)) return input.toString();
+    else return "";
+  }
+  return input as string;
+}
+
+// oxlint-disable-next-line no-unnecessary-type-parameters -- caller picks the field's value type
+function convertStringToValue<T extends unknown | undefined>(
+  field: AnyFieldApi,
+  newValue: string,
+): T | undefined {
+  const defaultValue: unknown =
+    // oxlint-disable-next-line typescript/no-unsafe-member-access
+    field.form.options.defaultValues?.[field.name];
+  if (defaultValue === undefined || defaultValue === null) return newValue as T;
+  if (newValue === "" && typeof defaultValue !== "string") return undefined;
+  if (typeof defaultValue === "number") return Number.parseFloat(newValue) as T;
+
+  return newValue as T;
 }

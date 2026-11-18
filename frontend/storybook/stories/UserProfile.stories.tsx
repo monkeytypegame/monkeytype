@@ -1,5 +1,4 @@
 import { UserProfile as UserProfileType } from "@monkeytype/schemas/users";
-import { Component } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -156,7 +155,7 @@ const baseProfile: UserProfileType = {
 
 const meta = preview.meta({
   title: "Pages/UserProfile",
-  component: UserProfile as Component,
+  component: UserProfile,
   parameters: {
     layout: "padded",
   },

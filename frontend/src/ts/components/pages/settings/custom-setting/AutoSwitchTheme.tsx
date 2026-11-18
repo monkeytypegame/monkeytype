@@ -8,11 +8,17 @@ import { ThemesList } from "../../../../constants/themes";
 import { cn } from "../../../../utils/cn";
 import { Button } from "../../../common/Button";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const themeOptions = ThemesList.map((theme) => ({
+  text: theme.name.replace(/_/g, " "),
+  value: theme.name,
+}));
 
 export function AutoSwitchTheme(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="autoSwitchTheme"
       title={
         configMetadata.autoSwitchTheme.displayString ?? "auto switch theme"
@@ -49,10 +55,7 @@ export function AutoSwitchTheme(): JSXElement {
             <div class="grid grid-cols-[7rem_1fr] items-center gap-2">
               <div>light</div>
               <SlimSelect
-                options={ThemesList.map((theme) => ({
-                  text: theme.name.replace(/_/g, " "),
-                  value: theme.name,
-                }))}
+                options={themeOptions}
                 selected={getConfig.themeLight}
                 onChange={(value) =>
                   setConfig("themeLight", value as ThemeName)
@@ -62,10 +65,7 @@ export function AutoSwitchTheme(): JSXElement {
             <div class="grid grid-cols-[7rem_1fr] items-center gap-2">
               <div>dark</div>
               <SlimSelect
-                options={ThemesList.map((theme) => ({
-                  text: theme.name.replace(/_/g, " "),
-                  value: theme.name,
-                }))}
+                options={themeOptions}
                 selected={getConfig.themeDark}
                 onChange={(value) => setConfig("themeDark", value as ThemeName)}
               />

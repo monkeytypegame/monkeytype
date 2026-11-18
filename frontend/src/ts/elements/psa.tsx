@@ -3,11 +3,13 @@ import { IdSchema } from "@monkeytype/schemas/util";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { format } from "date-fns/format";
+import { createRoot } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../ape";
-import { authEvent } from "../events/auth";
+import { createEffectOn } from "../hooks/effects";
 import { addBanner } from "../states/banners";
+import { getAuthState } from "../states/core";
 import { addPsa } from "../states/psas";
 import { secondsToString } from "../utils/date-and-time";
 import { isDevEnvironment } from "../utils/env";
@@ -90,8 +92,7 @@ async function getLatest(): Promise<PSA[] | null> {
       if (
         maintenanceData !== undefined &&
         maintenanceData.length > 0 &&
-        maintenanceData[0] !== undefined &&
-        maintenanceData[0].status === "INPROGRESS"
+        maintenanceData[0]?.status === "INPROGRESS"
       ) {
         addBanner({
           level: "error",
@@ -204,8 +205,11 @@ export async function show(): Promise<void> {
   });
 }
 
-authEvent.subscribe((event) => {
-  if (event.type === "authStateChanged") {
-    void show();
-  }
-});
+/** Shows the PSAs on every auth state change. */
+export function init(): void {
+  createRoot(() =>
+    createEffectOn(getAuthState, (state) => {
+      if (state !== "unknown") void show();
+    }),
+  );
+}

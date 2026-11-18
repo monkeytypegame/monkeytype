@@ -23,8 +23,10 @@ import {
   incrementDailyLeaderboard,
 } from "../../utils/prometheus";
 import GeorgeQueue from "../../queues/george-queue";
-import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
-import AutoRoleList from "../../constants/auto-roles";
+import {
+  getDailyLeaderboard,
+  purgeUserFromDailyLeaderboards,
+} from "../../utils/daily-leaderboards";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
@@ -43,7 +45,6 @@ import {
   GetResultsResponse,
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
-  ReportCompletedEventMismatchRequest,
 } from "@monkeytype/contracts/results";
 import {
   CompletedEvent,
@@ -65,6 +66,7 @@ import { MonkeyRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
+import { getChallenges } from "@monkeytype/challenges";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -81,6 +83,14 @@ try {
     process.exit(1);
   }
 }
+
+const FIRST_RESULT_GRACE_MS = 10 * 60 * 1000;
+
+const autoRoleChallengeNames = new Set(
+  getChallenges()
+    .filter((it) => it.settings?.autoRole)
+    .map((it) => it.name),
+);
 
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,
@@ -154,14 +164,6 @@ export async function getLastResult(
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
 }
 
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
-}
-
 export async function updateTags(
   req: MonkeyRequest<undefined, UpdateResultTagsRequest>,
 ): Promise<UpdateResultTagsResponse> {
@@ -183,48 +185,6 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
-}
-
-export async function reportCompletedEventMismatch(
-  req: MonkeyRequest<undefined, ReportCompletedEventMismatchRequest>,
-): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-  const {
-    notMatching,
-    mismatchedKeys,
-    groupKey,
-    language,
-    mode,
-    mode2,
-    difficulty,
-    duration,
-    funboxes,
-    version,
-    data,
-  } = req.body;
-  // Logger.warning(
-  //   `Completed event mismatch for uid ${uid}: ${notMatching.join(", ")}`,
-  // );
-  // Logger.warning(`Old CE: ${JSON.stringify(ce)}`);
-  // Logger.warning(`New CE: ${JSON.stringify(ce2)}`);
-  void addLog(
-    "completed_event_mismatch",
-    {
-      notMatching,
-      mismatchedKeys,
-      groupKey,
-      language,
-      mode,
-      mode2,
-      difficulty,
-      duration,
-      funboxes,
-      version,
-      data,
-    },
-    uid,
-  );
-  return new MonkeyResponse("Mismatch reported", null);
 }
 
 export async function addResult(
@@ -363,23 +323,37 @@ export async function addResult(
     ResultDAL.getLastResultTimestamp(uid),
   );
 
+  // Abandoned-test time (incompleteTestSeconds/incompleteTests) is client
+  // supplied. When a previous result exists it is bounded to real elapsed time
+  // by the result-spacing check below. When it does not (new account, or all
+  // results deleted) there is nothing to bound it against, so it must not be
+  // credited toward timeTyping / XP / leaderboard eligibility.
+  if (!isSafeNumber(lastResultTimestamp)) {
+    completedEvent.incompleteTestSeconds = 0;
+    completedEvent.incompleteTests = [];
+  }
+
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
+
+  // Without a previous result, bound the test by account age instead. The
+  // grace covers a test finished signed out and saved right after signing up.
+  const spacingBase = isSafeNumber(lastResultTimestamp)
+    ? lastResultTimestamp
+    : user.addedAt - FIRST_RESULT_GRACE_MS;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
   const testDurationMilis = completedEvent.testDuration * 1000;
   const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
   const earliestPossible =
-    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
+    spacingBase + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
-  if (
-    isSafeNumber(lastResultTimestamp) &&
-    nowNoMilis < earliestPossible - 1000
-  ) {
+  if (isSafeNumber(spacingBase) && nowNoMilis < earliestPossible - 1000) {
     void addLog(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
+        addedAt: user.addedAt,
         earliestPossible,
         now: nowNoMilis,
         testDuration: testDurationMilis,
@@ -423,11 +397,21 @@ export async function addResult(
               subject: "Banned",
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            await UserDAL.addToInbox(
-              uid,
-              [mail],
-              req.ctx.configuration.users.inbox,
-            );
+            await Promise.all([
+              UserDAL.addToInbox(
+                uid,
+                [mail],
+                req.ctx.configuration.users.inbox,
+              ),
+              purgeUserFromDailyLeaderboards(
+                uid,
+                req.ctx.configuration.dailyLeaderboards,
+              ),
+              WeeklyXpLeaderboard.purgeUserFromXpLeaderboards(
+                uid,
+                req.ctx.configuration.leaderboards.weeklyXp,
+              ),
+            ]);
             user.banned = true;
           }
         }
@@ -502,7 +486,7 @@ export async function addResult(
   if (
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
-    AutoRoleList.includes(completedEvent.challenge) &&
+    autoRoleChallengeNames.has(completedEvent.challenge) &&
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {

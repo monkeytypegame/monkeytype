@@ -1,4 +1,4 @@
-import { Component, createSignal, onCleanup } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 
 import preview from "#.storybook/preview";
 
@@ -6,7 +6,7 @@ import { User } from "../../src/ts/components/common/User";
 
 const meta = preview.meta({
   title: "Common/User",
-  component: User as Component,
+  component: User,
   parameters: {
     layout: "centered",
   },

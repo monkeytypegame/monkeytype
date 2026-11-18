@@ -1,4 +1,5 @@
 import { Language } from "@monkeytype/schemas/languages";
+import { STRONG_RTL_CHARACTER } from "./direction-regex";
 
 /**
  * Removes accents from a string.
@@ -227,73 +228,37 @@ export function replaceControlCharacters(textToClear: string): string {
   return textToClear;
 }
 
-/**
- * Detect if a word contains RTL (Right-to-Left) characters.
- * This is for test scenarios where individual words may have different directions.
- * Uses a simple regex pattern that covers all common RTL scripts.
- * @param word the word to check for RTL characters
- * @returns true if the word contains RTL characters, false otherwise
- */
-function hasRTLCharacters(word: string): [boolean, number] {
-  if (!word || word.length === 0) {
-    return [false, 0];
-  }
+export type Direction = "ltr" | "rtl";
 
-  // This covers Arabic, Farsi, Urdu, and other RTL scripts
-  const rtlPattern =
-    /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+/;
-
-  const result = rtlPattern.exec(word);
-  return [result !== null, result?.[0].length ?? 0];
-}
+const FIRST_STRONG_CHARACTER = new RegExp(
+  `${STRONG_RTL_CHARACTER.source}|\\p{L}`,
+  "u",
+);
 
 /**
- * Cache for word direction to avoid repeated calculations per word
- * Keyed by the stripped core of the word; can be manually cleared when needed
+ * The direction of the word's first strongly directional character. Without
+ * one, numerals read left to right and anything else (punctuation, symbols,
+ * emoji, an empty word) takes `fallback`.
  */
-let wordDirectionCache: Map<string, [boolean, number]> = new Map();
-
-export function clearWordDirectionCache(): void {
-  wordDirectionCache.clear();
+export function getWordDirection(
+  word = "",
+  fallback: Direction = "ltr",
+): Direction {
+  const firstStrong = FIRST_STRONG_CHARACTER.exec(word)?.[0];
+  if (firstStrong !== undefined) {
+    return STRONG_RTL_CHARACTER.test(firstStrong) ? "rtl" : "ltr";
+  }
+  return /\p{N}/u.test(word) ? "ltr" : fallback;
 }
 
-export function isWordRightToLeft(
-  word: string | undefined,
-  languageRTL: boolean,
-  reverseDirection?: boolean,
-): [boolean, boolean] {
-  if (word === undefined || word.length === 0) {
-    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
-  }
-
-  // Strip leading/trailing punctuation and whitespace so attached opposite-direction
-  // punctuation like "word؟" or "،word" doesn't flip the direction detection
-  // and if only punctuation/symbols/whitespace, use main language direction
-  const core = word.replace(/^[\p{P}\p{S}\s]+|[\p{P}\p{S}\s]+$/gu, "");
-  if (core.length === 0) {
-    return reverseDirection ? [!languageRTL, false] : [languageRTL, false];
-  }
-
-  // cache by core to handle variants like "word" vs "word؟"
-  const cached = wordDirectionCache.get(core);
-  if (cached !== undefined) {
-    return reverseDirection
-      ? [!cached[0], false]
-      : [cached[0], cached[1] === word.length];
-  }
-
-  const result = hasRTLCharacters(core);
-  wordDirectionCache.set(core, result);
-
-  return reverseDirection
-    ? [!result[0], false]
-    : [result[0], result[1] === word.length];
+export function reverseDirection(direction: Direction): Direction {
+  return direction === "ltr" ? "rtl" : "ltr";
 }
 
 export const CHAR_EQUIVALENCE_SETS = [
   new Set(["’", "‘", "'", "ʼ", "׳", "ʻ", "᾽", "᾽"]),
   new Set([`"`, "”", "“", "„"]),
-  new Set(["–", "—", "-", "‐"]),
+  new Set(["–", "—", "-", "‐", "‑"]),
   new Set([",", "‚"]),
 ];
 
@@ -317,6 +282,13 @@ export function areCharactersVisuallyEqual(
 ): boolean {
   // If characters are exactly the same, they're equivalent
   if (char1 === char2) {
+    return true;
+  }
+
+  // Treat any Unicode space as equivalent to the regular U+0020 separator.
+  // This lets IME-produced spaces (e.g. U+3000) match stored word separators.
+  // The U+0020 guard short-circuits the common non-space case before calling isSpace.
+  if ((char1 === " " || char2 === " ") && isSpace(char1) && isSpace(char2)) {
     return true;
   }
 
@@ -357,6 +329,25 @@ export function toHex(buffer: ArrayBuffer): string {
   return hashHex;
 }
 
+// hoisted to module scope so isSpace doesn't allocate a Set on every call
+// (it runs per keystroke via areCharactersVisuallyEqual)
+const SPACE_CODE_POINTS = new Set([
+  0x0020, // Regular space (spacebar)
+  0x2002, // En space (Option+Space on Mac)
+  0x2003, // Em space (Option+Shift+Space on Mac)
+  0x2009, // Thin space (various input methods)
+  0x3000, // Ideographic space (CJK input methods)
+  0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
+  0x1680, // Ogham space mark (rare, but included for completeness)
+  0x202f, // Narrow no-break space (various input methods)
+  0xfeff, // Zero width no-break space (various input methods)
+  0x2007, // Figure space (various input methods)
+  0x2008, // Punctuation space (various input methods)
+  0x2004, // Three-per-em space (various input methods)
+  0x200a, // Hair space (various input methods)
+  0x200b, // Zero width space (various input methods)
+]);
+
 /**
  * Checks if a character is a directly typable space character on a standard keyboard.
  * These are space characters that can be typed without special input methods or copy-pasting.
@@ -369,24 +360,7 @@ export function isSpace(char: string): boolean {
   const codePoint = char.codePointAt(0);
   if (codePoint === undefined) return false;
 
-  const spaces = new Set([
-    0x0020, // Regular space (spacebar)
-    0x2002, // En space (Option+Space on Mac)
-    0x2003, // Em space (Option+Shift+Space on Mac)
-    0x2009, // Thin space (various input methods)
-    0x3000, // Ideographic space (CJK input methods)
-    0x00a0, // Non-breaking space (Alt+0160 on Windows, Option+Space on Mac)
-    0x1680, // Ogham space mark (rare, but included for completeness)
-    0x202f, // Narrow no-break space (various input methods)
-    0xfeff, // Zero width no-break space (various input methods)
-    0x2007, // Figure space (various input methods)
-    0x2008, // Punctuation space (various input methods)
-    0x2004, // Three-per-em space (various input methods)
-    0x200a, // Hair space (various input methods)
-    0x200b, // Zero width space (various input methods)
-  ]);
-
-  return spaces.has(codePoint);
+  return SPACE_CODE_POINTS.has(codePoint);
 }
 
 export function replaceUnderscoresWithSpaces(text: string): string {
@@ -409,6 +383,7 @@ export function countChars(
   inputWord: string,
   targetWord: string,
   creditPartial: boolean,
+  committed: boolean,
 ): CharCounts {
   let allCorrect = 0;
   let correctWord = 0;
@@ -424,8 +399,14 @@ export function countChars(
     const targetChar = targetWord[i];
 
     if (inputChar === targetChar) {
+      // matching space on a wrong word: incorrect if it committed the word
+      // (legacy parity), extra if it was a literal space (stopOnError=word)
       if (targetChar === " " && !wordCorrect) {
-        extra += 1;
+        if (committed && i === inputWord.length - 1) {
+          incorrect += 1;
+        } else {
+          extra += 1;
+        }
       } else {
         allCorrect += 1;
       }
@@ -457,8 +438,3 @@ export function countChars(
     missed,
   };
 }
-
-// Export testing utilities for unit tests
-export const __testing = {
-  hasRTLCharacters,
-};

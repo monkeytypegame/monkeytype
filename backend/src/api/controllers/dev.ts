@@ -163,7 +163,7 @@ function createResult(
     charStats: [131, 0, 0, 0],
     acc: random(80, 100),
     language: "english",
-    mode: mode as Mode,
+    mode: mode,
     mode2: mode2 as unknown as never,
     timestamp: timestamp.valueOf(),
     testDuration: testDuration,

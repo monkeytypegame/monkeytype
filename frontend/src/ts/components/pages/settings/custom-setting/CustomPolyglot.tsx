@@ -12,11 +12,23 @@ import {
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const languageOptionGroups = LanguageGroupNames.map(
+  (group) =>
+    ({
+      label: group,
+      options: LanguageGroups[group]?.map((language) => ({
+        text: getLanguageDisplayString(language),
+        value: language,
+      })),
+    }) as Optgroup,
+);
 
 export function CustomPolyglot(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="customPolyglot"
       title="polyglot languages"
       description={configMetadata.customPolyglot.description}
@@ -29,16 +41,7 @@ export function CustomPolyglot(): JSXElement {
             allowDeselect: true,
             minSelected: 2,
           }}
-          optionGroups={LanguageGroupNames.map(
-            (group) =>
-              ({
-                label: group,
-                options: LanguageGroups[group]?.map((language) => ({
-                  text: getLanguageDisplayString(language),
-                  value: language,
-                })),
-              }) as Optgroup,
-          )}
+          optionGroups={languageOptionGroups}
           selected={getConfig.customPolyglot}
           onChange={(val) => {
             if (

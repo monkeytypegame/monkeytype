@@ -1,12 +1,13 @@
-import preview from "#.storybook/preview";
-import { Component, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { fn } from "storybook/test";
+
+import preview from "#.storybook/preview";
 
 import SlimSelect from "../../src/ts/components/ui/SlimSelect";
 
 const meta = preview.meta({
   title: "UI/SlimSelect",
-  component: SlimSelect as Component,
+  component: SlimSelect,
   parameters: {
     layout: "centered",
   },

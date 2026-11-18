@@ -1,8 +1,11 @@
+import { Config } from "@monkeytype/schemas/configs";
 import { Keycode } from "../../constants/keys";
 import {
   DeleteInputType,
   InsertInputType,
 } from "../../input/helpers/input-type";
+import { CustomTextLimitMode } from "@monkeytype/schemas/util";
+import { getMode2 } from "../../utils/misc";
 
 export type TestEventType =
   | "keydown"
@@ -68,12 +71,19 @@ export type TimerEventData =
   | {
       event: "step";
       timer: number;
-      drift: number;
+      // omitted on catchup steps (they all fire at the same testMs in a
+      // synchronous burst, so per-tick drift isn't a real measurement)
+      drift?: number;
       slowTimer?: true;
+      // true when this step fired as part of a catch-up burst from a stall
+      // (timerStep ran with the cheap path; only the final step of the burst
+      // has the full WPM/UI side effects)
+      catchup?: true;
     }
   | {
       event: "start" | "end";
       timer: number;
+      date: number;
     };
 
 export type InputEvent = EventProps<"input", InputEventData>;
@@ -82,6 +92,11 @@ type BaseInputEventData = {
   charIndex: number;
   wordIndex: number;
   inputValue: string;
+  // true when monkeytype produced this input itself instead of the user
+  // pressing a key - delete on error, code mode auto indentation. There is no
+  // keydown behind these, and they share the timestamp of the keypress that
+  // triggered them.
+  automatic?: true;
 };
 
 export type InputEventData =
@@ -123,8 +138,14 @@ export type CompositionTestEventData =
 
 export type EventLogContext = {
   targetWords: string[];
-  isTimedTest: boolean;
+  // isTimedTest: boolean;
+  mode: Config["mode"];
+  mode2: ReturnType<typeof getMode2>;
+  customTextLimitMode?: CustomTextLimitMode;
+  customTextLimitValue?: number;
+  isFunboxWithNospacePropertyActive?: boolean;
   bailedOut: boolean;
+  hasKorean: boolean;
 };
 
 export const EVENT_LOG_VERSION = 1;

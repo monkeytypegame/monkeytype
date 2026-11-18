@@ -3,10 +3,10 @@ import { JSXElement } from "solid-js";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 
-export function QuickNav(): JSXElement {
+export function QuickNav(props: { class?: string }): JSXElement {
   const buttonClass = "px-3 py-3";
   return (
-    <div>
+    <div class={props.class}>
       <div
         class={cn(
           "mx-auto rounded bg-sub-alt text-em-xs",

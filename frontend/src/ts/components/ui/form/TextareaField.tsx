@@ -37,6 +37,7 @@ export function TextareaField(props: {
         maxLength={props.maxLength}
         onKeyDown={(e) => props.onKeyDown?.(e)}
         onKeyPress={(e) => props.onKeyPress?.(e)}
+        dir="auto"
       ></textarea>
       <Show when={props.field().options.validators}>
         <FieldIndicator field={props.field()} />

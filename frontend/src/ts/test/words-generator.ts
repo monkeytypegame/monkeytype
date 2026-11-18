@@ -13,7 +13,6 @@ import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
-import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder } from "../utils/json-data";
 import {
@@ -21,13 +20,20 @@ import {
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { WordGenError } from "../utils/word-gen-error";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
-import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import {
+  getSelectedQuoteId,
+  getCurrentQuote,
+  isRepeated,
+  setCurrentQuote,
+} from "../states/test";
+import * as TestWords from "./test-words";
 
 //pin implementation
 const random = Math.random;
@@ -38,7 +44,7 @@ function shouldCapitalize(lastChar: string): boolean {
 
 let spanishSentenceTracker = "";
 export async function punctuateWord(
-  previousWord: string,
+  previousWord: string | undefined,
   currentWord: string,
   index: number,
   maxindex: number,
@@ -47,7 +53,8 @@ export async function punctuateWord(
 
   const currentLanguage = Config.language.split("_")[0];
 
-  const lastChar = Strings.getLastChar(previousWord);
+  const lastChar =
+    previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
 
   const funbox = findSingleActiveFunboxWithFunction("punctuateWord");
   if (funbox) {
@@ -56,7 +63,7 @@ export async function punctuateWord(
   if (
     currentLanguage !== "code" &&
     currentLanguage !== "georgian" &&
-    (index === 0 || shouldCapitalize(lastChar))
+    (index === 0 || (lastChar !== undefined && shouldCapitalize(lastChar)))
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
@@ -371,7 +378,7 @@ function applyFunboxesToWord(
 
 async function applyBritishEnglishToWord(
   word: string,
-  previousWord: string,
+  previousWord: string | undefined,
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!Config.language.includes("english")) return word;
@@ -536,14 +543,10 @@ async function getQuoteWordList(
 
   let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(
-      TestState.selectedQuoteId,
-    );
+    const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
     if (targetQuote === undefined) {
       setQuoteLengthAll();
-      throw new WordGenError(
-        `Quote ${TestState.selectedQuoteId} does not exist`,
-      );
+      throw new WordGenError(`Quote ${getSelectedQuoteId()} does not exist`);
     }
     rq = targetQuote;
   } else if (Config.quoteLength.includes(-3)) {
@@ -598,14 +601,36 @@ let currentWordset: Wordset | null = null;
 let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
-type GenerateWordsReturn = {
-  words: string[];
-  sectionIndexes: number[];
+type TestWordFacts = {
   hasTab: boolean;
   hasNewline: boolean;
-  allRightToLeft?: boolean;
+  hasNumbers: boolean;
+  hasKorean: boolean;
+};
+
+type GenerateWordsReturn = TestWordFacts & {
+  words: string[];
+  sectionIndexes: number[];
   allJoiningScript?: boolean;
 };
+
+const koreanRegex =
+  /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]/;
+
+/**
+ * Facts about the whole test. Pass the wordset too, not just the generated
+ * words: only the first words are generated up front, the rest stream in during
+ * the test and the answers have to hold from the start.
+ */
+export function getTestWordFacts(wordLists: string[][]): TestWordFacts {
+  const text = wordLists.flat().join(" ");
+  return {
+    hasTab: text.includes("\t"),
+    hasNewline: text.includes("\n"),
+    hasNumbers: /\p{N}/u.test(text),
+    hasKorean: koreanRegex.test(text),
+  };
+}
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
 
@@ -621,12 +646,14 @@ export async function generateWords(
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
+  const rawWordList: string[] = [];
   const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
     hasTab: false,
     hasNewline: false,
-    allRightToLeft: language.rightToLeft,
+    hasNumbers: false,
+    hasKorean: false,
     allJoiningScript: language.joiningScript ?? false,
   };
 
@@ -686,9 +713,10 @@ export async function generateWords(
     const nextWord = await getNextWord(
       i,
       limit,
-      Arrays.nthElementFromArray(ret.words, -1) ?? "",
-      Arrays.nthElementFromArray(ret.words, -2) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -1) ?? "",
+      Arrays.nthElementFromArray(rawWordList, -2) ?? "",
     );
+    rawWordList.push(nextWord.wordRaw);
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
@@ -713,19 +741,14 @@ export async function generateWords(
     throw new WordGenError("Random quote is null");
   }
 
-  ret.hasTab =
-    ret.words.some((w) => w.includes("\t")) ||
-    currentWordset.words.some((w) => w.includes("\t")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
-  ret.hasNewline =
-    ret.words.some((w) => w.includes("\n")) ||
-    currentWordset.words.some((w) => w.includes("\n")) ||
-    (Config.mode === "quote" &&
-      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
+  const facts = getTestWordFacts([
+    ret.words,
+    currentWordset.words,
+    Config.mode === "quote" ? (quote as QuoteWithTextSplit).textSplit : [],
+  ]);
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
-  return ret;
+  return { ...ret, ...facts };
 }
 
 export let sectionIndex = 0;
@@ -736,6 +759,7 @@ let previousGetNextWordReturns: GetNextWordReturn[] = [];
 
 type GetNextWordReturn = {
   word: string;
+  wordRaw: string;
   sectionIndex: number;
 };
 
@@ -743,7 +767,7 @@ type GetNextWordReturn = {
 export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
-  previousWord: string,
+  previousWord: string | undefined,
   previousWord2: string | undefined,
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
@@ -807,7 +831,9 @@ export async function getNextWord(
 
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
   let randomWord = currentWordset.randomWord(funboxFrequency);
-  const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
+  const previousWordRaw = previousWord
+    ?.replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
   const previousWord2Raw = previousWord2
     ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
@@ -967,11 +993,44 @@ export async function getNextWord(
   console.debug("Word:", randomWord);
 
   const ret = {
-    word: randomWord,
+    word: appendCommitCharacter(randomWord),
+    wordRaw: randomWord,
     sectionIndex: sectionIndex,
   };
 
   previousGetNextWordReturns.push(ret);
 
   return ret;
+}
+
+/**
+ * Appends the inter-word commit separator the way the generator does: a trailing
+ * space, unless the word already ends with a newline or the nospace funbox is
+ * active. Callers that push words outside of getNextWord (e.g. section funbox
+ * pulls) must use this so the separator is part of the target word.
+ */
+export function appendCommitCharacter(word: string): string {
+  if (word.endsWith("\n") || isFunboxActiveWithProperty("nospace")) {
+    return word;
+  }
+  return `${word} `;
+}
+
+export function areAllWordsGenerated(): boolean {
+  return (
+    (Config.mode === "words" &&
+      TestWords.words.length >= Config.words &&
+      Config.words > 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
+    (Config.mode === "quote" &&
+      TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      sectionIndex >= CustomText.getLimitValue() &&
+      currentSection.length === 0 &&
+      CustomText.getLimitValue() !== 0)
+  );
 }

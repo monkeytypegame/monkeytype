@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { customEnumErrorHandler } from "./util";
 
-const KnownFontNameSchema = z.enum(
+export const KnownFontNameSchema = z.enum(
   [
     "Roboto_Mono",
     "Noto_Naskh_Arabic",

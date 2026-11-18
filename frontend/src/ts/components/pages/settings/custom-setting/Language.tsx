@@ -11,27 +11,30 @@ import {
 } from "../../../../constants/languages";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const languageOptionGroups = LanguageGroupNames.map(
+  (group) =>
+    ({
+      label: group,
+      options: LanguageGroups[group]?.map((language) => ({
+        text: getLanguageDisplayString(language),
+        value: language,
+      })),
+    }) as Optgroup,
+);
 
 export function Language(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="language"
       title="language"
       description={configMetadata.language.description}
       fa={configMetadata.language.fa}
       inputs={
         <SlimSelect
-          optionGroups={LanguageGroupNames.map(
-            (group) =>
-              ({
-                label: group,
-                options: LanguageGroups[group]?.map((language) => ({
-                  text: getLanguageDisplayString(language),
-                  value: language,
-                })),
-              }) as Optgroup,
-          )}
+          optionGroups={languageOptionGroups}
           selected={getConfig.language}
           onChange={(val) => {
             if (getConfig.language === (val as LanguageSchema)) return;

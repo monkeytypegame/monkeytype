@@ -7,11 +7,17 @@ import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
 import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import SlimSelect from "../../../ui/SlimSelect";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const layoutOptions = LayoutsList.map((layout) => ({
+  text: layout.replace(/_/g, " "),
+  value: layout,
+}));
 
 export function CustomLayoutfluid(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="customLayoutfluid"
       title="custom layoutfluid"
       description={configMetadata.customLayoutfluid.description}
@@ -24,10 +30,7 @@ export function CustomLayoutfluid(): JSXElement {
             allowDeselect: true,
             minSelected: 2,
           }}
-          options={LayoutsList.map((layout) => ({
-            text: layout.replace(/_/g, " "),
-            value: layout,
-          }))}
+          options={layoutOptions}
           selected={getConfig.customLayoutfluid}
           onChange={(val) => {
             if (

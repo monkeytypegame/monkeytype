@@ -11,11 +11,9 @@ import {
 import { isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { reloadAfter } from "../../../utils/misc";
 
 export function showRemoveAuthMethodModal(options: {
   authMethod: AuthMethod;
-  callback: () => void;
 }): void {
   if (!isAuthenticated()) return;
 
@@ -54,13 +52,6 @@ export function showRemoveAuthMethodModal(options: {
 
     execFn: async ({ password }) => {
       const result = await removeAuthProvider(options.authMethod, { password });
-      if (result.status !== "success") {
-        return result;
-      }
-
-      options.callback();
-
-      reloadAfter(3);
       return result;
     },
   });

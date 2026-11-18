@@ -41,13 +41,20 @@ export function AnimeMatch(
   const animate = () => props.animate ?? ctx?.()?.animate;
   const exit = () => props.exit ?? ctx?.()?.exit;
 
+  // copies built in plain accessors, not JSX ternaries: those compile to a
+  // memo per read, and Anime reads these in cleanup where there is no owner
+  const animateCopy = (): AnimationParams | undefined => {
+    const params = animate();
+    return params ? { ...params } : undefined;
+  };
+  const exitCopy = (): AnimationParams | undefined => {
+    const params = exit();
+    return params ? { ...params } : undefined;
+  };
+
   return (
     <Match when={props.when}>
-      <Anime
-        initial={initial()}
-        animate={animate() ? { ...animate() } : undefined}
-        exit={exit() ? { ...exit() } : undefined}
-      >
+      <Anime initial={initial()} animate={animateCopy()} exit={exitCopy()}>
         {props.children}
       </Anime>
     </Match>

@@ -1,28 +1,32 @@
-import { Command } from "../types";
+import { FontNameSchema } from "@monkeytype/schemas/fonts";
+import { Command, withValidation } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 
 import { showNoticeNotification } from "../../states/notifications";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { applyFontFamily } from "../../ui";
+
 const fromMeta = buildCommandForConfigKey("fontFamily");
 
 if (fromMeta.subgroup) {
   fromMeta.subgroup.list.push({
     id: "customFont",
     display: "Custom font...",
-    icon: "fa-font",
+    fa: { icon: "fa-font" },
     alias: "custom font options",
     subgroup: {
       title: "Custom font...",
       list: [
-        {
+        withValidation({
           id: "customFontName",
           display: "Custom name...",
-          icon: "fa-font",
+          fa: { icon: "fa-font" },
           alias: "custom font name",
           input: true,
+          validation: {
+            schema: FontNameSchema,
+          },
           defaultValue: (): string => {
             return Config.fontFamily.replace(/_/g, " ");
           },
@@ -31,11 +35,11 @@ if (fromMeta.subgroup) {
             const fontName = input.replaceAll(/ /g, "_");
             setConfig("fontFamily", fontName);
           },
-        },
+        }),
         {
           id: "customLocalFont",
           display: "Local font...",
-          icon: "fa-file-import fa-fw",
+          fa: { icon: "fa-file-import" },
           alias: "upload font",
           available: async (): Promise<boolean> => {
             return !(await FileStorage.hasFile("LocalFontFamilyFile"));
@@ -75,7 +79,6 @@ if (fromMeta.subgroup) {
                 const dataUrl = readerEvent.target?.result as string;
                 try {
                   await FileStorage.storeFile("LocalFontFamilyFile", dataUrl);
-                  await applyFontFamily();
                 } catch (e) {
                   showNoticeNotification(
                     `Error uploading font: ${(e as Error).message}`,
@@ -92,7 +95,7 @@ if (fromMeta.subgroup) {
         {
           id: "removeLocalFont",
           display: "Remove local font",
-          icon: "fa-trash",
+          fa: { icon: "fa-trash" },
           alias: "remove font",
           available: async (): Promise<boolean> => {
             return await FileStorage.hasFile("LocalFontFamilyFile");
@@ -100,7 +103,6 @@ if (fromMeta.subgroup) {
           exec: async (): Promise<void> => {
             try {
               await FileStorage.deleteFile("LocalFontFamilyFile");
-              await applyFontFamily();
             } catch (e) {
               showNoticeNotification(
                 `Error removing font: ${(e as Error).message}`,

@@ -1,10 +1,7 @@
-import { Config } from "../config/store";
-import * as JSONData from "../utils/json-data";
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
-import * as KeyConverter from "../utils/key-converter";
 
-import { getActiveFunboxNames } from "./funbox/list";
+import { __nonReactive } from "../states/test";
 
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
@@ -34,15 +31,10 @@ export async function getCharFromEvent(
 
   let layout;
   try {
-    layout = await JSONData.getLayout(Config.layout);
+    layout = await __nonReactive.getInputLayout();
   } catch (e) {
     showErrorNotification("Failed to emulate event", { error: e });
     return null;
-  }
-
-  const funbox = getActiveFunboxNames().includes("layout_mirror");
-  if (funbox) {
-    layout = KeyConverter.mirrorLayoutKeys(layout);
   }
 
   let keyEventCodes: string[] = [];

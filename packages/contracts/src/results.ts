@@ -4,7 +4,6 @@ import {
   CommonResponses,
   meta,
   MonkeyClientError,
-  MonkeyResponseSchema,
   responseWithData,
 } from "./util/api";
 import {
@@ -13,12 +12,6 @@ import {
   ResultMinifiedSchema,
   ResultSchema,
 } from "@monkeytype/schemas/results";
-import { LanguageSchema } from "@monkeytype/schemas/languages";
-import {
-  DifficultySchema,
-  Mode2Schema,
-  ModeSchema,
-} from "@monkeytype/schemas/shared";
 import { IdSchema } from "@monkeytype/schemas/util";
 
 export const GetResultsQuerySchema = z.object({
@@ -64,28 +57,6 @@ export const AddResultRequestSchema = z.object({
   result: CompletedEventSchema,
 });
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
-
-export const ReportCompletedEventMismatchRequestSchema = z.object({
-  notMatching: z.array(z.string().max(100)).max(50),
-  mismatchedKeys: z.array(z.string().max(100)).max(50),
-  groupKey: z.string().max(500),
-  language: LanguageSchema.optional(),
-  mode: ModeSchema.optional(),
-  mode2: Mode2Schema.optional(),
-  difficulty: DifficultySchema.optional(),
-  duration: z.number().max(200).optional(),
-  funboxes: z.string().max(100).optional(),
-  version: z.literal(26),
-  data: z.object({
-    words: z.string().max(10000),
-    events: z.array(z.record(z.unknown())),
-  }),
-  // ce: z.record(z.unknown()),
-  // ce2: z.record(z.unknown()),
-});
-export type ReportCompletedEventMismatchRequest = z.infer<
-  typeof ReportCompletedEventMismatchRequestSchema
->;
 
 export const AddResultResponseSchema = responseWithData(
   PostResultResponseSchema,
@@ -187,36 +158,6 @@ export const resultsContract = c.router(
       },
       metadata: meta({
         rateLimit: "resultsTagsUpdate",
-      }),
-    },
-    reportCompletedEventMismatch: {
-      summary: "report completed event mismatch",
-      description:
-        "Report a mismatch between old and new completed event builders.",
-      method: "POST",
-      path: "/mismatch",
-      body: ReportCompletedEventMismatchRequestSchema.strict(),
-      responses: {
-        200: MonkeyResponseSchema,
-      },
-      metadata: meta({
-        rateLimit: "resultsMismatchReport",
-      }),
-    },
-    deleteAll: {
-      summary: "delete all results",
-      description: "Delete all results for the current user",
-      method: "DELETE",
-      path: "",
-      body: c.noBody(),
-      responses: {
-        200: MonkeyResponseSchema,
-      },
-      metadata: meta({
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
-        rateLimit: "resultsDeleteAll",
       }),
     },
     getLast: {

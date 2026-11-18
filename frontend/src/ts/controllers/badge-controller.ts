@@ -196,7 +196,7 @@ export function getHTMLById(
   noBalloon = false,
   showUnknown = false,
 ): string {
-  const badge = badges[id] as UserBadge | undefined;
+  const badge = badges[id];
 
   if (!badge && !showUnknown) {
     return "";

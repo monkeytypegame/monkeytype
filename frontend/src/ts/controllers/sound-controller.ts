@@ -1,7 +1,7 @@
-import { Config } from "../config/store";
-import { configEvent } from "../events/config";
+import { createRoot } from "solid-js";
+import { Config, getConfig } from "../config/store";
+import { createEffectOn } from "../hooks/effects";
 import { randomElementFromArray } from "../utils/arrays";
-import { leftState, rightState } from "../test/shift-tracker";
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
 
@@ -18,6 +18,7 @@ import {
   SupportedOscillatorTypes,
   ValidNotes,
 } from "../constants/sounds";
+import { getModifierState } from "../states/modifiers";
 
 let howlerModulePromise: Promise<typeof import("howler")> | null = null;
 async function getHowlerModule(): Promise<typeof import("howler")> {
@@ -115,11 +116,12 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
   await init();
 
   const safeClickSounds = clickSoundConfig[clickId];
-  if (safeClickSounds === undefined || safeClickSounds[0] === undefined) {
+  if (safeClickSounds?.[0] === undefined) {
     return;
   }
 
   const howl = await getHowl(safeClickSounds[0]);
+  howl.stop();
   howl.seek(0);
   howl.play();
 }
@@ -133,6 +135,7 @@ export async function previewError(val: PlaySoundOnError): Promise<void> {
   const errorSoundIds = Object.keys(safeErrorSounds);
   if (!errorSoundIds.includes(val)) return;
 
+  errorSounds?.[val]?.[0]?.stop();
   errorSounds?.[val]?.[0]?.seek(0);
   errorSounds?.[val]?.[0]?.play();
 }
@@ -335,8 +338,8 @@ function playNote(options: {
   }
 
   const baseOctave = 3;
-  const octave =
-    baseOctave + (leftState || rightState || isCapsLockOn() ? 1 : 0);
+  const { shift } = getModifierState();
+  const octave = baseOctave + (shift || isCapsLockOn() ? 1 : 0);
   const currentFrequency = codeToNote[currentCode]?.(octave);
 
   const oscillatorNode = audioCtx.createOscillator();
@@ -419,15 +422,24 @@ function extractScaleSounds(
           {
             preview: createPreviewScale(config.validNotes),
             meta: { ...defaultScaleData },
-          } as ScaleMeta,
+          },
         ];
       }),
   );
 }
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "playSoundOnClick" && newValue !== "off") void init();
-  if (key === "soundVolume") {
-    void setVolume(newValue);
-  }
+// a root so the effects are owned, they live as long as the page
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.playSoundOnClick,
+    (value) => {
+      if (value !== "off") void init();
+    },
+    { defer: true },
+  );
+  createEffectOn(
+    () => getConfig.soundVolume,
+    (value) => void setVolume(value),
+    { defer: true },
+  );
 });

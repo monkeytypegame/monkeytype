@@ -60,5 +60,8 @@
     "typescript/prefer-regexp-exec": "error",
     "typescript/prefer-find": "error",
     "typescript/consistent-type-exports": "error",
+    "prefer-optional-chain": "error",
+    "no-unnecessary-type-conversion": "error",
+    "prefer-string-starts-ends-with": "error",
   },
 }

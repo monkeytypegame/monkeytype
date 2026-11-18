@@ -77,7 +77,7 @@ describe("middlewares/auth", () => {
         throw error;
       }
       return "Next function called";
-    }) as unknown as NextFunction;
+    });
   });
 
   afterEach(() => {

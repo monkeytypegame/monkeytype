@@ -6,6 +6,7 @@ import {
   For,
   JSXElement,
   on,
+  onCleanup,
   onMount,
   Show,
 } from "solid-js";
@@ -257,6 +258,9 @@ function SignalsPanel(): JSXElement {
   const [search, setSearch] = createSignal("");
   const groups = buildGroups();
   const [ref, el] = useRef<HTMLDivElement>();
+  // a closed devtools panel is only hidden: unmount the rows so they don't
+  // add to every style recalc
+  const [isDevtoolsOpen, setIsDevtoolsOpen] = createSignal(true);
 
   const filteredGroups = (): SignalGroup[] => {
     const query = search().toLowerCase();
@@ -277,6 +281,17 @@ function SignalsPanel(): JSXElement {
       el()?.parentElement?.style.setProperty("height", "100%");
       el()?.parentElement?.style.setProperty("overflow", "scroll");
     }
+
+    // set by the devtools on their panel container
+    const container = el()?.closest("#tanstack_devtools");
+    if (!container) return;
+    const sync = (): void => {
+      setIsDevtoolsOpen(container.getAttribute("data-open") !== "false");
+    };
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(container, { attributeFilter: ["data-open"] });
+    onCleanup(() => observer.disconnect());
   });
 
   return (
@@ -293,6 +308,11 @@ function SignalsPanel(): JSXElement {
       )}
     >
       <div class="sticky top-0 z-10 bg-bg p-3 pb-0">
+        <div class="mb-2" style={{ color: "#FDB022" }}>
+          Keeping this panel open can cause performance issues (eg. slower
+          typing): its rows update live and add to every style recalc. Close the
+          devtools or switch tabs when testing performance.
+        </div>
         <input
           type="text"
           placeholder="Filter by signal or file name..."
@@ -310,11 +330,13 @@ function SignalsPanel(): JSXElement {
           }}
         />
       </div>
-      <div class="px-3 pb-3">
-        <For each={filteredGroups()}>
-          {(group) => <SignalGroupSection group={group} />}
-        </For>
-      </div>
+      <Show when={isDevtoolsOpen()}>
+        <div class="px-3 pb-3">
+          <For each={filteredGroups()}>
+            {(group) => <SignalGroupSection group={group} />}
+          </For>
+        </div>
+      </Show>
     </div>
   );
 }

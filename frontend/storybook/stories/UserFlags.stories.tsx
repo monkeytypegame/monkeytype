@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { UserFlags } from "../../src/ts/components/common/UserFlags";
 
 const meta = preview.meta({
   title: "Common/UserFlags",
-  component: UserFlags as Component,
+  component: UserFlags,
   parameters: {
     layout: "centered",
   },

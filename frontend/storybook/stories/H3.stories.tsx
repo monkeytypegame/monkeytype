@@ -1,12 +1,10 @@
-import { Component } from "solid-js";
-
 import preview from "#.storybook/preview";
 
 import { H3 } from "../../src/ts/components/common/Headers";
 
 const meta = preview.meta({
   title: "Common/H3",
-  component: H3 as Component,
+  component: H3,
   parameters: {
     layout: "centered",
   },

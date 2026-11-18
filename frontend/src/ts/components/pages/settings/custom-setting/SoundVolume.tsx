@@ -8,11 +8,11 @@ import {
   previewClick,
 } from "../../../../controllers/sound-controller";
 import { Slider } from "../../../common/Slider";
-import { Setting } from "../Setting";
+import { SearchableSetting } from "../SearchableSetting";
 
 export function SoundVolume(): JSXElement {
   return (
-    <Setting
+    <SearchableSetting
       key="soundVolume"
       title="sound volume"
       description={configMetadata.soundVolume.description}

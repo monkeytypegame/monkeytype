@@ -7,22 +7,21 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth";
-import * as DB from "../../../db";
+import { updateName, getUserData } from "../../../queries/user";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { reloadAfter } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
 
 export function showUpdateNameModal(): void {
-  const snapshot = DB.getSnapshot();
-  if (!isAuthenticated() || !snapshot) return;
+  const userData = getUserData();
+  if (!isAuthenticated() || !userData) return;
 
   showSimpleModal({
     title: "Update name",
     buttonText: isUsingPasswordAuthentication()
       ? "update"
       : "reauthenticate to update",
-    text: DB.getSnapshot()?.needsToChangeName
+    text: userData.needsToChangeName
       ? "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience."
       : undefined,
     schema: z.object({
@@ -58,21 +57,13 @@ export function showUpdateNameModal(): void {
         };
       }
 
-      const response = await Ape.users.updateName({
-        body: { name: newName },
-      });
-      if (response.status !== 200) {
+      const { error } = await updateName(newName);
+      if (error !== null) {
         return {
           status: "error",
           message: "Failed to update name",
-          notificationOptions: { response },
+          notificationOptions: { error },
         };
-      }
-
-      snapshot.name = newName;
-      DB.setSnapshot(snapshot);
-      if (snapshot.needsToChangeName) {
-        reloadAfter(2);
       }
 
       return {

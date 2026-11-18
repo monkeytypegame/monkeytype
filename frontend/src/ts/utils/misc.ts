@@ -52,52 +52,6 @@ export function convertNumberToHindi(numString: string): string {
   return ret;
 }
 
-export function findGetParameter(
-  parameterName: string,
-  getOverride?: string,
-): string | null {
-  let result = null;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) {
-        result = decodeURIComponent(tmp[1] as string);
-      }
-    });
-  return result;
-}
-
-export function checkIfGetParameterExists(
-  parameterName: string,
-  getOverride?: string,
-): boolean {
-  let result = false;
-  let tmp = [];
-
-  let search = location.search;
-  if (getOverride !== undefined && getOverride !== "") {
-    search = getOverride;
-  }
-
-  search
-    .slice(1)
-    .split("&")
-    .forEach(function (item) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = true;
-    });
-  return result;
-}
-
 export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>,
 ): string {
@@ -185,7 +139,7 @@ export async function swapElements(
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   },
-): Promise<boolean | undefined> {
+): Promise<void> {
   if (el1 === null || el2 === null) {
     return;
   }
@@ -199,7 +153,7 @@ export async function swapElements(
     if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
-      return false;
+      return;
     }
 
     el1.show();
@@ -230,8 +184,6 @@ export async function swapElements(
     await middleCallback();
     await callback();
   }
-
-  return;
 }
 
 export function getMode2<M extends keyof PersonalBests>(
@@ -343,16 +295,11 @@ export function isElementVisible(query: string): boolean {
 }
 
 export function isPopupVisible(popupId: string): boolean {
-  return (
-    isElementVisible(`#popups #${popupId}`) ||
-    isElementVisible(`#solidmodals #${popupId}`)
-  );
+  return isElementVisible(`#solidmodals #${popupId}`);
 }
 
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll(
-    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper, #solidmodals dialog",
-  );
+  const popups = document.querySelectorAll("#solidmodals dialog");
   let popupVisible = false;
   for (const popup of popups) {
     if (isPopupVisible(popup.id)) {
@@ -472,19 +419,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-
-export function typedKeys<T extends object>(
-  obj: T,
-): T extends T ? (keyof T)[] : never {
-  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
-}
-
-export function typedEntries<T extends object>(
-  obj: T,
-): { [K in keyof T]: [K, T[K]] }[keyof T][] {
-  return Object.entries(obj) as { [K in keyof T]: [K, T[K]] }[keyof T][];
-}
-
 export function reloadAfter(seconds: number): void {
   setTimeout(() => {
     window.location.reload();
@@ -581,7 +515,7 @@ export function promiseWithResolvers<T = void>(): {
   return {
     resolve,
     reject,
-    promise: promiseLike as Promise<T>,
+    promise: promiseLike,
     reset,
   };
 }
@@ -700,6 +634,12 @@ export function scrollToCenterOrTop(el: HTMLElement | null): void {
     block: elementHeight < windowHeight ? "center" : "start",
   });
 }
+export function scrollToTop(): void {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
 
 export function formatTopPercentage(lbRank?: RankAndCount): string {
   if (lbRank === undefined) return "";
@@ -731,13 +671,6 @@ export function formatTypingStatsRatio(stats: {
       stats.completedTests
     ).toFixed(1),
   };
-}
-
-export function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
 }
 
 export function getTotalInlineMargin(element: HTMLElement): number {
