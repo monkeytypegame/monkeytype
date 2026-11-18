@@ -1,6 +1,7 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
@@ -13,7 +14,6 @@ import { showNoticeNotification } from "../states/notifications";
 import { setRandomTheme } from "../states/theme";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
-import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
