@@ -37,7 +37,7 @@ import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import * as AfterInput from "../../src/ts/input/helpers/after-input";
+import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
 import {
   increaseActiveWordIndex,
   requestFocusWords,
@@ -127,7 +127,7 @@ function childClasses(words: HTMLElement): string[] {
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
   increaseActiveWordIndex();
-  AfterInput.afterTestWordChange("forward");
+  afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -190,13 +190,13 @@ describe("after-input words rendering", () => {
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
       increaseActiveWordIndex();
-      AfterInput.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
     increaseActiveWordIndex();
     const topBefore = input.style.top;
 
-    AfterInput.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     // nothing rendered or laid out synchronously
     expect(activeWordIndex(words)).toBe("4");
@@ -226,7 +226,7 @@ describe("after-input words rendering", () => {
     // committed with a typo
     setWordInput(0, "wrod");
     increaseActiveWordIndex();
-    AfterInput.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     const first = (): Element | null =>
       words.querySelector(".word[data-wordindex='0']");
@@ -245,12 +245,12 @@ describe("after-input words rendering", () => {
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
     appendRenderedWord({ display: "" });
-    AfterInput.afterTestWordChange("forward");
+    afterTestWordChange("forward");
     runFrames();
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     resetActiveWordIndex();
-    AfterInput.afterTestWordChange("back");
+    afterTestWordChange("back");
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     runFrames();
@@ -268,7 +268,7 @@ describe("after-input words rendering", () => {
 
     for (let i = 0; i < 2; i++) {
       increaseActiveWordIndex();
-      AfterInput.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
 
@@ -454,7 +454,7 @@ describe("after-input words rendering", () => {
 
       // to the first word of the second line, same frame
       increaseActiveWordIndex();
-      AfterInput.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
     });
@@ -463,7 +463,7 @@ describe("after-input words rendering", () => {
       mountTwoLetterWords(3);
       for (let i = 0; i < 3; i++) increaseActiveWordIndex();
       appendRenderedWord({ display: "ab" });
-      AfterInput.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
     });
@@ -508,7 +508,7 @@ describe("after-input words rendering", () => {
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
         increaseActiveWordIndex();
-        AfterInput.afterTestWordChange("forward");
+        afterTestWordChange("forward");
       }
       runFrames();
       await new Promise((resolve) => setTimeout(resolve, 0));

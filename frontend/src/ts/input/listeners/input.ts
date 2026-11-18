@@ -6,7 +6,7 @@ import {
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
 } from "../state";
-import * as AfterInput from "../helpers/after-input";
+import { afterTestCompositionUpdate } from "../helpers/after-input";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/test-words";
@@ -149,7 +149,7 @@ export async function onInput(event: InputEvent): Promise<void> {
     // in case the data is the same as the last one, just ignore it
     if (getLastInsertCompositionTextData() !== event.data) {
       setLastInsertCompositionTextData(event.data ?? "");
-      AfterInput.afterTestCompositionUpdate();
+      afterTestCompositionUpdate();
     }
   } else {
     throw new Error(`Unhandled input type: ${inputType}`);
