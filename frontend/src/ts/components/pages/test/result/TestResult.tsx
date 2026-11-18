@@ -114,7 +114,10 @@ function LoginPrompt(): JSXElement {
   return (
     <Show when={!isAuthenticated() && !getIsScreenshotting()}>
       <div class="mb-4 text-center text-sub">
-        <Link to="/login">Sign in</Link> to save your result
+        <Link to="/login" tabIndex={-1}>
+          Sign in
+        </Link>{" "}
+        to save your result
       </div>
     </Show>
   );
