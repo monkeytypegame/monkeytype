@@ -32,10 +32,10 @@
       "length": 62
     },
     {
-      "text": "public enum OperatingSystem {\n\tOSX, WINDOWS, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\";\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
+      "text": "public enum OperatingSystem {\n\tOSX, WINDOWS, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"macOS\";\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
       "id": 5,
       "source": "Detect OS",
-      "length": 201
+      "length": 200
     },
     {
       "text": "boolean contains(int[] list, int x) {\n\tfor(int y: list)\n\t\tif (y == x)\n\t\t\treturn true;\n\treturn false;\n}",
@@ -974,7 +974,7 @@
       "length": 189
     },
     {
-      "text": "var totalBalanceOfALlClients = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.map(Account::getBalance)\n\t.reduce(BigDecimal.ZERO, BigDecimal::add);",
+      "text": "var totalBalanceOfAllClients = clients.stream()\n\t.flatMap(c -> c.getAccounts().stream())\n\t.map(Account::getBalance)\n\t.reduce(BigDecimal.ZERO, BigDecimal::add);",
       "source": "Streams - Reduce BigDecimal Example",
       "id": 162,
       "length": 159
