@@ -160,6 +160,17 @@ describe("string utils", () => {
       expect(Strings.splitIntoCharacters("t𐑩e")).toEqual(["t", "𐑩", "e"]);
     });
   });
+  describe("cleanTypographySymbols", () => {
+    it.each([
+      ["„Hallo“", '"Hallo"'],
+      ["ἀπ᾽", "ἀπ'"],
+      ["„one“ „two“ ᾽᾽", '"one" "two" \'\''],
+      ["plain text, 123!", "plain text, 123!"],
+    ])("converts %s to %s", (input, expected) => {
+      expect(Strings.cleanTypographySymbols(input)).toBe(expected);
+    });
+  });
+
   describe("replaceControlCharacters", () => {
     it.each([
       // Basic tab conversions
