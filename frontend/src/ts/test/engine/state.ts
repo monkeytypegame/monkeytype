@@ -1,6 +1,5 @@
 import { batch, createMemo, createRoot, createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import { roundTo2 } from "@monkeytype/util/numbers";
 import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
@@ -152,7 +151,8 @@ const liveAcc = createRoot(() =>
   createMemo<number | undefined>((prev) => {
     trackLiveStats();
     if (liveStatsCleared) return undefined;
-    const acc = roundTo2(getLiveCachedAccuracy() ?? 100);
+    // unrounded: displays floor it, so 99.99% never shows as 100%
+    const acc = getLiveCachedAccuracy() ?? 100;
     return isNaN(acc) ? prev : acc;
   }),
 );

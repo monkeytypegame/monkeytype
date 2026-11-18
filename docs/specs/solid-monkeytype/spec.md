@@ -289,7 +289,7 @@ From the caret boundary (T3):
 From the engine state (T6a):
 
 - Live acc and burst update on the frame after the keystroke or word, not synchronously.
-- Live acc is always rounded to 2 decimals before the display floors it (the timer's write each second used to be unrounded, so it could show 1% lower for a second).
+- Live acc is never rounded before the display floors it, so it never rounds up to 100% (typing used to round it to 2 decimals first: 99.996% showed as 100%).
 
 From user data (U1):
 
