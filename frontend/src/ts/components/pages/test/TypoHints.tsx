@@ -8,12 +8,12 @@ import {
 } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { LETTER_SELECTOR } from "../../../states/word-elements";
 import {
   RenderedWord,
   trackTypoHintsLayout,
   wordsRenderState,
 } from "../../../states/words-render";
+import { LETTER_SELECTOR } from "./selectors";
 import {
   createTypoHints,
   MergedTypoHint,

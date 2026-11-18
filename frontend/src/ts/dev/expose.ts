@@ -8,7 +8,7 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { LETTER_SELECTOR } from "../states/word-elements";
+import { LETTER_SELECTOR } from "../components/pages/test/selectors";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/events/data";
@@ -60,7 +60,7 @@ function wordsSnapshot(): ChildSnapshot[] {
  * right to left words). Within a few px is on.
  */
 function caretOffset(): { dx: number; dy: number } | undefined {
-  const caret = document.querySelector("#caret");
+  const caret = document.querySelector('[data-ui-element="caret"]');
   const letters = document.querySelectorAll(
     `#words .word.active ${LETTER_SELECTOR}`,
   );

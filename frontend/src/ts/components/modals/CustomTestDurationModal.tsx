@@ -82,7 +82,12 @@ export function CustomTestDurationModal(): JSXElement {
             },
           }}
           children={(field) => (
-            <InputField field={field} type="text" placeholder="duration" />
+            <InputField
+              field={field}
+              type="text"
+              placeholder="duration"
+              autocomplete="off"
+            />
           )}
         />
         <div class="text-xs">

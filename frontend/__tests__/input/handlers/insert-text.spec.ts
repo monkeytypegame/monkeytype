@@ -22,7 +22,6 @@ vi.mock("../../../src/ts/input/input-element", () => ({
   },
   getInputElement: () => null,
   moveInputElementCaretToTheEnd: () => undefined,
-  isInputElementFocused: () => true,
   focusInputElement: () => undefined,
   blurInputElement: () => undefined,
 }));
