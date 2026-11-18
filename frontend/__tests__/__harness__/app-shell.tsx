@@ -112,7 +112,7 @@ import {
   setResultCalculating,
   setTestActive,
 } from "../../src/ts/states/test";
-import { canStartTest } from "../../src/ts/test/test-page-state";
+import { canStartTest } from "../../src/ts/test/test-page-bridge";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };

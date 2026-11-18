@@ -33,7 +33,6 @@ import {
   setTestFocusState,
   testRestartedEvent,
 } from "../../../states/test";
-import { onFadeRequest } from "../../../states/test-fade";
 import * as CustomText from "../../../test/custom-text";
 import {
   leaveTestPage,
@@ -41,7 +40,10 @@ import {
   restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
-import { markTestPageMounted } from "../../../test/test-page-state";
+import {
+  markTestPageMounted,
+  registerFade,
+} from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
@@ -149,17 +151,19 @@ export function TestPage(): JSXElement {
     );
   });
 
-  onFadeRequest((fade) => {
-    if (fade.target !== "typingTest" || typingTestRef === undefined) return;
-    // synchronous, so the shown test can't paint before the fade starts
-    if (fade.direction === "in") typingTestRef.style.opacity = "0";
-    fade.waitFor(
-      Misc.promiseAnimate(typingTestRef, {
-        opacity: fade.direction === "in" ? [0, 1] : 0,
-        duration: fade.duration,
-      }),
-    );
-  });
+  const unregisterFade = registerFade(
+    "typingTest",
+    async (direction, duration) => {
+      if (typingTestRef === undefined) return;
+      // synchronous, so the shown test can't paint before the fade starts
+      if (direction === "in") typingTestRef.style.opacity = "0";
+      await Misc.promiseAnimate(typingTestRef, {
+        opacity: direction === "in" ? [0, 1] : 0,
+        duration,
+      });
+    },
+  );
+  onCleanup(unregisterFade);
 
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view

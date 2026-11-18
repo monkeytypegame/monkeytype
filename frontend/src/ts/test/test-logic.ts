@@ -94,8 +94,7 @@ import {
 } from "../states/test";
 import * as TestWords from "./test-words";
 import * as WordsGenerator from "./words-generator";
-import { canStartTest, isTestPageMounted } from "./test-page-state";
-import { fadeTest } from "../states/test-fade";
+import { canStartTest, fadeTest, isTestPageMounted } from "./test-page-bridge";
 import { configEvent } from "../events/config";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";

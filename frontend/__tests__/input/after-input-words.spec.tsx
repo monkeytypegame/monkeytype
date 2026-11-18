@@ -52,7 +52,7 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import { markTestPageMounted } from "../../src/ts/test/test-page-state";
+import { markTestPageMounted } from "../../src/ts/test/test-page-bridge";
 import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
