@@ -9,12 +9,15 @@ import { getAppliedFunboxes } from "../../states/test";
 
 /**
  * Funbox document state: body classes and stylesheets for the applied funboxes
- * (test page only), and the crt mode, which stays on across pages.
+ * (test page only), and the site-wide modes (crt, ai slop), which stay on
+ * across pages.
  */
 export function Funbox(): JSXElement {
   const applied = createMemo(() => getFunbox(getAppliedFunboxes()));
   const isCrt = (): boolean =>
     getConfig.funbox.includes("crt") && !getIsScreenshotting();
+  const isAiSlop = (): boolean =>
+    getConfig.funbox.includes("ai_slop") && !getIsScreenshotting();
 
   useBodyClasses(() => ({
     ...Object.fromEntries(
@@ -24,6 +27,7 @@ export function Funbox(): JSXElement {
       fb.properties?.includes("ignoreReducedMotion"),
     ),
     crtmode: isCrt(),
+    aismode: isAiSlop(),
   }));
 
   return (
@@ -42,6 +46,13 @@ export function Funbox(): JSXElement {
       <Show when={isCrt()}>
         <Link rel="stylesheet" id="globalFunBoxTheme" href="funbox/crt.css" />
         <div id="scanline"></div>
+      </Show>
+      <Show when={isAiSlop()}>
+        <Link
+          rel="stylesheet"
+          id="globalAiSlopTheme"
+          href="funbox/ai_slop.css"
+        />
       </Show>
     </MetaProvider>
   );

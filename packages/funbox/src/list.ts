@@ -398,6 +398,13 @@ const list: Record<FunboxName, FunboxMetadata> = {
     name: "crt",
     cssModifications: ["body"],
   },
+  ai_slop: {
+    description: "Everything glows, everything has a border. The AI aesthetic.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    name: "ai_slop",
+    cssModifications: ["body"],
+  },
   backwards: {
     description: "...sdrawkcab epyt ot yrt woN",
     name: "backwards",

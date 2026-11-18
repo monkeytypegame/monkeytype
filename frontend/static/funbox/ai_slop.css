@@ -1,0 +1,219 @@
+/*
+ * AI slop funbox: makes the site look like a website an AI would generate.
+ * Everything gets a border, a neon glow and hover animations, and aurora
+ * blobs drift behind the page.
+ *
+ * All colors are color-mix()ed from the active theme's root variables, so
+ * any theme works. Animations are silenced by the global
+ * prefers-reduced-motion rule (media-queries.scss) unless the body carries
+ * .ignore-reduced-motion.
+ */
+
+body.aismode {
+  --ai-slop-main-glow: color-mix(in srgb, var(--main-color) 55%, transparent);
+  --ai-slop-sub-glow: color-mix(in srgb, var(--sub-color) 55%, transparent);
+  --ai-slop-error-glow: color-mix(in srgb, var(--error-color) 60%, transparent);
+  --ai-slop-border: color-mix(in srgb, var(--main-color) 50%, var(--sub-color));
+  --ai-slop-border-hot: color-mix(
+    in srgb,
+    var(--main-color) 85%,
+    var(--sub-color)
+  );
+}
+
+/* aurora blobs behind everything (above the custom background at -z-999) */
+body.aismode::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38rem 38rem at 15% 20%,
+      color-mix(in srgb, var(--main-color) 25%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      42rem 42rem at 85% 15%,
+      color-mix(in srgb, var(--sub-alt-color) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      46rem 46rem at 75% 85%,
+      color-mix(in srgb, var(--error-color) 18%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 50rem at 20% 80%,
+      color-mix(in srgb, var(--main-color) 15%, transparent),
+      transparent 70%
+    );
+  animation: ai-slop-blobs 30s ease-in-out infinite alternate;
+}
+
+@keyframes ai-slop-blobs {
+  to {
+    transform: translate3d(3%, 4%, 0) rotate(2deg) scale(1.08);
+  }
+}
+
+/* cards: border + glow + inner haze */
+body.aismode [data-ui-element="header"],
+body.aismode footer,
+body.aismode #result,
+body.aismode [data-ui-element="keymap"],
+body.aismode [data-ui-element="testConfig"],
+body.aismode [data-ui-element="notificationBubble"],
+body.aismode .balloon,
+body.aismode .modal {
+  border: 1px solid var(--ai-slop-border);
+  border-radius: 1rem;
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    inset 0 0 2rem color-mix(in srgb, var(--main-color) 8%, transparent);
+}
+
+/* glassmorphism for modals */
+body.aismode .modal {
+  background: color-mix(in srgb, var(--bg-color) 72%, transparent);
+  backdrop-filter: blur(0.75rem);
+}
+
+/* interactive elements: resting state */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    input,
+    textarea,
+    select
+  ) {
+  border: 1px solid var(--ai-slop-border);
+  border-radius: 0.625rem;
+  box-shadow: 0 0 0.625rem var(--ai-slop-sub-glow);
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    transform 150ms ease;
+}
+
+/* interactive elements: hover lifts and pulses */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    input,
+    textarea,
+    select
+  ):hover:not(:disabled) {
+  transform: translateY(-0.125rem) scale(1.04);
+  border-color: var(--ai-slop-border-hot);
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    0 0 2.5rem var(--ai-slop-sub-glow);
+  animation: ai-slop-pulse 1.1s ease-in-out infinite;
+}
+
+/* interactive elements: keyboard focus ring + pulse */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    input,
+    textarea,
+    select
+  ):focus-visible {
+  border-color: var(--ai-slop-border-hot);
+  box-shadow:
+    0 0 0 0.125rem var(--bg-color),
+    0 0 1.75rem var(--ai-slop-main-glow);
+  animation: ai-slop-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes ai-slop-pulse {
+  50% {
+    box-shadow:
+      0 0 2rem var(--ai-slop-main-glow),
+      0 0 3.5rem var(--ai-slop-sub-glow),
+      0 0 5rem var(--ai-slop-main-glow);
+  }
+}
+
+/* nav items glow in their own color */
+body.aismode [data-nav-item] {
+  text-shadow: 0 0 0.75rem color-mix(in srgb, currentColor 60%, transparent);
+  transition: transform 150ms ease;
+}
+
+body.aismode [data-nav-item]:hover {
+  transform: scale(1.1);
+  text-shadow:
+    0 0 0.75rem color-mix(in srgb, currentColor 85%, transparent),
+    0 0 2.25rem currentColor;
+}
+
+/* headings glow in their own color */
+body.aismode h1,
+body.aismode h2,
+body.aismode h3 {
+  text-shadow: 0 0 1rem color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* words: untyped glow strongest, typed fade, errors burn */
+body.aismode [data-ui-element="word"] {
+  text-shadow: 0 0 0.875rem color-mix(in srgb, currentColor 30%, transparent);
+}
+
+body.aismode [data-ui-element="word"][data-ui-state="untyped"] {
+  text-shadow: 0 0 1.25rem color-mix(in srgb, currentColor 50%, transparent);
+}
+
+body.aismode [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
+  text-shadow: 0 0 1.125rem var(--ai-slop-error-glow);
+}
+
+body.aismode [data-ui-element="word"][data-ui-active] {
+  text-shadow:
+    0 0 0.5rem currentColor,
+    0 0 1.75rem var(--ai-slop-main-glow);
+}
+
+/* carets burn */
+body.aismode [data-ui-element="caret"],
+body.aismode [data-ui-element="paceCaret"] {
+  box-shadow: 0 0 0.875rem var(--ai-slop-main-glow);
+}
+
+body.aismode [data-ui-element="typoHint"] {
+  text-shadow: 0 0 0.625rem var(--ai-slop-error-glow);
+}
+
+/* result stats glow in their own color */
+body.aismode [data-ui-element="resultStatValue"] {
+  text-shadow: 0 0 1.25rem color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* key tips and kbd hints get a border too */
+body.aismode kbd {
+  border: 1px solid var(--ai-slop-border);
+  box-shadow: 0 0 0.5rem var(--ai-slop-sub-glow);
+}
+
+/* the logo is neon */
+body.aismode [data-ui-element="logo"] svg {
+  filter: drop-shadow(0 0 0.75rem var(--ai-slop-main-glow));
+}
+
+/* content links glow on hover (buttons are handled above) */
+body.aismode a:not([data-ui-element="button"]):hover {
+  text-shadow:
+    0 0 0.75rem color-mix(in srgb, currentColor 70%, transparent),
+    0 0 1.75rem var(--ai-slop-main-glow);
+}
