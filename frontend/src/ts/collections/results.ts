@@ -3,10 +3,7 @@ import {
   ResultMinified,
   XpBreakdown,
 } from "@monkeytype/schemas/results";
-import type {
-  Config as ConfigSchema,
-  FunboxName,
-} from "@monkeytype/schemas/configs";
+import { FunboxName } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
@@ -49,6 +46,7 @@ import {
   isDownloaded,
   waitForDownload,
 } from "./utils/blocking-download";
+import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
 import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
@@ -665,18 +663,16 @@ export type CurrentSettingsFilter = {
 // oxlint-disable-next-line typescript/explicit-function-return-type
 export function useUserAverage10LiveQuery(options: {
   isEnabled: Accessor<boolean>;
-  /** The settings to average over, read reactively (eg. a config store). */
-  config: ConfigSchema;
 }) {
   const settingsFilter = createMemo(() => {
     const language =
-      options.config.mode === "quote"
-        ? removeLanguageSize(options.config.language)
-        : options.config.language;
+      getConfig.mode === "quote"
+        ? removeLanguageSize(getConfig.language)
+        : getConfig.language;
 
     return {
-      ...options.config,
-      mode2: getMode2(options.config, getCurrentQuote()),
+      ...getConfig,
+      mode2: getMode2(getConfig, getCurrentQuote()),
       language,
     };
   });

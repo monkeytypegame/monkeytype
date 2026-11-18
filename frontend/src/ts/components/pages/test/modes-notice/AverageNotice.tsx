@@ -1,14 +1,13 @@
 import { createMemo, JSXElement } from "solid-js";
 
 import { useUserAverage10LiveQuery } from "../../../../collections/results";
+import { getConfig } from "../../../../config/store";
 import { getFormatting, isAuthenticated } from "../../../../states/core";
-import { testConfigView as config } from "../../../../states/test-config-view";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
   const last10 = useUserAverage10LiveQuery({
-    isEnabled: () => isAuthenticated() && config.showAverage !== "off",
-    config,
+    isEnabled: () => isAuthenticated() && getConfig.showAverage !== "off",
   });
 
   const displayText = createMemo(() => {
@@ -18,13 +17,13 @@ export function AverageNotice(): JSXElement {
     let speed = undefined;
     let acc = undefined;
 
-    if (config.showAverage === "both" || config.showAverage === "speed") {
+    if (getConfig.showAverage === "both" || getConfig.showAverage === "speed") {
       speed = format.typingSpeed(last10()?.wpm ?? 0, {
-        suffix: ` ${config.typingSpeedUnit}`,
+        suffix: ` ${getConfig.typingSpeedUnit}`,
       });
     }
 
-    if (config.showAverage === "both" || config.showAverage === "acc") {
+    if (getConfig.showAverage === "both" || getConfig.showAverage === "acc") {
       acc = format.accuracy(last10()?.acc ?? 0, {
         suffix: " acc",
       });
@@ -35,7 +34,7 @@ export function AverageNotice(): JSXElement {
 
   return (
     <Notice
-      when={isAuthenticated() && config.showAverage !== "off"}
+      when={isAuthenticated() && getConfig.showAverage !== "off"}
       icon="fa-chart-bar"
       openCommandline="showAverage"
       text={displayText()}
