@@ -6,7 +6,7 @@ import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../../test/engine/input-type";
 import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
-import { getActiveWordIndex } from "../../states/test";
+import { getActiveWordIndex } from "../../test/engine/state";
 import { setWordInput } from "../../states/words-render";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {

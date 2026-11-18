@@ -14,7 +14,7 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isTestFinished, isErrorBorderDisabled } from "../../../../states/test";
+import { isResultScreen, isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
@@ -288,7 +288,7 @@ function Word(props: {
       <Show
         when={
           isHovered() &&
-          isTestFinished() &&
+          isResultScreen() &&
           props.word.input !== "" &&
           !getIsScreenshotting()
         }

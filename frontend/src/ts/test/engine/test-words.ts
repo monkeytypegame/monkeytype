@@ -1,8 +1,5 @@
-import {
-  getActiveWordIndex,
-  isDirectionReversed,
-  isLanguageRightToLeft,
-} from "../../states/test";
+import { isDirectionReversed, isLanguageRightToLeft } from "../../states/test";
+import { getActiveWordIndex, resetActiveWordIndex } from "./state";
 import {
   type Direction,
   getWordDirection,
@@ -110,4 +107,29 @@ class Words {
   }
 }
 
-export const words = new Words();
+type ReadonlyWords = {
+  get(i?: undefined, raw?: boolean): Word[];
+  get(i: number, raw?: boolean): Word | undefined;
+  getCurrent(): Word | undefined;
+  readonly length: number;
+};
+
+const list = new Words();
+
+/** The test's words. Read-only: written through the commands below. Not reactive (T6b). */
+export const words: ReadonlyWords = list;
+
+export function pushWord(word: string, sectionIndex: number): Word {
+  return list.push(word, sectionIndex);
+}
+
+/** Clears the words and goes back to the first one. */
+export function resetWords(): void {
+  list.reset();
+  resetActiveWordIndex();
+}
+
+/** Strips the trailing commit separator once the final word is generated. */
+export function removeCommitCharFromLastWord(): void {
+  list.removeCommitCharacterFromLastWord();
+}

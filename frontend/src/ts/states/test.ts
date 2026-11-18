@@ -8,11 +8,11 @@ import {
 import { z } from "zod";
 import { getConfig } from "../config/store";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { EventLog } from "../test/engine/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
+import { getPhase } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -30,20 +30,30 @@ import { getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
-export const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
-export const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
-export const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);
+// UI state of the test. Engine state (phase, words, active word index, timer,
+// live stats, EventLog) lives in test/engine.
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-// True from TestLogic.finish() (before the result is built) until restart()
-// fades the result out. Whether the result is on screen: isResultShown()
-export const [isTestFinished, setTestFinished] = createSignal(false);
+// True while a restart fades the result out: the phase is already
+// "restarting", but the result is still on screen. T6b: restart fades follow
+// the phase and this goes.
+const [isResultFadingOut, setResultFadingOut] = createSignal(false);
+export { setResultFadingOut };
+
+/**
+ * From the end of the words fade-out on finish until a restart has faded the
+ * result out. Whether the result is rendered: isResultShown()
+ */
+export function isResultScreen(): boolean {
+  const phase = getPhase();
+  return phase === "finished" || phase === "failed" || isResultFadingOut();
+}
+
 // True from the first line of TestLogic.finish() until the result is built, so
-// it covers the words fade-out that isTestFinished() is still false during.
+// it covers the words fade-out that isResultScreen() is still false during.
+// T6c: the engine's result signal replaces it.
 export const [isResultCalculating, setResultCalculating] = createSignal(false);
-// Set when the user bails out of a test early; reset by TestLogic.restartTest().
-export const [getBailedOut, setBailedOut] = createSignal(false);
 // focus mode: everything but the test hidden while typing, until the mouse
 // moves (FocusModeExit). Not the same as testFocusState (out of focus).
 const [isFocusMode, setFocusModeNow] = createSignal(false);
@@ -167,20 +177,6 @@ export const [isResultLoading, setResultLoading] = createSignal(false);
 export const [isComposing, setComposing] = createSignal(false);
 export const [getCompositionData, setCompositionData] = createSignal("");
 
-// the timer drifted too far: animations stay off until it's cleared on restart.
-const [isSlowTimer, setIsSlowTimer] = createSignal(false);
-export { isSlowTimer };
-
-export function setSlowTimer(): void {
-  if (isSlowTimer()) return;
-  setIsSlowTimer(true);
-  console.error("Slow timer, disabling animations");
-}
-
-export function clearSlowTimer(): void {
-  setIsSlowTimer(false);
-}
-
 createRoot(() =>
   createEffect(
     on(
@@ -192,6 +188,7 @@ createRoot(() =>
     ),
   ),
 );
+// T6c: the result and its flags (invalid, last result) move to the engine.
 export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
 // a finished test's result, before the server adds hash and uid
@@ -225,35 +222,6 @@ export const [getCurrentQuote, setCurrentQuote] =
 
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
-
-export const [isTestActive, setTestActive] = createSignal(false);
-
-export const [
-  getActiveWordIndex,
-  {
-    increase: increaseActiveWordIndex,
-    decrease: decreaseActiveWordIndex,
-    reset: resetActiveWordIndex,
-  },
-] = createSignalWithSetters<number>(0)({
-  increase: (set) => set((n) => n + 1),
-  decrease: (set) => set((n) => n - 1),
-  reset: (set) => set(0),
-});
-
-/**
- * Live test stats, rendered by the Solid live stat displays (the mini and text
- * variants and the progress bar). The test engine is still vanilla, so it pushes
- * plain numbers in here as it goes; everything shown on screen is derived below.
- * `undefined` means "no data yet" and is what the displays fall back to defaults on.
- */
-export const [currentLiveStats, setCurrentLiveStats] = createStore<{
-  wpm?: number;
-  acc?: number;
-  raw?: number;
-  burst?: number;
-  seconds?: number;
-}>({});
 
 createRoot(() =>
   createEffect(() => {
@@ -353,27 +321,25 @@ const [keymapLayoutObject, keymapLayoutPromise] = createRoot(() =>
 );
 export { keymapLayoutObject };
 
-/**
- * Used for non reactive access. Do not use in Solid components.
- */
-export const __nonReactive = {
-  getKeymapLayout: async (): Promise<LayoutObject> => {
-    await keymapLayoutPromise.promise;
-    const result = keymapLayoutObject();
-    if (result === undefined) {
-      throw new Error("Failed to load keymap layout");
-    }
-    return result;
-  },
-  getInputLayout: async (): Promise<LayoutObject> => {
-    await inputLayoutPromise.promise;
-    const result = inputLayoutObject();
-    if (result === undefined) {
-      throw new Error("Failed to load input layout");
-    }
-    return result;
-  },
-};
+/** The keymap layout, once loaded. Throws if loading failed. */
+export async function loadKeymapLayout(): Promise<LayoutObject> {
+  await keymapLayoutPromise.promise;
+  const result = keymapLayoutObject();
+  if (result === undefined) {
+    throw new Error("Failed to load keymap layout");
+  }
+  return result;
+}
+
+/** The layout typed with, once loaded. Throws if loading failed. */
+export async function loadInputLayout(): Promise<LayoutObject> {
+  await inputLayoutPromise.promise;
+  const result = inputLayoutObject();
+  if (result === undefined) {
+    throw new Error("Failed to load input layout");
+  }
+  return result;
+}
 
 export const [getSelectedQuoteId, setSelectedQuoteId] = createRoot(() =>
   useLocalStorage({
@@ -398,7 +364,3 @@ export function isTestRightToLeft(): boolean {
 export function getTestDirection(): Direction {
   return isTestRightToLeft() ? "rtl" : "ltr";
 }
-
-export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
-export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
-export const [getFrozenLog, setFrozenLog] = createSignal<EventLog | null>(null);

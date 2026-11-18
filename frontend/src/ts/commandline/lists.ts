@@ -35,7 +35,7 @@ import {
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
 import { fixSkillIssue } from "../components/layout/overlays/SkillIssueFix";
-import { getFrozenLog } from "../states/test";
+import { getFrozenLog } from "../test/engine/state";
 
 const adsCommands = buildCommands("ads");
 

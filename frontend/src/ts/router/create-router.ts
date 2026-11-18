@@ -11,11 +11,8 @@ import {
 import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
-import {
-  isResultCalculating,
-  isTestActive,
-  isTestRestarting,
-} from "../states/test";
+import { isResultCalculating } from "../states/test";
+import { getPhase } from "../test/engine/state";
 import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
 import { finishLoadingBar } from "./loading-bar";
@@ -107,13 +104,13 @@ export function createAppRouter(
         );
         return true;
       }
-      if (isTestRestarting() || isResultCalculating()) {
+      if (getPhase() === "restarting" || isResultCalculating()) {
         console.debug(
-          `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultCalculating: ${isResultCalculating()})`,
+          `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${getPhase() === "restarting"}, resultCalculating: ${isResultCalculating()})`,
         );
         return true;
       }
-      if (isTestActive() && isFunboxActive("no_quit")) {
+      if (getPhase() === "active" && isFunboxActive("no_quit")) {
         showNoticeNotification(
           "No quit funbox is active. Please finish the test.",
           { important: true },

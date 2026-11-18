@@ -39,10 +39,6 @@ import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
 import {
-  increaseActiveWordIndex,
-  resetActiveWordIndex,
-} from "../../src/ts/states/test";
-import {
   appendRenderedWord,
   isWordRendered,
   replaceWords,
@@ -51,6 +47,7 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
+import { nextWord, resetActiveWordIndex } from "../../src/ts/test/engine/state";
 import * as TestWords from "../../src/ts/test/engine/test-words";
 import {
   focusWordsEvent,
@@ -128,7 +125,7 @@ function childClasses(words: HTMLElement): string[] {
 
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
-  increaseActiveWordIndex();
+  nextWord();
   afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
@@ -176,7 +173,7 @@ describe("after-input words rendering", () => {
   afterEach(() => {
     for (const cleanup of cleanups.splice(0)) cleanup();
     resetWordsRender();
-    TestWords.words.reset();
+    TestWords.resetWords();
     resetActiveWordIndex();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -191,11 +188,11 @@ describe("after-input words rendering", () => {
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
-      increaseActiveWordIndex();
+      nextWord();
       afterTestWordChange("forward");
     }
     runFrames();
-    increaseActiveWordIndex();
+    nextWord();
     const topBefore = input.style.top;
 
     afterTestWordChange("forward");
@@ -227,7 +224,7 @@ describe("after-input words rendering", () => {
 
     // committed with a typo
     setWordInput(0, "wrod");
-    increaseActiveWordIndex();
+    nextWord();
     afterTestWordChange("forward");
 
     const first = (): Element | null =>
@@ -245,7 +242,7 @@ describe("after-input words rendering", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
-    increaseActiveWordIndex();
+    nextWord();
     appendRenderedWord({ display: "" });
     afterTestWordChange("forward");
     runFrames();
@@ -269,7 +266,7 @@ describe("after-input words rendering", () => {
     );
 
     for (let i = 0; i < 2; i++) {
-      increaseActiveWordIndex();
+      nextWord();
       afterTestWordChange("forward");
     }
     runFrames();
@@ -284,8 +281,8 @@ describe("after-input words rendering", () => {
     });
 
     function startTest(count: number): void {
-      TestWords.words.reset();
-      for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
+      TestWords.resetWords();
+      for (let i = 0; i < count; i++) TestWords.pushWord("word", 0);
       resetActiveWordIndex();
       // restartTest's render step
       focusWordsEvent.dispatch({ force: true });
@@ -455,7 +452,7 @@ describe("after-input words rendering", () => {
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
 
       // to the first word of the second line, same frame
-      increaseActiveWordIndex();
+      nextWord();
       afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
@@ -463,7 +460,7 @@ describe("after-input words rendering", () => {
 
     it("blocks the extra letter while the active word isn't rendered yet", () => {
       mountTwoLetterWords(3);
-      for (let i = 0; i < 3; i++) increaseActiveWordIndex();
+      for (let i = 0; i < 3; i++) nextWord();
       appendRenderedWord({ display: "ab" });
       afterTestWordChange("forward");
 
@@ -509,7 +506,7 @@ describe("after-input words rendering", () => {
       await goForward();
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
-        increaseActiveWordIndex();
+        nextWord();
         afterTestWordChange("forward");
       }
       runFrames();

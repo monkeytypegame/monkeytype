@@ -23,7 +23,7 @@ import * as ConfigValidation from "../../src/ts/config/validation";
 import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
-import * as TestState from "../../src/ts/states/test";
+import * as EngineState from "../../src/ts/test/engine/state";
 import { getConfig as getConfigStore } from "../../src/ts/config/store";
 import { unwrap } from "solid-js/store";
 import { createEffect, createRoot } from "solid-js";
@@ -54,7 +54,7 @@ describe("Config", () => {
     );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
-    const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
+    const enginePhaseMock = vi.spyOn(EngineState, "getPhase");
 
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,
@@ -64,7 +64,7 @@ describe("Config", () => {
       notificationAddMock,
       miscReloadAfterMock,
       miscTriggerResizeMock,
-      stateIsTestActiveMock,
+      enginePhaseMock,
     ];
 
     beforeEach(async () => {
@@ -74,7 +74,7 @@ describe("Config", () => {
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       dbSaveConfigMock.mockResolvedValue();
-      stateIsTestActiveMock.mockReturnValue(true);
+      enginePhaseMock.mockReturnValue("active");
 
       replaceConfig({});
     });

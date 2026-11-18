@@ -5,15 +5,13 @@ import Format from "../singletons/format";
 import * as CustomText from "../test/custom-text";
 import * as TestWords from "../test/engine/test-words";
 import { secondsToString } from "../utils/date-and-time";
+import { getCurrentQuote, isFocusMode, isResultCalculating } from "./test";
 import {
-  currentLiveStats,
   getActiveWordIndex,
   getBailedOut,
-  getCurrentQuote,
-  isFocusMode,
-  isResultCalculating,
-  isTestActive,
-} from "./test";
+  getPhase,
+  liveStats,
+} from "../test/engine/state";
 
 /** Whether this test counts down a time limit rather than a number of words. */
 function isTimeLimitedTest(): boolean {
@@ -59,7 +57,7 @@ export function getBarTarget(): {
   ease?: string;
 } {
   if (isTimeLimitedTest()) {
-    const { seconds } = currentLiveStats;
+    const { seconds } = liveStats;
     const limit = getTestTimeLimit();
     if (seconds === undefined || limit === 0) {
       return { width: "100vw", duration: 0 };
@@ -72,12 +70,12 @@ export function getBarTarget(): {
   }
   const wordsTotal = getWordsTotal();
   // no elapsed time means the test was reset, so snap back instead of animating
-  if (currentLiveStats.seconds === undefined || wordsTotal === 0) {
+  if (liveStats.seconds === undefined || wordsTotal === 0) {
     return { width: "0vw", duration: 0 };
   }
   // the active word index stops on the last word instead of going one past it,
   // so the word count alone tops out at (n-1)/n — fill the bar on finish.
-  // isResultCalculating flips on the first line of finish(); isTestFinished
+  // isResultCalculating flips on the first line of finish(); isResultScreen
   // would be a fade-out too late, since the bar outlives the words fading out.
   if (isResultCalculating() && !getBailedOut()) {
     return { width: "100vw", duration: 125 };
@@ -89,25 +87,24 @@ export function getBarTarget(): {
 }
 
 export const showLiveStats = createRoot(() =>
-  createMemo(() => isTestActive() && isFocusMode()),
+  createMemo(() => getPhase() === "active" && isFocusMode()),
 );
 export const getLiveSpeedText = createRoot(() =>
   createMemo(() =>
     Format.typingSpeed(
-      (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0,
+      (getConfig.blindMode ? liveStats.raw : liveStats.wpm) ?? 0,
       { showDecimalPlaces: false },
     ),
   ),
 );
 export const getLiveAccText = createRoot(() =>
   createMemo(
-    () =>
-      `${getConfig.blindMode ? 100 : Math.floor(currentLiveStats.acc ?? 100)}%`,
+    () => `${getConfig.blindMode ? 100 : Math.floor(liveStats.acc ?? 100)}%`,
   ),
 );
 export const getLiveBurstText = createRoot(() =>
   createMemo(() =>
-    Format.typingSpeed(currentLiveStats.burst ?? 0, {
+    Format.typingSpeed(liveStats.burst ?? 0, {
       showDecimalPlaces: false,
     }),
   ),
@@ -118,7 +115,7 @@ export const getTimerText = createRoot(() =>
   createMemo(() => {
     if (isTimeLimitedTest()) {
       const limit = getTestTimeLimit();
-      const seconds = currentLiveStats.seconds ?? 0;
+      const seconds = liveStats.seconds ?? 0;
       return secondsToString(limit === 0 ? seconds : limit - seconds);
     }
     // read the signal first so the memo subscribes to it on every branch below
@@ -140,6 +137,6 @@ export const isTimerFlashHidden = createRoot(() =>
       getConfig.timerStyle === "flash_mini" ||
       getConfig.timerStyle === "flash_text";
     if (!isFlashStyle || !isTimeLimitedTest()) return false;
-    return (getTestTimeLimit() - (currentLiveStats.seconds ?? 0)) % 15 !== 0;
+    return (getTestTimeLimit() - (liveStats.seconds ?? 0)) % 15 !== 0;
   }),
 );

@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "./notifications";
 import { addBanner, removeBanner } from "./banners";
-import { isTestActive } from "./test";
+import { getPhase } from "../test/engine/state";
 
 const [isOnline, setOnline] = createSignal(navigator.onLine);
 export { isOnline };
@@ -34,7 +34,7 @@ const throttledHandleState = debounce(5000, () => {
       noInternetBannerId = undefined;
     }
     bannerAlreadyClosed = false;
-  } else if (!isTestActive()) {
+  } else if (getPhase() !== "active") {
     showOfflineBanner();
   }
 });

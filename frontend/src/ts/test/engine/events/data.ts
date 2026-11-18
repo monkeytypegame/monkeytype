@@ -16,21 +16,23 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
-import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
+import { getEventsForWord, getInputFromDom } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestWords from "../test-words";
 import { Config } from "../../../config/store";
+// oxlint-disable-next-line no-restricted-imports -- T6b: read from the test settings
 import * as CustomText from "../../custom-text";
 import { getMode2 } from "../../../utils/misc";
+import { getCurrentQuote, isResultCalculating } from "../../../states/test";
 import {
-  getKoreanStatus,
   getActiveWordIndex,
-  getCurrentQuote,
   getBailedOut,
-  isResultCalculating,
-} from "../../../states/test";
+  getKoreanStatus,
+  scheduleLiveStatsFlush,
+} from "../state";
+// oxlint-disable-next-line no-restricted-imports -- T6b: read from the test settings
 import { isFunboxActiveWithProperty } from "../../funbox/active";
 
 export function buildEventLog(): EventLog {
@@ -95,11 +97,8 @@ export function logTestEvent(
 
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
+    // input only logs tracked keys (input/helpers/test-event-code.ts)
     const code = data.code as Keycode | "NoCode";
-
-    if (!keysToTrack.has(code)) {
-      return;
-    }
 
     if (pressedKeys.has(code)) {
       pressedKeys.delete(code);
@@ -137,20 +136,13 @@ export function logTestEvent(
 
     let key: Keycode | "NoCode" | `NoCode${number}` = code;
 
-    if (/^NoCode\d+$/.test(code)) {
-      // already indexed (e.g. from forceReleaseAllKeys)
-    } else {
-      if (!keysToTrack.has(code as Keycode | "NoCode")) {
+    // already indexed codes (NoCode1, e.g. from forceReleaseAllKeys) stay
+    if (code === "NoCode") {
+      key = `NoCode${noCodeIndex - 1}`;
+      if (!pressedKeys.has(key)) {
         return;
       }
-
-      if (code === "NoCode") {
-        key = `NoCode${noCodeIndex - 1}`;
-        if (!pressedKeys.has(key)) {
-          return;
-        }
-        noCodeIndex--;
-      }
+      noCodeIndex--;
     }
 
     if (!pressedKeys.has(key)) {
@@ -195,6 +187,7 @@ export function logTestEvent(
     throw new Error(`Unsupported event type: ${type}`);
   }
   console.debug(`Test events - logTestEvent - ${now}ms - ${type}`, eventData);
+  scheduleLiveStatsFlush();
 }
 
 function invalidateCache(): void {
@@ -368,6 +361,7 @@ export function resetTestEvents(): void {
   pressedKeys = new Map();
   noCodeIndex = 0;
   resetLiveCache();
+  scheduleLiveStatsFlush();
 }
 
 export function getPressedKeys(): Map<

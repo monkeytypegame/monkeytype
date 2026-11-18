@@ -70,7 +70,7 @@ export const [resultState, setResultState] = createStore<ResultState>({
 });
 
 // visibility of the #result element, set once the result is built. Fade in/out
-// is still animated imperatively. Whether the test has ended: isTestFinished()
+// is still animated imperatively. Whether the test has ended: isResultScreen()
 export const [isResultShown, setResultShown] = createSignal(false);
 
 export function showCrown(type: CrownType, text = "", wide = false): void {

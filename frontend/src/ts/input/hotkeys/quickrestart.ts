@@ -7,7 +7,8 @@ import { getRoutePage } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
-import { isLongTest, wordsHaveNewline, wordsHaveTab } from "../../states/test";
+import { isLongTest } from "../../states/test";
+import { wordsHaveNewline, wordsHaveTab } from "../../test/engine/state";
 
 function quickRestart(e: KeyboardEvent): void {
   if (isAnyPopupVisible()) {

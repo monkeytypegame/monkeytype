@@ -36,6 +36,49 @@
       }
     },
     {
+      // test engine: DOM-free, owns its state; may read the data layer
+      // (config, states, collections) (docs/specs/solid-monkeytype/spec.md)
+      "files": ["src/ts/test/engine/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "**/components/**",
+                  "**/elements/**",
+                  "**/input/**",
+                  "**/controllers/**",
+                  "**/pages/**",
+                  "**/anim"
+                ],
+                "message": "The engine never imports UI or input: expose a signal and react to it outside the engine."
+              },
+              {
+                "group": [
+                  "**/test-logic",
+                  "**/test-page-bridge",
+                  "**/timer-effects",
+                  "**/pace-caret",
+                  "**/words-generator",
+                  "**/funbox/**",
+                  "**/custom-text"
+                ],
+                "message": "The engine never imports the test modules around it (test-logic, funbox, custom text): they call the engine."
+              }
+            ]
+          }
+        ],
+        "no-restricted-globals": [
+          "error",
+          { "name": "document", "message": "The engine has no DOM access." },
+          { "name": "HTMLElement", "message": "The engine has no DOM access." },
+          { "name": "Element", "message": "The engine has no DOM access." }
+        ]
+      }
+    },
+    {
       "jsPlugins": ["eslint-plugin-solid", "@tanstack/eslint-plugin-query"],
       "files": ["src/**/*.tsx"],
       "rules": {

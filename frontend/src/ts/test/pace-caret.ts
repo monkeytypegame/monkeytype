@@ -11,13 +11,12 @@ import {
   getUserDailyBestOnce,
 } from "../collections/results";
 import {
-  getActiveWordIndex,
   getCurrentQuote,
-  isTestFinished,
+  isResultScreen,
   isPaceRepeat,
-  isTestActive,
   setPaceCaretWpm,
 } from "../states/test";
+import { getActiveWordIndex, getPhase } from "./engine/state";
 
 type Settings = {
   wpm: number;
@@ -120,7 +119,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || isTestFinished()) {
+  if (currentSettings === null || getPhase() !== "active" || isResultScreen()) {
     return;
   }
 
