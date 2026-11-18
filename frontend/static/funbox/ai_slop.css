@@ -59,11 +59,8 @@ body.aismode::before {
 }
 
 /* cards: border + glow + inner haze */
-body.aismode [data-ui-element="header"],
-body.aismode footer,
 body.aismode #result,
 body.aismode [data-ui-element="keymap"],
-body.aismode [data-ui-element="testConfig"],
 body.aismode [data-ui-element="notificationBubble"],
 body.aismode .balloon,
 body.aismode .modal {
