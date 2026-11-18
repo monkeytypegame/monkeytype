@@ -16,6 +16,7 @@ import {
   getActiveWordIndex,
   getPhase,
   setBailedOut,
+  setFailReason,
   setKoreanStatus,
   setLastBurst,
   setPhase,
@@ -39,13 +40,17 @@ export function start(): void {
 }
 
 /**
- * Freezes the test: force-releases held keys, switches to finished/failed and
- * builds the frozen log. Doesn't publish it: see publishFrozenLog().
+ * Freezes the test: force-releases held keys, switches to finished (failed
+ * when given a reason) and builds the frozen log. Doesn't publish it: see
+ * publishFrozenLog().
  */
-export function finish(failed: boolean): EventLog {
+export function finish(failReason: string | null = null): EventLog {
   // T6c: runs on finish()'s first line and drops events logged after it
   forceReleaseAllKeys();
-  setPhase(failed ? "failed" : "finished");
+  batch(() => {
+    setPhase("finished");
+    setFailReason(failReason);
+  });
   cleanupData();
   if (isDevEnvironment()) logEventsDataToTheConsoleTable();
   const log = buildEventLog();
@@ -60,6 +65,7 @@ export function reset(): void {
   batch(() => {
     if (getPhase() === "active") setPhase("idle");
     setBailedOut(false);
+    setFailReason(null);
     setKoreanStatus(false);
   });
 }

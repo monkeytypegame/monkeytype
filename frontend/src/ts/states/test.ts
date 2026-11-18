@@ -47,7 +47,7 @@ export { setResultFadingOut };
  */
 export function isResultScreen(): boolean {
   const phase = getPhase();
-  return phase === "finished" || phase === "failed" || isResultFadingOut();
+  return phase === "finished" || isResultFadingOut();
 }
 
 // True from the first line of TestLogic.finish() until the result is built, so

@@ -15,10 +15,11 @@ import { EventLog } from "./events/types";
 /**
  * - idle: words ready, waiting for the first keystroke
  * - active: typing, the timer runs
- * - finished/failed: from the end of the words fade-out until a restart
+ * - finished: from the end of the words fade-out until a restart, passed or
+ *   failed (see getFailReason)
  * - restarting: from the restart's first fade-out until the new test is ready
  */
-export type Phase = "idle" | "active" | "finished" | "failed" | "restarting";
+export type Phase = "idle" | "active" | "finished" | "restarting";
 
 // T6c: finish/fail switch the phase on their first line, not after the words
 // fade-out; T6b: restart fades follow the phase.
@@ -64,6 +65,12 @@ export function setWordsInfo(info: {
     setKoreanStatus(info.hasKorean);
   });
 }
+
+// ---- fail reason
+
+// setter for engine/commands only
+/** Why the finished test failed ("min accuracy", "slow timer"…); null if it passed. */
+export const [getFailReason, setFailReason] = createSignal<string | null>(null);
 
 // ---- bail out
 

@@ -6,6 +6,7 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getBailedOut,
+  getFailReason,
   getFrozenLog,
   getPhase,
   liveStats,
@@ -46,15 +47,19 @@ describe("engine", () => {
 
     it("finish freezes the log and switches to finished", () => {
       Engine.start();
-      const log = Engine.finish(false);
+      const log = Engine.finish();
       expect(getPhase()).toBe("finished");
+      expect(getFailReason()).toBeNull();
       expect(log.events).toEqual([]);
     });
 
-    it("fail switches to failed", () => {
+    it("fail finishes with a reason, cleared by reset", () => {
       Engine.start();
-      Engine.finish(true);
-      expect(getPhase()).toBe("failed");
+      Engine.finish("min accuracy");
+      expect(getPhase()).toBe("finished");
+      expect(getFailReason()).toBe("min accuracy");
+      Engine.reset();
+      expect(getFailReason()).toBeNull();
     });
 
     it("reset ends an active test, but keeps a finished one", () => {
@@ -63,14 +68,14 @@ describe("engine", () => {
       expect(getPhase()).toBe("idle");
 
       Engine.start();
-      Engine.finish(false);
+      Engine.finish();
       Engine.reset();
       expect(getPhase()).toBe("finished");
     });
 
     it("restart lasts until endRestart", () => {
       Engine.start();
-      Engine.finish(false);
+      Engine.finish();
       Engine.restart();
       expect(getPhase()).toBe("restarting");
       Engine.endRestart();
@@ -82,7 +87,7 @@ describe("engine", () => {
     it("is published separately from finish", () => {
       publishFrozenLog();
       Engine.start();
-      const log = Engine.finish(false);
+      const log = Engine.finish();
       expect(getFrozenLog()).not.toBe(log);
 
       publishFrozenLog();
@@ -92,7 +97,7 @@ describe("engine", () => {
     it("force-releases held keys", () => {
       Engine.start();
       logTestEvent("keydown", 100, { code: "KeyA" });
-      const log = Engine.finish(false);
+      const log = Engine.finish();
       expect(log.events.map((e) => e.type)).toEqual(["keydown", "keyup"]);
     });
   });

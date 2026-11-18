@@ -81,6 +81,7 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getBailedOut,
+  getFailReason,
   getPhase,
   publishFrozenLog,
   setWordsInfo,
@@ -162,7 +163,6 @@ import {
   resetWordsRender,
 } from "../states/words-render";
 
-let failReason = "";
 let slowTimerNotificationIds: number[] = [];
 
 export function startTest(now: number): boolean {
@@ -221,7 +221,6 @@ function resetTestState(): void {
   setComposing(false);
   setCompositionData("");
   testReinitCount = 0;
-  failReason = "";
 }
 
 /**
@@ -330,7 +329,7 @@ export async function restartTest(
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (getPhase() === "active" || failReason !== "")
+    (getPhase() === "active" || getFailReason() !== null)
   ) {
     options.withSameWordset = true;
   }
@@ -867,7 +866,8 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   return completedEvent;
 }
 
-export async function finish(difficultyFailed = false): Promise<void> {
+/** Ends the test; with a reason, as failed (see fail()). */
+export async function finish(failReason: string | null = null): Promise<void> {
   if (getPhase() !== "active") return;
   setResultCalculating(true);
   const now = performance.now();
@@ -887,7 +887,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsRepeated(false);
   }
 
-  const eventLog = Engine.finish(difficultyFailed);
+  const eventLog = Engine.finish(failReason);
+  const difficultyFailed = failReason !== null;
   const ce = buildCompletedEvent(eventLog);
   PaceCaret.setLastTestWpm(ce.wpm);
 
@@ -1121,7 +1122,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const resultUpdatePromise = showResult(completedEvent, dontSave, {
     difficultyFailed,
-    failReason,
+    failReason: failReason ?? "",
     afkDetected,
     isRepeated: isRepeated(),
     tooShort,
@@ -1349,8 +1350,7 @@ export function fail(reason: string): void {
       ),
     );
   }
-  failReason = reason;
-  void finish(true);
+  void finish(reason);
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
