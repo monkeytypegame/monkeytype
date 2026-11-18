@@ -1,13 +1,11 @@
 import * as TestWords from "./test-words";
 import { Config } from "../config/store";
-import * as DB from "../db";
-import { getActiveTagsPB } from "../collections/tags";
+import { getLocalPB } from "../queries/user";
+import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
-import * as TestState from "./test-state";
 import { configEvent } from "../events/config";
 import { getActiveFunboxes } from "./funbox/list";
-import { Caret } from "../elements/caret";
-import { qsr } from "../utils/dom";
+import { createSignal } from "solid-js";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -15,7 +13,7 @@ import {
 import {
   getActiveWordIndex,
   getCurrentQuote,
-  getResultVisible,
+  isTestFinished,
   isPaceRepeat,
   isTestActive,
   setPaceCaretWpm,
@@ -36,7 +34,23 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-export const caret = new Caret(qsr("#paceCaret"), Config.paceCaretStyle);
+/** Where the pace caret heads during a step. */
+export type PaceCaretTarget = {
+  wordIndex: number;
+  letterIndex: number;
+  /** when it gets there, performance.now() time: it moves at a linear pace */
+  stepEnd: number;
+};
+
+const [paceCaretTarget, setPaceCaretTarget] = createSignal<
+  PaceCaretTarget | undefined
+>(undefined);
+
+/**
+ * The letter the pace caret is heading for, undefined while it's hidden
+ * (no pace, test not started, out of words). Words draws it there.
+ */
+export { paceCaretTarget };
 
 let lastTestWpm = 0;
 
@@ -46,30 +60,13 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-export function resetCaretPosition(): void {
-  if (Config.paceCaret === "off" && !isPaceRepeat()) return;
-  if (Config.mode === "zen") return;
-
-  caret.hide();
-  caret.stopAllAnimations();
-  caret.clearMargins();
-
-  caret.goTo({
-    wordIndex: 0,
-    letterIndex: 0,
-    isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-    isDirectionReversed: TestState.isDirectionReversed,
-    animate: false,
-  });
-}
-
 export async function init(): Promise<void> {
-  caret.hide();
+  setPaceCaretTarget(undefined);
   const mode2 = Misc.getMode2(Config, getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =
-      DB.getLocalPB(
+      getLocalPB(
         Config.mode,
         mode2,
         Config.punctuation,
@@ -123,49 +120,32 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || getResultVisible()) {
+  if (currentSettings === null || !isTestActive() || isTestFinished()) {
     return;
-  }
-
-  if (caret.isHidden()) {
-    caret.show();
   }
 
   incrementLetterIndex();
+  // out of words
+  if (settings !== currentSettings) return;
 
-  try {
-    const now = performance.now();
-    const absoluteStepEnd = startTimestamp + expectedStepEnd;
-    const duration = absoluteStepEnd - now;
+  const absoluteStepEnd = startTimestamp + expectedStepEnd;
+  const duration = absoluteStepEnd - performance.now();
 
-    caret.goTo({
-      wordIndex: currentSettings.currentWordIndex,
-      letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: TestState.isLanguageRightToLeft,
-      isDirectionReversed: TestState.isDirectionReversed,
-      animate: true,
-      animationOptions: {
-        duration,
-        easing: "linear",
-      },
-    });
+  setPaceCaretTarget({
+    wordIndex: currentSettings.currentWordIndex,
+    letterIndex: currentSettings.currentLetterIndex,
+    stepEnd: absoluteStepEnd,
+  });
 
-    currentSettings.timeout = setTimeout(
-      () => {
-        if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
-          () => {
-            if (settings === currentSettings) settings = null;
-          },
-        );
-      },
-      Math.max(0, duration),
-    );
-  } catch (e) {
-    console.error(e);
-    caret.hide();
-    return;
-  }
+  currentSettings.timeout = setTimeout(
+    () => {
+      if (settings !== currentSettings) return;
+      update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(() => {
+        if (settings === currentSettings) settings = null;
+      });
+    },
+    Math.max(0, duration),
+  );
 }
 
 export function reset(): void {
@@ -174,6 +154,7 @@ export function reset(): void {
   }
   settings = null;
   startTimestamp = 0;
+  setPaceCaretTarget(undefined);
 }
 
 function incrementLetterIndex(): void {
@@ -224,7 +205,7 @@ function incrementLetterIndex(): void {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    caret.hide();
+    setPaceCaretTarget(undefined);
     return;
   }
 }
@@ -232,8 +213,7 @@ function incrementLetterIndex(): void {
 export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
-      settings !== null &&
-      settings.wordsStatus[getActiveWordIndex()] === true &&
+      settings?.wordsStatus[getActiveWordIndex()] === true &&
       !Config.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = undefined;
@@ -259,7 +239,4 @@ export function start(): void {
 
 configEvent.subscribe(({ key }) => {
   if (key === "paceCaret") void init();
-  if (key === "paceCaretStyle") {
-    caret.setStyle(Config.paceCaretStyle);
-  }
 });

@@ -432,19 +432,30 @@ function countCharsForWordIndex(
   // IME commit chars (e.g. the full-width ideographic space U+3000) differ from
   // the regular space the target word uses as a separator. Normalize them so
   // the comparison matches the live input path, which treats them via isSpace.
+  // oxlint-disable-next-line no-misused-spread -- split into code points on purpose
   simulatedInput = [...simulatedInput]
     .map((c) => (isSpace(c) ? " " : c))
     .join("");
-  if (eventLog.context.koreanStatus) {
+  if (eventLog.context.hasKorean) {
     simulatedInput = Hangul.disassemble(simulatedInput).join("");
   }
 
   let targetWord = getTargetWord(eventLog, wordIndex) ?? simulatedInput;
-  if (eventLog.context.koreanStatus) {
+  if (eventLog.context.hasKorean) {
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 
-  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+  const lastInput = wordEvents.findLast((e) => e.type === "input");
+  const committed =
+    lastInput?.data.inputType === "insertText" &&
+    lastInput.data.commitsWord === true;
+
+  return countChars(
+    simulatedInput,
+    targetWord,
+    lastWord && countPartial,
+    committed,
+  );
 }
 
 function inferActiveWordIndex(
@@ -553,7 +564,7 @@ export function getAccuracy(
 ): {
   correct: number;
   incorrect: number;
-  percentage: number;
+  percentage: number | null;
 } {
   const { events } = eventLog;
 
@@ -574,7 +585,7 @@ export function getAccuracy(
     }
   }
   const total = correct + incorrect;
-  const percentage = total === 0 ? 0 : (correct / total) * 100;
+  const percentage = total === 0 ? null : (correct / total) * 100;
 
   return {
     correct: correct,
@@ -601,6 +612,19 @@ export function getKeypressSpacing(eventLog: EventLog): number[] {
   }
 
   return spacings;
+}
+
+// Gap between the last two input events, null with fewer than two.
+export function getMsSinceLastInputEvent(eventLog: EventLog): number | null {
+  let last: number | undefined;
+  let previous: number | undefined;
+  for (const event of eventLog.events) {
+    if (event.type !== "input") continue;
+    previous = last;
+    last = event.testMs;
+  }
+  if (last === undefined || previous === undefined) return null;
+  return roundTo2(last - previous);
 }
 
 export function getKeypressOverlap(eventLog: EventLog): number {

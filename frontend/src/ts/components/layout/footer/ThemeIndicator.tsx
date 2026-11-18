@@ -1,36 +1,28 @@
 import { JSXElement, Show } from "solid-js";
 
-import { useCustomThemesLiveQuery } from "../../../collections/custom-themes";
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
-import {
-  getThemeIndicator,
-  isAuthenticated,
-  setCommandlineSubgroup,
-} from "../../../states/core";
-import { showModal } from "../../../states/modals";
+import { getCustomThemes } from "../../../queries/custom-themes";
+import { showCommandline } from "../../../states/commandline";
+import { getThemeIndicator, isAuthenticated } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
-  const themes = useCustomThemesLiveQuery();
-
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
       if (Config.customTheme) {
         setConfig("customTheme", false);
         return;
       }
-      if (isAuthenticated() && themes().length < 1) {
+      if (isAuthenticated() && getCustomThemes().length < 1) {
         showNoticeNotification("No custom themes!");
-        setConfig("customTheme", false);
         return;
       }
       setConfig("customTheme", true);
     } else {
       const subgroup = Config.customTheme ? "customTheme" : "themes";
-      setCommandlineSubgroup(subgroup);
-      showModal("Commandline");
+      showCommandline({ subgroupOverride: subgroup });
     }
   };
 

@@ -1,13 +1,14 @@
 import { Mode } from "@monkeytype/schemas/shared";
 import { createMemo, JSXElement } from "solid-js";
 
-import { SnapshotResult } from "../../../constants/default-snapshot";
+import type { NormalizedLocalResult } from "../../../collections/results";
+
 import { getTheme } from "../../../states/theme";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";
 import { ChartJs } from "../../common/ChartJs";
 
 export function HistogramChart(props: {
-  results: SnapshotResult<Mode>[];
+  results: NormalizedLocalResult<Mode>[];
   typingSpeedUnit: TypingSpeedUnitSettings;
 }): JSXElement {
   const buckets = createMemo(() =>

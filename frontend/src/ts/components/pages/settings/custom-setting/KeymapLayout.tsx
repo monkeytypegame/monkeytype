@@ -8,6 +8,18 @@ import { LayoutsList } from "../../../../constants/layouts";
 import SlimSelect from "../../../ui/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
+// built once - a new array on every read would make SlimSelect rebuild its options
+const keymapLayoutOptions = [
+  {
+    text: "emulator sync",
+    value: "overrideSync",
+  },
+  ...LayoutsList.map((layout) => ({
+    text: layout.replace(/_/g, " "),
+    value: layout,
+  })),
+];
+
 export function KeymapLayout(): JSXElement {
   return (
     <SearchableSetting
@@ -17,18 +29,7 @@ export function KeymapLayout(): JSXElement {
       fa={configMetadata.keymapLayout.fa}
       inputs={
         <SlimSelect
-          options={[
-            {
-              text: "emulator sync",
-              value: "overrideSync",
-            },
-            ...LayoutsList.map((layout) => {
-              return {
-                text: layout.replace(/_/g, " "),
-                value: layout,
-              };
-            }),
-          ]}
+          options={keymapLayoutOptions}
           selected={getConfig.keymapLayout}
           onChange={(val) => {
             if (getConfig.keymapLayout === (val as KeymapLayoutSchema)) return;

@@ -1,7 +1,7 @@
 import * as PresetController from "../../controllers/preset-controller";
 import { isAuthenticated } from "../../states/core";
 import { Command, CommandsSubgroup } from "../types";
-import { __nonReactive } from "../../collections/presets";
+import { getPresets } from "../../queries/presets";
 import { showModal } from "../../states/modals";
 
 const subgroup: CommandsSubgroup = {
@@ -17,7 +17,7 @@ const commands: Command[] = [
     visible: false,
     id: "applyPreset",
     display: "Presets...",
-    icon: "fa-sliders-h",
+    fa: { icon: "fa-sliders-h" },
     subgroup,
     available: (): boolean => {
       return isAuthenticated();
@@ -26,7 +26,7 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const presets = __nonReactive.getPresets();
+  const presets = getPresets();
   subgroup.list = [];
   if (presets.length === 0) return;
   presets.forEach((preset) => {
@@ -41,7 +41,7 @@ function update(): void {
   subgroup.list.push({
     id: "createPreset",
     display: "Create preset",
-    icon: "fa-plus",
+    fa: { icon: "fa-plus" },
     exec: (): void => {
       showModal("AddPresetModal");
     },

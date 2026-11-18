@@ -4,15 +4,22 @@ packages:
   - packages/*
   - frontend/storybook
 
-onlyBuiltDependencies:
-  - "@firebase/util"
-  - "@fortawesome/fontawesome-free"
-  - "@sentry/cli"
-  - bcrypt
-  - core-js
-  - cpu-features
-  - esbuild
-  - msgpackr-extract
-  - protobufjs
-  - re2
-  - ssh2
+allowBuilds:
+  "@firebase/util": true
+  "@fortawesome/fontawesome-free": true
+  "@parcel/watcher": true
+  "@sentry/cli": true
+  bcrypt: true
+  core-js: true
+  cpu-features: true
+  esbuild: true
+  msgpackr-extract: true
+  protobufjs: true
+  re2: true
+  ssh2: true
+
+overrides:
+  "postcss": "8.5.8"
+engineStrict: true
+saveExact: true
+savePrefix: ""

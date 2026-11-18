@@ -1,0 +1,27 @@
+{
+  "ignorePatterns": ["node_modules", "dist", "coverage", ".firebase", ".turbo"],
+  "extends": ["../packages/oxlint-config/index.jsonc"],
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        //
+      }
+    },
+    {
+      "files": ["storybook/**/*.tsx"],
+      "rules": {
+        "explicit-function-return-type": "off",
+        "no-explicit-any": "off",
+        "no-unsafe-assignment": "off",
+        "no-empty-function": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.tsx"],
+      "rules": {
+        "explicit-function-return-type": "off"
+      }
+    }
+  ]
+}

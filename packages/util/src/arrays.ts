@@ -30,6 +30,9 @@ export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
  * @param b The second array.
  * @returns True if the arrays are equal, false otherwise.
  */
-export function areSortedArraysEqual<T>(a: T[], b: T[]): boolean {
+export function areSortedArraysEqual<T>(
+  a: readonly T[],
+  b: readonly T[],
+): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }

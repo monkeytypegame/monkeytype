@@ -10,10 +10,10 @@ import { format as dateFormat } from "date-fns";
 import { createMemo, For, Show } from "solid-js";
 
 import { setup } from "../../../controllers/challenge-controller";
-import { navigate } from "../../../controllers/route-controller";
+import { navigate } from "../../../router/navigate";
 import { bp } from "../../../states/breakpoints";
 import { showModal } from "../../../states/modals";
-import { restart } from "../../../test/test-logic";
+import { restartTest } from "../../../test/test-logic";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
 import { Formatting } from "../../../utils/format";
@@ -214,9 +214,9 @@ function ChallengeItem(props: {
                 class="text-xs opacity-0 group-hover:opacity-100"
                 // oxlint-disable-next-line solid/reactivity
                 onClick={async () => {
-                  await navigate("/");
+                  await navigate({ to: "/" });
                   await setup(props.challenge.name);
-                  await restart({ nosave: true });
+                  await restartTest({ nosave: true });
                 }}
               />
             </Show>
@@ -254,7 +254,7 @@ function ChallengeItem(props: {
                 props.variant === "full" && "md:flex-row",
               )}
             >
-              <p classList={{ "text-main": props.completed && isRare() }}>
+              <p class={cn({ "text-main": props.completed && isRare() })}>
                 {printChallengeUnlockPercentage(props.challenge)}
               </p>
               <Show

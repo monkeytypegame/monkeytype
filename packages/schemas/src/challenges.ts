@@ -75,7 +75,6 @@ export const ChallengeNameSchema = z.enum(
     "literallyTheFastestPersonHere",
     "bananaHoarder",
     "alpha",
-    "blazeIt",
     "burstMaster",
     "burstGod",
     "shotgun",

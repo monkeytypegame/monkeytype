@@ -26,6 +26,12 @@ export function getfpsLimit(): number {
   return fpsLimitSignal();
 }
 
+export function resetFpsLimit(): void {
+  fpsLimit.remove();
+  setFpsLimitSignal(fpsLimit.get());
+  applyEngineSettings();
+}
+
 export function applyEngineSettings(): void {
   engine.pauseOnDocumentHidden = false;
   engine.fps = fpsLimit.get();

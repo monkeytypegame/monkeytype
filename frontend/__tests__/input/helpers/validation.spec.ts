@@ -164,6 +164,7 @@ describe("shouldGoToNextWord", () => {
     replaceConfig({
       mode: "time",
       stopOnError: "off",
+      deleteOnError: "off",
       strictSpace: false,
       difficulty: "normal",
     });
@@ -316,6 +317,43 @@ describe("shouldGoToNextWord", () => {
         config: {
           stopOnError: "off",
           strictSpace: true,
+          difficulty: "normal",
+        },
+        expected: true,
+      },
+      // Delete on error
+      {
+        desc: "stay on incorrect word (deleteOnError letter)",
+        inputValue: "hel",
+        targetWord: "hello ",
+        config: {
+          stopOnError: "off",
+          deleteOnError: "letter",
+          strictSpace: false,
+          difficulty: "normal",
+        },
+        expected: false,
+      },
+      {
+        desc: "stay on incorrect word (deleteOnError word)",
+        inputValue: "hel",
+        targetWord: "hello ",
+        config: {
+          stopOnError: "off",
+          deleteOnError: "word",
+          strictSpace: false,
+          difficulty: "normal",
+        },
+        expected: false,
+      },
+      {
+        desc: "go to next word on correct word (deleteOnError letter)",
+        inputValue: "hello",
+        targetWord: "hello ",
+        config: {
+          stopOnError: "off",
+          deleteOnError: "letter",
+          strictSpace: false,
           difficulty: "normal",
         },
         expected: true,

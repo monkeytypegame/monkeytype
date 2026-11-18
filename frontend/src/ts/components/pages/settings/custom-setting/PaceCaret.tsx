@@ -58,14 +58,12 @@ export function PaceCaret(): JSXElement {
               name="paceCaretCustomSpeed"
               validators={{
                 onChange: fromSchema(PaceCaretCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={PaceCaretCustomSpeedSchema}
                     placeholder={"pace caret speed"}
                     type="number"
@@ -85,7 +83,7 @@ export function PaceCaret(): JSXElement {
                   { displayString?: string }
                 >;
                 const displayString =
-                  optionMeta?.[String(option)]?.displayString ?? String(option);
+                  optionMeta?.[option]?.displayString ?? option;
                 return (
                   <Button
                     active={getConfig.paceCaret === option}

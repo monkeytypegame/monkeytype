@@ -3,9 +3,9 @@ import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
-import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
 import * as GeorgeQueue from "../../../src/queues/george-queue";
+import * as LogsDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
@@ -14,11 +14,19 @@ import { omit } from "../../../src/utils/misc";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import * as ChallengeVerify from "@monkeytype/challenges/verify";
 
-const { mockApp, uid, mockAuth } = setup();
+const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
 enableRateLimitExpects();
 
 describe("result controller test", () => {
+  const addLogMock = vi.spyOn(LogsDal, "addLog");
+  const addImportantLogMock = vi.spyOn(LogsDal, "addImportantLog");
+
+  beforeEach(() => {
+    addLogMock.mockClear().mockResolvedValue();
+    addImportantLogMock.mockClear().mockResolvedValue();
+  });
+
   describe("getResults", () => {
     const resultMock = vi.spyOn(ResultDal, "getResults");
 
@@ -400,45 +408,6 @@ describe("result controller test", () => {
       ).toBeRateLimited({ max: 30, windowMs: 60 * 1000 }); //should use defaultApeRateLimit
     });
   });
-  describe("deleteAll", () => {
-    const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
-    const logToDbMock = vi.spyOn(LogsDal, "addLog");
-    afterEach(() => {
-      deleteAllMock.mockClear();
-      logToDbMock.mockClear();
-    });
-
-    it("should delete", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: Date.now() - 1000 });
-      deleteAllMock.mockResolvedValue(undefined as any);
-
-      //WHEN
-      const { body } = await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(200);
-
-      //THEN
-      expect(body.message).toEqual("All results deleted");
-      expect(body.data).toBeNull();
-
-      expect(deleteAllMock).toHaveBeenCalledWith(uid);
-      expect(logToDbMock).toHaveBeenCalledWith("user_results_deleted", "", uid);
-    });
-    it("should fail to delete with non-fresh token", async () => {
-      //GIVEN
-      mockAuth.modifyToken({ iat: 0 });
-
-      //WHEN/THEN
-      await mockApp
-        .delete("/results")
-        .set("Authorization", `Bearer ${uid}`)
-        .send()
-        .expect(401);
-    });
-  });
   describe("updateTags", () => {
     const getResultMock = vi.spyOn(ResultDal, "getResult");
     const updateTagsMock = vi.spyOn(ResultDal, "updateTags");
@@ -591,6 +560,10 @@ describe("result controller test", () => {
       "awardChallenge",
     );
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
+    const resultGetLastTimestampMock = vi.spyOn(
+      ResultDal,
+      "getLastResultTimestamp",
+    );
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
     const challengeVerifyMock = vi.spyOn(ChallengeVerify, "verify");
 
@@ -608,6 +581,7 @@ describe("result controller test", () => {
         userUpdateChallengeMock,
         georgeAwardChallengeMock,
         resultAddMock,
+        resultGetLastTimestampMock,
         publicUpdateStatsMock,
         challengeVerifyMock,
       ].forEach((it) => it.mockClear());
@@ -619,6 +593,8 @@ describe("result controller test", () => {
       userUpdateChallengeMock.mockResolvedValue();
       georgeAwardChallengeMock.mockResolvedValue();
       resultAddMock.mockResolvedValue({ insertedId });
+      //a prior result exists so incomplete-test time is credited (not zeroed)
+      resultGetLastTimestampMock.mockResolvedValue(0);
       userIncrementXpMock.mockResolvedValue();
       challengeVerifyMock.mockReturnValue({ state: "success" } as any);
     });
@@ -650,6 +626,7 @@ describe("result controller test", () => {
           base: 20,
           incomplete: 5,
           funbox: 80,
+          daily: 0,
         },
         streak: 0,
         insertedId: insertedId.toHexString(),
@@ -701,7 +678,6 @@ describe("result controller test", () => {
         15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
     });
-
     it("should add result with challenge", async () => {
       //GIVEN
       userGetMock.mockClear();
@@ -818,6 +794,45 @@ describe("result controller test", () => {
       expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
     });
 
+    it("should add first result finished before signup within the grace", async () => {
+      //GIVEN
+      resultGetLastTimestampMock.mockRejectedValue(
+        new Error("No results found"),
+      );
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        addedAt: Date.now(),
+      } as any);
+
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({ result: buildCompletedEvent({ testDuration: 9 * 60 }) })
+        .expect(200);
+    });
+    it("should fail first result longer than account age plus grace", async () => {
+      //GIVEN
+      resultGetLastTimestampMock.mockRejectedValue(
+        new Error("No results found"),
+      );
+      userGetMock.mockResolvedValue({
+        name: "bob",
+        addedAt: Date.now(),
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({ result: buildCompletedEvent({ testDuration: 11 * 60 }) })
+        .expect(462);
+
+      //THEN
+      expect(body.message).toEqual("Invalid result spacing");
+      expect(resultAddMock).not.toHaveBeenCalled();
+    });
+
     it("should fail if result saving is disabled", async () => {
       //GIVEN
       await enableResultsSaving(false);
@@ -871,6 +886,76 @@ describe("result controller test", () => {
           "Unrecognized key(s) in object: 'extra'",
         ],
       });
+    });
+
+    it("should fail with out of range durations and char stats", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            mode2: "604801",
+            testDuration: 604801,
+            charStats: [527272232241202700, 0, 0, 0],
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.charStats.0" Number must be less than or equal to 9007199254740991`,
+        `"result.testDuration" Number must be less than or equal to 604800`,
+        `"result.mode2" Time mode can't exceed 604800 seconds`,
+      ]);
+    });
+
+    it("should fail with time mode2 over the max duration", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            mode2: "23434321432942344",
+            testDuration: 600,
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.mode2" Time mode can't exceed 604800 seconds`,
+      ]);
+    });
+
+    it("should fail with toolong data on short tests", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            testDuration: 122,
+            chartData: "toolong",
+            keySpacing: "toolong",
+            keyDuration: "toolong",
+          }),
+        })
+        .expect(422);
+
+      //THEN
+      expect(body.validationErrors).toEqual([
+        `"result.chartData" Only allowed for tests longer than 122 seconds`,
+        `"result.keySpacing" Only allowed for tests longer than 122 seconds`,
+        `"result.keyDuration" Only allowed for tests longer than 122 seconds`,
+      ]);
     });
 
     it("should fail wit duplicate funboxes", async () => {

@@ -82,6 +82,11 @@ class Problems<K extends string, T extends string> {
   }
 }
 
+// skip dotfiles like .DS_Store or tool folders like .claude
+function readdirNoDotfiles(path: string): string[] {
+  return fs.readdirSync(path).filter((it) => !it.startsWith("."));
+}
+
 function findDuplicates<T>(items: T[]): T[] {
   const seen = new Set<T>();
   const duplicates = new Set<T>();
@@ -129,9 +134,9 @@ async function validateLayouts(): Promise<void> {
   }
 
   //no files not defined in LayoutsList
-  const additionalLayoutFiles = fs
-    .readdirSync("./static/layouts")
-    .filter((it) => !LayoutsList.some((layout) => `${layout}.json` === it));
+  const additionalLayoutFiles = readdirNoDotfiles("./static/layouts").filter(
+    (it) => !LayoutsList.some((layout) => `${layout}.json` === it),
+  );
   if (additionalLayoutFiles.length !== 0) {
     additionalLayoutFiles.forEach((it) => problems.add("_additional", it));
   }
@@ -150,7 +155,7 @@ async function validateQuotes(): Promise<void> {
     fs.readFileSync("./scripts/short-quotes.json", "utf8"),
   ) as Record<QuoteData["language"], number[]>;
 
-  const quotesFiles = fs.readdirSync("./static/quotes/");
+  const quotesFiles = readdirNoDotfiles("./static/quotes/");
   for (let quotefilename of quotesFiles) {
     quotefilename = quotefilename.split(".")[0] as string;
     let quoteData;
@@ -287,7 +292,7 @@ async function validateLanguages(): Promise<void> {
   }
 
   //no files not defined in LanguageList
-  fs.readdirSync("./static/languages")
+  readdirNoDotfiles("./static/languages")
     .filter((it) => !LanguageList.some((language) => `${language}.json` === it))
     .forEach((it) => problems.add("_additional", it));
 
@@ -341,9 +346,9 @@ async function validateFonts(): Promise<void> {
     "Vazirharf-NL-Regular.woff2", //default font
   ]);
 
-  const fontFiles = fs
-    .readdirSync("./static/webfonts")
-    .filter((it) => !ignoredFonts.has(it));
+  const fontFiles = readdirNoDotfiles("./static/webfonts").filter(
+    (it) => !ignoredFonts.has(it),
+  );
 
   //missing font files
   Object.entries(Fonts)
@@ -381,7 +386,7 @@ async function validateThemes(): Promise<void> {
   });
 
   //no missing files
-  const themeFiles = fs.readdirSync("./static/themes");
+  const themeFiles = readdirNoDotfiles("./static/themes");
 
   //missing or additional theme files (mismatch in hasCss)
   ThemesList.filter(
@@ -423,13 +428,12 @@ async function validateSounds(): Promise<void> {
   });
 
   const soundFiles = new Set(
-    fs
-      .readdirSync("./static/sounds")
+    readdirNoDotfiles("./static/sounds")
       .filter((it) => it.startsWith("click"))
       .flatMap((folder) =>
-        fs
-          .readdirSync(`./static/sounds/${folder}`)
-          .map((it) => `${folder}/${it}`),
+        readdirNoDotfiles(`./static/sounds/${folder}`).map(
+          (it) => `${folder}/${it}`,
+        ),
       ),
   );
 

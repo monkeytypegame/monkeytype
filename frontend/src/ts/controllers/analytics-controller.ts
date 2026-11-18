@@ -5,7 +5,6 @@ import {
 } from "firebase/analytics";
 import { getAnalytics } from "../firebase";
 import { createErrorMessage } from "../utils/error";
-import { qs } from "../utils/dom";
 
 let analytics: AnalyticsType;
 
@@ -29,7 +28,9 @@ export function activateAnalytics(): void {
   try {
     analytics = getAnalytics();
     setAnalyticsCollectionEnabled(analytics, true);
-    qs("body")?.appendHtml(`
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
     <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=UA-165993088-1"
@@ -42,7 +43,8 @@ export function activateAnalytics(): void {
     gtag("js", new Date());
 
     gtag("config", "UA-165993088-1");
-  </script>`);
+  </script>`,
+    );
   } catch (e) {
     console.error(createErrorMessage(e, "Failed to activate analytics"));
   }

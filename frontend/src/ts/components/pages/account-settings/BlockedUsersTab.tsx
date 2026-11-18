@@ -11,7 +11,11 @@ import { showSimpleModal } from "../../../states/simple-modal";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 import { Section } from "./utils";
 
 export function BlockedUsersTab() {
@@ -21,7 +25,7 @@ export function BlockedUsersTab() {
   return (
     <Section
       title="blocked users"
-      fa={{ icon: "fa-user-shield" }}
+      fa={{ icon: "fa-ban" }}
       fullWidth
       description=<>Blocked users cannot send you friend requests.</>
     >
@@ -44,7 +48,8 @@ export function BlockedUsersTab() {
 }
 
 function getColumns(): DataTableColumnDef<Connection>[] {
-  const defineColumn = createColumnHelper<Connection>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, Connection>()
+    .accessor;
   const cols = [
     defineColumn("initiatorName", {
       header: "name",
@@ -56,7 +61,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           }}
           showAvatar={false}
           linkToProfile
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
         />
       ),
     }),

@@ -196,7 +196,7 @@ function addAuth(
 function getRequiredPermissions(
   metadata: EndpointMetadata | undefined,
 ): PermissionId[] | undefined {
-  if (metadata === undefined || metadata.requirePermission === undefined) {
+  if (metadata?.requirePermission === undefined) {
     return undefined;
   }
 
@@ -210,7 +210,7 @@ function addTags(
   operation: OperationObject,
   metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.openApiTags === undefined) return;
+  if (metadata?.openApiTags === undefined) return;
   operation.tags = Array.isArray(metadata.openApiTags)
     ? metadata.openApiTags
     : [metadata.openApiTags];
@@ -220,7 +220,7 @@ function addRateLimit(
   operation: OperationObject,
   metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.rateLimit === undefined) return;
+  if (metadata?.rateLimit === undefined) return;
   // oxlint-disable-next-line no-unsafe-assignment
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
@@ -280,7 +280,7 @@ function addRequiredConfiguration(
   operation: OperationObject,
   metadata: EndpointMetadata | undefined,
 ): void {
-  if (metadata === undefined || metadata.requireConfiguration === undefined) {
+  if (metadata?.requireConfiguration === undefined) {
     return;
   }
 

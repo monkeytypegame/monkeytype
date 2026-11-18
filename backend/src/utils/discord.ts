@@ -87,8 +87,8 @@ export async function getOauthLink(
 
   return `${BASE_URL}/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${
     isDevEnvironment()
-      ? `http%3A%2F%2Flocalhost%3A3000%2Fverify`
-      : `https%3A%2F%2Fmonkeytype.com%2Fverify`
+      ? `http%3A%2F%2Flocalhost%3A3000%2F`
+      : `https%3A%2F%2Fmonkeytype.com%2F`
   }&response_type=token&scope=${scope.join("+")}&state=${token}`;
 }
 

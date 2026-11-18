@@ -32,6 +32,12 @@
           ]
         }
       }
+    },
+    {
+      "files": ["frontend/src/ts/index.tsx"],
+      "options": {
+        "experimentalSortImports": false
+      }
     }
   ]
 }
