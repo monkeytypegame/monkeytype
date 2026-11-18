@@ -96,7 +96,7 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 }));
 
 // peripheral collaborators - none of them feed back into the events we assert
-vi.mock("../../../src/ts/test/test-ui", () => ({
+vi.mock("../../../src/ts/input/helpers/after-input", () => ({
   afterTestTextInput: vi.fn(),
 }));
 vi.mock("../../../src/ts/states/words-render", () => ({

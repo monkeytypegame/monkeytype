@@ -1,14 +1,6 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import {
-  createMemo,
-  JSXElement,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
+import { createMemo, JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
@@ -18,8 +10,8 @@ import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
 import { getLastEventLog, getLastResult } from "../../../../states/test";
+import { onFadeRequest } from "../../../../states/test-fade";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
-import { setResultElement } from "../../../../test/test-ui";
 import { cn } from "../../../../utils/cn";
 import {
   applyReducedMotion,
@@ -56,15 +48,24 @@ export function TestResult(): JSXElement {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restartTest
-    setResultElement(el);
-    onCleanup(() => setResultElement(undefined));
 
     void el.promiseAnimate({
       opacity: [0, 1],
       duration: applyReducedMotion(125),
     });
     scrollToCenterOrTop(el.native);
+  });
+
+  // restartTest fades it out
+  onFadeRequest((fade) => {
+    const el = resultEl();
+    if (fade.target !== "result" || el === undefined) return;
+    fade.waitFor(
+      el.promiseAnimate({
+        opacity: fade.direction === "in" ? [0, 1] : 0,
+        duration: fade.duration,
+      }),
+    );
   });
 
   return (

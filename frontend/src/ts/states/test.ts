@@ -15,6 +15,7 @@ import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
+import { createEvent } from "../hooks/createEvent";
 import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
@@ -116,6 +117,23 @@ export const [isWordsInputFocused, setWordsInputFocused] = createSignal(false);
 // Words scrolls the window to the active word on each request (during a test)
 export const [trackScrollWindowToActiveWord, triggerScrollWindowToActiveWord] =
   createTrigger();
+
+const focusWordsEvent = createEvent<{ force: boolean }>();
+/** WordsInput focuses the input; TestPage keeps the test block in view. */
+export const onFocusWordsRequest = focusWordsEvent.useListener;
+/**
+ * Focuses the words input, then brings the test into view: the active line
+ * during a test, the test block before it. `force` blurs first.
+ */
+export function requestFocusWords(force = false): void {
+  focusWordsEvent.dispatch({ force });
+}
+
+/** Dispatched by a restart, once the new test is ready, with its source. */
+export const testRestartedEvent = createEvent<"testPage" | "resultPage">();
+
+/** Dispatched after each typed character, with whether it was correct. */
+export const textInsertedEvent = createEvent<boolean>();
 
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =

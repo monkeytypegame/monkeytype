@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
+import * as AfterInput from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
   decreaseActiveWordIndex,
@@ -43,7 +43,7 @@ export async function goToNextWord({
     lastBurst: null,
   };
 
-  TestUI.beforeTestWordChange("forward");
+  AfterInput.beforeTestWordChange("forward");
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace({
@@ -85,7 +85,7 @@ export async function goToNextWord({
   }
 
   setInputElementValue("");
-  void TestUI.afterTestWordChange("forward", ret.lastBurst);
+  AfterInput.afterTestWordChange("forward", ret.lastBurst);
 
   return ret;
 }
@@ -96,7 +96,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back");
+  AfterInput.beforeTestWordChange("back");
 
   decreaseActiveWordIndex();
 
@@ -120,5 +120,5 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
       setInputElementValue(word);
     }
   }
-  void TestUI.afterTestWordChange("back");
+  AfterInput.afterTestWordChange("back");
 }

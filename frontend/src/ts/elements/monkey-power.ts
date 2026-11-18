@@ -1,4 +1,8 @@
-import { isSlowTimer } from "../states/test";
+import {
+  isSlowTimer,
+  testRestartedEvent,
+  textInsertedEvent,
+} from "../states/test";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
@@ -124,6 +128,8 @@ function updateParticle(particle: Particle): void {
 export function init(): void {
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
+  textInsertedEvent.subscribe((correct) => void addPower(correct));
+  testRestartedEvent.subscribe(() => reset());
 }
 
 function render(): void {

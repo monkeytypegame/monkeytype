@@ -1,4 +1,7 @@
 import { Config } from "../../config/store";
+// the spec's one documented exception: a synchronous measurement exported by
+// Words
+// oxlint-disable-next-line no-restricted-imports
 import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
 import * as TestWords from "../../test/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
