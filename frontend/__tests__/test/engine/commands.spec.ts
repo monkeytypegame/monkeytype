@@ -6,8 +6,7 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getFrozenLog,
-  getRestartSource,
-  getRestartStage,
+  getTestId,
   getTestPhase,
   getTestEnd,
   liveStats,
@@ -83,82 +82,30 @@ describe("engine", () => {
   });
 
   describe("restart", () => {
-    afterEach(() => {
-      if (getTestPhase() === "restarting") Engine.endRestart();
-    });
-
-    it("goes through its stages until endRestart", () => {
+    it("is restarting until the current generation commits", () => {
       Engine.start();
       Engine.finish();
-      expect(Engine.requestRestart("resultPage", {})).toBe("started");
+      const id = getTestId();
+      const token = Engine.requestRestart({ noAnim: true });
       expect(getTestPhase()).toBe("restarting");
-      expect(getRestartSource()).toBe("resultPage");
-      expect(getRestartStage()).toBe("fadingOut");
-      Engine.restartFadedOut();
-      expect(getRestartStage()).toBe("preparing");
-      Engine.takeRestartRequests(customText);
-      Engine.restartPrepared();
-      expect(getRestartStage()).toBe("fadingIn");
-      expect(Engine.endRestart()).toBeNull();
+      expect(Engine.isCurrentRestart(token)).toBe(true);
+      expect(Engine.commitRestart(token)).toBe(true);
       expect(getTestPhase()).toBe("idle");
-      expect(getRestartStage()).toBeUndefined();
+      expect(getTestId()).toBe(id + 1);
+      expect(Engine.isCurrentRestart(token)).toBe(false);
     });
 
-    it("merges requests until the settings are taken", () => {
-      Engine.requestRestart("testPage", {
-        noAnim: true,
-        withSameWordset: true,
-      });
-      expect(Engine.requestRestart("resultPage", { noAnim: false })).toBe(
-        "merged",
-      );
-      Engine.restartFadedOut();
-      expect(Engine.requestRestart("testPage", {})).toBe("merged");
-      // the first request's source; the latest noAnim; withSameWordset sticks
-      expect(getRestartSource()).toBe("testPage");
-      expect(Engine.takeRestartRequests(customText)).toEqual({
-        withSameWordset: true,
-        practiseMissed: false,
-        noAnim: false,
-      });
-    });
-
-    it("queues one more restart for settings changes after the settings are taken", () => {
-      Engine.requestRestart("testPage", {});
-      Engine.restartFadedOut();
-      Engine.takeRestartRequests(customText);
+    it("a newer request supersedes the generation, keeping the options", () => {
+      const first = Engine.requestRestart({ withSameWordset: true });
+      const second = Engine.requestRestart({});
+      expect(Engine.isCurrentRestart(first)).toBe(false);
+      expect(Engine.commitRestart(first)).toBe(false);
+      expect(getTestPhase()).toBe("restarting");
       expect(
-        Engine.requestRestart("testPage", { practiseMissed: true }, true),
-      ).toBe("queued");
-      expect(Engine.requestRestart("testPage", { noAnim: true }, true)).toBe(
-        "queued",
-      );
-      Engine.restartPrepared();
-      expect(Engine.endRestart()).toEqual({
-        withSameWordset: false,
-        practiseMissed: true,
-        noAnim: true,
-      });
-      expect(Engine.endRestart()).toBeNull();
-    });
-
-    it("drops other requests after the settings are taken", () => {
-      Engine.requestRestart("testPage", {});
-      Engine.restartFadedOut();
-      Engine.takeRestartRequests(customText);
-      expect(Engine.requestRestart("testPage", {})).toBe("dropped");
-      expect(Engine.endRestart()).toBeNull();
-    });
-
-    it("a retry takes the queued requests back in", () => {
-      Engine.requestRestart("testPage", {});
-      Engine.restartFadedOut();
-      Engine.takeRestartRequests(customText);
-      Engine.requestRestart("testPage", { withSameWordset: true }, true);
-      Engine.reopenRestartRequests();
-      expect(Engine.requestRestart("testPage", {})).toBe("merged");
-      expect(Engine.takeRestartRequests(customText).withSameWordset).toBe(true);
-      expect(Engine.endRestart()).toBeNull();
+        Engine.takeTestSettingsForRestart(customText).withSameWordset,
+      ).toBe(true);
+      expect(Engine.commitRestart(second)).toBe(true);
+      expect(getTestPhase()).toBe("idle");
     });
   });
 

@@ -70,7 +70,11 @@ import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
-import { isResultCalculating, isResultScreen } from "../../src/ts/states/test";
+import {
+  isResultCalculating,
+  isResultScreen,
+  isRestartShowing,
+} from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
 import { getTestSettings } from "../../src/ts/test/engine/test-settings";
@@ -233,7 +237,8 @@ export async function renderTestPage(
 
   // the restart on mount: fade out, generate words, fade in. It may only
   // begin a frame in, after a previous spec's finished test
-  const ready = (): boolean => sawRestart && getTestPhase() === "idle";
+  const ready = (): boolean =>
+    sawRestart && getTestPhase() === "idle" && !isRestartShowing();
   for (let i = 0; i < 50 && !ready(); i++) await frame();
   stopWatchingRestart();
   if (!ready()) throw new Error("The test page never got ready");

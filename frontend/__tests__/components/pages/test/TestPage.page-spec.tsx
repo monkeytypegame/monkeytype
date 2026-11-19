@@ -262,8 +262,6 @@ describe("TestPage", () => {
           .letters()
           .map((l) => l.char),
       ).toEqual(["t", "h", "e"]);
-      expect(page.testSettings().mode).toBe("custom");
-
       await page.advance(1000);
 
       expect(page.phase()).toBe("ready");

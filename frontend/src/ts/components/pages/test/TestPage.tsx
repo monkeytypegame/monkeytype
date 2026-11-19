@@ -28,22 +28,23 @@ import {
   isTypingTestHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
+  setRestartShowing,
+  setResultLeaving,
   setTestFocusState,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
-import * as Engine from "../../../test/engine/commands";
 import {
   getRestartOptions,
-  getRestartSource,
-  getRestartStage,
+  getTestId,
+  getTestPhase,
   isTestActive,
 } from "../../../test/engine/state";
 import {
-  endRestart,
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
   restartIfNotStarted,
+  showRestartedTest,
 } from "../../../test/test-logic";
 import {
   fadeTest,
@@ -173,20 +174,61 @@ export function TestPage(): JSXElement {
   );
   onCleanup(unregisterFade);
 
-  // restart fades: the old test or result fades out, then the new test in
+  // Restart display: the engine generates at once; this fades out what's on
+  // screen, then swaps the new test in (hidden) once the restart committed,
+  // and fades it in. A restart during the fade-out shows only its own result.
+  let display: "idle" | "out" | "waiting" | "in" = "idle";
+  let source: "testPage" | "resultPage" = "testPage";
+
+  const fadeOutForRestart = async (): Promise<void> => {
+    display = "out";
+    setRestartShowing(true);
+    const { noAnim } = untrack(getRestartOptions);
+    // what's rendered: the phase is already "restarting"
+    source = untrack(isResultShown) ? "resultPage" : "testPage";
+    if (source === "resultPage") setResultLeaving(true);
+    await fadeTest(
+      source === "resultPage" ? "result" : "typingTest",
+      "out",
+      noAnim,
+    );
+    setResultLeaving(false);
+    display = "waiting";
+    void swapInRestartedTest();
+  };
+
+  const swapInRestartedTest = async (): Promise<void> => {
+    if (display !== "waiting" || untrack(getTestPhase) === "restarting") {
+      return;
+    }
+    display = "in";
+    showRestartedTest(source);
+    // fadeTest hides the test synchronously, before the new words paint
+    await fadeTest("typingTest", "in", untrack(getRestartOptions).noAnim);
+    // a restart began meanwhile: it fades the test out again
+    if (display !== "in") return;
+    display = "idle";
+    setRestartShowing(false);
+    focusWordsEvent.dispatch({ force: true });
+  };
+
   createEffect(
-    on(getRestartStage, (stage) => {
-      const { noAnim } = untrack(getRestartOptions);
-      if (stage === "fadingOut") {
-        const target =
-          untrack(getRestartSource) === "resultPage" ? "result" : "typingTest";
-        void fadeTest(target, "out", noAnim).then(Engine.restartFadedOut);
-      } else if (stage === "fadingIn") {
-        // fadeTest hides the test synchronously, before the new words paint
-        void fadeTest("typingTest", "in", noAnim).then(endRestart);
-      }
+    on(getTestPhase, (phase) => {
+      if (phase !== "restarting") return;
+      // already fading out or waiting: it shows the latest restart
+      if (display === "out" || display === "waiting") return;
+      void fadeOutForRestart();
     }),
   );
+  // the restart committed a new test
+  createEffect(
+    on(getTestId, () => void swapInRestartedTest(), { defer: true }),
+  );
+  onCleanup(() => {
+    display = "idle";
+    setRestartShowing(false);
+    setResultLeaving(false);
+  });
 
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view
