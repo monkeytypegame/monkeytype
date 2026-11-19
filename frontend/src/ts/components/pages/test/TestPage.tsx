@@ -188,36 +188,42 @@ export function TestPage(): JSXElement {
       duration: noAnim ? 0 : Misc.applyReducedMotion(125),
     });
   };
-  // Finish display: on finish the words fade out, then the result fades in,
-  // or a spinner shows until the engine has built it.
-  let finishDisplay: "idle" | "out" | "waiting" = "idle";
+  // Finish display: on finish the words fade out, then the result fades in.
+  // Rendering the result runs on the main thread: a spinner painted first
+  // (CSS, shown after a delay) keeps animating while it's slow. The engine
+  // has built the result during the fade-out; if not, the spinner waits for it.
+  let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
   const [isSpinnerShown, setSpinnerShown] = createSignal(false);
 
   const fadeOutForFinish = async (): Promise<void> => {
     finishDisplay = "out";
     await fade(typingTestRef, "out", false);
-    if (finishDisplay !== "out") return;
-    // a restart began meanwhile (once the result was built): it shows the
-    // new test instead
-    if (untrack(getTestPhase) !== "finished") {
-      finishDisplay = "idle";
-      return;
-    }
-    finishDisplay = "waiting";
+    if (finishDisplay !== "out" || !isStillFinished()) return;
+    finishDisplay = "spinner";
     setTypingTestHidden(true);
-    void showResultWhenReady();
+    setSpinnerShown(true);
+    // after the spinner is painted
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => setTimeout(resolve, 0)),
+    );
+    if (finishDisplay !== "spinner" || !isStillFinished()) return;
+    finishDisplay = "waiting";
+    await showResultWhenBuilt();
   };
 
-  const showResultWhenReady = async (): Promise<void> => {
-    if (finishDisplay !== "waiting") return;
-    if (untrack(getResult) === null) {
-      setSpinnerShown(true);
-      return;
-    }
+  const showResultWhenBuilt = async (): Promise<void> => {
+    if (finishDisplay !== "waiting" || untrack(getResult) === null) return;
     finishDisplay = "idle";
-    setSpinnerShown(false);
     showResult();
+    setSpinnerShown(false);
     await fade(resultRef, "in", false);
+  };
+
+  /** False once a restart began: it shows the new test instead. */
+  const isStillFinished = (): boolean => {
+    if (untrack(getTestPhase) === "finished") return true;
+    finishDisplay = "idle";
+    return false;
   };
 
   /** Shows the result while it's still transparent. */
@@ -346,10 +352,10 @@ export function TestPage(): JSXElement {
       void fadeOutForRestart();
     }),
   );
-  // the result arrived after the words faded out: swap the spinner for it,
-  // outside the effect (the result's own state is set by then)
+  // the result was built after the spinner showed: render it, outside the
+  // effect (test-logic has set the result's own state by then)
   createEffect(
-    on(getResult, () => queueMicrotask(() => void showResultWhenReady()), {
+    on(getResult, () => queueMicrotask(() => void showResultWhenBuilt()), {
       defer: true,
     }),
   );
@@ -490,7 +496,7 @@ export function TestPage(): JSXElement {
       </Show>
       <Show when={isSpinnerShown()}>
         <div
-          class="animate-[fadeIn_0.125s_ease_forwards] text-center text-[2rem] opacity-0"
+          class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0"
           data-ui-element="resultSpinner"
         >
           <LoadingCircle />

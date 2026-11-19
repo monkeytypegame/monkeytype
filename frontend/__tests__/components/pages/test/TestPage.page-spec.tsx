@@ -246,7 +246,6 @@ describe("TestPage", () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
 
       await page.type("the fox");
-      // the result is built after a paint, before the fade-out ends
       await page.advance(100);
       expect(page.resultScreen()).toEqual({ result: false, spinner: false });
 
@@ -254,7 +253,22 @@ describe("TestPage", () => {
       expect(page.resultScreen()).toEqual({ result: true, spinner: false });
     });
 
-    it("shows a spinner until a slow result is built", async () => {
+    it("paints the delayed spinner for a frame before rendering the result", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      await page.type("the fox");
+      // the fade-out ends on a frame
+      for (let i = 0; i < 20 && !page.resultScreen().spinner; i++) {
+        await page.frame();
+      }
+      expect(page.resultScreen()).toEqual({ result: false, spinner: true });
+
+      await page.frame();
+      await page.advance(1);
+      expect(page.resultScreen()).toEqual({ result: true, spinner: false });
+    });
+
+    it("keeps the spinner until a slow result is built", async () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
       page.holdResult();
 
