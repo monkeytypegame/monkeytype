@@ -73,7 +73,7 @@ import { setRouter } from "../../src/ts/router/instance";
 import {
   isResultCalculating,
   isResultScreen,
-  isRestartShowing,
+  isRestartAnimating,
 } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
@@ -238,7 +238,7 @@ export async function renderTestPage(
   // the restart on mount: fade out, generate words, fade in. It may only
   // begin a frame in, after a previous spec's finished test
   const ready = (): boolean =>
-    sawRestart && getTestPhase() === "idle" && !isRestartShowing();
+    sawRestart && getTestPhase() === "idle" && !isRestartAnimating();
   for (let i = 0; i < 50 && !ready(); i++) await frame();
   stopWatchingRestart();
   if (!ready()) throw new Error("The test page never got ready");

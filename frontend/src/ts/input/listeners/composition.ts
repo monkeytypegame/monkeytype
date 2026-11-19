@@ -6,7 +6,7 @@ import {
   isResultCalculating,
   setComposing,
   setCompositionData,
-  isRestartShowing,
+  isRestartAnimating,
 } from "../../states/test";
 import {
   getActiveWordIndex,
@@ -24,7 +24,7 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartShowing() ||
+    isRestartAnimating() ||
     isResultCalculating()
   ) {
     return;
@@ -50,7 +50,7 @@ export function onCompositionUpdate(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartShowing() ||
+    isRestartAnimating() ||
     isResultCalculating()
   ) {
     return;
@@ -74,7 +74,7 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartShowing() ||
+    isRestartAnimating() ||
     isResultCalculating()
   ) {
     return;

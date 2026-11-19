@@ -32,7 +32,7 @@ import {
   resetIncompleteTests,
   setFocusMode,
   setLayoutfluidTimerVisible,
-  setRestartShowing,
+  setRestartAnimating,
   setResultLeaving,
   setTypingTestHidden,
   setWordsInputPosition,
@@ -229,7 +229,7 @@ export function TestPage(): JSXElement {
 
   const fadeOutForRestart = async (): Promise<void> => {
     display = "out";
-    setRestartShowing(true);
+    setRestartAnimating(true);
     const { noAnim } = untrack(getRestartOptions);
     // what's rendered: the phase is already "restarting"
     source = untrack(isResultShown) ? "resultPage" : "testPage";
@@ -253,7 +253,7 @@ export function TestPage(): JSXElement {
     if (!untrack(isTestInitFailed)) {
       showNewTest();
       // while hidden: focusing restarts the caret's blink. Input waits for
-      // the fade-in (isRestartShowing)
+      // the fade-in (isRestartAnimating)
       focusWordsEvent.dispatch({ force: true });
       // the restart's side effects
       ResultWordHighlight.destroy();
@@ -272,7 +272,7 @@ export function TestPage(): JSXElement {
     // a restart began meanwhile: it fades the test out again
     if (display !== "in") return;
     display = "idle";
-    setRestartShowing(false);
+    setRestartAnimating(false);
   };
 
   createEffect(
@@ -295,7 +295,7 @@ export function TestPage(): JSXElement {
   );
   onCleanup(() => {
     display = "idle";
-    setRestartShowing(false);
+    setRestartAnimating(false);
     setResultLeaving(false);
   });
 

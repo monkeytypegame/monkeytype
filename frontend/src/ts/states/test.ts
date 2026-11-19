@@ -43,7 +43,7 @@ export const [isResultLeaving, setResultLeaving] = createSignal(false);
  * True from a restart's fade-out until the new test has faded in. Input waits
  * for it; other restart requests are dropped meanwhile.
  */
-export const [isRestartShowing, setRestartShowing] = createSignal(false);
+export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
 /**
  * From the end of the words fade-out on finish until a restart has faded the
