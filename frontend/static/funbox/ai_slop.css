@@ -188,6 +188,11 @@ body.aismode
   }
 }
 
+/* the command line input keeps its own frame */
+body.aismode #CommandlineModal input {
+  border: 0;
+}
+
 /* nav items glow in their own color */
 body.aismode [data-nav-item] {
   text-shadow: 0 0 0.75rem color-mix(in srgb, currentColor 60%, transparent);
@@ -203,9 +208,15 @@ body.aismode [data-nav-item]:hover {
 
 /* headings glow in their own color */
 body.aismode h1,
-body.aismode h2,
 body.aismode h3 {
   text-shadow: 0 0 1rem color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* h2s get the full neon treatment */
+body.aismode h2 {
+  text-shadow:
+    0 0 0.625rem color-mix(in srgb, currentColor 75%, transparent),
+    0 0 1.75rem var(--ai-slop-main-glow);
 }
 
 /* words: untyped glow strongest, typed fade, errors burn */
