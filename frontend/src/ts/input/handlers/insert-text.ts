@@ -1,5 +1,5 @@
 import { afterTestTextInput } from "../helpers/after-input";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -25,7 +25,7 @@ import { showNoticeNotification } from "../../states/notifications";
 import { goToNextWord, goToPreviousWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
-import { getCurrentInput, logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
 import {
@@ -34,7 +34,7 @@ import {
   isComposing,
   flashKeymapKey,
 } from "../../states/test";
-import { DeleteInputType } from "../helpers/input-type";
+import { DeleteInputType } from "../../test/engine/input-type";
 import { isWordRendered } from "../../states/words-render";
 
 const charOverrides = new Map<string, string>([

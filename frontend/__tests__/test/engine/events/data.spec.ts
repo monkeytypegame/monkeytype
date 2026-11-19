@@ -11,7 +11,7 @@ import {
   resetTestEvents,
   __testing,
   forceReleaseAllKeys,
-} from "../../../src/ts/test/events/data";
+} from "../../../../src/ts/test/engine/events/data";
 import type {
   InputEventData,
   KeydownEvent,
@@ -19,9 +19,9 @@ import type {
   KeyupEvent,
   KeyupEventData,
   TimerEventData,
-} from "../../../src/ts/test/events/types";
-import { Keycode } from "../../../src/ts/constants/keys";
-import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
+} from "../../../../src/ts/test/engine/events/types";
+import { Keycode } from "../../../../src/ts/constants/keys";
+import { getEventsPerWord } from "../../../../src/ts/test/engine/events/helpers";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
   return { code };

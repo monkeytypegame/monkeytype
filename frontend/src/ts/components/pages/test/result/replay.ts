@@ -7,9 +7,12 @@ import { getFrozenLog } from "../../../../states/test";
 import {
   getEventsForWord,
   getInputFromDom,
-} from "../../../../test/events/helpers";
-import { getInputHistory, getWpmHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/helpers";
+import {
+  getInputHistory,
+  getWpmHistory,
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 
 type ReplayLetter = {
   char: string;

@@ -1,7 +1,7 @@
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
-import { logTestEvent } from "../../test/events/data";
+import { logTestEvent } from "../../test/engine/events/data";
 import {
   isTestRestarting,
   getActiveWordIndex,

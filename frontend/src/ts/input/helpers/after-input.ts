@@ -16,9 +16,9 @@ import {
   setWordTyped,
   truncateWords,
 } from "../../states/words-render";
-import { getCurrentInput } from "../../test/events/data";
-import { getLiveCachedAccuracy } from "../../test/events/live-cache";
-import * as TestWords from "../../test/test-words";
+import { getCurrentInput } from "../../test/engine/events/data";
+import { getLiveCachedAccuracy } from "../../test/engine/events/live-cache";
+import * as TestWords from "../../test/engine/test-words";
 import * as Numbers from "@monkeytype/util/numbers";
 
 /** Dispatched after each typed character, with whether it was correct. */

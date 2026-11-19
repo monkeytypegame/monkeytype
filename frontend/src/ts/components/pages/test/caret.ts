@@ -3,7 +3,7 @@ import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
 
 import { Config } from "../../../config/store";
-import * as TestWords from "../../../test/test-words";
+import * as TestWords from "../../../test/engine/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
 import type { Direction } from "../../../utils/strings";

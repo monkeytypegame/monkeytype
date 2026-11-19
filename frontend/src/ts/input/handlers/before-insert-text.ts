@@ -3,7 +3,7 @@ import { Config } from "../../config/store";
 // Words
 // oxlint-disable-next-line no-restricted-imports
 import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
@@ -15,7 +15,7 @@ import {
 } from "../../states/test";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
-import { getCurrentInput } from "../../test/events/data";
+import { getCurrentInput } from "../../test/engine/events/data";
 import { isSpace } from "../../utils/strings";
 
 /**

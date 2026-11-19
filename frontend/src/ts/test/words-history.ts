@@ -17,9 +17,9 @@ import {
   getInputHistory,
   getMissedWords,
   getWordBurstHistory,
-} from "./events/stats";
-import * as TestWords from "./test-words";
-import { EventLog } from "./events/types";
+} from "./engine/events/stats";
+import * as TestWords from "./engine/test-words";
+import { EventLog } from "./engine/events/types";
 
 const [isWordsHistoryOpen, setWordsHistoryOpen] = createSignal(false);
 const [isWordsHistoryAnimated, setWordsHistoryAnimated] = createSignal(true);

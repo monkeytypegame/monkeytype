@@ -6,12 +6,12 @@ vi.mock("../../../src/ts/test/test-stats", () => ({
 
 const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
-vi.mock("../../../src/ts/config/store", () => ({
+vi.mock("../../../../src/ts/config/store", () => ({
   Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
   getConfig: {},
 }));
 
-vi.mock("../../../src/ts/test/test-words", () => {
+vi.mock("../../../../src/ts/test/engine/test-words", () => {
   type CommitChar = " " | "\n" | "";
   type Word = { text: string; textWithCommit: string; commit: CommitChar };
   const list: Word[] = [];
@@ -40,11 +40,11 @@ vi.mock("../../../src/ts/test/test-words", () => {
 });
 
 const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
-vi.mock("../../../src/ts/test/custom-text", () => ({
+vi.mock("../../../../src/ts/test/custom-text", () => ({
   getLimit: () => customTextLimit,
 }));
 
-vi.mock("../../../src/ts/states/test", () => ({
+vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
   getActiveWordIndex: () => mockState.activeWordIndex,
   isResultCalculating: () => false,
@@ -59,12 +59,12 @@ import {
   cleanupData,
   buildEventLog,
   __testing,
-} from "../../../src/ts/test/events/data";
+} from "../../../../src/ts/test/engine/events/data";
 import {
   findInputValueMismatches,
   getEventsForWord,
   getEventsPerWord,
-} from "../../../src/ts/test/events/helpers";
+} from "../../../../src/ts/test/engine/events/helpers";
 import {
   getStartToFirstKeypressMs,
   getLastKeypressToEndMs,
@@ -85,18 +85,18 @@ import {
   getKeypressSpacing,
   getMissedWords,
   getMsSinceLastInputEvent,
-} from "../../../src/ts/test/events/stats";
+} from "../../../../src/ts/test/engine/events/stats";
 import type {
   InputEventData,
   InputEventNoMs,
   KeydownEventData,
   KeyupEventData,
   TimerEventData,
-} from "../../../src/ts/test/events/types";
-import { Config } from "../../../src/ts/config/store";
-import { Keycode } from "../../../src/ts/constants/keys";
-import { words as TestWords } from "../../../src/ts/test/test-words";
-import { isFunboxActiveWithProperty } from "../../../src/ts/test/funbox/list";
+} from "../../../../src/ts/test/engine/events/types";
+import { Config } from "../../../../src/ts/config/store";
+import { Keycode } from "../../../../src/ts/constants/keys";
+import { words as TestWords } from "../../../../src/ts/test/engine/test-words";
+import { isFunboxActiveWithProperty } from "../../../../src/ts/test/funbox/list";
 
 // mirror the generator: each word carries a trailing space separator unless it
 // already ends with a newline, the nospace funbox is active, or it's the last

@@ -13,7 +13,7 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
-import * as TestWords from "../test-words";
+import * as TestWords from "../engine/test-words";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";

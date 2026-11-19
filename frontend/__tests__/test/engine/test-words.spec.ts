@@ -5,14 +5,14 @@ const { isLanguageRightToLeft, isDirectionReversed } = vi.hoisted(() => ({
   isDirectionReversed: vi.fn(() => false),
 }));
 
-vi.mock("../../src/ts/states/test", () => ({
+vi.mock("../../../src/ts/states/test", () => ({
   getActiveWordIndex: () => 0,
   isLanguageRightToLeft,
   isDirectionReversed,
 }));
 
-import { words } from "../../src/ts/test/test-words";
-import type { Direction } from "../../src/ts/utils/strings";
+import { words } from "../../../src/ts/test/engine/test-words";
+import type { Direction } from "../../../src/ts/utils/strings";
 
 describe("test-words", () => {
   beforeEach(() => {

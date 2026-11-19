@@ -25,7 +25,7 @@ vi.mock("../../src/ts/utils/json-data", async (importOriginal) => ({
 }));
 // input source for after-input's letter updates
 let currentInput = "";
-vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
+vi.mock("../../src/ts/test/engine/events/data", async (importOriginal) => ({
   ...(await importOriginal()),
   getCurrentInput: (): string => currentInput,
 }));
@@ -51,11 +51,11 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
+import * as TestWords from "../../src/ts/test/engine/test-words";
 import {
   focusWordsEvent,
   markTestPageMounted,
 } from "../../src/ts/test/test-page-bridge";
-import * as TestWords from "../../src/ts/test/test-words";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
 // jsdom has no layout: words get a fake one, 5 per line

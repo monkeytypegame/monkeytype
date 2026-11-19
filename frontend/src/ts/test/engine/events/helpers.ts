@@ -1,5 +1,5 @@
-import { Config } from "../../config/store";
-import { Keycode } from "../../constants/keys";
+import { Config } from "../../../config/store";
+import { Keycode } from "../../../constants/keys";
 import { InputEventNoMs, TestEventNoMs } from "./types";
 
 export const keysToTrack = new Set<Keycode | "NoCode">([

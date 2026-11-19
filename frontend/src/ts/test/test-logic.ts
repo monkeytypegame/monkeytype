@@ -21,7 +21,7 @@ import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
-import * as TestTimer from "./test-timer";
+import * as TestTimer from "./engine/test-timer";
 import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
 import { getActiveTags } from "../queries/tags";
@@ -90,7 +90,7 @@ import {
   setTestFocusState,
   setWordsInputPosition,
 } from "../states/test";
-import * as TestWords from "./test-words";
+import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import {
   fadeTest,
@@ -141,7 +141,7 @@ import {
   logEventsDataToTheConsoleTable,
   forceReleaseAllKeys,
   buildEventLog,
-} from "./events/data";
+} from "./engine/events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -159,11 +159,11 @@ import {
   getInputHistory,
   getKeypressesPerSecond,
   getKeypressSpacing,
-} from "./events/stats";
-import { getLiveCachedAccuracy } from "./events/live-cache";
+} from "./engine/events/stats";
+import { getLiveCachedAccuracy } from "./engine/events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
-import { EventLog } from "./events/types";
+import { EventLog } from "./engine/events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
 import {

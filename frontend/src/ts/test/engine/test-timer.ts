@@ -1,18 +1,18 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import { Config } from "../config/store";
-import { setConfig } from "../config/setters";
-import * as CustomText from "./custom-text";
+import { Config } from "../../config/store";
+import { setConfig } from "../../config/setters";
+import * as CustomText from "../custom-text";
 import * as TestWords from "./test-words";
 import {
   showNoticeNotification,
   showErrorNotification,
   removeNotification,
-} from "../states/notifications";
+} from "../../states/notifications";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
-import * as SoundController from "../controllers/sound-controller";
-import { clearLowFpsMode, setLowFpsMode } from "../anim";
+import * as SoundController from "../../controllers/sound-controller";
+import { clearLowFpsMode, setLowFpsMode } from "../../anim";
 import { createTimer } from "animejs";
 import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -23,7 +23,7 @@ import {
   getLiveCachedTimerStartMs,
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
-import { calculateWpm } from "../utils/numbers";
+import { calculateWpm } from "../../utils/numbers";
 import {
   getActiveWordIndex,
   isTestActive,
@@ -34,8 +34,8 @@ import {
   setSlowTimer,
   clearSlowTimer,
   highlightKeymapKey,
-} from "../states/test";
-import { capitalizeFirstLetter } from "../utils/strings";
+} from "../../states/test";
+import { capitalizeFirstLetter } from "../../utils/strings";
 
 export type TimerHandlers = {
   onFinish: () => void;

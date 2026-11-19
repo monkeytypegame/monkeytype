@@ -3,7 +3,7 @@ import { createMemo, createRoot } from "solid-js";
 import { getConfig } from "../config/store";
 import Format from "../singletons/format";
 import * as CustomText from "../test/custom-text";
-import * as TestWords from "../test/test-words";
+import * as TestWords from "../test/engine/test-words";
 import { secondsToString } from "../utils/date-and-time";
 import {
   currentLiveStats,

@@ -4,11 +4,11 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import { getInputHistory } from "../../test/events/stats";
+import { getInputHistory } from "../../test/engine/events/stats";
 import { getFrozenLog, isTestFinished } from "../../states/test";
 import { showModal } from "../../states/modals";
 import {

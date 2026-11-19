@@ -24,8 +24,8 @@ import {
   getCurrentInput,
   getInputForWord,
   logTestEvent,
-} from "../../test/events/data";
-import { getTestEventCode } from "../../test/events/helpers";
+} from "../../test/engine/events/data";
+import { getTestEventCode } from "../../test/engine/events/helpers";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {

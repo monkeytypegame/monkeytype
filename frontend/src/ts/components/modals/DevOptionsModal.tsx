@@ -22,7 +22,7 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
-import { disableSlowTimerFail } from "../../test/test-timer";
+import { disableSlowTimerFail } from "../../test/engine/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";

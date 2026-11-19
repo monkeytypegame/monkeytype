@@ -5,8 +5,8 @@ import { getUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { toggleSmoothedBurst } from "./states/result";
 import { getFrozenLog } from "./states/test";
-import { buildEventLog } from "./test/events/data";
-import * as TestTimer from "./test/test-timer";
+import { buildEventLog } from "./test/engine/events/data";
+import * as TestTimer from "./test/engine/test-timer";
 import { qs, qsa, qsr } from "./utils/dom";
 import * as Logger from "./utils/logger";
 

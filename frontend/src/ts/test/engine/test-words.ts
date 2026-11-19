@@ -2,12 +2,12 @@ import {
   getActiveWordIndex,
   isDirectionReversed,
   isLanguageRightToLeft,
-} from "../states/test";
+} from "../../states/test";
 import {
   type Direction,
   getWordDirection,
   reverseDirection,
-} from "../utils/strings";
+} from "../../utils/strings";
 
 type CommitChar = " " | "\n" | "";
 

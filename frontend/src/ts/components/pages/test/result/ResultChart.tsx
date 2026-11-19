@@ -43,8 +43,8 @@ import {
   getRawHistory,
   getTimerBoundaryLabels,
   getWordIndexesForSecond,
-} from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {

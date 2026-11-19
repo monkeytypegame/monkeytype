@@ -7,7 +7,7 @@ import {
   increaseActiveWordIndex,
 } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
@@ -16,13 +16,13 @@ import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
-import { DeleteInputType } from "./input-type";
-import { getWordBurst } from "../../test/events/stats";
+import { DeleteInputType } from "../../test/engine/input-type";
+import { getWordBurst } from "../../test/engine/events/stats";
 import {
   buildEventLog,
   getCurrentInput,
   getInputForWord,
-} from "../../test/events/data";
+} from "../../test/engine/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;

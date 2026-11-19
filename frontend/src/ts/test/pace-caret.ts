@@ -1,4 +1,4 @@
-import * as TestWords from "./test-words";
+import * as TestWords from "./engine/test-words";
 import { Config } from "../config/store";
 import { getLocalPB } from "../queries/user";
 import { getActiveTagsPB } from "../queries/tags";

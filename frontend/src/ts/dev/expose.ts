@@ -10,7 +10,7 @@ import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
-import { getCurrentInput } from "../test/events/data";
+import { getCurrentInput } from "../test/engine/events/data";
 import { restartTest } from "../test/test-logic";
 import { quickLogin, signOut } from "./auth";
 import { trackedSignals } from "./signal-tracker";

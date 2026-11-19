@@ -39,7 +39,7 @@ const nav = vi.hoisted(() => ({
 }));
 vi.mock("../../../src/ts/input/helpers/word-navigation", () => nav);
 
-vi.mock("../../../src/ts/test/test-words", () => {
+vi.mock("../../../src/ts/test/engine/test-words", () => {
   type CommitChar = " " | "\n" | "";
   type Word = { text: string; textWithCommit: string; commit: CommitChar };
   const list: Word[] = [];
@@ -132,15 +132,15 @@ import {
   resetTestEvents,
   getAllTestEvents,
   getInputForWord,
-} from "../../../src/ts/test/events/data";
+} from "../../../src/ts/test/engine/events/data";
 import {
   findInputValueMismatches,
   getEventsForWord,
-} from "../../../src/ts/test/events/helpers";
-import type { InputEventNoMs } from "../../../src/ts/test/events/types";
-import { words as TestWords } from "../../../src/ts/test/test-words";
+} from "../../../src/ts/test/engine/events/helpers";
+import type { InputEventNoMs } from "../../../src/ts/test/engine/events/types";
+import { words as TestWords } from "../../../src/ts/test/engine/test-words";
 import { __testing } from "../../../src/ts/config/testing";
-import { DeleteInputType } from "../../../src/ts/input/helpers/input-type";
+import { DeleteInputType } from "../../../src/ts/test/engine/input-type";
 
 const { replaceConfig } = __testing;
 

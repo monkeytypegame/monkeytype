@@ -8,7 +8,7 @@ import {
 import { z } from "zod";
 import { getConfig } from "../config/store";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { EventLog } from "../test/events/types";
+import { EventLog } from "../test/engine/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
