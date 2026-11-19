@@ -12,7 +12,7 @@ import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/engine/test-words";
 import {
   isResultCalculating,
-  isRestartShowing,
+  isRestartAnimating,
   getCompositionData,
 } from "../../states/test";
 import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
@@ -100,7 +100,7 @@ export async function onInput(event: InputEvent): Promise<void> {
   if (
     isResultCalculating() ||
     getTestPhase() === "restarting" ||
-    isRestartShowing()
+    isRestartAnimating()
   ) {
     return;
   }

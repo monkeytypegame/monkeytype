@@ -67,7 +67,7 @@ import {
   setLastSignedOutResult,
   setResultCalculating,
   isResultScreen,
-  isRestartShowing,
+  isRestartAnimating,
   CompletedResult,
   setResultLoading,
   setTestInitError,
@@ -278,7 +278,7 @@ export async function restartTest(
 
 function requestRestart(options: RestartRequestOptions): void {
   const restarting = getTestPhase() === "restarting";
-  if (restarting || untrack(isRestartShowing)) {
+  if (restarting || untrack(isRestartAnimating)) {
     options.event?.preventDefault();
     if (!(options.settingsChanged ?? false)) return;
     if (restarting) {

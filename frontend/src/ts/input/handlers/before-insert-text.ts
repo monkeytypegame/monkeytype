@@ -7,7 +7,7 @@ import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { isRestartShowing, isResultCalculating } from "../../states/test";
+import { isRestartAnimating, isResultCalculating } from "../../states/test";
 import { getTestPhase, wordsHaveNewline } from "../../test/engine/state";
 import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
@@ -21,7 +21,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (getTestPhase() === "restarting" || isRestartShowing()) {
+  if (getTestPhase() === "restarting" || isRestartAnimating()) {
     return true;
   }
 
