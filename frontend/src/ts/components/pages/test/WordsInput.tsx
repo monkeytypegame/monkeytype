@@ -26,7 +26,7 @@ import {
   triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
-import { getTestPhase } from "../../../test/engine/state";
+import { isTestActive } from "../../../test/engine/state";
 import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
@@ -53,7 +53,7 @@ export function WordsInput(): JSXElement {
   focusWordsEvent.useListener(({ force }) => {
     if (force) inputRef?.blur();
     inputRef?.focus({ preventScroll: true });
-    if (getTestPhase() === "active") triggerScrollWindowToActiveWord();
+    if (isTestActive()) triggerScrollWindowToActiveWord();
   });
 
   const px = (value: number | undefined): string | undefined =>

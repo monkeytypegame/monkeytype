@@ -80,6 +80,7 @@ import {
   getActiveWordIndex,
   getTestEnd,
   getTestPhase,
+  isTestActive,
   publishFrozenLog,
   setWordsInfo,
   type TestEnd,
@@ -227,7 +228,7 @@ function resetTestState(): void {
 export function stop(): void {
   if (getTestPhase() === "restarting" || isResultCalculating()) return;
 
-  if (getTestPhase() === "active") recordIncompleteTest();
+  if (isTestActive()) recordIncompleteTest();
   resetTestState();
 }
 
@@ -265,7 +266,7 @@ export async function restartTest(
   if (!untrack(isTestPageMounted)) return;
 
   const noQuit = isFunboxActive("no_quit");
-  if (getTestPhase() === "active" && noQuit) {
+  if (isTestActive() && noQuit) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {
@@ -280,7 +281,7 @@ export async function restartTest(
     options.event?.preventDefault();
     return;
   }
-  if (getTestPhase() === "active") {
+  if (isTestActive()) {
     if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
       if (
@@ -326,7 +327,7 @@ export async function restartTest(
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (getTestPhase() === "active" || getTestEnd()?.type === "failed")
+    (isTestActive() || getTestEnd()?.type === "failed")
   ) {
     options.withSameWordset = true;
   }
@@ -867,7 +868,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
 export async function finish(
   end: TestEnd = { type: "completed" },
 ): Promise<void> {
-  if (getTestPhase() !== "active") return;
+  if (!isTestActive()) return;
   Engine.recordEnd(end);
   const bailedOut = end.type === "bailedOut";
   const failReason = end.type === "failed" ? end.reason : null;
@@ -1384,7 +1385,7 @@ const debouncedZipfCheck = debounce(250, async () => {
 export function onRestartButtonClick(): void {
   if (isResultCalculating()) return;
   if (
-    getTestPhase() === "active" &&
+    isTestActive() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
@@ -1412,7 +1413,7 @@ export function repeatTest(): void {
  */
 export function restartIfNotStarted(): void {
   if (
-    getTestPhase() !== "active" &&
+    !isTestActive() &&
     !isResultScreen() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {

@@ -7,7 +7,11 @@ import {
   setComposing,
   setCompositionData,
 } from "../../states/test";
-import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
+import {
+  getActiveWordIndex,
+  getTestPhase,
+  isTestActive,
+} from "../../test/engine/state";
 
 export function onCompositionStart(event: CompositionEvent): void {
   console.debug("wordsInput event compositionstart", {
@@ -21,7 +25,7 @@ export function onCompositionStart(event: CompositionEvent): void {
   setComposing(true);
   setCompositionData("");
   setLastInsertCompositionTextData("");
-  if (getTestPhase() !== "active") {
+  if (!isTestActive()) {
     TestLogic.startTest(now);
   }
 

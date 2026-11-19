@@ -29,7 +29,7 @@ import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
 import { isComposing, flashKeymapKey } from "../../states/test";
-import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
+import { getActiveWordIndex, isTestActive } from "../../test/engine/state";
 import { DeleteInputType } from "../../test/engine/input-type";
 import { isWordRendered } from "../../states/words-render";
 
@@ -205,7 +205,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   const data = normalizedData ?? options.data;
 
   // start if needed
-  if (getTestPhase() !== "active") {
+  if (!isTestActive()) {
     TestLogic.startTest(now);
   }
 

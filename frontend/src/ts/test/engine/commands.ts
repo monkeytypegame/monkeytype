@@ -14,7 +14,7 @@ import { EventLog } from "./events/types";
 import {
   freezeLog,
   getActiveWordIndex,
-  getTestPhase,
+  isTestActive,
   setTestEnd,
   setKoreanStatus,
   setLastBurst,
@@ -67,7 +67,7 @@ export function reset(): void {
   resetTestEvents();
   TestTimer.clear();
   batch(() => {
-    if (getTestPhase() === "active") setTestPhase("idle");
+    if (isTestActive()) setTestPhase("idle");
     setTestEnd(null);
     setKoreanStatus(false);
   });

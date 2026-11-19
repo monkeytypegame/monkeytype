@@ -12,7 +12,7 @@ import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import { isResultCalculating } from "../states/test";
-import { getTestPhase } from "../test/engine/state";
+import { getTestPhase, isTestActive } from "../test/engine/state";
 import { isFunboxActive } from "../test/funbox/list";
 import { leaveTestPage } from "../test/test-logic";
 import { finishLoadingBar } from "./loading-bar";
@@ -110,7 +110,7 @@ export function createAppRouter(
         );
         return true;
       }
-      if (getTestPhase() === "active" && isFunboxActive("no_quit")) {
+      if (isTestActive() && isFunboxActive("no_quit")) {
         showNoticeNotification(
           "No quit funbox is active. Please finish the test.",
           { important: true },

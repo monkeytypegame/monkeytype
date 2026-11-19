@@ -108,7 +108,7 @@ import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
 import { canStartTest } from "../../src/ts/states/router";
 import { setResultCalculating } from "../../src/ts/states/test";
-import { getTestPhase, setTestPhase } from "../../src/ts/test/engine/state";
+import { isTestActive, setTestPhase } from "../../src/ts/test/engine/state";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
@@ -559,7 +559,7 @@ const testControls: TestControls = {
   type: () => {
     if (canStartTest()) setTestPhase("active");
   },
-  isRunning: () => getTestPhase() === "active",
+  isRunning: () => isTestActive(),
   setRestarting: (restarting) =>
     setTestPhase(restarting ? "restarting" : "idle"),
   setResultCalculating: (calculating) => setResultCalculating(calculating),

@@ -20,7 +20,7 @@ import {
 } from "../../../states/test";
 import {
   getActiveWordIndex,
-  getTestPhase,
+  isTestActive,
   wordsHaveNewline,
 } from "../../../test/engine/state";
 import { isSlowTimer } from "../../../test/engine/test-timer";
@@ -427,7 +427,7 @@ export function createWordsLayout(options: {
    * test in view.
    */
   function scrollWindowToActiveWord(allowScrollUp: boolean): void {
-    if (getTestPhase() !== "active") return;
+    if (!isTestActive()) return;
     const activeWord = getActiveWordElement();
     if (activeWord === null) return;
     const windowHeight = window.innerHeight;

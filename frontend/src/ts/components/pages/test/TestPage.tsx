@@ -30,7 +30,7 @@ import {
   setTestFocusState,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
-import { getTestPhase } from "../../../test/engine/state";
+import { isTestActive } from "../../../test/engine/state";
 import {
   leaveTestPage,
   onRestartButtonClick,
@@ -109,7 +109,7 @@ export function TestPage(): JSXElement {
     window.addEventListener(
       "beforeunload",
       (event) => {
-        if (getTestPhase() !== "active") return;
+        if (!isTestActive()) return;
         if (
           canQuickRestart(
             Config.mode,
@@ -131,7 +131,7 @@ export function TestPage(): JSXElement {
     // before the test, keeps it in view. During one, Words keeps the active
     // line in view
     const keepTestInView = debounce(250, () => {
-      if (getTestPhase() === "active" || isResultScreen()) return;
+      if (isTestActive() || isResultScreen()) return;
       Misc.scrollToCenterOrTop(typingTestRef ?? null);
     });
     window.addEventListener("resize", keepTestInView, { signal });
@@ -167,7 +167,7 @@ export function TestPage(): JSXElement {
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view
   focusWordsEvent.useListener(() => {
-    if (getTestPhase() === "active") return;
+    if (isTestActive()) return;
     Misc.scrollToCenterOrTop(typingTestRef ?? null);
   });
 

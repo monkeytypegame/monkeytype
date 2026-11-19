@@ -15,7 +15,7 @@ import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { getTestPhase } from "../test/engine/state";
+import { isTestActive } from "../test/engine/state";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -41,7 +41,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   if (
     metadata.changeRequiresRestart &&
-    getTestPhase() === "active" &&
+    isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {
     showNoticeNotification(
@@ -151,7 +151,7 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (getTestPhase() === "active" && Config.funbox.includes("no_quit")) {
+  if (isTestActive() && Config.funbox.includes("no_quit")) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {

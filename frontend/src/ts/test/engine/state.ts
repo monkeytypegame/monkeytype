@@ -27,6 +27,11 @@ export type TestPhase = "idle" | "active" | "finished" | "restarting";
 // setters exported for engine/commands only
 export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
+/** The test is running: typing, the timer runs. */
+export function isTestActive(): boolean {
+  return getTestPhase() === "active";
+}
+
 // ---- words
 
 // steps by one only; resetActiveWordIndex: words reset or regenerated
