@@ -138,6 +138,11 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   changeRequiresRestart: boolean;
   /**
+   * Restarts only when this returns true (eg. the setting matters only while
+   * a funbox is active). Requires changeRequiresRestart.
+   */
+  restartWhen?: (config: ConfigSchemas.Config) => boolean;
+  /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
    * @param options - The options object containing the value being set and the current config.
@@ -678,6 +683,7 @@ const configMetadataEntries = {
     fa: { icon: "fa-tint" },
     displayString: "custom layoutfluid",
     changeRequiresRestart: true,
+    restartWhen: (config) => config.funbox.includes("layoutfluid"),
     group: "behavior",
     description:
       "Select which layouts you want the layoutfluid funbox to cycle through.",
@@ -698,7 +704,7 @@ const configMetadataEntries = {
     key: "customPolyglot",
     fa: { icon: "fa-language" },
     displayString: "polyglot languages",
-    changeRequiresRestart: false,
+    changeRequiresRestart: true,
     group: "behavior",
     description: "Select which languages you want the polyglot funbox to use.",
     overrideValue: ({ value }) => {

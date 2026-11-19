@@ -7,8 +7,7 @@ import { createEvent } from "../hooks/createEvent";
 import { applyReducedMotion } from "../utils/misc";
 
 // Removed once test-logic stops asking (no roadmap row yet): its restart
-// guard and config subscriber go in T6b, the funbox activation check with
-// the engine split (T6).
+// guard, the funbox activation check.
 
 // the current mount's signal - a remount can register before the old one aborts
 const [getMountSignal, setMountSignal] = createSignal<AbortSignal>();
@@ -55,9 +54,9 @@ export async function fadeTest(
   await fades.get(target)?.(direction, noAnim ? 0 : applyReducedMotion(125));
 }
 
-// test-logic's dispatch goes in T6b, when TestPage focuses on the restart's
-// phase; the event then moves into TestPage, for WordsInput's autofocus and
-// the wrapper click (no roadmap row yet).
+// test-logic's dispatch goes once TestPage focuses on the restart's stage;
+// the event then moves into TestPage, for WordsInput's autofocus and the
+// wrapper click (no roadmap row yet).
 /**
  * Focuses the words input (WordsInput), then brings the test into view: the
  * active line during a test (Words), the test block before it (TestPage).
@@ -65,6 +64,6 @@ export async function fadeTest(
  */
 export const focusWordsEvent = createEvent<{ force: boolean }>();
 
-// Removed in T6a/T6b: listeners follow the engine's restart instead.
+// Removed once listeners follow the engine's restart stage (no roadmap row yet).
 /** Dispatched by a restart, once the new test is ready, with its source. */
 export const testRestartedEvent = createEvent<"testPage" | "resultPage">();

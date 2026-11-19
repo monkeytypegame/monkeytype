@@ -31,6 +31,8 @@ import {
   type TestEnd,
 } from "./state";
 import * as TestTimer from "./test-timer";
+import { takeTestSettings } from "./test-settings";
+import type { CustomTextSettings } from "@monkeytype/schemas/results";
 
 // The engine's lifecycle commands. Kept apart from ./state, which the timer
 // and the EventLog import, so the imports don't cycle.
@@ -143,12 +145,31 @@ export function restartFadedOut(): void {
 }
 
 /**
- * test-logic, right before it reads the settings to generate the new test:
- * requests from now on queue another restart. Returns the merged options.
+ * test-logic, right before it generates the words: retakes the test settings
+ * (config plus `customText`). Requests from now on queue another restart.
+ * Returns the merged options.
  */
-export function takeRestartRequests(): RestartOptions {
+export function takeRestartRequests(
+  customText: CustomTextSettings,
+): RestartOptions {
   acceptingRequests = false;
+  takeTestSettings(customText);
   return getRestartOptions();
+}
+
+/**
+ * test-logic, when generating the words failed and it tries again: the retry
+ * reads the settings anew, so requests queued meanwhile (including the
+ * generator's own fallback writes) merge into it.
+ */
+export function reopenRestartRequests(): void {
+  if (getTestPhase() !== "restarting" || acceptingRequests) return;
+  acceptingRequests = true;
+  if (queued !== null) {
+    const next = queued;
+    queued = null;
+    setRestartOptions((current) => toOptions(mergeRequests(current, next)));
+  }
 }
 
 /** test-logic: the new test is ready to fade in. */

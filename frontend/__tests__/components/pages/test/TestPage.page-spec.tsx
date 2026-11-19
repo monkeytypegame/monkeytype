@@ -247,6 +247,67 @@ describe("TestPage", () => {
     });
   });
 
+  describe("restart", () => {
+    it("restarts once for test settings changed while the old test fades out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.setConfig("mode", "time");
+      expect(page.phase()).toBe("restarting");
+      page.setConfig("time", 15);
+      await page.frame();
+      // the old test fades out as it was
+      expect(
+        page
+          .word(0)
+          .letters()
+          .map((l) => l.char),
+      ).toEqual(["t", "h", "e"]);
+      expect(page.testSettings().mode).toBe("custom");
+
+      await page.advance(1000);
+
+      expect(page.phase()).toBe("ready");
+      expect(page.restarts()).toBe(1);
+      expect(page.testSettings().mode).toBe("time");
+      expect(page.testSettings().time).toBe(15);
+    });
+
+    it("doesn't restart for a setting that isn't a test setting", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.setConfig("blindMode", true);
+      await page.advance(500);
+
+      expect(page.restarts()).toBe(0);
+    });
+
+    it("merges restart requests into one", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      page.restart();
+      await page.advance(1000);
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.restarts()).toBe(2);
+      expect(page.phase()).toBe("ready");
+    });
+
+    it("keeps the result on screen until it has faded out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+      await page.type("the fox");
+      await page.advance(500);
+      expect(page.phase()).toBe("finished");
+
+      page.restart();
+
+      expect(page.phase()).toBe("finished");
+      await page.advance(1000);
+      expect(page.phase()).toBe("ready");
+    });
+  });
+
   it("starts each spec on a fresh test", async () => {
     // the previous specs left typed, finished tests behind
     const page = await renderTestPage({ words: ["the", "fox"] });

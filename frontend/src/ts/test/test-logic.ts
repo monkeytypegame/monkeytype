@@ -7,7 +7,14 @@ import {
 } from "../states/lazy-mode";
 import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
-import { batch, createEffect, createRoot, on, untrack } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createRoot,
+  on,
+  untrack,
+} from "solid-js";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
@@ -89,6 +96,8 @@ import {
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
+import { TEST_SETTINGS_KEYS, getTestSettings } from "./engine/test-settings";
+import { configMetadata } from "../config/metadata";
 import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
@@ -133,7 +142,7 @@ import {
 import { blurInputElement, setInputElementValue } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
-import { Config } from "../config/store";
+import { Config, getConfig } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import { buildEventLog } from "./engine/events/data";
 import {
@@ -253,12 +262,25 @@ type RestartRequestOptions = Partial<RestartOptions> & {
  * the restart's stages: TestPage fades the old test out, prepareRestart()
  * generates the new one, TestPage fades it in.
  */
+// true while a request runs: config it reverts (practise words) restarts
+// with it, not again
+let requesting = false;
+
 export async function restartTest(
   options = {} as RestartRequestOptions,
 ): Promise<void> {
   // not on the test page - TestPage restarts on mount
   if (!untrack(isTestPageMounted)) return;
+  if (requesting) return;
+  requesting = true;
+  try {
+    requestRestart(options);
+  } finally {
+    requesting = false;
+  }
+}
 
+function requestRestart(options: RestartRequestOptions): void {
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
     showNoticeNotification(
@@ -280,13 +302,13 @@ export async function restartTest(
 
   if (isTestActive()) {
     if (options.isQuickRestart) {
-      if (Config.mode !== "zen") options.event?.preventDefault();
+      if (getTestSettings().mode !== "zen") options.event?.preventDefault();
       if (
         !canQuickRestart(
-          Config.mode,
-          Config.words,
-          Config.time,
-          CustomText.getData(),
+          getTestSettings().mode,
+          getTestSettings().words,
+          getTestSettings().time,
+          getTestSettings().customText,
           getCustomTextIndicator()?.isLong ?? false,
         )
       ) {
@@ -320,9 +342,9 @@ export async function restartTest(
 
   const currentQuote = getCurrentQuote();
   if (
-    Config.mode === "quote" &&
+    getTestSettings().mode === "quote" &&
     currentQuote !== null &&
-    Config.language.startsWith(currentQuote.language) &&
+    getTestSettings().language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (isTestActive() || getTestEnd()?.type === "failed")
   ) {
@@ -409,10 +431,12 @@ async function prepareRestart(): Promise<void> {
   }
   testRestartedEvent.dispatch(getRestartSource());
   replaceWords(
-    Config.mode === "zen" ? [{ display: "" }] : TestWords.words.get(),
+    getTestSettings().mode === "zen"
+      ? [{ display: "" }]
+      : TestWords.words.get(),
     {
       activeWordIndex: getActiveWordIndex(),
-      zen: Config.mode === "zen",
+      zen: getTestSettings().mode === "zen",
     },
   );
 
@@ -424,6 +448,27 @@ async function prepareRestart(): Promise<void> {
   // TestPage fades the new test in, then calls endRestart()
   Engine.restartPrepared();
 }
+
+// Changing a test setting restarts the test: one restart, however many
+// change (a preset applies them in one batch). T7: moves into the engine with
+// the request steps above.
+createRoot(() => {
+  for (const key of TEST_SETTINGS_KEYS) {
+    // serialized, so changes inside arrays (funbox, quote length) count
+    const value = createMemo(() => JSON.stringify(getConfig[key]));
+    createEffect(
+      on(
+        value,
+        () => {
+          const restartWhen = configMetadata[key].restartWhen;
+          if (restartWhen !== undefined && !restartWhen(Config)) return;
+          void restartTest();
+        },
+        { defer: true },
+      ),
+    );
+  }
+});
 
 createRoot(() => {
   createEffect(
@@ -440,6 +485,8 @@ let testReinitCount = 0;
 
 async function init(): Promise<boolean> {
   console.debug("Initializing test");
+  // a retry reads the settings anew: requests since the last try merge in
+  Engine.reopenRestartRequests();
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
@@ -562,7 +609,7 @@ async function init(): Promise<boolean> {
 
   // requests from here on queue another restart: the words are generated
   // from the settings as they are now
-  const { withSameWordset } = Engine.takeRestartRequests();
+  const { withSameWordset } = Engine.takeRestartRequests(CustomText.getData());
   setIsRepeated(withSameWordset);
   setIsPaceRepeat(Config.repeatedPace && withSameWordset);
 
@@ -622,7 +669,7 @@ async function init(): Promise<boolean> {
     TestWords.removeCommitCharFromLastWord();
   }
 
-  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+  if (Config.keymapMode === "next" && getTestSettings().mode !== "zen") {
     highlightKeymapKey(
       nthElementFromArray(
         // ignoring for now but this might need a different approach
@@ -636,8 +683,8 @@ async function init(): Promise<boolean> {
   Funbox.toggleScript(TestWords.words.getCurrent()?.text ?? "");
   setJoiningScript(
     (allJoiningScript ?? language.joiningScript ?? false) ||
-      Config.mode === "custom" ||
-      Config.mode === "zen",
+      getTestSettings().mode === "custom" ||
+      getTestSettings().mode === "zen",
   );
 
   console.debug("Test initialized with words", TestWords.words.get());
@@ -650,7 +697,7 @@ async function init(): Promise<boolean> {
 
 //add word during the test
 export async function addWord(): Promise<void> {
-  if (Config.mode === "zen") {
+  if (getTestSettings().mode === "zen") {
     appendRenderedWord({ display: "" });
     return;
   }
@@ -677,7 +724,7 @@ export async function addWord(): Promise<void> {
   if (sectionFunbox) {
     if (TestWords.words.length - getActiveWordIndex() < 20) {
       const section = await sectionFunbox.functions.pullSection(
-        Config.language,
+        getTestSettings().language,
       );
 
       if (section === false) {
@@ -694,7 +741,10 @@ export async function addWord(): Promise<void> {
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
         const word = section.words[i] as string;
-        if (wordCount >= Config.words && Config.mode === "words") {
+        if (
+          wordCount >= getTestSettings().words &&
+          getTestSettings().mode === "words"
+        ) {
           break;
         }
         wordCount++;
@@ -772,19 +822,19 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   //tags
   const activeTagsIds: string[] = getActiveTags().map((tag) => tag._id);
 
-  let language = Config.language;
-  if (Config.mode === "quote") {
-    language = Strings.removeLanguageSize(Config.language);
+  let language = getTestSettings().language;
+  if (getTestSettings().mode === "quote") {
+    language = Strings.removeLanguageSize(getTestSettings().language);
   }
 
   let customText: CompletedEventCustomText | undefined = undefined;
-  if (Config.mode === "custom") {
-    const temp = CustomText.getData();
+  if (getTestSettings().mode === "custom") {
+    const temp = getTestSettings().customText;
     customText = {
       textLen: temp.text.length,
       mode: temp.mode,
       pipeDelimiter: temp.pipeDelimiter,
-      limit: temp.limit,
+      limit: { ...temp.limit },
     };
   }
 
@@ -844,17 +894,17 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     quoteLength: currentQuote?.group ?? -1,
     customText: customText,
     tags: activeTagsIds,
-    punctuation: Config.punctuation,
-    numbers: Config.numbers,
-    lazyMode: Config.lazyMode,
+    punctuation: getTestSettings().punctuation,
+    numbers: getTestSettings().numbers,
+    lazyMode: getTestSettings().lazyMode,
     timestamp: Date.now(),
-    mode: Config.mode,
-    mode2: Misc.getMode2(Config, currentQuote),
+    mode: getTestSettings().mode,
+    mode2: Misc.getMode2(getTestSettings(), currentQuote),
     bailedOut: getTestEnd()?.type === "bailedOut",
-    funbox: Config.funbox,
-    difficulty: Config.difficulty,
+    funbox: [...getTestSettings().funbox],
+    difficulty: getTestSettings().difficulty,
     blindMode: Config.blindMode,
-    stopOnLetter: Config.stopOnError === "letter",
+    stopOnLetter: getTestSettings().stopOnError === "letter",
     restartCount: getRestartCount(),
     incompleteTests: getIncompleteTests(),
     incompleteTestSeconds:
@@ -898,7 +948,7 @@ export async function finish(
 
   setTestFocusState("focused");
 
-  if (isRepeated() && Config.mode === "quote") {
+  if (isRepeated() && getTestSettings().mode === "quote") {
     setIsRepeated(false);
   }
 
@@ -957,7 +1007,7 @@ export async function finish(
   //fail checks
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
-    Config.mode === "time" &&
+    getTestSettings().mode === "time" &&
     !bailedOut &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
@@ -973,22 +1023,26 @@ export async function finish(
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
-    (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
-    (Config.mode === "time" &&
+    (getTestSettings().mode === "time" &&
+      mode2Number < 15 &&
+      mode2Number > 0) ||
+    (getTestSettings().mode === "time" &&
       mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
-    (Config.mode === "words" && mode2Number < 10 && mode2Number > 0) ||
-    (Config.mode === "words" &&
+    (getTestSettings().mode === "words" &&
+      mode2Number < 10 &&
+      mode2Number > 0) ||
+    (getTestSettings().mode === "words" &&
       mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
-    (Config.mode === "custom" &&
-      (CustomText.getLimitMode() === "word" ||
-        CustomText.getLimitMode() === "section") &&
-      CustomText.getLimitValue() < 10) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "time" &&
-      CustomText.getLimitValue() < 15) ||
-    (Config.mode === "zen" && completedEvent.testDuration < 15)
+    (getTestSettings().mode === "custom" &&
+      (getTestSettings().customText.limit.mode === "word" ||
+        getTestSettings().customText.limit.mode === "section") &&
+      getTestSettings().customText.limit.value < 10) ||
+    (getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.mode === "time" &&
+      getTestSettings().customText.limit.value < 15) ||
+    (getTestSettings().mode === "zen" && completedEvent.testDuration < 15)
   ) {
     showNoticeNotification("Test invalid - too short");
     invalid = true;
@@ -1050,7 +1104,7 @@ export async function finish(
 
   const customTextName = getCustomTextIndicator()?.name ?? "";
   const isLong = getCustomTextIndicator()?.isLong === true;
-  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+  if (getTestSettings().mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
       bailedOut ||
@@ -1144,9 +1198,9 @@ export async function finish(
     isRepeated: isRepeated(),
     tooShort,
     invalid,
-    stopOnError: Config.stopOnError,
+    stopOnError: getTestSettings().stopOnError,
     deleteOnError: Config.deleteOnError,
-    quote: Config.mode === "quote" ? getCurrentQuote() : null,
+    quote: getTestSettings().mode === "quote" ? getCurrentQuote() : null,
   });
 
   await Promise.all([savingResultPromise, resultUpdatePromise]);
@@ -1215,10 +1269,10 @@ async function showResult(
   setFocusMode(false);
 
   const canQuickRestartTest = canQuickRestart(
-    Config.mode,
-    Config.words,
-    Config.time,
-    CustomText.getData(),
+    getTestSettings().mode,
+    getTestSettings().words,
+    getTestSettings().time,
+    getTestSettings().customText,
     getCustomTextIndicator()?.isLong ?? false,
   );
   if (
@@ -1371,11 +1425,13 @@ export function fail(reason: string): void {
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
+  const supports = await JSONData.checkIfLanguageSupportsZipf(
+    getTestSettings().language,
+  );
   if (supports === "no") {
     showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
+        Strings.getLanguageDisplayString(getTestSettings().language),
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       {
         durationMs: 7000,
@@ -1385,7 +1441,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   if (supports === "unknown") {
     showNoticeNotification(
       `${Strings.capitalizeFirstLetter(
-        Strings.getLanguageDisplayString(Config.language),
+        Strings.getLanguageDisplayString(getTestSettings().language),
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       {
         durationMs: 7000,
@@ -1399,7 +1455,7 @@ export function onRestartButtonClick(): void {
   if (
     isTestActive() &&
     Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
+    getTestSettings().mode === "quote"
   ) {
     void restartTest({
       withSameWordset: true,
@@ -1410,7 +1466,7 @@ export function onRestartButtonClick(): void {
 }
 
 export function repeatTest(): void {
-  if (Config.mode === "zen") {
+  if (getTestSettings().mode === "zen") {
     showNoticeNotification("Repeat test disabled in zen mode");
     return;
   }
@@ -1427,7 +1483,7 @@ export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
     !isResultScreen() &&
-    (Config.mode === "time" || Config.mode === "words")
+    (getTestSettings().mode === "time" || getTestSettings().mode === "words")
   ) {
     void restartTest({
       noAnim: true,
@@ -1449,11 +1505,6 @@ configEvent.subscribe(({ key, newValue, nosave }) => {
           nosave: true,
         });
       }
-      void restartTest();
-    }
-    if (key === "difficulty" && !nosave) void restartTest();
-    if (key === "customLayoutfluid" && Config.funbox.includes("layoutfluid")) {
-      void restartTest();
     }
 
     if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {

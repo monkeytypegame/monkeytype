@@ -47,9 +47,16 @@ vi.mock("../../../../src/ts/test/engine/test-words", () => {
 });
 
 const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
-vi.mock("../../../../src/ts/test/custom-text", () => ({
-  getLimit: () => customTextLimit,
-}));
+// the mocked config doubles as the test settings
+vi.mock("../../../../src/ts/test/engine/test-settings", async () => {
+  const { Config } = await import("../../../../src/ts/config/store");
+  return {
+    getTestSettings: () => ({
+      ...Config,
+      customText: { limit: customTextLimit },
+    }),
+  };
+});
 
 vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,

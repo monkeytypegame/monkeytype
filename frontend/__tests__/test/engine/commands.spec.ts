@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { CustomTextSettings } from "@monkeytype/schemas/results";
 
 import * as Engine from "../../../src/ts/test/engine/commands";
 import {
@@ -18,6 +19,13 @@ import {
   setTestPhase,
 } from "../../../src/ts/test/engine/state";
 import { logTestEvent } from "../../../src/ts/test/engine/events/data";
+
+const customText: CustomTextSettings = {
+  text: [],
+  mode: "repeat",
+  limit: { mode: "word", value: 0 },
+  pipeDelimiter: false,
+};
 
 function frame(): void {
   vi.advanceTimersToNextFrame();
@@ -88,7 +96,7 @@ describe("engine", () => {
       expect(getRestartStage()).toBe("fadingOut");
       Engine.restartFadedOut();
       expect(getRestartStage()).toBe("preparing");
-      Engine.takeRestartRequests();
+      Engine.takeRestartRequests(customText);
       Engine.restartPrepared();
       expect(getRestartStage()).toBe("fadingIn");
       expect(Engine.endRestart()).toBeNull();
@@ -108,7 +116,7 @@ describe("engine", () => {
       expect(Engine.requestRestart("testPage", {})).toBe("merged");
       // the first request's source; the latest noAnim; withSameWordset sticks
       expect(getRestartSource()).toBe("testPage");
-      expect(Engine.takeRestartRequests()).toEqual({
+      expect(Engine.takeRestartRequests(customText)).toEqual({
         withSameWordset: true,
         practiseMissed: false,
         noAnim: false,
@@ -118,7 +126,7 @@ describe("engine", () => {
     it("queues one more restart for requests after the settings are taken", () => {
       Engine.requestRestart("testPage", {});
       Engine.restartFadedOut();
-      Engine.takeRestartRequests();
+      Engine.takeRestartRequests(customText);
       expect(Engine.requestRestart("testPage", { practiseMissed: true })).toBe(
         "queued",
       );
@@ -131,6 +139,17 @@ describe("engine", () => {
         practiseMissed: true,
         noAnim: true,
       });
+      expect(Engine.endRestart()).toBeNull();
+    });
+
+    it("a retry takes the queued requests back in", () => {
+      Engine.requestRestart("testPage", {});
+      Engine.restartFadedOut();
+      Engine.takeRestartRequests(customText);
+      Engine.requestRestart("testPage", { withSameWordset: true });
+      Engine.reopenRestartRequests();
+      expect(Engine.requestRestart("testPage", {})).toBe("merged");
+      expect(Engine.takeRestartRequests(customText).withSameWordset).toBe(true);
       expect(Engine.endRestart()).toBeNull();
     });
   });

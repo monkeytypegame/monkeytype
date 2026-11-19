@@ -6,7 +6,9 @@ import { setFontPreview } from "../states/font";
 
 // side effects of config commands, kept out of config metadata because the
 // modules they call import the config setters (a circular import otherwise).
-// the test restarts go away once the engine restarts on `changeRequiresRestart`
+// the test restarts: a change already restarts through the test settings
+// effect (test-logic); these also restart when the value is unchanged, as
+// picking the current option always did. They merge into one restart.
 
 export type CommandlineConfigActions<K extends keyof ConfigSchemas.Config> = {
   subgroup?: {

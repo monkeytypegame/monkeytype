@@ -1,3 +1,4 @@
+import { getTestSettings } from "../test-settings";
 import {
   CompositionTestEvent,
   CompositionTestEventData,
@@ -21,9 +22,6 @@ import { recordEventForCache, resetLiveCache } from "./live-cache";
 import { Keycode } from "../../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestWords from "../test-words";
-import { Config } from "../../../config/store";
-// oxlint-disable-next-line no-restricted-imports -- T6b: read from the test settings
-import * as CustomText from "../../custom-text";
 import { getMode2 } from "../../../utils/misc";
 import { getCurrentQuote, isResultCalculating } from "../../../states/test";
 import {
@@ -32,22 +30,23 @@ import {
   getTestEnd,
   scheduleLiveStatsFlush,
 } from "../state";
-// oxlint-disable-next-line no-restricted-imports -- T6b: read from the test settings
-import { isFunboxActiveWithProperty } from "../../funbox/active";
+import { getFunbox } from "@monkeytype/funbox";
 
 export function buildEventLog(): EventLog {
   const context = {
     targetWords: [...TestWords.words.get().map((w) => w.textWithCommit)],
-    mode: Config.mode,
-    mode2: getMode2(Config, getCurrentQuote()),
+    mode: getTestSettings().mode,
+    mode2: getMode2(getTestSettings(), getCurrentQuote()),
     hasKorean: getKoreanStatus(),
     bailedOut: getTestEnd()?.type === "bailedOut",
-    ...(Config.mode === "custom" && {
-      customTextLimitMode: CustomText.getLimit().mode,
-      customTextLimitValue: CustomText.getLimit().value,
+    ...(getTestSettings().mode === "custom" && {
+      customTextLimitMode: getTestSettings().customText.limit.mode,
+      customTextLimitValue: getTestSettings().customText.limit.value,
     }),
-    ...(Config.funbox.length !== 0 && {
-      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+    ...(getTestSettings().funbox.length !== 0 && {
+      isFunboxWithNospacePropertyActive: getFunbox(
+        getTestSettings().funbox,
+      ).some((fb) => fb.properties?.includes("nospace") ?? false),
     }),
   };
 

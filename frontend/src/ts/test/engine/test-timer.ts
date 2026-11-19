@@ -1,10 +1,8 @@
+import { getTestSettings } from "./test-settings";
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
 import { createSignal } from "solid-js";
-import { Config } from "../../config/store";
-// oxlint-disable-next-line no-restricted-imports -- T6b: the time limit comes from the test settings
-import * as CustomText from "../custom-text";
 import { createTimer } from "animejs";
 import { buildEventLog, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
@@ -165,8 +163,8 @@ function checkIfFailed(
 ): boolean {
   if (timerDebug) console.time("fail conditions");
   if (
-    Config.minWpm === "custom" &&
-    wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
+    getTestSettings().minWpm === "custom" &&
+    wpmAndRaw.wpm < getTestSettings().minWpmCustomSpeed &&
     getActiveWordIndex() > 3
   ) {
     if (timer !== null) clearTimeout(timer);
@@ -175,7 +173,11 @@ function checkIfFailed(
     onFail("min speed");
     return true;
   }
-  if (Config.minAcc === "custom" && acc !== null && acc < Config.minAccCustom) {
+  if (
+    getTestSettings().minAcc === "custom" &&
+    acc !== null &&
+    acc < getTestSettings().minAccCustom
+  ) {
     if (timer !== null) clearTimeout(timer);
     clearSlowTimer();
     slowTimerCount = 0;
@@ -191,10 +193,13 @@ function checkIfTimeIsUp(testTime: number): void {
 
   let maxTime = undefined;
 
-  if (Config.mode === "time") {
-    maxTime = Config.time;
-  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
-    maxTime = CustomText.getLimitValue();
+  if (getTestSettings().mode === "time") {
+    maxTime = getTestSettings().time;
+  } else if (
+    getTestSettings().mode === "custom" &&
+    getTestSettings().customText.limit.mode === "time"
+  ) {
+    maxTime = getTestSettings().customText.limit.value;
   }
   if (maxTime !== undefined && maxTime !== 0 && testTime >= maxTime) {
     //times up
@@ -266,8 +271,12 @@ function timerStep(now: number, catchingUp: boolean): void {
 function checkIfTimerIsSlow(drift: number): void {
   if (!slowTimerFailEnabled) return;
   if (
-    (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
-    (Config.mode === "words" && Config.words < 250 && Config.words > 0)
+    (getTestSettings().mode === "time" &&
+      getTestSettings().time < 130 &&
+      getTestSettings().time > 0) ||
+    (getTestSettings().mode === "words" &&
+      getTestSettings().words < 250 &&
+      getTestSettings().words > 0)
   ) {
     if (drift > 125) {
       //slow timer
