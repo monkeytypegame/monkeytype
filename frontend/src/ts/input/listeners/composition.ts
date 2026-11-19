@@ -3,7 +3,6 @@ import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/engine/events/data";
 import {
-  isResultCalculating,
   setComposing,
   setCompositionData,
   isRestartAnimating,
@@ -24,8 +23,8 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartAnimating() ||
-    isResultCalculating()
+    getTestPhase() === "finished" ||
+    isRestartAnimating()
   ) {
     return;
   }
@@ -50,8 +49,8 @@ export function onCompositionUpdate(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartAnimating() ||
-    isResultCalculating()
+    getTestPhase() === "finished" ||
+    isRestartAnimating()
   ) {
     return;
   }
@@ -74,8 +73,8 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
 
   if (
     getTestPhase() === "restarting" ||
-    isRestartAnimating() ||
-    isResultCalculating()
+    getTestPhase() === "finished" ||
+    isRestartAnimating()
   ) {
     return;
   }

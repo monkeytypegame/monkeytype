@@ -11,7 +11,6 @@ vi.mock("../../../../src/ts/test/engine/test-words", () => ({
 
 vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
-  isResultCalculating: () => false,
 }));
 
 vi.mock("../../../../src/ts/test/engine/state", () => ({

@@ -1,51 +1,40 @@
-import { __nonReactive } from "../collections/results";
+import { createSignal } from "solid-js";
+
+import { getSecondsTypedSinceOnce } from "../collections/results";
 import * as DateTime from "../utils/date-and-time";
 
-let seconds = 0;
-let addedAllToday = false;
+const [seconds, setSeconds] = createSignal(0);
+// whether seconds started from today's saved results, not this session
+const [addedAllToday, setAddedAllToday] = createSignal(false);
 let dayToday: number;
 
+/** A finished test's seconds (afk excluded). */
 export function addSeconds(s: number): void {
-  if (addedAllToday) {
+  if (addedAllToday()) {
     const nowDate = new Date().getDate();
     if (nowDate > dayToday) {
-      seconds = s;
+      setSeconds(s);
       return;
     }
   }
-  seconds += s;
+  setSeconds((current) => current + s);
 }
 
-export function getString(): string {
-  const secString = DateTime.secondsToString(Math.round(seconds), true, true);
-  return secString + (addedAllToday ? " today" : " session");
+/** Time typed today (or this session, signed out), eg. "05:12 today". Reactive. */
+export function getTimeTodayString(): string {
+  const secString = DateTime.secondsToString(Math.round(seconds()), true, true);
+  return secString + (addedAllToday() ? " today" : " session");
 }
 
-export function addAllFromToday(): void {
+/** Starts the count from today's saved results (the results are loaded). */
+export async function addAllFromToday(): Promise<void> {
   const todayDate = new Date();
   todayDate.setSeconds(0);
   todayDate.setMinutes(0);
   todayDate.setHours(0);
   todayDate.setMilliseconds(0);
   dayToday = todayDate.getDate();
-  const todayDateMS = todayDate.getTime();
 
-  seconds = 0;
-  const results = __nonReactive.getResults();
-
-  for (const result of results) {
-    const resultDate = new Date(result.timestamp);
-    resultDate.setSeconds(0);
-    resultDate.setMinutes(0);
-    resultDate.setHours(0);
-    resultDate.setMilliseconds(0);
-    const resultDateMS = resultDate.getTime();
-
-    if (resultDateMS >= todayDateMS) {
-      seconds +=
-        result.testDuration + result.incompleteTestSeconds - result.afkDuration;
-    }
-  }
-
-  addedAllToday = true;
+  setSeconds(await getSecondsTypedSinceOnce(todayDate.getTime()));
+  setAddedAllToday(true);
 }

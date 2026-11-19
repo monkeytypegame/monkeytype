@@ -42,7 +42,7 @@ export async function handleEnter(
 ): Promise<void> {
   if (e.shiftKey) {
     if (Config.mode === "zen") {
-      void TestLogic.finish();
+      TestLogic.finish();
       return;
     } else if (
       !canQuickRestart(
@@ -68,7 +68,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        void TestLogic.finish({ type: "bailedOut" });
+        TestLogic.finish({ type: "bailedOut" });
         return;
       }
     }

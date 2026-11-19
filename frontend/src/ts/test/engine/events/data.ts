@@ -23,7 +23,7 @@ import { Keycode } from "../../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestWords from "../test-words";
 import { getMode2 } from "../../../utils/misc";
-import { getCurrentQuote, isResultCalculating } from "../../../states/test";
+import { getCurrentQuote } from "../../../states/test";
 import {
   getActiveWordIndex,
   getKoreanStatus,
@@ -76,11 +76,20 @@ let pressedKeys: Map<
   }
 > = new Map();
 
+// set by finish() once held keys are released: later events are dropped
+let frozen = false;
+
+/** finish(): drops every event logged from now until the next reset. */
+export function freezeEvents(): void {
+  frozen = true;
+}
+
 export function logTestEvent(
   type: TestEventType,
   now: number,
   eventData: TestEventData,
 ): void {
+  if (frozen) return;
   invalidateCache();
 
   now = roundTo2(now);
@@ -107,10 +116,6 @@ export function logTestEvent(
         testMs: 0,
         data: { ...data, code },
       });
-    }
-
-    if (isResultCalculating()) {
-      return;
     }
 
     let key: Keycode | "NoCode" | `NoCode${number}` = code;
@@ -359,6 +364,7 @@ export function resetTestEvents(): void {
   invalidateCache();
   pressedKeys = new Map();
   noCodeIndex = 0;
+  frozen = false;
   resetLiveCache();
   scheduleLiveStatsFlush();
 }

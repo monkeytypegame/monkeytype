@@ -8,15 +8,15 @@ import { getUserData } from "../../../../queries/user";
 import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
-import { resultState } from "../../../../states/result";
-import { getLastResult } from "../../../../states/test";
-import { getFrozenLog } from "../../../../test/engine/state";
-import { restartTest, retrySavingResult } from "../../../../test/test-logic";
-import { cn } from "../../../../utils/cn";
+import * as Engine from "../../../../test/engine/commands";
 import {
-  applyReducedMotion,
-  scrollToCenterOrTop,
-} from "../../../../utils/misc";
+  getFrozenLog,
+  getResult,
+  getSaveStatus,
+} from "../../../../test/engine/state";
+import { restartTest } from "../../../../test/test-logic";
+import { cn } from "../../../../utils/cn";
+import { scrollToCenterOrTop } from "../../../../utils/misc";
 import { AdIcon } from "../../../common/AdIcon";
 import { adSlotClass, adSlotRef } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
@@ -34,7 +34,7 @@ const INTERACTIVE_SELECTOR =
   'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
 
 export function TestResult(props: {
-  /** the result element: TestPage fades it out on restart */
+  /** the result element: TestPage fades it in, and out on restart */
   ref?: (el: HTMLDivElement) => void;
 }): JSXElement {
   let prefocusRef: HTMLDivElement | undefined;
@@ -42,7 +42,7 @@ export function TestResult(props: {
   onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
   const lastTest = createMemo(() => {
-    const result = getLastResult();
+    const result = getResult()?.completedEvent ?? null;
     const eventLog = getFrozenLog();
     return result !== null && eventLog !== null ? { result, eventLog } : null;
   });
@@ -52,10 +52,7 @@ export function TestResult(props: {
     const el = resultEl();
     if (el === undefined) return;
 
-    void el.promiseAnimate({
-      opacity: [0, 1],
-      duration: applyReducedMotion(125),
-    });
+    // TestPage fades it in
     scrollToCenterOrTop(el.native);
   });
 
@@ -144,13 +141,18 @@ function LoginPrompt(): JSXElement {
 
 function RetrySavingButton(): JSXElement {
   return (
-    <Show when={resultState.canRetrySaving}>
+    <Show
+      when={(() => {
+        const status = getSaveStatus();
+        return status.state === "failed" && status.canRetry;
+      })()}
+    >
       <div class="grid w-full justify-center">
         <Button
           type="button"
           class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
           id="retrySavingResultButton"
-          onClick={() => void retrySavingResult()}
+          onClick={() => Engine.retrySave()}
           text="Retry saving result"
           fa={{ icon: "fa-redo" }}
         />

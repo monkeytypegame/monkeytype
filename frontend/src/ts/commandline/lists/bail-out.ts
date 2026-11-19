@@ -37,7 +37,7 @@ const subgroup: CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        void TestLogic.finish({ type: "bailedOut" });
+        TestLogic.finish({ type: "bailedOut" });
       },
       available: (): boolean => {
         return canBailOut();

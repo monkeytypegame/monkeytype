@@ -5,11 +5,12 @@ import { getConfig } from "../config/store";
 import Format from "../singletons/format";
 import * as TestWords from "../test/engine/test-words";
 import { secondsToString } from "../utils/date-and-time";
-import { getCurrentQuote, isFocusMode, isResultCalculating } from "./test";
+import { getCurrentQuote, isFocusMode } from "./test";
 import {
   getActiveWordIndex,
   isTestActive,
   getTestEnd,
+  getTestPhase,
   liveStats,
 } from "../test/engine/state";
 
@@ -81,9 +82,8 @@ export function getBarTarget(): {
   }
   // the active word index stops on the last word instead of going one past it,
   // so the word count alone tops out at (n-1)/n — fill the bar on finish.
-  // isResultCalculating flips on the first line of finish(); isResultScreen
-  // would be a fade-out too late, since the bar outlives the words fading out.
-  if (isResultCalculating() && getTestEnd()?.type !== "bailedOut") {
+  // finished: the bar outlives the words fading out
+  if (getTestPhase() === "finished" && getTestEnd()?.type !== "bailedOut") {
     return { width: "100vw", duration: 125 };
   }
   return {

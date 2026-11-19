@@ -9,7 +9,6 @@ import { focusInputElement } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getTestDirection,
-  isResultCalculating,
   isResultScreen,
   isTestRightToLeft,
   isWordsInputFocused,
@@ -1039,10 +1038,7 @@ export function createWordsLayout(options: {
   // while the input is focused, until the test ends. Hidden while resizing,
   // shown once the words are laid out
   const isCaretShown = (): boolean =>
-    isWordsInputFocused() &&
-    !isResultCalculating() &&
-    !isResultScreen() &&
-    !isResizing();
+    isWordsInputFocused() && !isResultScreen() && !isResizing();
   // shown again: it may have moved meanwhile
   createEffect(
     on(

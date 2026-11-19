@@ -7,7 +7,7 @@ import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import { isRestartAnimating, isResultCalculating } from "../../states/test";
+import { isRestartAnimating } from "../../states/test";
 import { getTestPhase, wordsHaveNewline } from "../../test/engine/state";
 import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
@@ -29,7 +29,8 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (isResultCalculating()) {
+  // finished: the finish keystroke froze the test
+  if (getTestPhase() === "finished") {
     return true;
   }
 

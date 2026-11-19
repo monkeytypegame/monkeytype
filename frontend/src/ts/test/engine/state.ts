@@ -6,6 +6,7 @@ import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import { EventLog } from "./events/types";
+import type { TestResult } from "./result";
 
 /**
  * Engine state: only this folder writes it. Everything else reads the signals
@@ -16,14 +17,12 @@ import { EventLog } from "./events/types";
 /**
  * - idle: words ready, waiting for the first keystroke
  * - active: typing, the timer runs
- * - finished: from the end of the words fade-out until a restart, passed or
- *   failed (see getTestEnd)
- * - restarting: from the restart's first fade-out until the new test is ready
+ * - finished: from finish() (the finish keystroke) until a restart, passed or
+ *   failed (see getTestEnd). The result follows a paint later (getResult)
+ * - restarting: from the restart request until the new test is generated
  */
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
-// T6c: finish/fail switch the phase on their first line, not after the words
-// fade-out.
 // setters exported for engine/commands only
 export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
@@ -106,26 +105,41 @@ export type TestEnd =
 /** How the test ended; null until it ends. */
 export const [getTestEnd, setTestEnd] = createSignal<TestEnd | null>(null);
 
-// ---- frozen log
+// ---- result
 
-let frozenLog: EventLog | null = null;
+// setters for engine/commands only
 const [getFrozenLog, setFrozenLog] = createSignal<EventLog | null>(null);
-/** The finished test's event log: the result's input. */
-export { getFrozenLog };
+/**
+ * The finished test's event log: the result's input. Published with the
+ * result, so readers never pair a new log with an old result.
+ */
+export { getFrozenLog, setFrozenLog };
 
-/** engine/commands only: finish() freezes the log here. */
-export function freezeLog(log: EventLog): void {
-  frozenLog = log;
+/**
+ * The last finished test's result: null from finish() until the engine built
+ * it, then kept until the next finish (a restart keeps it).
+ */
+export const [getResult, setResult] = createSignal<TestResult | null>(null);
+
+/** The test finished and its result isn't built yet. */
+export function isResultPending(): boolean {
+  return getTestPhase() === "finished" && getResult() === null;
 }
 
 /**
- * Publishes the log finish() froze. test-logic calls it in the batch that
- * sets the result, so readers never pair a new log with an old result.
- * T6c: the engine publishes it with its own result signal.
+ * Saving the last result: test-logic hands the engine its save
+ * (Engine.save); a restart goes back to idle.
  */
-export function publishFrozenLog(): void {
-  setFrozenLog(frozenLog);
-}
+export type SaveStatus =
+  | { state: "idle" }
+  | { state: "saving" }
+  | { state: "saved" }
+  | { state: "failed"; canRetry: boolean };
+
+// setter for engine/commands only
+export const [getSaveStatus, setSaveStatus] = createSignal<SaveStatus>({
+  state: "idle",
+});
 
 // ---- live stats
 

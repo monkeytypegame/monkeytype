@@ -45,8 +45,6 @@ type ResultState = {
   // id of the saved result, empty until the server accepts it
   resultId: string;
   dailyLeaderboardRank?: number;
-  canRetrySaving: boolean;
-  timeToday: string;
   crown: {
     visible: boolean;
     type: CrownType;
@@ -59,8 +57,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
   details: null,
   tags: [],
   resultId: "",
-  canRetrySaving: false,
-  timeToday: "",
   crown: {
     visible: false,
     type: "normal",

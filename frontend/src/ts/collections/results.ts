@@ -797,9 +797,26 @@ createRoot(() =>
 function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];
 }
+
 /**
- * Used for non reactive access. Do not use in Solid components.
+ * Seconds typed in results since `since` (a timestamp): incomplete tests
+ * included, afk time excluded.
  */
-export const __nonReactive = {
-  getResults,
-};
+export async function getSecondsTypedSinceOnce(since: number): Promise<number> {
+  if (!isAuthenticated()) return 0;
+  const results = await queryOnce((q) =>
+    q
+      .from({ r: resultsCollection })
+      .where(({ r }) => gte(r.timestamp, since))
+      .select(({ r }) => ({
+        testDuration: r.testDuration,
+        incompleteTestSeconds: r.incompleteTestSeconds,
+        afkDuration: r.afkDuration,
+      })),
+  );
+  return results.reduce(
+    (seconds, r) =>
+      seconds + r.testDuration + r.incompleteTestSeconds - r.afkDuration,
+    0,
+  );
+}

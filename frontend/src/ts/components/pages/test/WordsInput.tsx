@@ -5,6 +5,7 @@ import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
 import { Config, getConfig } from "../../../config/store";
 import { ModifierKeys } from "../../../constants/modifier-keys";
 import {
+  blurInputElement,
   registerInputElement,
   setInputElementValue,
 } from "../../../input/input-element";
@@ -20,6 +21,7 @@ import {
   onSelectionChange,
   preventDefault,
 } from "../../../input/listeners/misc";
+import { isResultShown } from "../../../states/result";
 import {
   isRealWordsInputShown,
   isResultScreen,
@@ -50,6 +52,16 @@ export function WordsInput(): JSXElement {
       getTestId,
       () => {
         if (inputRef !== undefined) setInputElementValue("");
+      },
+      { defer: true },
+    ),
+  );
+  // the result is shown: the test's input lets go of the focus
+  createEffect(
+    on(
+      isResultShown,
+      (shown) => {
+        if (shown && inputRef !== undefined) blurInputElement();
       },
       { defer: true },
     ),

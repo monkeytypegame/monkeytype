@@ -7,13 +7,18 @@ import {
   buildEventLog,
   cleanupData,
   forceReleaseAllKeys,
+  freezeEvents,
   logEventsDataToTheConsoleTable,
   resetTestEvents,
 } from "./events/data";
-import { EventLog } from "./events/types";
+import { afterPaint } from "./after-paint";
+import { buildResult } from "./result";
 import {
-  freezeLog,
   clearLiveStats,
+  getSaveStatus,
+  setFrozenLog,
+  setResult,
+  setSaveStatus,
   getActiveWordIndex,
   isTestActive,
   setTestEnd,
@@ -44,27 +49,77 @@ export function start(): void {
   });
 }
 
-/**
- * The test is ending: records how, before the words fade out (the words
- * progress bar reads it at once). T6c: part of finish(), on its first line.
- */
-export function recordEnd(end: TestEnd): void {
-  setTestEnd(end);
-}
+// counts finishes: a result built for an older one is dropped
+let finishCount = 0;
 
 /**
- * Freezes the test: force-releases held keys, switches to finished and builds
- * the frozen log. Doesn't publish it: see publishFrozenLog().
+ * Ends the test, synchronously: stops the timer, force-releases held keys and
+ * freezes the log (later events are dropped), then switches to finished. The
+ * result is built after the next paint, so the words' fade-out can start
+ * first (getResult; isResultPending until then).
  */
-export function finish(): EventLog {
-  // T6c: runs on finish()'s first line and drops events logged after it
+export function finish(end: TestEnd): void {
+  if (!isTestActive()) return;
+  TestTimer.clear(true, performance.now());
   forceReleaseAllKeys();
-  setTestPhase("finished");
-  cleanupData();
-  if (isDevEnvironment()) logEventsDataToTheConsoleTable();
-  const log = buildEventLog();
-  freezeLog(log);
-  return log;
+  freezeEvents();
+  batch(() => {
+    setTestEnd(end);
+    setResult(null);
+    setTestPhase("finished");
+  });
+  const token = ++finishCount;
+  afterPaint(() => {
+    if (token !== finishCount || getTestPhase() !== "finished") return;
+    cleanupData();
+    if (isDevEnvironment()) logEventsDataToTheConsoleTable();
+    const log = buildEventLog();
+    const result = buildResult(log, end);
+    batch(() => {
+      setFrozenLog(log);
+      setResult(result);
+    });
+  });
+}
+
+// the last save, kept for a retry
+let saveRun: ((isRetrying: boolean) => Promise<SaveOutcome>) | undefined;
+
+/** How a save went: canRetry when the server may accept it later. */
+export type SaveOutcome = { saved: true } | { saved: false; canRetry: boolean };
+
+/**
+ * Saves the last result with `run` (test-logic's request) without awaiting
+ * it, and keeps `run` for retrySave(). getSaveStatus() follows it.
+ */
+export function save(run: (isRetrying: boolean) => Promise<SaveOutcome>): void {
+  saveRun = run;
+  void runSave(run, false);
+}
+
+/** Retries the last save. False when there's nothing to retry. */
+export function retrySave(): boolean {
+  const status = getSaveStatus();
+  if (saveRun === undefined || status.state !== "failed" || !status.canRetry) {
+    return false;
+  }
+  void runSave(saveRun, true);
+  return true;
+}
+
+async function runSave(
+  run: (isRetrying: boolean) => Promise<SaveOutcome>,
+  isRetrying: boolean,
+): Promise<void> {
+  setSaveStatus({ state: "saving" });
+  const outcome = await run(isRetrying);
+  // a restart meanwhile cleared it
+  if (saveRun !== run) return;
+  setSaveStatus(
+    outcome.saved
+      ? { state: "saved" }
+      : { state: "failed", canRetry: outcome.canRetry },
+  );
 }
 
 /** Resets the test's data. Phase: active → idle (finished stays until a restart). */
@@ -75,7 +130,9 @@ export function reset(): void {
     if (isTestActive()) setTestPhase("idle");
     setTestEnd(null);
     setKoreanStatus(false);
+    setSaveStatus({ state: "idle" });
   });
+  saveRun = undefined;
 }
 
 // ---- restart
