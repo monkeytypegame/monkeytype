@@ -247,6 +247,10 @@
     --untyped-letter-color: var(--main-color);
     --incorrect-letter-color: var(--colorful-error-color);
     --extra-letter-color: var(--colorful-error-extra-color);
+    // blind resets the error border; outranks the flipped error border below
+    &.blind .word.error {
+      border-bottom: 2px solid transparent;
+    }
   }
 
   &.highlight-off {
