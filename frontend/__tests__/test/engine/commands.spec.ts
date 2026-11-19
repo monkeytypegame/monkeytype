@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { CustomTextSettings } from "@monkeytype/schemas/results";
 
 import * as Engine from "../../../src/ts/test/engine/commands";
 import {
   clearLiveStats,
   getActiveWordIndex,
   getFrozenLog,
+  getRestartOptions,
   getTestId,
   getTestPhase,
   getTestEnd,
@@ -18,13 +18,6 @@ import {
   setTestPhase,
 } from "../../../src/ts/test/engine/state";
 import { logTestEvent } from "../../../src/ts/test/engine/events/data";
-
-const customText: CustomTextSettings = {
-  text: [],
-  mode: "repeat",
-  limit: { mode: "word", value: 0 },
-  pipeDelimiter: false,
-};
 
 function frame(): void {
   vi.advanceTimersToNextFrame();
@@ -101,9 +94,7 @@ describe("engine", () => {
       expect(Engine.isCurrentRestart(first)).toBe(false);
       expect(Engine.commitRestart(first)).toBe(false);
       expect(getTestPhase()).toBe("restarting");
-      expect(
-        Engine.takeTestSettingsForRestart(customText).withSameWordset,
-      ).toBe(true);
+      expect(getRestartOptions().withSameWordset).toBe(true);
       expect(Engine.commitRestart(second)).toBe(true);
       expect(getTestPhase()).toBe("idle");
     });

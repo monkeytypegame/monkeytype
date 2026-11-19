@@ -85,6 +85,7 @@ import {
 import {
   clearLiveStats,
   getActiveWordIndex,
+  getRestartOptions,
   getTestEnd,
   getTestPhase,
   isTestActive,
@@ -99,12 +100,7 @@ import { changeRequiresRestart } from "../config/metadata";
 import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
-import {
-  fadeOutForFinish,
-  focusWordsEvent,
-  isTestPageMounted,
-  testRestartedEvent,
-} from "./test-page-bridge";
+import { fadeOutForFinish, isTestPageMounted } from "./test-page-bridge";
 import { configEvent } from "../events/config";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
@@ -249,6 +245,8 @@ export function leaveTestPage(): void {
 }
 
 type RestartRequestOptions = Partial<RestartOptions> & {
+  /** Practise missed words: keeps the practise settings. */
+  practiseMissed?: boolean;
   nosave?: boolean;
   event?: KeyboardEvent;
   isQuickRestart?: boolean;
@@ -393,14 +391,10 @@ function requestRestart(options: RestartRequestOptions): void {
   void prepareRestart(
     Engine.requestRestart({
       withSameWordset,
-      practiseMissed: options.practiseMissed,
       noAnim: options.noAnim,
     }),
   );
 }
-
-// whether the last committed restart generated a test (init didn't give up)
-let restartGenerated = false;
 
 /**
  * Generates the new test for the restart holding `token`, while TestPage
@@ -423,7 +417,10 @@ async function prepareRestart(token: number): Promise<void> {
     }
   }
 
-  restartGenerated = initResult === "ok";
+  if (initResult === "ok") {
+    setTestInitFailed(false);
+    setTestInitError(null);
+  }
   // TestPage swaps it in (showRestartedTest) once the old test faded out
   Engine.commitRestart(token);
 }
@@ -433,8 +430,7 @@ async function prepareRestart(token: number): Promise<void> {
  * the new test while hidden. Outside effects and batches: replaceWords
  * measures the new words as they render.
  */
-export function showRestartedTest(source: "testPage" | "resultPage"): void {
-  if (!restartGenerated) return;
+export function showRestartedTest(): void {
   setInputElementValue("");
   setResultShown(false);
   setTypingTestHidden(false);
@@ -442,15 +438,9 @@ export function showRestartedTest(source: "testPage" | "resultPage"): void {
   setFocusMode(false);
   clearLiveStats();
   setLayoutfluidTimerVisible(false);
-  setTestInitFailed(false);
-  setTestInitError(null);
-  // while hidden: focusing restarts the caret's blink. Input waits for the
-  // fade-in (isRestartShowing)
-  focusWordsEvent.dispatch({ force: true });
   if (!isOnline()) {
     showOfflineBanner();
   }
-  testRestartedEvent.dispatch(source);
   replaceWords(
     getTestSettings().mode === "zen"
       ? [{ display: "" }]
@@ -614,9 +604,8 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
 
   // the words are generated from the settings as they are now: a settings
   // change from here on supersedes this generation
-  const { withSameWordset } = Engine.takeTestSettingsForRestart(
-    CustomText.getData(),
-  );
+  Engine.retakeTestSettings(CustomText.getData());
+  const { withSameWordset } = getRestartOptions();
   setIsRepeated(withSameWordset);
   setIsPaceRepeat(Config.repeatedPace && withSameWordset);
 

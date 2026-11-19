@@ -13,6 +13,7 @@ import { Config, getConfig } from "../../../config/store";
 import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
+import * as MonkeyPower from "../../../elements/monkey-power";
 import { getCustomTextIndicator } from "../../../states/core";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
@@ -50,7 +51,6 @@ import {
   focusWordsEvent,
   markTestPageMounted,
   registerFinishFadeOut,
-  testRestartedEvent,
 } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
@@ -210,7 +210,24 @@ export function TestPage(): JSXElement {
       return;
     }
     display = "in";
-    showRestartedTest(source);
+    // init gave up: TestInitFailed shows instead
+    if (!untrack(isTestInitFailed)) {
+      showRestartedTest();
+      // while hidden: focusing restarts the caret's blink. Input waits for
+      // the fade-in (isRestartShowing)
+      focusWordsEvent.dispatch({ force: true });
+      // the restart's side effects
+      ResultWordHighlight.destroy();
+      if (source === "resultPage") {
+        if (Config.randomTheme !== "off") {
+          void ThemeController.randomizeTheme();
+        }
+        skipBreakdownEvent.dispatch();
+      }
+      AdController.destroyResult();
+      void SoundController.clearAllSounds();
+      MonkeyPower.reset();
+    }
     // fade hides the test synchronously, before the new words paint
     await fade(typingTestRef, "in", untrack(getRestartOptions).noAnim);
     // a restart began meanwhile: it fades the test out again
@@ -248,18 +265,6 @@ export function TestPage(): JSXElement {
   focusWordsEvent.useListener(() => {
     if (isTestActive()) return;
     Misc.scrollToCenterOrTop(typingTestRef ?? null);
-  });
-
-  testRestartedEvent.useListener((source) => {
-    ResultWordHighlight.destroy();
-    if (source === "resultPage") {
-      if (Config.randomTheme !== "off") {
-        void ThemeController.randomizeTheme();
-      }
-      skipBreakdownEvent.dispatch();
-    }
-    AdController.destroyResult();
-    void SoundController.clearAllSounds();
   });
 
   createEffect(
