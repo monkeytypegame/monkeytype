@@ -78,12 +78,9 @@ import {
   setCompositionData,
   highlightKeymapKey,
   setFocusMode,
-  setLayoutfluidTimerVisible,
   setTestFocusState,
-  setWordsInputPosition,
 } from "../states/test";
 import {
-  clearLiveStats,
   getActiveWordIndex,
   getRestartOptions,
   getTestEnd,
@@ -95,7 +92,11 @@ import {
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
-import { TEST_SETTINGS_KEYS, getTestSettings } from "./engine/test-settings";
+import {
+  TEST_SETTINGS_KEYS,
+  getTestSettings,
+  takeTestSettings,
+} from "./engine/test-settings";
 import { changeRequiresRestart } from "../config/metadata";
 import "./timer-effects";
 import * as TestWords from "./engine/test-words";
@@ -133,7 +134,7 @@ import {
   setResultState,
   setCrownType,
 } from "../states/result";
-import { blurInputElement, setInputElementValue } from "../input/input-element";
+import { blurInputElement } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config, getConfig } from "../config/store";
@@ -162,11 +163,7 @@ import { calculateWpm } from "../utils/numbers";
 import { EventLog } from "./engine/events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
-import {
-  appendRenderedWord,
-  replaceWords,
-  resetWordsRender,
-} from "../states/words-render";
+import { appendRenderedWord, resetWordsRender } from "../states/words-render";
 
 let slowTimerNotificationIds: number[] = [];
 
@@ -425,33 +422,6 @@ async function prepareRestart(token: number): Promise<void> {
   Engine.commitRestart(token);
 }
 
-/**
- * TestPage, once the old test has faded out and the restart committed: shows
- * the new test while hidden. Outside effects and batches: replaceWords
- * measures the new words as they render.
- */
-export function showRestartedTest(): void {
-  setInputElementValue("");
-  setResultShown(false);
-  setTypingTestHidden(false);
-  setWordsInputPosition((position) => ({ ...position, left: 0 }));
-  setFocusMode(false);
-  clearLiveStats();
-  setLayoutfluidTimerVisible(false);
-  if (!isOnline()) {
-    showOfflineBanner();
-  }
-  replaceWords(
-    getTestSettings().mode === "zen"
-      ? [{ display: "" }]
-      : TestWords.words.get(),
-    {
-      activeWordIndex: getActiveWordIndex(),
-      zen: getTestSettings().mode === "zen",
-    },
-  );
-}
-
 // Changing a test setting restarts the test: one restart, however many
 // change (a preset applies them in one batch). T7: moves into the engine with
 // the request steps above.
@@ -604,7 +574,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
 
   // the words are generated from the settings as they are now: a settings
   // change from here on supersedes this generation
-  Engine.retakeTestSettings(CustomText.getData());
+  takeTestSettings(CustomText.getData());
   const { withSameWordset } = getRestartOptions();
   setIsRepeated(withSameWordset);
   setIsPaceRepeat(Config.repeatedPace && withSameWordset);
@@ -1470,22 +1440,6 @@ export function repeatTest(): void {
   void restartTest({
     withSameWordset: true,
   });
-}
-
-/**
- * Little roadblock for basic cheating - restarts an unstarted test.
- * TestPage calls this when the window regains focus or becomes visible.
- */
-export function restartIfNotStarted(): void {
-  if (
-    !isTestActive() &&
-    !isResultScreen() &&
-    (getTestSettings().mode === "time" || getTestSettings().mode === "words")
-  ) {
-    void restartTest({
-      noAnim: true,
-    });
-  }
 }
 
 // ===============================
