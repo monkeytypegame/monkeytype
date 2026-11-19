@@ -45,7 +45,7 @@ import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
   setKoreanStatus,
-  setLastEventLog,
+  setFrozenLog,
   setIsTestRestarting,
   isTestRestarting,
   getCurrentQuote,
@@ -953,7 +953,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   batch(() => {
-    setLastEventLog(eventLog);
+    setFrozenLog(eventLog);
     setLastResult(structuredClone(completedEvent));
   });
 

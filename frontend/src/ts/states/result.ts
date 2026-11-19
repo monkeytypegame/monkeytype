@@ -7,7 +7,7 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { showSuccessNotification } from "./notifications";
 
 /**
- * State of the result screen that can't be derived from getLastResult() / getLastEventLog().
+ * State of the result screen that can't be derived from getLastResult() / getFrozenLog().
  * The test engine (test/test-logic) is still vanilla and writes here.
  */
 

@@ -401,6 +401,4 @@ export function getTestDirection(): Direction {
 
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
-export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
-  null,
-);
+export const [getFrozenLog, setFrozenLog] = createSignal<EventLog | null>(null);

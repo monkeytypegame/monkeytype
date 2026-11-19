@@ -3,7 +3,7 @@ import { createStore, produce } from "solid-js/store";
 import * as Sound from "../../../../controllers/sound-controller";
 import * as Arrays from "../../../../utils/arrays";
 import { Config } from "../../../../config/store";
-import { getLastEventLog } from "../../../../states/test";
+import { getFrozenLog } from "../../../../states/test";
 import {
   getEventsForWord,
   getInputFromDom,
@@ -288,7 +288,7 @@ function loadOldReplay(): number {
 
 export function toggleReplayDisplay(): void {
   if (!replayState.open) {
-    const eventLog = getLastEventLog();
+    const eventLog = getFrozenLog();
     if (eventLog === null) return;
     loaded = {
       words: getWordsList(eventLog),

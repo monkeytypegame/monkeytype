@@ -4,11 +4,7 @@ import { z } from "zod";
 
 import { Config } from "../config/store";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
-import {
-  getKoreanStatus,
-  getLastEventLog,
-  isTestFinished,
-} from "../states/test";
+import { getKoreanStatus, getFrozenLog, isTestFinished } from "../states/test";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -173,7 +169,7 @@ export function toggleResultWords(noAnimation = false): void {
 }
 
 export async function copyWordsList(): Promise<void> {
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
@@ -189,7 +185,7 @@ export async function copyWordsList(): Promise<void> {
 }
 
 export async function copyMissedWordsList(): Promise<void> {
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return;
   let words;
   if (Config.mode === "zen") {
@@ -201,7 +197,7 @@ export async function copyMissedWordsList(): Promise<void> {
 }
 
 export function copySlowWordsList(): void {
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return;
 
   const burstHistory = getWordBurstHistory(eventLog);

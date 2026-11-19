@@ -17,7 +17,7 @@ import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
-import { getLastEventLog, getLastResult } from "../../../../states/test";
+import { getFrozenLog, getLastResult } from "../../../../states/test";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
 import { registerFade } from "../../../../test/test-page-bridge";
 import { cn } from "../../../../utils/cn";
@@ -48,7 +48,7 @@ export function TestResult(): JSXElement {
 
   const lastTest = createMemo(() => {
     const result = getLastResult();
-    const eventLog = getLastEventLog();
+    const eventLog = getFrozenLog();
     return result !== null && eventLog !== null ? { result, eventLog } : null;
   });
 

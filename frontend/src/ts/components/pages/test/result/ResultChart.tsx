@@ -37,7 +37,7 @@ import {
   isResultShown,
   resultState,
 } from "../../../../states/result";
-import { CompletedResult, getLastEventLog } from "../../../../states/test";
+import { CompletedResult, getFrozenLog } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
@@ -377,7 +377,7 @@ let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
 
 function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
   if (prevTooltipItem === ti) return "";
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return "";
 
   prevTooltipItem = ti;

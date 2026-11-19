@@ -65,7 +65,7 @@ import {
   type SyncKind,
 } from "../../states/event-log-viewer";
 import { hideModal } from "../../states/modals";
-import { getLastEventLog } from "../../states/test";
+import { getFrozenLog } from "../../states/test";
 import { getTheme } from "../../states/theme";
 import { getInputFromDom } from "../../test/events/helpers";
 import {
@@ -321,7 +321,7 @@ export function EventLogViewerModal(): JSXElement {
   const onShow = (): void => loadFrom(raw());
 
   const onLoadLatest = (): void => {
-    const log = getLastEventLog();
+    const log = getFrozenLog();
     if (log === null) {
       setError("No event log available - complete a test first");
       return;
