@@ -100,7 +100,7 @@ import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import {
-  fadeTest,
+  fadeOutForFinish,
   focusWordsEvent,
   isTestPageMounted,
   testRestartedEvent,
@@ -949,7 +949,7 @@ export async function finish(
   // fade out the test and show loading
   // because the css animation has a delay,
   // if the test calculation is fast the loading will not show
-  await fadeTest("typingTest", "out", false);
+  await fadeOutForFinish();
   setTypingTestHidden(true);
   setResultLoading(true);
   await Misc.sleep(0); //allow ui update

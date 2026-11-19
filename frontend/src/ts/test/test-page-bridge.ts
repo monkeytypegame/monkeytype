@@ -25,36 +25,26 @@ export function isTestPageMounted(): boolean {
   return getMountSignal() !== undefined;
 }
 
-// TestPage runs the restart fades itself, the engine never waits for them.
-// T6c: the finish fade too, and this goes.
-export type FadeTarget = "typingTest" | "result";
+// T6c: removed. The finish fade-out follows the phase in TestPage, which runs
+// all the other fades itself; finish() awaits this one until then.
+let finishFadeOut: ((duration: number) => Promise<void>) | undefined;
 
-/** Animates the target's element; resolves when the animation ends. */
-export type Fade = (direction: "in" | "out", duration: number) => Promise<void>;
-
-const fades = new Map<FadeTarget, Fade>();
-
-/** Registers the fade for `target`. Returns the unregister function. */
-export function registerFade(target: FadeTarget, fade: Fade): () => void {
-  fades.set(target, fade);
+/** TestPage: registers the words' fade-out on finish. Returns the unregister function. */
+export function registerFinishFadeOut(
+  fade: (duration: number) => Promise<void>,
+): () => void {
+  finishFadeOut = fade;
   return () => {
-    if (fades.get(target) === fade) fades.delete(target);
+    if (finishFadeOut === fade) finishFadeOut = undefined;
   };
 }
 
-/**
- * Fades `target` in or out. Resolves when the animation ends, or at once
- * when nothing renders the target.
- */
-export async function fadeTest(
-  target: FadeTarget,
-  direction: "in" | "out",
-  noAnim: boolean,
-): Promise<void> {
-  await fades.get(target)?.(direction, noAnim ? 0 : applyReducedMotion(125));
+/** Fades the words out on finish; resolves at once when TestPage isn't mounted. */
+export async function fadeOutForFinish(): Promise<void> {
+  await finishFadeOut?.(applyReducedMotion(125));
 }
 
-// test-logic's dispatch goes once TestPage focuses on the restart's stage;
+// test-logic's dispatch goes once TestPage focuses on its own swap;
 // the event then moves into TestPage, for WordsInput's autofocus and the
 // wrapper click (no roadmap row yet).
 /**

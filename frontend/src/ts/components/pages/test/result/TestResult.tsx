@@ -1,14 +1,6 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import {
-  createMemo,
-  JSXElement,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
+import { createMemo, JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
@@ -20,7 +12,6 @@ import { resultState } from "../../../../states/result";
 import { getLastResult } from "../../../../states/test";
 import { getFrozenLog } from "../../../../test/engine/state";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
-import { registerFade } from "../../../../test/test-page-bridge";
 import { cn } from "../../../../utils/cn";
 import {
   applyReducedMotion,
@@ -42,7 +33,10 @@ import { ResultWordsHistory } from "./ResultWordsHistory";
 const INTERACTIVE_SELECTOR =
   'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
 
-export function TestResult(): JSXElement {
+export function TestResult(props: {
+  /** the result element: TestPage fades it out on restart */
+  ref?: (el: HTMLDivElement) => void;
+}): JSXElement {
   let prefocusRef: HTMLDivElement | undefined;
 
   onMount(() => prefocusRef?.focus({ preventScroll: true }));
@@ -65,19 +59,13 @@ export function TestResult(): JSXElement {
     scrollToCenterOrTop(el.native);
   });
 
-  // restartTest fades it out
-  const unregisterFade = registerFade("result", async (direction, duration) => {
-    await resultEl()?.promiseAnimate({
-      opacity: direction === "in" ? [0, 1] : 0,
-      duration,
-    });
-  });
-  onCleanup(unregisterFade);
-
   return (
     <div
       id="result"
-      ref={resultRef}
+      ref={(el) => {
+        resultRef(el);
+        props.ref?.(el);
+      }}
       class={cn("content-grid full-width")}
       onClick={(e) => {
         // a click on plain content drops focus to the body, and Tab would
