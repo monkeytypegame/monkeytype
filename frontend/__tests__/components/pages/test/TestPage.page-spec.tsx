@@ -294,6 +294,31 @@ describe("TestPage", () => {
       expect(page.phase()).toBe("ready");
     });
 
+    it("restarts once for a second request while the new test fades in", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      // past the fade-out: the new test is generated
+      await page.advance(130);
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.restarts()).toBe(1);
+      expect(page.phase()).toBe("ready");
+    });
+
+    it("restarts again for a settings change after the new words are generated", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      await page.advance(130);
+      page.setConfig("mode", "time");
+      await page.advance(1000);
+
+      expect(page.testSettings().mode).toBe("time");
+      expect(page.phase()).toBe("ready");
+    });
+
     it("keeps the result on screen until it has faded out", async () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
       await page.type("the fox");
