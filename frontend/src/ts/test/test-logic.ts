@@ -381,8 +381,8 @@ async function prepareRestart(token: number): Promise<void> {
 }
 
 // Changing a test setting restarts the test: one restart, however many
-// change (a preset applies them in one batch). T7: moves into the engine with
-// the request steps above.
+// change (a preset applies them in one batch). Moves into the engine with the
+// request steps above (no roadmap row yet).
 createRoot(() => {
   for (const key of TEST_SETTINGS_KEYS) {
     // serialized, so changes inside arrays (funbox, quote length) count
