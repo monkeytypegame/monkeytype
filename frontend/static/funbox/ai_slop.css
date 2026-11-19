@@ -1,12 +1,14 @@
 /*
  * AI slop funbox: makes the site look like a website an AI would generate.
  * Everything gets a border, a neon glow and hover animations, and aurora
- * blobs drift behind the page.
+ * blobs drift behind the page with a scroll parallax, where scroll-driven
+ * animations are supported.
  *
  * All colors are color-mix()ed from the active theme's root variables, so
- * any theme works. Animations are silenced by the global
- * prefers-reduced-motion rule (media-queries.scss) unless the body carries
- * .ignore-reduced-motion.
+ * any theme works. Hover/focus animations are silenced by the global
+ * prefers-reduced-motion rule (media-queries.scss); the blobs live on the
+ * body's own pseudo, which that rule does not cover, so they get their own
+ * block below.
  */
 
 body.aismode {
@@ -50,6 +52,38 @@ body.aismode::before {
       transparent 70%
     );
   animation: ai-slop-blobs 30s ease-in-out infinite alternate;
+}
+
+/*
+ * Scroll parallax: the fixed blobs shift up with the scroll, so they appear
+ * to move slower than the content. Capped at 3000px of scroll so short pages
+ * don't get a fast drift; older browsers without scroll-driven animations
+ * just get the drift above.
+ */
+@supports (animation-timeline: scroll()) {
+  body.aismode::before {
+    animation:
+      ai-slop-blobs 30s ease-in-out infinite alternate,
+      ai-slop-parallax 1s linear;
+    animation-timeline: auto, scroll();
+    animation-range:
+      normal,
+      0 3000px;
+    animation-fill-mode: none, forwards;
+  }
+}
+
+@keyframes ai-slop-parallax {
+  to {
+    translate: 0 -7rem;
+  }
+}
+
+/* the body's own pseudo is not covered by the global rule above */
+@media (prefers-reduced-motion) {
+  body.aismode::before {
+    animation: none;
+  }
 }
 
 @keyframes ai-slop-blobs {
