@@ -13,6 +13,7 @@ import {
 import { EventLog } from "./events/types";
 import {
   freezeLog,
+  clearLiveStats,
   getActiveWordIndex,
   isTestActive,
   setTestEnd,
@@ -27,8 +28,6 @@ import {
   type TestEnd,
 } from "./state";
 import * as TestTimer from "./test-timer";
-import { takeTestSettings } from "./test-settings";
-import type { CustomTextSettings } from "@monkeytype/schemas/results";
 
 // The engine's lifecycle commands. Kept apart from ./state, which the timer
 // and the EventLog import, so the imports don't cycle.
@@ -116,16 +115,9 @@ export function commitRestart(token: number): boolean {
   batch(() => {
     setTestId((id) => id + 1);
     setTestPhase("idle");
+    clearLiveStats();
   });
   return true;
-}
-
-/**
- * test-logic, right before it generates the words: retakes the test
- * settings (config plus `customText`).
- */
-export function retakeTestSettings(customText: CustomTextSettings): void {
-  takeTestSettings(customText);
 }
 
 /**

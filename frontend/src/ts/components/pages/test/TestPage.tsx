@@ -14,11 +14,12 @@ import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
+import { isOnline, showOfflineBanner } from "../../../states/connection";
 import { getCustomTextIndicator } from "../../../states/core";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { isResultShown } from "../../../states/result";
+import { isResultShown, setResultShown } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
@@ -29,23 +30,29 @@ import {
   isTypingTestHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
+  setFocusMode,
+  setLayoutfluidTimerVisible,
   setRestartShowing,
   setResultLeaving,
+  setTypingTestHidden,
+  setWordsInputPosition,
   setTestFocusState,
 } from "../../../states/test";
+import { replaceWords } from "../../../states/words-render";
 import * as CustomText from "../../../test/custom-text";
 import {
+  getActiveWordIndex,
   getRestartOptions,
   getTestId,
   getTestPhase,
   isTestActive,
 } from "../../../test/engine/state";
+import { getTestSettings } from "../../../test/engine/test-settings";
+import * as TestWords from "../../../test/engine/test-words";
 import {
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
-  restartIfNotStarted,
-  showRestartedTest,
 } from "../../../test/test-logic";
 import {
   focusWordsEvent,
@@ -182,6 +189,38 @@ export function TestPage(): JSXElement {
     }),
   );
 
+  /**
+   * Shows the restarted test while hidden. Outside effects and batches:
+   * replaceWords measures the new words as they render.
+   */
+  const showNewTest = (): void => {
+    setResultShown(false);
+    setTypingTestHidden(false);
+    setWordsInputPosition((position) => ({ ...position, left: 0 }));
+    setFocusMode(false);
+    setLayoutfluidTimerVisible(false);
+    if (!isOnline()) showOfflineBanner();
+    const zen = getTestSettings().mode === "zen";
+    replaceWords(zen ? [{ display: "" }] : TestWords.words.get(), {
+      activeWordIndex: getActiveWordIndex(),
+      zen,
+    });
+  };
+
+  /**
+   * Little roadblock for basic cheating: restarts an unstarted test when the
+   * window regains focus or becomes visible.
+   */
+  const restartIfNotStarted = (): void => {
+    if (
+      !isTestActive() &&
+      !isResultScreen() &&
+      (getTestSettings().mode === "time" || getTestSettings().mode === "words")
+    ) {
+      void restartTest({ noAnim: true });
+    }
+  };
+
   // Restart display: the engine generates at once; this fades out what's on
   // screen, then swaps the new test in (hidden) once the restart committed,
   // and fades it in. A restart during the fade-out shows only its own result.
@@ -212,7 +251,7 @@ export function TestPage(): JSXElement {
     display = "in";
     // init gave up: TestInitFailed shows instead
     if (!untrack(isTestInitFailed)) {
-      showRestartedTest();
+      showNewTest();
       // while hidden: focusing restarts the caret's blink. Input waits for
       // the fade-in (isRestartShowing)
       focusWordsEvent.dispatch({ force: true });

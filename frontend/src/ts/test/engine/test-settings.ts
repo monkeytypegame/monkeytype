@@ -85,8 +85,8 @@ export function getTestSettings(): Readonly<TestSettings> {
 }
 
 /**
- * engine/commands only: retakes the test settings from config and the custom
- * text, right before the words are generated.
+ * The restart's generation only (test-logic init): retakes the test settings
+ * from config and the custom text, right before the words are generated.
  */
 export function takeTestSettings(customText: CustomTextSettings): void {
   setTestSettings(reconcile(snapshot(customText)));
