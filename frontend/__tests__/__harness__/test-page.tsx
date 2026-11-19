@@ -58,20 +58,23 @@ import {
   RegisteredRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { createEffect, createRoot } from "solid-js";
+import { createEffect, createRoot, on } from "solid-js";
 import { vi } from "vitest";
 
 import type { WordStatus } from "../../src/ts/components/pages/test/Word";
 import type { LetterStatus } from "../../src/ts/components/pages/test/WordLetter";
 
 import { TestPage } from "../../src/ts/components/pages/test/TestPage";
+import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
 import { isResultCalculating, isResultScreen } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
+import { getTestSettings } from "../../src/ts/test/engine/test-settings";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
+import { restartTest } from "../../src/ts/test/test-logic";
 
 // tests check the rendered DOM itself, not the registry's refs, so they
 // query letters directly (spec Q33 exempts tests)
@@ -131,7 +134,7 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 // draws on a canvas, which jsdom lacks
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
 
-export type PagePhase = "ready" | "active" | "finished";
+export type PagePhase = "ready" | "active" | "finished" | "restarting";
 
 export type RenderTestPageOptions = {
   /** The test shows exactly these words, in order (a custom test). */
@@ -156,6 +159,14 @@ export type TestPageHarness = {
     isActive: boolean;
   };
   phase: () => PagePhase;
+  /** Restarts begun since the page got ready. */
+  restarts: () => number;
+  /** Requests a restart, as the restart button. */
+  restart: () => void;
+  /** Sets a config key, as the settings UI. */
+  setConfig: typeof setConfig;
+  /** The settings the current test was generated with. */
+  testSettings: typeof getTestSettings;
   caret: () => { shown: boolean };
   paceCaret: () => {
     shown: boolean;
@@ -226,6 +237,21 @@ export async function renderTestPage(
   // the live stats and the render flush on the next frame
   await frame();
 
+  let restarts = 0;
+  stopCountingRestarts?.();
+  stopCountingRestarts = createRoot((dispose) => {
+    createEffect(
+      on(
+        () => getTestPhase() === "restarting",
+        (restarting) => {
+          if (restarting) restarts++;
+        },
+        { defer: true },
+      ),
+    );
+    return dispose;
+  });
+
   const wordElement = (index: number): Element => {
     const el = container.querySelector(
       `#words [data-ui-element="word"][data-wordindex="${index}"]`,
@@ -281,7 +307,13 @@ export async function renderTestPage(
         ? "finished"
         : getTestPhase() === "active"
           ? "active"
-          : "ready",
+          : getTestPhase() === "restarting"
+            ? "restarting"
+            : "ready",
+    restarts: () => restarts,
+    restart: () => void restartTest(),
+    setConfig,
+    testSettings: getTestSettings,
     caret: () => ({ shown: isShown("caret") }),
     paceCaret: () => {
       const target = paceCaretTarget();
@@ -304,8 +336,12 @@ export async function renderTestPage(
   };
 }
 
+let stopCountingRestarts: (() => void) | undefined;
+
 /** Unmounts the page, ending its test. */
 export async function cleanupTestPage(): Promise<void> {
+  stopCountingRestarts?.();
+  stopCountingRestarts = undefined;
   // a finishing test can't be stopped: let it finish
   for (let i = 0; i < 100 && isResultCalculating(); i++) await frame();
   cleanup();

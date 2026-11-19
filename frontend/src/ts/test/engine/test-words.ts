@@ -116,7 +116,7 @@ type ReadonlyWords = {
 
 const list = new Words();
 
-/** The test's words. Read-only: written through the commands below. Not reactive (T6b). */
+/** The test's words. Read-only: written through the commands below. Not reactive: a restart regenerates them. */
 export const words: ReadonlyWords = list;
 
 export function pushWord(word: string, sectionIndex: number): Word {

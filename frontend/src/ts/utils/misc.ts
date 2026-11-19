@@ -187,7 +187,7 @@ export async function swapElements(
 }
 
 export function getMode2<M extends keyof PersonalBests>(
-  config: Config,
+  config: Pick<Config, "mode" | "time" | "words">,
   randomQuote: { id: number } | null,
 ): Mode2<M> {
   const mode = config.mode;

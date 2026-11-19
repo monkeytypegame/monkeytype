@@ -1,3 +1,4 @@
+import { getTestSettings } from "./engine/test-settings";
 import * as TestWords from "./engine/test-words";
 import { Config } from "../config/store";
 import { getLocalPB } from "../queries/user";
@@ -61,29 +62,29 @@ export function setLastTestWpm(wpm: number): void {
 
 export async function init(): Promise<void> {
   setPaceCaretTarget(undefined);
-  const mode2 = Misc.getMode2(Config, getCurrentQuote());
+  const mode2 = Misc.getMode2(getTestSettings(), getCurrentQuote());
   let wpm = 0;
   if (Config.paceCaret === "pb") {
     wpm =
       getLocalPB(
-        Config.mode,
+        getTestSettings().mode,
         mode2,
-        Config.punctuation,
-        Config.numbers,
-        Config.language,
-        Config.difficulty,
-        Config.lazyMode,
+        getTestSettings().punctuation,
+        getTestSettings().numbers,
+        getTestSettings().language,
+        getTestSettings().difficulty,
+        getTestSettings().lazyMode,
         getActiveFunboxes(),
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
     wpm = getActiveTagsPB(
-      Config.mode,
+      getTestSettings().mode,
       mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
+      getTestSettings().punctuation,
+      getTestSettings().numbers,
+      getTestSettings().language,
+      getTestSettings().difficulty,
+      getTestSettings().lazyMode,
     );
   } else if (Config.paceCaret === "average") {
     wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);

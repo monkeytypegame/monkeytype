@@ -80,8 +80,9 @@ export const [
   resetActiveWordIndex: (set) => set(0),
 });
 
-// Facts about the generated words. Words aren't reactive (T6b regenerates
-// them from the test settings), so these are set with them, not derived.
+// Facts about the generated words. Words aren't reactive (a restart
+// regenerates them from the test settings), so these are set with them, not
+// derived.
 const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
 const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);

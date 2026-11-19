@@ -254,8 +254,8 @@ const mt = {
   /** The config store object, not a function: `getConfig.fontSize`. */
   getConfig,
   /**
-   * Writes a config key. Doesn't restart the test (callers restart until T6b):
-   * use `runCommand` when the restart matters.
+   * Writes a config key. A test setting (flagged `changeRequiresRestart`)
+   * restarts the test on the test page.
    */
   setConfig,
   /** Opens a modal by `ModalId`. */

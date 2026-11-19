@@ -1,3 +1,4 @@
+import { getTestSettings } from "../../../test/engine/test-settings";
 import { CaretStyle } from "@monkeytype/schemas/configs";
 import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
@@ -305,7 +306,7 @@ export class Caret {
     // we also clamp the letterIndex to be within the range of actual letters
     // anything beyond just goes to the edge of the word
     let side: "beforeLetter" | "afterLetter" = "beforeLetter";
-    if (Config.mode === "zen") {
+    if (getTestSettings().mode === "zen") {
       if (options.letterIndex > 0) {
         side = "afterLetter";
         options.letterIndex -= 1;
