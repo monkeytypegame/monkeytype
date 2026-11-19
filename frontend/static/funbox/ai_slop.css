@@ -188,9 +188,63 @@ body.aismode
   }
 }
 
-/* the command line input keeps its own frame */
-body.aismode #CommandlineModal input {
+/* the command line input keeps its own look: no funbox chrome at all */
+body.aismode #CommandlineModal :is(input, textarea, select) {
   border: 0;
+  border-radius: var(--roundness);
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+  transition: none;
+  animation: none;
+}
+
+/* tables stay calmer: no funbox chrome on their buttons and links */
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ),
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ):hover:not(:disabled),
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ):focus-visible {
+  border: 0;
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+  transition: none;
+  animation: none;
+}
+
+/* stripe the table rows a bit: a hint of the main color, brighter on hover */
+body.aismode table tbody tr:not([data-state="selected"]):nth-child(odd) > td {
+  background: color-mix(in srgb, var(--main-color) 12%, var(--sub-alt-color));
+}
+
+body.aismode table tbody tr:hover > td {
+  background: color-mix(in srgb, var(--main-color) 22%, var(--sub-alt-color));
 }
 
 /* nav items glow in their own color */
