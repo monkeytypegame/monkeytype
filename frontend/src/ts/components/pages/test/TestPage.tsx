@@ -5,6 +5,7 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
@@ -30,14 +31,22 @@ import {
   setTestFocusState,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
-import { isTestActive } from "../../../test/engine/state";
+import * as Engine from "../../../test/engine/commands";
 import {
+  getRestartOptions,
+  getRestartSource,
+  getRestartStage,
+  isTestActive,
+} from "../../../test/engine/state";
+import {
+  endRestart,
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
 import {
+  fadeTest,
   focusWordsEvent,
   markTestPageMounted,
   registerFade,
@@ -163,6 +172,21 @@ export function TestPage(): JSXElement {
     },
   );
   onCleanup(unregisterFade);
+
+  // restart fades: the old test or result fades out, then the new test in
+  createEffect(
+    on(getRestartStage, (stage) => {
+      const { noAnim } = untrack(getRestartOptions);
+      if (stage === "fadingOut") {
+        const target =
+          untrack(getRestartSource) === "resultPage" ? "result" : "typingTest";
+        void fadeTest(target, "out", noAnim).then(Engine.restartFadedOut);
+      } else if (stage === "fadingIn") {
+        // fadeTest hides the test synchronously, before the new words paint
+        void fadeTest("typingTest", "in", noAnim).then(endRestart);
+      }
+    }),
+  );
 
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view

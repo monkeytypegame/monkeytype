@@ -12,7 +12,11 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { getTestPhase } from "../test/engine/state";
+import {
+  getRestartSource,
+  getRestartStage,
+  getTestPhase,
+} from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -35,19 +39,18 @@ import { clearTimeouts } from "../utils/misc";
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-// True while a restart fades the result out: the phase is already
-// "restarting", but the result is still on screen. T6b: restart fades follow
-// the phase and this goes.
-const [isResultFadingOut, setResultFadingOut] = createSignal(false);
-export { setResultFadingOut };
-
 /**
  * From the end of the words fade-out on finish until a restart has faded the
  * result out. Whether the result is rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
   const phase = getTestPhase();
-  return phase === "finished" || isResultFadingOut();
+  return (
+    phase === "finished" ||
+    (phase === "restarting" &&
+      getRestartSource() === "resultPage" &&
+      getRestartStage() === "fadingOut")
+  );
 }
 
 // True from the first line of TestLogic.finish() until the result is built, so

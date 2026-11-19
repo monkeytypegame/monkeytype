@@ -7,7 +7,7 @@ import {
 } from "../states/lazy-mode";
 import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
-import { batch, untrack } from "solid-js";
+import { batch, createEffect, createRoot, on, untrack } from "solid-js";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
@@ -60,7 +60,6 @@ import {
   setLastSignedOutResult,
   setResultCalculating,
   isResultScreen,
-  setResultFadingOut,
   CompletedResult,
   setResultLoading,
   setTestInitError,
@@ -78,11 +77,15 @@ import {
 import {
   clearLiveStats,
   getActiveWordIndex,
+  getRestartOptions,
+  getRestartSource,
+  getRestartStage,
   getTestEnd,
   getTestPhase,
   isTestActive,
   publishFrozenLog,
   setWordsInfo,
+  type RestartOptions,
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
@@ -238,30 +241,21 @@ export function leaveTestPage(): void {
   blurInputElement();
 }
 
-type RestartOptions = {
-  withSameWordset?: boolean;
+type RestartRequestOptions = Partial<RestartOptions> & {
   nosave?: boolean;
   event?: KeyboardEvent;
-  practiseMissed?: boolean;
-  noAnim?: boolean;
   isQuickRestart?: boolean;
 };
 
+/**
+ * Requests a restart: closes out the current test, then the engine starts a
+ * restart or merges this request into the one in progress. The rest follows
+ * the restart's stages: TestPage fades the old test out, prepareRestart()
+ * generates the new one, TestPage fades it in.
+ */
 export async function restartTest(
-  options = {} as RestartOptions,
+  options = {} as RestartRequestOptions,
 ): Promise<void> {
-  const defaultOptions = {
-    withSameWordset: false,
-    practiseMissed: false,
-    noAnim: false,
-    nosave: false,
-    isQuickRestart: false,
-  };
-
-  options = { ...defaultOptions, ...options };
-
-  // guards
-
   // not on the test page - TestPage restarts on mount
   if (!untrack(isTestPageMounted)) return;
 
@@ -277,10 +271,13 @@ export async function restartTest(
     return;
   }
 
-  if (getTestPhase() === "restarting" || isResultCalculating()) {
+  if (isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
+
+  let withSameWordset = options.withSameWordset ?? false;
+
   if (isTestActive()) {
     if (options.isQuickRestart) {
       if (Config.mode !== "zen") options.event?.preventDefault();
@@ -315,7 +312,7 @@ export async function restartTest(
     // close out the abandoned test
 
     if (isRepeated()) {
-      options.withSameWordset = true;
+      withSameWordset = true;
     }
 
     recordIncompleteTest();
@@ -329,13 +326,18 @@ export async function restartTest(
     Config.repeatQuotes === "typing" &&
     (isTestActive() || getTestEnd()?.type === "failed")
   ) {
-    options.withSameWordset = true;
+    withSameWordset = true;
   }
 
+  const restarting = getTestPhase() === "restarting";
+  // a restart in progress keeps its practise settings if it has them
+  const inProgress = restarting ? getRestartOptions() : undefined;
   if (
     PractiseWords.before.mode !== null &&
-    !options.withSameWordset &&
-    !options.practiseMissed
+    !withSameWordset &&
+    !(options.practiseMissed ?? false) &&
+    !(inProgress?.withSameWordset ?? false) &&
+    !(inProgress?.practiseMissed ?? false)
   ) {
     showNoticeNotification("Reverting to previous settings.");
     if (PractiseWords.before.punctuation !== null) {
@@ -358,32 +360,24 @@ export async function restartTest(
     PractiseWords.resetBefore();
   }
 
-  // reset state
+  if (!restarting) resetTestState();
+  else options.event?.preventDefault();
 
-  resetTestState();
+  Engine.requestRestart(isResultScreen() ? "resultPage" : "testPage", {
+    withSameWordset,
+    practiseMissed: options.practiseMissed,
+    noAnim: options.noAnim,
+  });
+}
 
-  const repeatWithPace =
-    (Config.repeatedPace && options.withSameWordset) ?? false;
-  setIsRepeated(options.withSameWordset ?? false);
-  setIsPaceRepeat(repeatWithPace);
+/** The restart is over: starts the one requested meanwhile, if any. */
+export function endRestart(): void {
+  const next = Engine.endRestart();
+  if (next !== null) void restartTest(next);
+}
 
-  // restart
-
-  const source: "testPage" | "resultPage" = isResultScreen()
-    ? "resultPage"
-    : "testPage";
-  const noAnim = options.noAnim ?? false;
-
-  setResultFadingOut(source === "resultPage");
-  Engine.restart();
-
-  await fadeTest(
-    source === "resultPage" ? "result" : "typingTest",
-    "out",
-    noAnim,
-  );
-
-  setResultFadingOut(false);
+/** The old test has faded out: generates the new one. */
+async function prepareRestart(): Promise<void> {
   setInputElementValue("");
 
   await Funbox.rememberSettings();
@@ -391,7 +385,7 @@ export async function restartTest(
   const initResult = await init();
 
   if (!initResult) {
-    Engine.endRestart();
+    endRestart();
     return;
   }
 
@@ -413,7 +407,7 @@ export async function restartTest(
   if (!isOnline()) {
     showOfflineBanner();
   }
-  testRestartedEvent.dispatch(source);
+  testRestartedEvent.dispatch(getRestartSource());
   replaceWords(
     Config.mode === "zen" ? [{ display: "" }] : TestWords.words.get(),
     {
@@ -422,10 +416,23 @@ export async function restartTest(
     },
   );
 
-  // sets the typing test's opacity to 0 at once, before anything paints
-  await fadeTest("typingTest", "in", noAnim);
-  Engine.endRestart();
+  // left mid restart: nothing fades the new test in
+  if (!untrack(isTestPageMounted)) {
+    endRestart();
+    return;
+  }
+  // TestPage fades the new test in, then calls endRestart()
+  Engine.restartPrepared();
 }
+
+createRoot(() => {
+  createEffect(
+    on(getRestartStage, (stage) => {
+      // outside the effect: the new words are measured as they render
+      if (stage === "preparing") queueMicrotask(() => void prepareRestart());
+    }),
+  );
+});
 
 let lastInitError: Error | null = null;
 let showedLazyModeNotification: boolean = false;
@@ -440,7 +447,6 @@ async function init(): Promise<boolean> {
       setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
     setTestInitFailed(true);
-    Engine.endRestart();
     return false;
   }
 
@@ -553,6 +559,12 @@ async function init(): Promise<boolean> {
   // words resolve their direction from these as they're pushed
   setIsLanguageRightToLeft(language.rightToLeft ?? false);
   setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
+
+  // requests from here on queue another restart: the words are generated
+  // from the settings as they are now
+  const { withSameWordset } = Engine.takeRestartRequests();
+  setIsRepeated(withSameWordset);
+  setIsPaceRepeat(Config.repeatedPace && withSameWordset);
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
