@@ -197,6 +197,7 @@ body.aismode #CommandlineModal :is(input, textarea, select) {
   transform: none;
   transition: none;
   animation: none;
+  background: none;
 }
 
 /* tables stay calmer: no funbox chrome on their buttons and links */
