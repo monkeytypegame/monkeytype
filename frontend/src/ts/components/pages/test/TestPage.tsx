@@ -222,7 +222,13 @@ export function TestPage(): JSXElement {
   );
   // the restart committed a new test
   createEffect(
-    on(getTestId, () => void swapInRestartedTest(), { defer: true }),
+    on(
+      getTestId,
+      // outside the effect and the commit's batch: replaceWords lays out the
+      // new words as they render
+      () => queueMicrotask(() => void swapInRestartedTest()),
+      { defer: true },
+    ),
   );
   onCleanup(() => {
     display = "idle";
