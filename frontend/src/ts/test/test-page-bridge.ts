@@ -1,5 +1,5 @@
 // Test page bridge: what imperative test code needs from the Solid TestPage:
-// whether the page is mounted, its fades, focus requests and restarts. All
+// whether the page is mounted, its finish fade and focus requests. All
 // temporary: each item says when it goes.
 import { createSignal, untrack } from "solid-js";
 
@@ -44,16 +44,11 @@ export async function fadeOutForFinish(): Promise<void> {
   await finishFadeOut?.(applyReducedMotion(125));
 }
 
-// test-logic's dispatch goes once TestPage focuses on its own swap;
-// the event then moves into TestPage, for WordsInput's autofocus and the
-// wrapper click (no roadmap row yet).
+// Only TestPage and WordsInput use it now: moves into TestPage, for
+// WordsInput's autofocus and the wrapper click (no roadmap row yet).
 /**
  * Focuses the words input (WordsInput), then brings the test into view: the
  * active line during a test (Words), the test block before it (TestPage).
  * `force` blurs first.
  */
 export const focusWordsEvent = createEvent<{ force: boolean }>();
-
-// Removed once listeners follow the engine's test id (no roadmap row yet).
-/** Dispatched when TestPage swaps a restarted test in, with what it replaced. */
-export const testRestartedEvent = createEvent<"testPage" | "resultPage">();

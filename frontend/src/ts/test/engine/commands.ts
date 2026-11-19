@@ -17,7 +17,6 @@ import {
   isTestActive,
   setTestEnd,
   setKoreanStatus,
-  getRestartOptions,
   getTestPhase,
   setLastBurst,
   setRestartOptions,
@@ -95,7 +94,6 @@ export function requestRestart(options: Partial<RestartOptions>): number {
     batch(() => {
       setRestartOptions({
         withSameWordset: options.withSameWordset ?? false,
-        practiseMissed: options.practiseMissed ?? false,
         noAnim: options.noAnim ?? false,
       });
       setTestPhase("restarting");
@@ -124,13 +122,10 @@ export function commitRestart(token: number): boolean {
 
 /**
  * test-logic, right before it generates the words: retakes the test
- * settings (config plus `customText`). Returns the restart's options.
+ * settings (config plus `customText`).
  */
-export function takeTestSettingsForRestart(
-  customText: CustomTextSettings,
-): RestartOptions {
+export function retakeTestSettings(customText: CustomTextSettings): void {
   takeTestSettings(customText);
-  return getRestartOptions();
 }
 
 /**

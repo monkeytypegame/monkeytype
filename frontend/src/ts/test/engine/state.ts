@@ -38,8 +38,6 @@ export function isTestActive(): boolean {
 export type RestartOptions = {
   /** Same words as the last test. */
   withSameWordset: boolean;
-  /** Practise missed words. */
-  practiseMissed: boolean;
   /** Skip the fades. */
   noAnim: boolean;
 };
@@ -48,7 +46,6 @@ export type RestartOptions = {
 export const [getRestartOptions, setRestartOptions] =
   createSignal<RestartOptions>({
     withSameWordset: false,
-    practiseMissed: false,
     noAnim: false,
   });
 
