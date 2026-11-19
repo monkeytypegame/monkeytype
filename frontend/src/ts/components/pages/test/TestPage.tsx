@@ -209,7 +209,6 @@ export function TestPage(): JSXElement {
     if (display !== "in") return;
     display = "idle";
     setRestartShowing(false);
-    focusWordsEvent.dispatch({ force: true });
   };
 
   createEffect(

@@ -101,6 +101,7 @@ import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import {
   fadeTest,
+  focusWordsEvent,
   isTestPageMounted,
   testRestartedEvent,
 } from "./test-page-bridge";
@@ -443,6 +444,9 @@ export function showRestartedTest(source: "testPage" | "resultPage"): void {
   setLayoutfluidTimerVisible(false);
   setTestInitFailed(false);
   setTestInitError(null);
+  // while hidden: focusing restarts the caret's blink. Input waits for the
+  // fade-in (isRestartShowing)
+  focusWordsEvent.dispatch({ force: true });
   if (!isOnline()) {
     showOfflineBanner();
   }
