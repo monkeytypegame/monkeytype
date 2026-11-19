@@ -188,12 +188,11 @@ createRoot(() =>
     ),
   ),
 );
-// T6c: the result and its flags (invalid, last result) move to the engine.
-export const [isTestInvalid, setIsTestInvalid] = createSignal(false);
 export const [isLongTest, setIsLongTest] = createSignal(false);
 // a finished test's result, before the server adds hash and uid
 export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
 
+// T6c: the result moves to the engine
 export const [getLastResult, setLastResult] =
   createSignal<CompletedResult | null>(null);
 export const [

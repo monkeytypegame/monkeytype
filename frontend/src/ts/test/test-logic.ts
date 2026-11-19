@@ -55,8 +55,6 @@ import {
   resetIncompleteTests,
   setIsPaceRepeat,
   setIsRepeated,
-  setIsTestInvalid,
-  isTestInvalid,
   setLastResult,
   isResultCalculating,
   setLastSignedOutResult,
@@ -213,7 +211,6 @@ function recordIncompleteTest(): void {
 
 function resetTestState(): void {
   Engine.reset();
-  setIsTestInvalid(false);
   resetModifierState();
   Replay.pauseReplay();
   PaceCaret.reset();
@@ -910,6 +907,8 @@ export async function finish(failReason: string | null = null): Promise<void> {
   }
 
   let dontSave = false;
+  // T6c: the engine returns validity with its result
+  let invalid = false;
 
   if (countUndefined(ce) > 0) {
     console.log(ce);
@@ -947,7 +946,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
   ) {
     showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (difficultyFailed) {
     showNoticeNotification(`Test failed - ${failReason}`, {
@@ -974,16 +973,16 @@ export async function finish(failReason: string | null = null): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     showNoticeNotification("Test invalid - too short");
-    setIsTestInvalid(true);
+    invalid = true;
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
     showNoticeNotification("Test invalid - AFK detected");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (isRepeated()) {
     showNoticeNotification("Test invalid - repeated");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     completedEvent.wpm < 0 ||
@@ -995,7 +994,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - wpm");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     completedEvent.rawWpm < 0 ||
@@ -1007,7 +1006,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - raw");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     (!getUserData()?.lbOptOut &&
@@ -1016,7 +1015,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   }
 
@@ -1126,7 +1125,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
     afkDetected,
     isRepeated: isRepeated(),
     tooShort,
-    invalid: isTestInvalid(),
+    invalid,
     stopOnError: Config.stopOnError,
     deleteOnError: Config.deleteOnError,
     quote: Config.mode === "quote" ? getCurrentQuote() : null,
