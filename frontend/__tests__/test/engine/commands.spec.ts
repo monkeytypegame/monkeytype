@@ -123,14 +123,14 @@ describe("engine", () => {
       });
     });
 
-    it("queues one more restart for requests after the settings are taken", () => {
+    it("queues one more restart for settings changes after the settings are taken", () => {
       Engine.requestRestart("testPage", {});
       Engine.restartFadedOut();
       Engine.takeRestartRequests(customText);
-      expect(Engine.requestRestart("testPage", { practiseMissed: true })).toBe(
-        "queued",
-      );
-      expect(Engine.requestRestart("testPage", { noAnim: true })).toBe(
+      expect(
+        Engine.requestRestart("testPage", { practiseMissed: true }, true),
+      ).toBe("queued");
+      expect(Engine.requestRestart("testPage", { noAnim: true }, true)).toBe(
         "queued",
       );
       Engine.restartPrepared();
@@ -142,11 +142,19 @@ describe("engine", () => {
       expect(Engine.endRestart()).toBeNull();
     });
 
+    it("drops other requests after the settings are taken", () => {
+      Engine.requestRestart("testPage", {});
+      Engine.restartFadedOut();
+      Engine.takeRestartRequests(customText);
+      expect(Engine.requestRestart("testPage", {})).toBe("dropped");
+      expect(Engine.endRestart()).toBeNull();
+    });
+
     it("a retry takes the queued requests back in", () => {
       Engine.requestRestart("testPage", {});
       Engine.restartFadedOut();
       Engine.takeRestartRequests(customText);
-      Engine.requestRestart("testPage", { withSameWordset: true });
+      Engine.requestRestart("testPage", { withSameWordset: true }, true);
       Engine.reopenRestartRequests();
       expect(Engine.requestRestart("testPage", {})).toBe("merged");
       expect(Engine.takeRestartRequests(customText).withSameWordset).toBe(true);

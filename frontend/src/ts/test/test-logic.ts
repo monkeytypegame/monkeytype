@@ -254,6 +254,8 @@ type RestartRequestOptions = Partial<RestartOptions> & {
   nosave?: boolean;
   event?: KeyboardEvent;
   isQuickRestart?: boolean;
+  /** A test setting changed: queues a restart even after the settings were taken. */
+  settingsChanged?: boolean;
 };
 
 /**
@@ -385,11 +387,15 @@ function requestRestart(options: RestartRequestOptions): void {
   if (!restarting) resetTestState();
   else options.event?.preventDefault();
 
-  Engine.requestRestart(isResultScreen() ? "resultPage" : "testPage", {
-    withSameWordset,
-    practiseMissed: options.practiseMissed,
-    noAnim: options.noAnim,
-  });
+  Engine.requestRestart(
+    isResultScreen() ? "resultPage" : "testPage",
+    {
+      withSameWordset,
+      practiseMissed: options.practiseMissed,
+      noAnim: options.noAnim,
+    },
+    options.settingsChanged ?? false,
+  );
 }
 
 /** The restart is over: starts the one requested meanwhile, if any. */
@@ -462,7 +468,7 @@ createRoot(() => {
         () => {
           const restartWhen = configMetadata[key].restartWhen;
           if (restartWhen !== undefined && !restartWhen(Config)) return;
-          void restartTest();
+          void restartTest({ settingsChanged: true });
         },
         { defer: true },
       ),

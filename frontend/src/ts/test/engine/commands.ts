@@ -114,13 +114,16 @@ function toOptions(request: Partial<RestartOptions>): RestartOptions {
 }
 
 /**
- * Requests a restart. Starts one (the old test fades out), merges into the
- * one taking requests, or queues one more after it.
+ * Requests a restart. Starts one (the old test fades out) or merges into the
+ * one taking requests. After that one took the settings, only a settings
+ * change (`settingsChanged`) queues one more restart; any other request is
+ * dropped: the test it asks for is the one being prepared.
  */
 export function requestRestart(
   source: RestartSource,
   options: Partial<RestartOptions>,
-): "started" | "merged" | "queued" {
+  settingsChanged = false,
+): "started" | "merged" | "queued" | "dropped" {
   if (getTestPhase() !== "restarting") {
     acceptingRequests = true;
     batch(() => {
@@ -135,6 +138,7 @@ export function requestRestart(
     setRestartOptions((current) => toOptions(mergeRequests(current, options)));
     return "merged";
   }
+  if (!settingsChanged) return "dropped";
   queued = mergeRequests(queued ?? {}, options);
   return "queued";
 }
