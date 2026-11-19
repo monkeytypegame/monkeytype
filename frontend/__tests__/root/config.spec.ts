@@ -54,7 +54,7 @@ describe("Config", () => {
     );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
-    const enginePhaseMock = vi.spyOn(EngineState, "getPhase");
+    const enginePhaseMock = vi.spyOn(EngineState, "getTestPhase");
 
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,

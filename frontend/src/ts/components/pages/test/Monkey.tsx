@@ -2,7 +2,7 @@ import { mapRange } from "@monkeytype/util/numbers";
 
 import { getConfig } from "../../../config/store";
 import { getMonkeyState } from "../../../states/monkey";
-import { getPhase, liveStats } from "../../../test/engine/state";
+import { getTestPhase, liveStats } from "../../../test/engine/state";
 import { AnimeShow } from "../../common/anime";
 
 const MIN_WPM = 130;
@@ -52,7 +52,7 @@ export function Monkey() {
   };
 
   return (
-    <AnimeShow when={getConfig.monkey && getPhase() === "active"}>
+    <AnimeShow when={getConfig.monkey && getTestPhase() === "active"}>
       <div
         class="animate-shake mx-auto flex h-0 w-fit justify-center"
         style={{ "animation-duration": `${animDuration()}s` }}

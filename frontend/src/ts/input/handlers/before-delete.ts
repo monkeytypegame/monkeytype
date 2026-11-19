@@ -5,14 +5,14 @@ import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/engine/events/data";
 import { isResultCalculating } from "../../states/test";
-import { getActiveWordIndex, getPhase } from "../../test/engine/state";
+import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
 
 export function onBeforeDelete(event: InputEvent): void {
-  if (getPhase() !== "active") {
+  if (getTestPhase() !== "active") {
     event.preventDefault();
     return;
   }
-  if (getPhase() === "restarting") {
+  if (getTestPhase() === "restarting") {
     event.preventDefault();
     return;
   }

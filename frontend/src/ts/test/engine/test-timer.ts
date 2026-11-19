@@ -16,7 +16,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../../utils/numbers";
-import { getActiveWordIndex, getPhase, setTimerLiveStats } from "./state";
+import { getActiveWordIndex, getTestPhase, setTimerLiveStats } from "./state";
 
 export type TimerHandlers = {
   onFinish: () => void;
@@ -328,7 +328,7 @@ async function _startOld(now: number): Promise<void> {
     const drift = roundTo2(Math.abs(interval - delay));
     checkIfTimerIsSlow(drift);
     timer = setTimeout(function () {
-      if (getPhase() !== "active") {
+      if (getTestPhase() !== "active") {
         if (timer !== null) clearTimeout(timer);
         clearSlowTimer();
         slowTimerCount = 0;

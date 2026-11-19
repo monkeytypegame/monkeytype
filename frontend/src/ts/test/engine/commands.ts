@@ -14,11 +14,11 @@ import { EventLog } from "./events/types";
 import {
   freezeLog,
   getActiveWordIndex,
-  getPhase,
+  getTestPhase,
   setTestEnd,
   setKoreanStatus,
   setLastBurst,
-  setPhase,
+  setTestPhase,
   startLiveStats,
   type TestEnd,
 } from "./state";
@@ -33,7 +33,7 @@ import * as TestTimer from "./test-timer";
  */
 export function start(): void {
   batch(() => {
-    setPhase("active");
+    setTestPhase("active");
     TestTimer.clear();
     startLiveStats();
   });
@@ -54,7 +54,7 @@ export function recordEnd(end: TestEnd): void {
 export function finish(): EventLog {
   // T6c: runs on finish()'s first line and drops events logged after it
   forceReleaseAllKeys();
-  setPhase("finished");
+  setTestPhase("finished");
   cleanupData();
   if (isDevEnvironment()) logEventsDataToTheConsoleTable();
   const log = buildEventLog();
@@ -67,7 +67,7 @@ export function reset(): void {
   resetTestEvents();
   TestTimer.clear();
   batch(() => {
-    if (getPhase() === "active") setPhase("idle");
+    if (getTestPhase() === "active") setTestPhase("idle");
     setTestEnd(null);
     setKoreanStatus(false);
   });
@@ -75,12 +75,12 @@ export function reset(): void {
 
 /** A restart began: its fade-out starts. */
 export function restart(): void {
-  setPhase("restarting");
+  setTestPhase("restarting");
 }
 
 /** The restart is over: the new test is ready, or init gave up. */
 export function endRestart(): void {
-  setPhase("idle");
+  setTestPhase("idle");
 }
 
 /**

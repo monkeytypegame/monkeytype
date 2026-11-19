@@ -70,7 +70,7 @@ import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
 import { isResultCalculating, isResultScreen } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
-import { getPhase, liveStats } from "../../src/ts/test/engine/state";
+import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 
 // tests check the rendered DOM itself, not the registry's refs, so they
@@ -131,7 +131,7 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 // draws on a canvas, which jsdom lacks
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
 
-export type TestPhase = "ready" | "active" | "finished";
+export type PagePhase = "ready" | "active" | "finished";
 
 export type RenderTestPageOptions = {
   /** The test shows exactly these words, in order (a custom test). */
@@ -155,7 +155,7 @@ export type TestPageHarness = {
     state: WordStatus;
     isActive: boolean;
   };
-  phase: () => TestPhase;
+  phase: () => PagePhase;
   caret: () => { shown: boolean };
   paceCaret: () => {
     shown: boolean;
@@ -196,7 +196,7 @@ export async function renderTestPage(
   let sawRestart = false;
   const stopWatchingRestart = createRoot((dispose) => {
     createEffect(() => {
-      if (getPhase() === "restarting") sawRestart = true;
+      if (getTestPhase() === "restarting") sawRestart = true;
     });
     return dispose;
   });
@@ -219,7 +219,7 @@ export async function renderTestPage(
 
   // the restart on mount: fade out, generate words, fade in. It may only
   // begin a frame in, after a previous spec's finished test
-  const ready = (): boolean => sawRestart && getPhase() === "idle";
+  const ready = (): boolean => sawRestart && getTestPhase() === "idle";
   for (let i = 0; i < 50 && !ready(); i++) await frame();
   stopWatchingRestart();
   if (!ready()) throw new Error("The test page never got ready");
@@ -279,7 +279,7 @@ export async function renderTestPage(
     phase: () =>
       isResultScreen()
         ? "finished"
-        : getPhase() === "active"
+        : getTestPhase() === "active"
           ? "active"
           : "ready",
     caret: () => ({ shown: isShown("caret") }),

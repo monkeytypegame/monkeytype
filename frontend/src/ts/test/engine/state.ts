@@ -20,12 +20,12 @@ import { EventLog } from "./events/types";
  *   failed (see getTestEnd)
  * - restarting: from the restart's first fade-out until the new test is ready
  */
-export type Phase = "idle" | "active" | "finished" | "restarting";
+export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
 // T6c: finish/fail switch the phase on their first line, not after the words
 // fade-out; T6b: restart fades follow the phase.
 // setters exported for engine/commands only
-export const [getPhase, setPhase] = createSignal<Phase>("idle");
+export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
 // ---- words
 

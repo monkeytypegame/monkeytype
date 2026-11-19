@@ -7,7 +7,7 @@ import {
   setComposing,
   setCompositionData,
 } from "../../states/test";
-import { getActiveWordIndex, getPhase } from "../../test/engine/state";
+import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
 
 export function onCompositionStart(event: CompositionEvent): void {
   console.debug("wordsInput event compositionstart", {
@@ -17,11 +17,11 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   const now = performance.now();
 
-  if (getPhase() === "restarting" || isResultCalculating()) return;
+  if (getTestPhase() === "restarting" || isResultCalculating()) return;
   setComposing(true);
   setCompositionData("");
   setLastInsertCompositionTextData("");
-  if (getPhase() !== "active") {
+  if (getTestPhase() !== "active") {
     TestLogic.startTest(now);
   }
 
@@ -37,7 +37,7 @@ export function onCompositionUpdate(event: CompositionEvent): void {
     data: event.data,
   });
 
-  if (getPhase() === "restarting" || isResultCalculating()) return;
+  if (getTestPhase() === "restarting" || isResultCalculating()) return;
   setCompositionData(event.data);
 
   const now = performance.now();
@@ -55,7 +55,7 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
     data: event.data,
   });
 
-  if (getPhase() === "restarting" || isResultCalculating()) return;
+  if (getTestPhase() === "restarting" || isResultCalculating()) return;
   setComposing(false);
   setCompositionData("");
   setLastInsertCompositionTextData("");

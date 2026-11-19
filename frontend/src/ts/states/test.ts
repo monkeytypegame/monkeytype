@@ -12,7 +12,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { getPhase } from "../test/engine/state";
+import { getTestPhase } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -46,7 +46,7 @@ export { setResultFadingOut };
  * result out. Whether the result is rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
-  const phase = getPhase();
+  const phase = getTestPhase();
   return phase === "finished" || isResultFadingOut();
 }
 

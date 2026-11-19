@@ -74,7 +74,7 @@ vi.mock("../../../src/ts/test/engine/test-words", () => {
 
 vi.mock("../../../src/ts/test/engine/state", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
-  getPhase: () => "active",
+  getTestPhase: () => "active",
   wordsHaveNewline: () => false,
   getTestEnd: () => null,
   getKoreanStatus: () => false,

@@ -17,7 +17,7 @@ import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
-import { getPhase } from "../test/engine/state";
+import { getTestPhase } from "../test/engine/state";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 
 let challengeLoading = false;
@@ -26,7 +26,7 @@ export function clearActive(): void {
   if (
     getLoadedChallenge() !== null &&
     !challengeLoading &&
-    getPhase() !== "restarting"
+    getTestPhase() !== "restarting"
   ) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);

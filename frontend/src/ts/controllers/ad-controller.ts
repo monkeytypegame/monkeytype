@@ -4,7 +4,7 @@ import { Config } from "../config/store";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { adSlotMediaQueries } from "../components/common/Advertisement";
-import { getPhase } from "../test/engine/state";
+import { getTestPhase } from "../test/engine/state";
 import {
   getAdBlock,
   getCookieBlocker,
@@ -37,7 +37,7 @@ function init(): void {
   }
 
   setInterval(() => {
-    if (getPhase() === "active") {
+    if (getTestPhase() === "active") {
       return;
     }
     if (choice === "eg") {

@@ -8,7 +8,7 @@ import { secondsToString } from "../utils/date-and-time";
 import { getCurrentQuote, isFocusMode, isResultCalculating } from "./test";
 import {
   getActiveWordIndex,
-  getPhase,
+  getTestPhase,
   getTestEnd,
   liveStats,
 } from "../test/engine/state";
@@ -87,7 +87,7 @@ export function getBarTarget(): {
 }
 
 export const showLiveStats = createRoot(() =>
-  createMemo(() => getPhase() === "active" && isFocusMode()),
+  createMemo(() => getTestPhase() === "active" && isFocusMode()),
 );
 export const getLiveSpeedText = createRoot(() =>
   createMemo(() =>

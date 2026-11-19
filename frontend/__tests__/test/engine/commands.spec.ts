@@ -5,7 +5,7 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getFrozenLog,
-  getPhase,
+  getTestPhase,
   getTestEnd,
   liveStats,
   incrementActiveWordIndex,
@@ -13,7 +13,7 @@ import {
   publishFrozenLog,
   resetActiveWordIndex,
   setLastBurst,
-  setPhase,
+  setTestPhase,
 } from "../../../src/ts/test/engine/state";
 import { logTestEvent } from "../../../src/ts/test/engine/events/data";
 
@@ -26,7 +26,7 @@ describe("engine", () => {
     vi.useFakeTimers({
       toFake: ["requestAnimationFrame", "cancelAnimationFrame", "performance"],
     });
-    setPhase("idle");
+    setTestPhase("idle");
     Engine.reset();
     clearLiveStats();
     resetActiveWordIndex();
@@ -40,13 +40,13 @@ describe("engine", () => {
   describe("phase", () => {
     it("start makes the test active", () => {
       Engine.start();
-      expect(getPhase()).toBe("active");
+      expect(getTestPhase()).toBe("active");
     });
 
     it("finish freezes the log and switches to finished", () => {
       Engine.start();
       const log = Engine.finish();
-      expect(getPhase()).toBe("finished");
+      expect(getTestPhase()).toBe("finished");
       expect(log.events).toEqual([]);
     });
 
@@ -54,7 +54,7 @@ describe("engine", () => {
       Engine.start();
       Engine.recordEnd({ type: "failed", reason: "min accuracy" });
       Engine.finish();
-      expect(getPhase()).toBe("finished");
+      expect(getTestPhase()).toBe("finished");
       expect(getTestEnd()).toEqual({ type: "failed", reason: "min accuracy" });
       Engine.reset();
       expect(getTestEnd()).toBeNull();
@@ -63,21 +63,21 @@ describe("engine", () => {
     it("reset ends an active test, but keeps a finished one", () => {
       Engine.start();
       Engine.reset();
-      expect(getPhase()).toBe("idle");
+      expect(getTestPhase()).toBe("idle");
 
       Engine.start();
       Engine.finish();
       Engine.reset();
-      expect(getPhase()).toBe("finished");
+      expect(getTestPhase()).toBe("finished");
     });
 
     it("restart lasts until endRestart", () => {
       Engine.start();
       Engine.finish();
       Engine.restart();
-      expect(getPhase()).toBe("restarting");
+      expect(getTestPhase()).toBe("restarting");
       Engine.endRestart();
-      expect(getPhase()).toBe("idle");
+      expect(getTestPhase()).toBe("idle");
     });
   });
 

@@ -16,7 +16,7 @@ import {
   isPaceRepeat,
   setPaceCaretWpm,
 } from "../states/test";
-import { getActiveWordIndex, getPhase } from "./engine/state";
+import { getActiveWordIndex, getTestPhase } from "./engine/state";
 
 type Settings = {
   wpm: number;
@@ -119,7 +119,11 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || getPhase() !== "active" || isResultScreen()) {
+  if (
+    currentSettings === null ||
+    getTestPhase() !== "active" ||
+    isResultScreen()
+  ) {
     return;
   }
 
