@@ -272,6 +272,22 @@ describe("TestPage", () => {
       expect(page.testSettings().time).toBe(15);
     });
 
+    it("restarts once for a preset changing several test settings", async () => {
+      const page = await renderTestPage({ config: { mode: "time", time: 30 } });
+
+      await page.applyConfig({
+        mode: "words",
+        words: 10,
+        punctuation: true,
+      });
+      await page.advance(1000);
+
+      expect(page.restarts()).toBe(1);
+      expect(page.testSettings().mode).toBe("words");
+      expect(page.testSettings().words).toBe(10);
+      expect(page.testSettings().punctuation).toBe(true);
+    });
+
     it("doesn't restart for a setting that isn't a test setting", async () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
 

@@ -65,6 +65,7 @@ import type { WordStatus } from "../../src/ts/components/pages/test/Word";
 import type { LetterStatus } from "../../src/ts/components/pages/test/WordLetter";
 
 import { TestPage } from "../../src/ts/components/pages/test/TestPage";
+import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
@@ -165,6 +166,8 @@ export type TestPageHarness = {
   restart: () => void;
   /** Sets a config key, as the settings UI. */
   setConfig: typeof setConfig;
+  /** Applies a whole config in one batch, as a preset. */
+  applyConfig: typeof applyConfig;
   /** The settings the current test was generated with. */
   testSettings: typeof getTestSettings;
   caret: () => { shown: boolean };
@@ -313,6 +316,7 @@ export async function renderTestPage(
     restarts: () => restarts,
     restart: () => void restartTest(),
     setConfig,
+    applyConfig,
     testSettings: getTestSettings,
     caret: () => ({ shown: isShown("caret") }),
     paceCaret: () => {
