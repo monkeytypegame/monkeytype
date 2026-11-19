@@ -5,6 +5,8 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getFrozenLog,
+  getRestartSource,
+  getRestartStage,
   getTestPhase,
   getTestEnd,
   liveStats,
@@ -70,14 +72,66 @@ describe("engine", () => {
       Engine.reset();
       expect(getTestPhase()).toBe("finished");
     });
+  });
 
-    it("restart lasts until endRestart", () => {
+  describe("restart", () => {
+    afterEach(() => {
+      if (getTestPhase() === "restarting") Engine.endRestart();
+    });
+
+    it("goes through its stages until endRestart", () => {
       Engine.start();
       Engine.finish();
-      Engine.restart();
+      expect(Engine.requestRestart("resultPage", {})).toBe("started");
       expect(getTestPhase()).toBe("restarting");
-      Engine.endRestart();
+      expect(getRestartSource()).toBe("resultPage");
+      expect(getRestartStage()).toBe("fadingOut");
+      Engine.restartFadedOut();
+      expect(getRestartStage()).toBe("preparing");
+      Engine.takeRestartRequests();
+      Engine.restartPrepared();
+      expect(getRestartStage()).toBe("fadingIn");
+      expect(Engine.endRestart()).toBeNull();
       expect(getTestPhase()).toBe("idle");
+      expect(getRestartStage()).toBeUndefined();
+    });
+
+    it("merges requests until the settings are taken", () => {
+      Engine.requestRestart("testPage", {
+        noAnim: true,
+        withSameWordset: true,
+      });
+      expect(Engine.requestRestart("resultPage", { noAnim: false })).toBe(
+        "merged",
+      );
+      Engine.restartFadedOut();
+      expect(Engine.requestRestart("testPage", {})).toBe("merged");
+      // the first request's source; the latest noAnim; withSameWordset sticks
+      expect(getRestartSource()).toBe("testPage");
+      expect(Engine.takeRestartRequests()).toEqual({
+        withSameWordset: true,
+        practiseMissed: false,
+        noAnim: false,
+      });
+    });
+
+    it("queues one more restart for requests after the settings are taken", () => {
+      Engine.requestRestart("testPage", {});
+      Engine.restartFadedOut();
+      Engine.takeRestartRequests();
+      expect(Engine.requestRestart("testPage", { practiseMissed: true })).toBe(
+        "queued",
+      );
+      expect(Engine.requestRestart("testPage", { noAnim: true })).toBe(
+        "queued",
+      );
+      Engine.restartPrepared();
+      expect(Engine.endRestart()).toEqual({
+        withSameWordset: false,
+        practiseMissed: true,
+        noAnim: true,
+      });
+      expect(Engine.endRestart()).toBeNull();
     });
   });
 

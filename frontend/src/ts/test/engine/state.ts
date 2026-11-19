@@ -23,7 +23,7 @@ import { EventLog } from "./events/types";
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
 // T6c: finish/fail switch the phase on their first line, not after the words
-// fade-out; T6b: restart fades follow the phase.
+// fade-out.
 // setters exported for engine/commands only
 export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
@@ -31,6 +31,42 @@ export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 export function isTestActive(): boolean {
   return getTestPhase() === "active";
 }
+
+// ---- restart
+
+/**
+ * Where a restart is, while the phase is "restarting":
+ * - fadingOut: the old test or result fades out (TestPage), still shown as it was
+ * - preparing: hidden; test-logic generates the new test
+ * - fadingIn: the new test fades in (TestPage)
+ */
+export type RestartStage = "fadingOut" | "preparing" | "fadingIn";
+
+/** What was on screen when the restart began: it's what fades out. */
+export type RestartSource = "testPage" | "resultPage";
+
+/** Options of a restart. Requests merged into one restart combine theirs. */
+export type RestartOptions = {
+  /** Same words as the last test. Kept if any merged request had it. */
+  withSameWordset: boolean;
+  /** Practise missed words. Kept if any merged request had it. */
+  practiseMissed: boolean;
+  /** Skip the fades. The latest request that sets it wins. */
+  noAnim: boolean;
+};
+
+// setters for engine/commands only
+export const [getRestartStage, setRestartStage] = createSignal<
+  RestartStage | undefined
+>(undefined);
+export const [getRestartSource, setRestartSource] =
+  createSignal<RestartSource>("testPage");
+export const [getRestartOptions, setRestartOptions] =
+  createSignal<RestartOptions>({
+    withSameWordset: false,
+    practiseMissed: false,
+    noAnim: false,
+  });
 
 // ---- words
 

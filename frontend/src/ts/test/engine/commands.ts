@@ -17,8 +17,16 @@ import {
   isTestActive,
   setTestEnd,
   setKoreanStatus,
+  getRestartOptions,
+  getRestartStage,
+  getTestPhase,
   setLastBurst,
+  setRestartOptions,
+  setRestartSource,
+  setRestartStage,
   setTestPhase,
+  type RestartOptions,
+  type RestartSource,
   startLiveStats,
   type TestEnd,
 } from "./state";
@@ -73,14 +81,94 @@ export function reset(): void {
   });
 }
 
-/** A restart began: its fade-out starts. */
-export function restart(): void {
-  setTestPhase("restarting");
+// ---- restart
+
+// A restart takes in requests until test-logic starts generating the new test
+// (takeRestartRequests): later ones merge into it, since the settings are
+// read after them. Requests after that queue one more restart, which starts
+// once this one ends.
+let acceptingRequests = false;
+let queued: Partial<RestartOptions> | null = null;
+
+function mergeRequests(
+  into: Partial<RestartOptions>,
+  next: Partial<RestartOptions>,
+): Partial<RestartOptions> {
+  return {
+    withSameWordset:
+      (into.withSameWordset ?? false) || (next.withSameWordset ?? false),
+    practiseMissed:
+      (into.practiseMissed ?? false) || (next.practiseMissed ?? false),
+    noAnim: next.noAnim ?? into.noAnim,
+  };
 }
 
-/** The restart is over: the new test is ready, or init gave up. */
-export function endRestart(): void {
-  setTestPhase("idle");
+function toOptions(request: Partial<RestartOptions>): RestartOptions {
+  return {
+    withSameWordset: request.withSameWordset ?? false,
+    practiseMissed: request.practiseMissed ?? false,
+    noAnim: request.noAnim ?? false,
+  };
+}
+
+/**
+ * Requests a restart. Starts one (the old test fades out), merges into the
+ * one taking requests, or queues one more after it.
+ */
+export function requestRestart(
+  source: RestartSource,
+  options: Partial<RestartOptions>,
+): "started" | "merged" | "queued" {
+  if (getTestPhase() !== "restarting") {
+    acceptingRequests = true;
+    batch(() => {
+      setRestartOptions(toOptions(options));
+      setRestartSource(source);
+      setRestartStage("fadingOut");
+      setTestPhase("restarting");
+    });
+    return "started";
+  }
+  if (acceptingRequests) {
+    setRestartOptions((current) => toOptions(mergeRequests(current, options)));
+    return "merged";
+  }
+  queued = mergeRequests(queued ?? {}, options);
+  return "queued";
+}
+
+/** TestPage: the old test or result has faded out. */
+export function restartFadedOut(): void {
+  if (getRestartStage() === "fadingOut") setRestartStage("preparing");
+}
+
+/**
+ * test-logic, right before it reads the settings to generate the new test:
+ * requests from now on queue another restart. Returns the merged options.
+ */
+export function takeRestartRequests(): RestartOptions {
+  acceptingRequests = false;
+  return getRestartOptions();
+}
+
+/** test-logic: the new test is ready to fade in. */
+export function restartPrepared(): void {
+  if (getRestartStage() === "preparing") setRestartStage("fadingIn");
+}
+
+/**
+ * The restart is over: the new test faded in, or init gave up. Returns the
+ * options of a restart queued meanwhile, for the caller to request.
+ */
+export function endRestart(): Partial<RestartOptions> | null {
+  acceptingRequests = false;
+  const next = queued;
+  queued = null;
+  batch(() => {
+    setRestartStage(undefined);
+    setTestPhase("idle");
+  });
+  return next;
 }
 
 /**

@@ -26,8 +26,8 @@ export function isTestPageMounted(): boolean {
   return getMountSignal() !== undefined;
 }
 
-// Removed in T6b (restart fades) and T6c (finish fade): TestPage runs fades
-// from the engine's phase.
+// TestPage runs the restart fades from the engine's restart stage. T6c: the
+// finish fade follows the phase too, and this goes.
 export type FadeTarget = "typingTest" | "result";
 
 /** Animates the target's element; resolves when the animation ends. */
