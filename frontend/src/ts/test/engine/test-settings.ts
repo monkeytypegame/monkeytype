@@ -6,7 +6,8 @@ import { getSelectedQuoteId } from "../../states/test";
 
 /**
  * The config keys a test is generated with: the ones flagged
- * `changeRequiresRestart` in the config metadata (a spec checks they match).
+ * `changeRequiresRestart` in the config metadata, `true` or a function (a spec
+ * checks they match).
  * Changing one restarts the test.
  */
 export const TEST_SETTINGS_KEYS = [
