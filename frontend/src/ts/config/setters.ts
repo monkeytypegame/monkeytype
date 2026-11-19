@@ -10,7 +10,7 @@ import {
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
-import { configMetadata } from "./metadata";
+import { changeRequiresRestart, configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
@@ -40,7 +40,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   const previousValue = Config[key];
 
   if (
-    metadata.changeRequiresRestart &&
+    changeRequiresRestart(key, Config) &&
     isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {

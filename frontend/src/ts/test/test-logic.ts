@@ -95,7 +95,7 @@ import {
 } from "./engine/state";
 import * as Engine from "./engine/commands";
 import { TEST_SETTINGS_KEYS, getTestSettings } from "./engine/test-settings";
-import { configMetadata } from "../config/metadata";
+import { changeRequiresRestart } from "../config/metadata";
 import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
@@ -473,8 +473,7 @@ createRoot(() => {
       on(
         value,
         () => {
-          const restartWhen = configMetadata[key].restartWhen;
-          if (restartWhen !== undefined && !restartWhen(Config)) return;
+          if (!changeRequiresRestart(key, Config)) return;
           void restartTest({ settingsChanged: true });
         },
         { defer: true },

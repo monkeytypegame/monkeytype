@@ -134,14 +134,11 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   group: ConfigSchemas.ConfigGroupName;
 
   /**
-   * Is a test restart required after this config change?
+   * Is a test restart required after this config change? A function narrows
+   * it to the configs where the setting matters (eg. only while a funbox is
+   * active). Either way the key is a test setting.
    */
-  changeRequiresRestart: boolean;
-  /**
-   * Restarts only when this returns true (eg. the setting matters only while
-   * a funbox is active). Requires changeRequiresRestart.
-   */
-  restartWhen?: (config: ConfigSchemas.Config) => boolean;
+  changeRequiresRestart: boolean | ((config: ConfigSchemas.Config) => boolean);
   /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
@@ -682,8 +679,7 @@ const configMetadataEntries = {
     key: "customLayoutfluid",
     fa: { icon: "fa-tint" },
     displayString: "custom layoutfluid",
-    changeRequiresRestart: true,
-    restartWhen: (config) => config.funbox.includes("layoutfluid"),
+    changeRequiresRestart: (config) => config.funbox.includes("layoutfluid"),
     group: "behavior",
     description:
       "Select which layouts you want the layoutfluid funbox to cycle through.",
@@ -1985,6 +1981,15 @@ const configMetadataEntries = {
 } satisfies ConfigMetadataObject;
 
 export const configMetadata: ConfigMetadataObject = configMetadataEntries;
+
+/** Whether changing `key` restarts the test, given `config`. */
+export function changeRequiresRestart(
+  key: keyof ConfigSchemas.Config,
+  config: ConfigSchemas.Config,
+): boolean {
+  const requires = configMetadata[key].changeRequiresRestart;
+  return typeof requires === "function" ? requires(config) : requires;
+}
 
 /**
  * Config keys that have a generated commandline command
