@@ -265,7 +265,7 @@ describe("TestPage", () => {
       await page.advance(1000);
 
       expect(page.phase()).toBe("ready");
-      expect(page.restarts()).toBe(1);
+      expect(page.getRestartCount()).toBe(1);
       expect(page.testSettings().mode).toBe("time");
       expect(page.testSettings().time).toBe(15);
     });
@@ -280,7 +280,7 @@ describe("TestPage", () => {
       });
       await page.advance(1000);
 
-      expect(page.restarts()).toBe(1);
+      expect(page.getRestartCount()).toBe(1);
       expect(page.testSettings().mode).toBe("words");
       expect(page.testSettings().words).toBe(10);
       expect(page.testSettings().punctuation).toBe(true);
@@ -292,7 +292,7 @@ describe("TestPage", () => {
       page.setConfig("blindMode", true);
       await page.advance(500);
 
-      expect(page.restarts()).toBe(0);
+      expect(page.getRestartCount()).toBe(0);
     });
 
     it("merges restart requests into one", async () => {
@@ -304,7 +304,7 @@ describe("TestPage", () => {
       page.restart();
       await page.advance(1000);
 
-      expect(page.restarts()).toBe(2);
+      expect(page.getRestartCount()).toBe(2);
       expect(page.phase()).toBe("ready");
     });
 
@@ -317,7 +317,7 @@ describe("TestPage", () => {
       page.restart();
       await page.advance(1000);
 
-      expect(page.restarts()).toBe(1);
+      expect(page.getRestartCount()).toBe(1);
       expect(page.phase()).toBe("ready");
     });
 

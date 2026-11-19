@@ -165,7 +165,7 @@ export type TestPageHarness = {
   };
   phase: () => PagePhase;
   /** Restarts begun since the page got ready. */
-  restarts: () => number;
+  getRestartCount: () => number;
   /** Requests a restart, as the restart button. */
   restart: () => void;
   /** Sets a config key, as the settings UI. */
@@ -318,7 +318,7 @@ export async function renderTestPage(
           : getTestPhase() === "restarting"
             ? "restarting"
             : "ready",
-    restarts: () => restarts,
+    getRestartCount: () => restarts,
     restart: () => void restartTest(),
     setConfig,
     applyConfig,
