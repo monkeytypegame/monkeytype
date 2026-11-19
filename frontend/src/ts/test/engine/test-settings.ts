@@ -1,8 +1,11 @@
+import { createMemo, createRoot } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import { Config } from "../../config/store";
+import { getCustomTextIndicator } from "../../states/core";
 import { getSelectedQuoteId } from "../../states/test";
+import { canQuickRestart } from "../../utils/quick-restart";
 
 /**
  * The config keys a test is generated with: the ones flagged
@@ -91,3 +94,20 @@ export function getTestSettings(): Readonly<TestSettings> {
 export function takeTestSettings(customText: CustomTextSettings): void {
   setTestSettings(reconcile(snapshot(customText)));
 }
+
+/**
+ * The current test is long, too long to quick restart (eg. 1000+ words, 15+
+ * minutes, a long custom text): restarting it asks for more. Reactive.
+ */
+export const isLongTest = createRoot(() =>
+  createMemo(
+    () =>
+      !canQuickRestart(
+        testSettings.mode,
+        testSettings.words,
+        testSettings.time,
+        testSettings.customText,
+        getCustomTextIndicator()?.isLong ?? false,
+      ),
+  ),
+);

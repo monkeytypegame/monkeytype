@@ -17,16 +17,12 @@ import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import * as CustomText from "../test/custom-text";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { isTestPageMounted } from "../test/test-page-bridge";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";
 import { mirrorLayoutKeys } from "../utils/key-converter";
-import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
@@ -184,7 +180,6 @@ createRoot(() =>
     ),
   ),
 );
-export const [isLongTest, setIsLongTest] = createSignal(false);
 // a finished test's result, before the server adds hash and uid
 export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
 
@@ -214,22 +209,6 @@ export const [getCurrentQuote, setCurrentQuote] =
 
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
-
-createRoot(() =>
-  createEffect(() => {
-    // custom text settings aren't reactive - re-read them when the test page mounts
-    isTestPageMounted();
-    setIsLongTest(
-      !canQuickRestart(
-        getConfig.mode,
-        getConfig.words,
-        getConfig.time,
-        CustomText.getData(),
-        getCustomTextIndicator()?.isLong ?? false,
-      ),
-    );
-  }),
-);
 
 export const getKeymapLayout = createRoot(() =>
   createMemo<{
