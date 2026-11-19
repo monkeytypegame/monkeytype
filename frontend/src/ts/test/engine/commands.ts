@@ -18,15 +18,12 @@ import {
   setTestEnd,
   setKoreanStatus,
   getRestartOptions,
-  getRestartStage,
   getTestPhase,
   setLastBurst,
   setRestartOptions,
-  setRestartSource,
-  setRestartStage,
+  setTestId,
   setTestPhase,
   type RestartOptions,
-  type RestartSource,
   startLiveStats,
   type TestEnd,
 } from "./state";
@@ -85,115 +82,55 @@ export function reset(): void {
 
 // ---- restart
 
-// A restart takes in requests until test-logic starts generating the new test
-// (takeRestartRequests): later ones merge into it, since the settings are
-// read after them. Requests after that queue one more restart, which starts
-// once this one ends.
-let acceptingRequests = false;
-let queued: Partial<RestartOptions> | null = null;
-
-function mergeRequests(
-  into: Partial<RestartOptions>,
-  next: Partial<RestartOptions>,
-): Partial<RestartOptions> {
-  return {
-    withSameWordset:
-      (into.withSameWordset ?? false) || (next.withSameWordset ?? false),
-    practiseMissed:
-      (into.practiseMissed ?? false) || (next.practiseMissed ?? false),
-    noAnim: next.noAnim ?? into.noAnim,
-  };
-}
-
-function toOptions(request: Partial<RestartOptions>): RestartOptions {
-  return {
-    withSameWordset: request.withSameWordset ?? false,
-    practiseMissed: request.practiseMissed ?? false,
-    noAnim: request.noAnim ?? false,
-  };
-}
+// the current generation's token: a newer request supersedes the one running
+let generation = 0;
 
 /**
- * Requests a restart. Starts one (the old test fades out) or merges into the
- * one taking requests. After that one took the settings, only a settings
- * change (`settingsChanged`) queues one more restart; any other request is
- * dropped: the test it asks for is the one being prepared.
+ * Starts a restart: the phase is restarting until commitRestart(). During
+ * one, a request supersedes the generation in progress (the options stay).
+ * Returns the token the generation checks with isCurrentRestart().
  */
-export function requestRestart(
-  source: RestartSource,
-  options: Partial<RestartOptions>,
-  settingsChanged = false,
-): "started" | "merged" | "queued" | "dropped" {
+export function requestRestart(options: Partial<RestartOptions>): number {
   if (getTestPhase() !== "restarting") {
-    acceptingRequests = true;
     batch(() => {
-      setRestartOptions(toOptions(options));
-      setRestartSource(source);
-      setRestartStage("fadingOut");
+      setRestartOptions({
+        withSameWordset: options.withSameWordset ?? false,
+        practiseMissed: options.practiseMissed ?? false,
+        noAnim: options.noAnim ?? false,
+      });
       setTestPhase("restarting");
     });
-    return "started";
   }
-  if (acceptingRequests) {
-    setRestartOptions((current) => toOptions(mergeRequests(current, options)));
-    return "merged";
-  }
-  if (!settingsChanged) return "dropped";
-  queued = mergeRequests(queued ?? {}, options);
-  return "queued";
+  return ++generation;
 }
 
-/** TestPage: the old test or result has faded out. */
-export function restartFadedOut(): void {
-  if (getRestartStage() === "fadingOut") setRestartStage("preparing");
+/** Whether the generation holding `token` is still the one to commit. */
+export function isCurrentRestart(token: number): boolean {
+  return token === generation && getTestPhase() === "restarting";
 }
 
 /**
- * test-logic, right before it generates the words: retakes the test settings
- * (config plus `customText`). Requests from now on queue another restart.
- * Returns the merged options.
+ * The generation holding `token` is done (or init gave up): commits a new
+ * test id and switches to idle. False when it was superseded.
  */
-export function takeRestartRequests(
-  customText: CustomTextSettings,
-): RestartOptions {
-  acceptingRequests = false;
-  takeTestSettings(customText);
-  return getRestartOptions();
-}
-
-/**
- * test-logic, when generating the words failed and it tries again: the retry
- * reads the settings anew, so requests queued meanwhile (including the
- * generator's own fallback writes) merge into it.
- */
-export function reopenRestartRequests(): void {
-  if (getTestPhase() !== "restarting" || acceptingRequests) return;
-  acceptingRequests = true;
-  if (queued !== null) {
-    const next = queued;
-    queued = null;
-    setRestartOptions((current) => toOptions(mergeRequests(current, next)));
-  }
-}
-
-/** test-logic: the new test is ready to fade in. */
-export function restartPrepared(): void {
-  if (getRestartStage() === "preparing") setRestartStage("fadingIn");
-}
-
-/**
- * The restart is over: the new test faded in, or init gave up. Returns the
- * options of a restart queued meanwhile, for the caller to request.
- */
-export function endRestart(): Partial<RestartOptions> | null {
-  acceptingRequests = false;
-  const next = queued;
-  queued = null;
+export function commitRestart(token: number): boolean {
+  if (!isCurrentRestart(token)) return false;
   batch(() => {
-    setRestartStage(undefined);
+    setTestId((id) => id + 1);
     setTestPhase("idle");
   });
-  return next;
+  return true;
+}
+
+/**
+ * test-logic, right before it generates the words: retakes the test
+ * settings (config plus `customText`). Returns the restart's options.
+ */
+export function takeTestSettingsForRestart(
+  customText: CustomTextSettings,
+): RestartOptions {
+  takeTestSettings(customText);
+  return getRestartOptions();
 }
 
 /**

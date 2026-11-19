@@ -25,8 +25,8 @@ export function isTestPageMounted(): boolean {
   return getMountSignal() !== undefined;
 }
 
-// TestPage runs the restart fades from the engine's restart stage. T6c: the
-// finish fade follows the phase too, and this goes.
+// TestPage runs the restart fades itself, the engine never waits for them.
+// T6c: the finish fade too, and this goes.
 export type FadeTarget = "typingTest" | "result";
 
 /** Animates the target's element; resolves when the animation ends. */
@@ -64,6 +64,6 @@ export async function fadeTest(
  */
 export const focusWordsEvent = createEvent<{ force: boolean }>();
 
-// Removed once listeners follow the engine's restart stage (no roadmap row yet).
-/** Dispatched by a restart, once the new test is ready, with its source. */
+// Removed once listeners follow the engine's test id (no roadmap row yet).
+/** Dispatched when TestPage swaps a restarted test in, with what it replaced. */
 export const testRestartedEvent = createEvent<"testPage" | "resultPage">();

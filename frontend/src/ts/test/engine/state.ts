@@ -34,39 +34,29 @@ export function isTestActive(): boolean {
 
 // ---- restart
 
-/**
- * Where a restart is, while the phase is "restarting":
- * - fadingOut: the old test or result fades out (TestPage), still shown as it was
- * - preparing: hidden; test-logic generates the new test
- * - fadingIn: the new test fades in (TestPage)
- */
-export type RestartStage = "fadingOut" | "preparing" | "fadingIn";
-
-/** What was on screen when the restart began: it's what fades out. */
-export type RestartSource = "testPage" | "resultPage";
-
-/** Options of a restart. Requests merged into one restart combine theirs. */
+/** Options of a restart: the request that started it sets them. */
 export type RestartOptions = {
-  /** Same words as the last test. Kept if any merged request had it. */
+  /** Same words as the last test. */
   withSameWordset: boolean;
-  /** Practise missed words. Kept if any merged request had it. */
+  /** Practise missed words. */
   practiseMissed: boolean;
-  /** Skip the fades. The latest request that sets it wins. */
+  /** Skip the fades. */
   noAnim: boolean;
 };
 
 // setters for engine/commands only
-export const [getRestartStage, setRestartStage] = createSignal<
-  RestartStage | undefined
->(undefined);
-export const [getRestartSource, setRestartSource] =
-  createSignal<RestartSource>("testPage");
 export const [getRestartOptions, setRestartOptions] =
   createSignal<RestartOptions>({
     withSameWordset: false,
     practiseMissed: false,
     noAnim: false,
   });
+
+/**
+ * Changes when a restart commits a new test (generated, or init gave up).
+ * TestPage swaps the new test in once it has faded the old one out.
+ */
+export const [getTestId, setTestId] = createSignal(0);
 
 // ---- words
 

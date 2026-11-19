@@ -67,6 +67,7 @@ import {
   setLastSignedOutResult,
   setResultCalculating,
   isResultScreen,
+  isRestartShowing,
   CompletedResult,
   setResultLoading,
   setTestInitError,
@@ -84,9 +85,6 @@ import {
 import {
   clearLiveStats,
   getActiveWordIndex,
-  getRestartOptions,
-  getRestartSource,
-  getRestartStage,
   getTestEnd,
   getTestPhase,
   isTestActive,
@@ -103,7 +101,6 @@ import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import {
   fadeTest,
-  focusWordsEvent,
   isTestPageMounted,
   testRestartedEvent,
 } from "./test-page-bridge";
@@ -259,10 +256,11 @@ type RestartRequestOptions = Partial<RestartOptions> & {
 };
 
 /**
- * Requests a restart: closes out the current test, then the engine starts a
- * restart or merges this request into the one in progress. The rest follows
- * the restart's stages: TestPage fades the old test out, prepareRestart()
- * generates the new one, TestPage fades it in.
+ * Requests a restart. Starts one: closes out the current test, and generates
+ * the new one at once (prepareRestart) while TestPage fades the old one out.
+ * During a restart, or while it's still on screen, only a settings change
+ * counts: it supersedes the generation in progress (or restarts the new test
+ * fading in). Other requests are dropped: the test they ask for is coming.
  */
 // true while a request runs: config it reverts (practise words) restarts
 // with it, not again
@@ -283,6 +281,16 @@ export async function restartTest(
 }
 
 function requestRestart(options: RestartRequestOptions): void {
+  const restarting = getTestPhase() === "restarting";
+  if (restarting || untrack(isRestartShowing)) {
+    options.event?.preventDefault();
+    if (!(options.settingsChanged ?? false)) return;
+    if (restarting) {
+      void prepareRestart(Engine.requestRestart({}));
+      return;
+    }
+  }
+
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
     showNoticeNotification(
@@ -353,15 +361,10 @@ function requestRestart(options: RestartRequestOptions): void {
     withSameWordset = true;
   }
 
-  const restarting = getTestPhase() === "restarting";
-  // a restart in progress keeps its practise settings if it has them
-  const inProgress = restarting ? getRestartOptions() : undefined;
   if (
     PractiseWords.before.mode !== null &&
     !withSameWordset &&
-    !(options.practiseMissed ?? false) &&
-    !(inProgress?.withSameWordset ?? false) &&
-    !(inProgress?.practiseMissed ?? false)
+    !(options.practiseMissed ?? false)
   ) {
     showNoticeNotification("Reverting to previous settings.");
     if (PractiseWords.before.punctuation !== null) {
@@ -384,45 +387,54 @@ function requestRestart(options: RestartRequestOptions): void {
     PractiseWords.resetBefore();
   }
 
-  if (!restarting) resetTestState();
-  else options.event?.preventDefault();
+  resetTestState();
 
-  Engine.requestRestart(
-    isResultScreen() ? "resultPage" : "testPage",
-    {
+  void prepareRestart(
+    Engine.requestRestart({
       withSameWordset,
       practiseMissed: options.practiseMissed,
       noAnim: options.noAnim,
-    },
-    options.settingsChanged ?? false,
+    }),
   );
 }
 
-/** The restart is over: starts the one requested meanwhile, if any. */
-export function endRestart(): void {
-  const next = Engine.endRestart();
-  if (next !== null) void restartTest(next);
-}
+// whether the last committed restart generated a test (init didn't give up)
+let restartGenerated = false;
 
-/** The old test has faded out: generates the new one. */
-async function prepareRestart(): Promise<void> {
-  setInputElementValue("");
+/**
+ * Generates the new test for the restart holding `token`, while TestPage
+ * fades the old one out. Gives up at the next step once superseded.
+ */
+async function prepareRestart(token: number): Promise<void> {
+  testReinitCount = 0;
 
   await Funbox.rememberSettings();
+  if (!Engine.isCurrentRestart(token)) return;
 
-  const initResult = await init();
+  const initResult = await init(token);
+  if (initResult === "superseded") return;
 
-  if (!initResult) {
-    endRestart();
-    return;
+  if (initResult === "ok") {
+    await PaceCaret.init();
+    if (!Engine.isCurrentRestart(token)) return;
+    for (const fb of getActiveFunboxesWithFunction("restart")) {
+      fb.functions.restart();
+    }
   }
 
-  await PaceCaret.init();
+  restartGenerated = initResult === "ok";
+  // TestPage swaps it in (showRestartedTest) once the old test faded out
+  Engine.commitRestart(token);
+}
 
-  for (const fb of getActiveFunboxesWithFunction("restart")) {
-    fb.functions.restart();
-  }
-
+/**
+ * TestPage, once the old test has faded out and the restart committed: shows
+ * the new test while hidden. Outside effects and batches: replaceWords
+ * measures the new words as they render.
+ */
+export function showRestartedTest(source: "testPage" | "resultPage"): void {
+  if (!restartGenerated) return;
+  setInputElementValue("");
   setResultShown(false);
   setTypingTestHidden(false);
   setWordsInputPosition((position) => ({ ...position, left: 0 }));
@@ -431,11 +443,10 @@ async function prepareRestart(): Promise<void> {
   setLayoutfluidTimerVisible(false);
   setTestInitFailed(false);
   setTestInitError(null);
-  focusWordsEvent.dispatch({ force: true });
   if (!isOnline()) {
     showOfflineBanner();
   }
-  testRestartedEvent.dispatch(getRestartSource());
+  testRestartedEvent.dispatch(source);
   replaceWords(
     getTestSettings().mode === "zen"
       ? [{ display: "" }]
@@ -445,14 +456,6 @@ async function prepareRestart(): Promise<void> {
       zen: getTestSettings().mode === "zen",
     },
   );
-
-  // left mid restart: nothing fades the new test in
-  if (!untrack(isTestPageMounted)) {
-    endRestart();
-    return;
-  }
-  // TestPage fades the new test in, then calls endRestart()
-  Engine.restartPrepared();
 }
 
 // Changing a test setting restarts the test: one restart, however many
@@ -476,23 +479,13 @@ createRoot(() => {
   }
 });
 
-createRoot(() => {
-  createEffect(
-    on(getRestartStage, (stage) => {
-      // outside the effect: the new words are measured as they render
-      if (stage === "preparing") queueMicrotask(() => void prepareRestart());
-    }),
-  );
-});
-
 let lastInitError: Error | null = null;
 let showedLazyModeNotification: boolean = false;
 let testReinitCount = 0;
 
-async function init(): Promise<boolean> {
+/** Generates the test's words. "superseded": a newer restart took over. */
+async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
   console.debug("Initializing test");
-  // a retry reads the settings anew: requests since the last try merge in
-  Engine.reopenRestartRequests();
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
@@ -500,7 +493,7 @@ async function init(): Promise<boolean> {
       setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
     setTestInitFailed(true);
-    return false;
+    return "failed";
   }
 
   TestWords.resetWords();
@@ -510,18 +503,20 @@ async function init(): Promise<boolean> {
     JSONData.getLanguage(Config.language),
   );
   hideLoaderBar();
+  if (!Engine.isCurrentRestart(token)) return "superseded";
 
   if (error) {
     showErrorNotification("Failed to load language", { error });
   }
 
   if (!language || language.name !== Config.language) {
-    return await init();
+    return await init(token);
   }
 
   // the page may have unmounted while loading the language
   if (untrack(isTestPageMounted)) {
     await Funbox.activate();
+    if (!Engine.isCurrentRestart(token)) return "superseded";
   }
 
   if (Config.mode === "quote") {
@@ -550,6 +545,7 @@ async function init(): Promise<boolean> {
     const anySupportsLazyMode = (await Promise.all(languagePromises))
       .filter((lang) => lang !== null)
       .some((lang) => !lang.noLazyMode);
+    if (!Engine.isCurrentRestart(token)) return "superseded";
 
     if (Config.lazyMode && !anySupportsLazyMode) {
       setRememberLazyMode(true);
@@ -613,9 +609,11 @@ async function init(): Promise<boolean> {
   setIsLanguageRightToLeft(language.rightToLeft ?? false);
   setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
 
-  // requests from here on queue another restart: the words are generated
-  // from the settings as they are now
-  const { withSameWordset } = Engine.takeRestartRequests(CustomText.getData());
+  // the words are generated from the settings as they are now: a settings
+  // change from here on supersedes this generation
+  const { withSameWordset } = Engine.takeTestSettingsForRestart(
+    CustomText.getData(),
+  );
   setIsRepeated(withSameWordset);
   setIsPaceRepeat(Config.repeatedPace && withSameWordset);
 
@@ -628,6 +626,7 @@ async function init(): Promise<boolean> {
   let generatedSectionIndexes: number[] = [];
   try {
     const gen = await WordsGenerator.generateWords(language);
+    if (!Engine.isCurrentRestart(token)) return "superseded";
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
     wordsHaveTab = gen.hasTab;
@@ -654,7 +653,7 @@ async function init(): Promise<boolean> {
       });
     }
 
-    return await init();
+    return await init(token);
   }
 
   setWordsInfo({
@@ -698,7 +697,7 @@ async function init(): Promise<boolean> {
     "Test initialized with section indexes",
     generatedSectionIndexes,
   );
-  return true;
+  return "ok";
 }
 
 //add word during the test

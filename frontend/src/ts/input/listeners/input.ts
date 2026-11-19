@@ -10,7 +10,11 @@ import { afterTestCompositionUpdate } from "../helpers/after-input";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/engine/test-words";
-import { isResultCalculating, getCompositionData } from "../../states/test";
+import {
+  isResultCalculating,
+  isRestartShowing,
+  getCompositionData,
+} from "../../states/test";
 import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
 import { getCurrentInput } from "../../test/engine/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
@@ -93,7 +97,13 @@ export async function onInput(event: InputEvent): Promise<void> {
   }
 
   // just in case before input doesn't catch this
-  if (isResultCalculating() || getTestPhase() === "restarting") return;
+  if (
+    isResultCalculating() ||
+    getTestPhase() === "restarting" ||
+    isRestartShowing()
+  ) {
+    return;
+  }
 
   const now = performance.now();
 

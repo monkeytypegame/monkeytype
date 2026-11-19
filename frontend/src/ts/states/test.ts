@@ -12,11 +12,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import {
-  getRestartSource,
-  getRestartStage,
-  getTestPhase,
-} from "../test/engine/state";
+import { getTestPhase } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -39,18 +35,22 @@ import { clearTimeouts } from "../utils/misc";
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
+// What's on screen during a restart: set by TestPage only, around its fades.
+// The engine's phase is already "restarting" (then "idle") meanwhile.
+/** True while a restart fades the result out. */
+export const [isResultLeaving, setResultLeaving] = createSignal(false);
+/**
+ * True from a restart's fade-out until the new test has faded in. Input waits
+ * for it; other restart requests are dropped meanwhile.
+ */
+export const [isRestartShowing, setRestartShowing] = createSignal(false);
+
 /**
  * From the end of the words fade-out on finish until a restart has faded the
  * result out. Whether the result is rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
-  const phase = getTestPhase();
-  return (
-    phase === "finished" ||
-    (phase === "restarting" &&
-      getRestartSource() === "resultPage" &&
-      getRestartStage() === "fadingOut")
-  );
+  return getTestPhase() === "finished" || isResultLeaving();
 }
 
 // True from the first line of TestLogic.finish() until the result is built, so
