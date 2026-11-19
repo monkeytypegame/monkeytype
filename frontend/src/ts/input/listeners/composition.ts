@@ -1,5 +1,5 @@
 import * as TestLogic from "../../test/test-logic";
-import { setLastInsertCompositionTextData } from "../state";
+import { setDeadKeyPending, setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
 import { logTestEvent } from "../../test/events/data";
 import {
@@ -21,6 +21,8 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   if (isTestRestarting() || isResultCalculating()) return;
   setComposing(true);
+  // real composition (linux) handles the dead key itself
+  setDeadKeyPending(false);
   setCompositionData("");
   setLastInsertCompositionTextData("");
   if (!isTestActive()) {

@@ -51,3 +51,15 @@ export function getLastInsertCompositionTextData(): string {
 export function setLastInsertCompositionTextData(value: string): void {
   lastInsertCompositionTextData = value;
 }
+
+// windows dead keys only fire a keydown with key "Dead" (no composition events),
+// so we track the pending accent ourselves
+let deadKeyPending = false;
+
+export function isDeadKeyPending(): boolean {
+  return deadKeyPending;
+}
+
+export function setDeadKeyPending(value: boolean): void {
+  deadKeyPending = value;
+}
