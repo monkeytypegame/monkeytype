@@ -47,10 +47,9 @@ import {
   showRestartedTest,
 } from "../../../test/test-logic";
 import {
-  fadeTest,
   focusWordsEvent,
   markTestPageMounted,
-  registerFade,
+  registerFinishFadeOut,
   testRestartedEvent,
 } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
@@ -90,6 +89,7 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
+  let resultRef: HTMLDivElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -160,19 +160,27 @@ export function TestPage(): JSXElement {
     );
   });
 
-  const unregisterFade = registerFade(
-    "typingTest",
-    async (direction, duration) => {
+  /** Resolves when the animation ends, or at once without the element. */
+  const fade = async (
+    el: HTMLElement | undefined,
+    direction: "in" | "out",
+    noAnim: boolean,
+  ): Promise<void> => {
+    if (el === undefined) return;
+    // synchronous, so the shown test can't paint before the fade starts
+    if (direction === "in") el.style.opacity = "0";
+    await Misc.promiseAnimate(el, {
+      opacity: direction === "in" ? [0, 1] : 0,
+      duration: noAnim ? 0 : Misc.applyReducedMotion(125),
+    });
+  };
+  // T6c: the finish fade-out follows the phase here
+  onCleanup(
+    registerFinishFadeOut(async (duration) => {
       if (typingTestRef === undefined) return;
-      // synchronous, so the shown test can't paint before the fade starts
-      if (direction === "in") typingTestRef.style.opacity = "0";
-      await Misc.promiseAnimate(typingTestRef, {
-        opacity: direction === "in" ? [0, 1] : 0,
-        duration,
-      });
-    },
+      await Misc.promiseAnimate(typingTestRef, { opacity: 0, duration });
+    }),
   );
-  onCleanup(unregisterFade);
 
   // Restart display: the engine generates at once; this fades out what's on
   // screen, then swaps the new test in (hidden) once the restart committed,
@@ -187,8 +195,8 @@ export function TestPage(): JSXElement {
     // what's rendered: the phase is already "restarting"
     source = untrack(isResultShown) ? "resultPage" : "testPage";
     if (source === "resultPage") setResultLeaving(true);
-    await fadeTest(
-      source === "resultPage" ? "result" : "typingTest",
+    await fade(
+      source === "resultPage" ? resultRef : typingTestRef,
       "out",
       noAnim,
     );
@@ -203,8 +211,8 @@ export function TestPage(): JSXElement {
     }
     display = "in";
     showRestartedTest(source);
-    // fadeTest hides the test synchronously, before the new words paint
-    await fadeTest("typingTest", "in", untrack(getRestartOptions).noAnim);
+    // fade hides the test synchronously, before the new words paint
+    await fade(typingTestRef, "in", untrack(getRestartOptions).noAnim);
     // a restart began meanwhile: it fades the test out again
     if (display !== "in") return;
     display = "idle";
@@ -371,7 +379,7 @@ export function TestPage(): JSXElement {
         </div>
       </Show>
       <Show when={isResultShown()}>
-        <TestResult />
+        <TestResult ref={(el) => (resultRef = el)} />
       </Show>
     </>
   );
