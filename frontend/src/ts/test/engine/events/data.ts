@@ -28,8 +28,8 @@ import { getMode2 } from "../../../utils/misc";
 import { getCurrentQuote, isResultCalculating } from "../../../states/test";
 import {
   getActiveWordIndex,
-  getBailedOut,
   getKoreanStatus,
+  getTestEnd,
   scheduleLiveStatsFlush,
 } from "../state";
 // oxlint-disable-next-line no-restricted-imports -- T6b: read from the test settings
@@ -41,7 +41,7 @@ export function buildEventLog(): EventLog {
     mode: Config.mode,
     mode2: getMode2(Config, getCurrentQuote()),
     hasKorean: getKoreanStatus(),
-    bailedOut: getBailedOut(),
+    bailedOut: getTestEnd()?.type === "bailedOut",
     ...(Config.mode === "custom" && {
       customTextLimitMode: CustomText.getLimit().mode,
       customTextLimitValue: CustomText.getLimit().value,

@@ -15,12 +15,12 @@ import {
   freezeLog,
   getActiveWordIndex,
   getPhase,
-  setBailedOut,
-  setFailReason,
+  setTestEnd,
   setKoreanStatus,
   setLastBurst,
   setPhase,
   startLiveStats,
+  type TestEnd,
 } from "./state";
 import * as TestTimer from "./test-timer";
 
@@ -40,17 +40,21 @@ export function start(): void {
 }
 
 /**
- * Freezes the test: force-releases held keys, switches to finished (failed
- * when given a reason) and builds the frozen log. Doesn't publish it: see
- * publishFrozenLog().
+ * The test is ending: records how, before the words fade out (the words
+ * progress bar reads it at once). T6c: part of finish(), on its first line.
  */
-export function finish(failReason: string | null = null): EventLog {
+export function recordEnd(end: TestEnd): void {
+  setTestEnd(end);
+}
+
+/**
+ * Freezes the test: force-releases held keys, switches to finished and builds
+ * the frozen log. Doesn't publish it: see publishFrozenLog().
+ */
+export function finish(): EventLog {
   // T6c: runs on finish()'s first line and drops events logged after it
   forceReleaseAllKeys();
-  batch(() => {
-    setPhase("finished");
-    setFailReason(failReason);
-  });
+  setPhase("finished");
   cleanupData();
   if (isDevEnvironment()) logEventsDataToTheConsoleTable();
   const log = buildEventLog();
@@ -64,8 +68,7 @@ export function reset(): void {
   TestTimer.clear();
   batch(() => {
     if (getPhase() === "active") setPhase("idle");
-    setBailedOut(false);
-    setFailReason(null);
+    setTestEnd(null);
     setKoreanStatus(false);
   });
 }

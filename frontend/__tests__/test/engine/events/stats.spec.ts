@@ -58,7 +58,7 @@ vi.mock("../../../../src/ts/states/test", () => ({
 
 vi.mock("../../../../src/ts/test/engine/state", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
-  getBailedOut: () => false,
+  getTestEnd: () => null,
   getKoreanStatus: () => false,
   scheduleLiveStatsFlush: () => undefined,
 }));

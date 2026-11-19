@@ -17,7 +17,7 @@ import { EventLog } from "./events/types";
  * - idle: words ready, waiting for the first keystroke
  * - active: typing, the timer runs
  * - finished: from the end of the words fade-out until a restart, passed or
- *   failed (see getFailReason)
+ *   failed (see getTestEnd)
  * - restarting: from the restart's first fade-out until the new test is ready
  */
 export type Phase = "idle" | "active" | "finished" | "restarting";
@@ -61,20 +61,21 @@ export function setWordsInfo(info: {
   });
 }
 
-// ---- fail reason
+// ---- test end
+
+/**
+ * How the test ended. bailedOut: the user ended it early; it counts, but
+ * doesn't run to its limit. failed: a fail check stopped it ("min accuracy",
+ * "slow timer"…).
+ */
+export type TestEnd =
+  | { type: "completed" }
+  | { type: "bailedOut" }
+  | { type: "failed"; reason: string };
 
 // setter for engine/commands only
-/** Why the finished test failed ("min accuracy", "slow timer"…); null if it passed. */
-export const [getFailReason, setFailReason] = createSignal<string | null>(null);
-
-// ---- bail out
-
-export const [getBailedOut, setBailedOut] = createSignal(false);
-
-/** The user ends the test early: it counts, but doesn't run to its limit. */
-export function bailOut(): void {
-  setBailedOut(true);
-}
+/** How the test ended; null until it ends. */
+export const [getTestEnd, setTestEnd] = createSignal<TestEnd | null>(null);
 
 // ---- frozen log
 

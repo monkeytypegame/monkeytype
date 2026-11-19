@@ -78,11 +78,11 @@ import {
 import {
   clearLiveStats,
   getActiveWordIndex,
-  getBailedOut,
-  getFailReason,
+  getTestEnd,
   getPhase,
   publishFrozenLog,
   setWordsInfo,
+  type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
 import "./timer-effects";
@@ -326,7 +326,7 @@ export async function restartTest(
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (getPhase() === "active" || getFailReason() !== null)
+    (getPhase() === "active" || getTestEnd()?.type === "failed")
   ) {
     options.withSameWordset = true;
   }
@@ -837,7 +837,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config, currentQuote),
-    bailedOut: getBailedOut(),
+    bailedOut: getTestEnd()?.type === "bailedOut",
     funbox: Config.funbox,
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
@@ -863,9 +863,14 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   return completedEvent;
 }
 
-/** Ends the test; with a reason, as failed (see fail()). */
-export async function finish(failReason: string | null = null): Promise<void> {
+/** Ends the test: completed by default, or bailed out / failed (see fail()). */
+export async function finish(
+  end: TestEnd = { type: "completed" },
+): Promise<void> {
   if (getPhase() !== "active") return;
+  Engine.recordEnd(end);
+  const bailedOut = end.type === "bailedOut";
+  const failReason = end.type === "failed" ? end.reason : null;
   setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
@@ -884,7 +889,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
     setIsRepeated(false);
   }
 
-  const eventLog = Engine.finish(failReason);
+  const eventLog = Engine.finish();
   const difficultyFailed = failReason !== null;
   const ce = buildCompletedEvent(eventLog);
   PaceCaret.setLastTestWpm(ce.wpm);
@@ -931,7 +936,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
   let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (getBailedOut()) afkDetected = false;
+  if (bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -940,7 +945,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !getBailedOut() &&
+    !bailedOut &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
@@ -1035,7 +1040,7 @@ export async function finish(failReason: string | null = null): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      getBailedOut() ||
+      bailedOut ||
       getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
@@ -1349,7 +1354,7 @@ export function fail(reason: string): void {
       ),
     );
   }
-  void finish(reason);
+  void finish({ type: "failed", reason });
 }
 
 const debouncedZipfCheck = debounce(250, async () => {

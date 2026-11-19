@@ -1,7 +1,6 @@
 import { Config } from "../../config/store";
 import { getCustomTextIndicator } from "../../states/core";
 import * as CustomText from "../../test/custom-text";
-import { bailOut } from "../../test/engine/state";
 import * as TestLogic from "../../test/test-logic";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -38,8 +37,7 @@ const subgroup: CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        bailOut();
-        void TestLogic.finish();
+        void TestLogic.finish({ type: "bailedOut" });
       },
       available: (): boolean => {
         return canBailOut();

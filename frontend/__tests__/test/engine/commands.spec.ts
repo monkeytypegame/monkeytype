@@ -2,13 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as Engine from "../../../src/ts/test/engine/commands";
 import {
-  bailOut,
   clearLiveStats,
   getActiveWordIndex,
-  getBailedOut,
-  getFailReason,
   getFrozenLog,
   getPhase,
+  getTestEnd,
   liveStats,
   incrementActiveWordIndex,
   decrementActiveWordIndex,
@@ -49,17 +47,17 @@ describe("engine", () => {
       Engine.start();
       const log = Engine.finish();
       expect(getPhase()).toBe("finished");
-      expect(getFailReason()).toBeNull();
       expect(log.events).toEqual([]);
     });
 
-    it("fail finishes with a reason, cleared by reset", () => {
+    it("records how the test ended, cleared by reset", () => {
       Engine.start();
-      Engine.finish("min accuracy");
+      Engine.recordEnd({ type: "failed", reason: "min accuracy" });
+      Engine.finish();
       expect(getPhase()).toBe("finished");
-      expect(getFailReason()).toBe("min accuracy");
+      expect(getTestEnd()).toEqual({ type: "failed", reason: "min accuracy" });
       Engine.reset();
-      expect(getFailReason()).toBeNull();
+      expect(getTestEnd()).toBeNull();
     });
 
     it("reset ends an active test, but keeps a finished one", () => {
@@ -110,15 +108,6 @@ describe("engine", () => {
       expect(getActiveWordIndex()).toBe(1);
       resetActiveWordIndex();
       expect(getActiveWordIndex()).toBe(0);
-    });
-  });
-
-  describe("bail out", () => {
-    it("is cleared by reset", () => {
-      bailOut();
-      expect(getBailedOut()).toBe(true);
-      Engine.reset();
-      expect(getBailedOut()).toBe(false);
     });
   });
 

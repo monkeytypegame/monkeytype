@@ -18,7 +18,7 @@ import {
 import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
 import { loadKeymapLayout } from "../../states/test";
-import { bailOut, wordsHaveTab } from "../../test/engine/state";
+import { wordsHaveTab } from "../../test/engine/state";
 
 import { getCustomTextIndicator } from "../../states/core";
 import {
@@ -68,8 +68,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        bailOut();
-        void TestLogic.finish();
+        void TestLogic.finish({ type: "bailedOut" });
         return;
       }
     }
