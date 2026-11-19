@@ -238,13 +238,49 @@ body.aismode
   animation: none;
 }
 
-/* stripe the table rows a bit: a hint of the main color, brighter on hover */
+/*
+ * stripe the table rows up: the striped rows get a gradient, a hairline glow
+ * border and a corner glow, so they read as floating cards. The table's base
+ * striping fades out at the row edges, the gradient follows that.
+ */
 body.aismode table tbody tr:not([data-state="selected"]):nth-child(odd) > td {
-  background: color-mix(in srgb, var(--main-color) 12%, var(--sub-alt-color));
+  background:
+    linear-gradient(
+      90deg,
+      var(--sub-alt-color),
+      color-mix(in srgb, var(--main-color) 16%, var(--sub-alt-color)) 35%,
+      var(--sub-alt-color)
+    ),
+    color-mix(in srgb, var(--main-color) 7%, transparent);
+  border-block: 1px solid color-mix(in srgb, var(--main-color) 25%, transparent);
 }
 
-body.aismode table tbody tr:hover > td {
-  background: color-mix(in srgb, var(--main-color) 22%, var(--sub-alt-color));
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:first-child {
+  border-radius: 0.625rem 0 0 0.625rem;
+  border-left: 1px solid color-mix(in srgb, var(--main-color) 45%, transparent);
+}
+
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:last-child {
+  border-radius: 0 0.625rem 0.625rem 0;
+  border-right: 1px solid color-mix(in srgb, var(--main-color) 45%, transparent);
+}
+
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:only-child {
+  border-inline: 1px solid
+    color-mix(in srgb, var(--main-color) 45%, transparent);
+  border-radius: 0.625rem;
 }
 
 /* nav items glow in their own color */
