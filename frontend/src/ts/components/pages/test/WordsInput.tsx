@@ -32,10 +32,10 @@ import {
   wordsInputPosition,
 } from "../../../states/test";
 import { getTestId, isTestActive } from "../../../test/engine/state";
-import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 import { isAnyPopupVisible } from "../../../utils/misc";
+import { focusWordsEvent } from "./focus-words";
 
 /**
  * The hidden textarea the typing test reads input from (#wordsInput). Follows

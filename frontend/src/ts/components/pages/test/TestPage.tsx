@@ -57,10 +57,7 @@ import {
   onRestartButtonClick,
   restartTest,
 } from "../../../test/test-logic";
-import {
-  focusWordsEvent,
-  markTestPageMounted,
-} from "../../../test/test-page-bridge";
+import { markTestPageMounted } from "../../../test/test-page-bridge";
 import {
   closeResultWords,
   toggleResultWords,
@@ -72,6 +69,7 @@ import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
+import { focusWordsEvent } from "./focus-words";
 import { FunboxTimer } from "./FunboxTimer";
 import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
