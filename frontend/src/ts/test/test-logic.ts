@@ -247,7 +247,7 @@ type RestartRequestOptions = Partial<RestartOptions> & {
   nosave?: boolean;
   event?: KeyboardEvent;
   isQuickRestart?: boolean;
-  /** A test setting changed: queues a restart even after the settings were taken. */
+  /** A test setting changed: supersedes a restart in progress, or restarts the test still fading in. */
   settingsChanged?: boolean;
 };
 
@@ -418,7 +418,7 @@ async function prepareRestart(token: number): Promise<void> {
     setTestInitFailed(false);
     setTestInitError(null);
   }
-  // TestPage swaps it in (showRestartedTest) once the old test faded out
+  // TestPage swaps it in once the old test has faded out
   Engine.commitRestart(token);
 }
 

@@ -8,7 +8,8 @@ import { setFontPreview } from "../states/font";
 // modules they call import the config setters (a circular import otherwise).
 // the test restarts: a change already restarts through the test settings
 // effect (test-logic); these also restart when the value is unchanged, as
-// picking the current option always did. They merge into one restart.
+// picking the current option always did. When the value changed, the
+// effect's restart is already running and this request is dropped.
 
 export type CommandlineConfigActions<K extends keyof ConfigSchemas.Config> = {
   subgroup?: {

@@ -295,7 +295,7 @@ describe("TestPage", () => {
       expect(page.getRestartCount()).toBe(0);
     });
 
-    it("merges restart requests into one", async () => {
+    it("drops a second request during a restart", async () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
 
       page.restart();
