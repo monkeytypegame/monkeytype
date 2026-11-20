@@ -2,12 +2,11 @@ import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
 import Ape from "../../../ape";
+import { reauthenticate, signOut } from "../../../auth/actions";
 import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
-  reauthenticate,
-  signOut,
-} from "../../../auth/actions";
+} from "../../../auth/methods";
 import { isAuthenticated } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";

@@ -1,64 +1,37 @@
-import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
-import { typedKeys } from "@monkeytype/util/objects";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { createMemo, createRoot } from "solid-js";
-import { z, ZodString } from "zod";
 
 import Ape from "../ape";
-import {
-  AuthError,
-  AuthMethod,
-  AuthUser,
-  ThirdPartyAuthMethod,
-  SignInOptions,
-} from "./providers/types";
-import {
-  signOut as authSignOut,
-  createUser,
-  finishSignUp,
-  getAuthenticatedUser,
-  isAuthAvailable,
-  cancelSignUp,
-  requireAuthProvider,
-  signIn as providerSignIn,
-} from "./session";
-import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import { createEffectOn } from "../hooks/effects";
-import { getUserId, isAuthenticated } from "./state";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import { FaObject } from "../types/font-awesome";
-import { isDevEnvironment } from "../utils/env";
 import { createErrorMessage } from "../utils/error";
-
-type AuthMethodInfo = {
-  display: string;
-  fa: FaObject;
-};
-
-/**
- * auth methods, keep order from most to least preferred.
- * This is used for reauthenticate
- */
-const authMethods = {
-  password: {
-    display: "Password",
-    fa: { icon: "fa-lock" },
-  },
-  github: {
-    display: "GitHub",
-    fa: { variant: "brand", icon: "fa-github" },
-  },
-  google: {
-    display: "Google",
-    fa: { variant: "brand", icon: "fa-google" },
-  },
-} as const satisfies Record<AuthMethod, AuthMethodInfo>;
-
-export type { AuthMethod, ThirdPartyAuthMethod as ProviderAuthMethod };
+import {
+  getAuthMethodDisplay,
+  getPreferredAuthenticationMethod,
+} from "./methods";
+import {
+  AuthError,
+  AuthMethod,
+  AuthUser,
+  SignInOptions,
+  ThirdPartyAuthMethod,
+} from "./providers/types";
+import {
+  cancelSignUp,
+  createUser,
+  finishSignUp,
+  getAuthenticatedUser,
+  isAuthAvailable,
+  linkPassword,
+  linkProvider,
+  reauthenticate as sessionReauthenticate,
+  signIn as sessionSignIn,
+  signOut as sessionSignOut,
+  unlink,
+} from "./session";
+import { isAuthenticated } from "./state";
 
 export type AuthResult =
   | {
@@ -85,45 +58,6 @@ type ReauthenticateOptions = {
   password?: string;
 };
 
-const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
-  createSignalWithSetters<Pick<AuthUser, "methods"> | null>(null)({
-    updateAuthenticatedUser: (set) => {
-      const user = getAuthenticatedUser();
-      if (user === null) {
-        set(null);
-      } else {
-        set({ methods: user.methods });
-      }
-    },
-  });
-export { getAuthenticatedUser };
-
-createRoot(() =>
-  createEffectOn(getUserId, () => {
-    updateAuthenticatedUser();
-  }),
-);
-
-const authenticationMemos = createRoot(() =>
-  Object.fromEntries(
-    typedKeys(authMethods).map((authMethod) => {
-      const memo = createMemo(() => {
-        const user = getAuthenticatedUserReactive();
-        if (user === null) return undefined;
-        const provider = user.methods.find((it) => it.method === authMethod);
-        const result = {
-          isInUse: provider !== undefined,
-          email: provider?.email ?? undefined,
-          hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
-        };
-
-        return result;
-      });
-      return [authMethod, memo];
-    }),
-  ),
-);
-
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
@@ -146,7 +80,7 @@ export async function signIn(options: SignInOptions): Promise<AuthResult> {
     return { success: false, message: "Authentication uninitialized" };
   }
 
-  const { error } = await tryCatch(providerSignIn(options));
+  const { error } = await tryCatch(sessionSignIn(options));
 
   if (error !== null) {
     return { success: false, message: error.message };
@@ -178,11 +112,10 @@ export async function addAuthProvider(
     if (authMethod === "password") {
       await addPasswordProvider(options);
     } else {
-      await requireAuthProvider().linkProvider(authMethod);
+      await linkProvider(authMethod);
     }
 
     showSuccessNotification(`${providerName} authentication added`);
-    updateAuthenticatedUser();
   } catch (error) {
     showErrorNotification(`Failed to add ${providerName} authentication`, {
       error,
@@ -200,7 +133,7 @@ async function addPasswordProvider(options: {
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
-  await requireAuthProvider().linkPassword(options.email, options.password);
+  await linkPassword(options.email, options.password);
   const response = await Ape.users.updateEmail({
     body: {
       newEmail: options.email,
@@ -230,8 +163,7 @@ export async function removeAuthProvider(
     };
   }
   try {
-    await requireAuthProvider().unlink(authMethod);
-    updateAuthenticatedUser();
+    await unlink(authMethod);
   } catch (e) {
     const message = createErrorMessage(
       e,
@@ -257,7 +189,7 @@ export function signOut(): void {
     return;
   }
   if (!isAuthenticated()) return;
-  void authSignOut();
+  void sessionSignOut();
 }
 
 export async function signUp(
@@ -342,12 +274,12 @@ export async function reauthenticate(
           message: "Failed to reauthenticate using password: password missing.",
         };
       }
-      await requireAuthProvider().reauthenticate({
+      await sessionReauthenticate({
         method: "password",
         password: options.password,
       });
     } else {
-      await requireAuthProvider().reauthenticate({ method: authMethod });
+      await sessionReauthenticate({ method: authMethod });
     }
 
     return {
@@ -377,70 +309,4 @@ export async function reauthenticate(
       };
     }
   }
-}
-
-function getPreferredAuthenticationMethod(
-  exclude?: AuthMethod,
-): AuthMethod | undefined {
-  const filteredMethods = typedKeys(authMethods).filter((it) => it !== exclude);
-  for (const method of filteredMethods) {
-    if (isUsingAuthentication(method)) return method;
-  }
-  return undefined;
-}
-
-export function isUsingAuthentication(authMethod: AuthMethod): boolean {
-  return (
-    getAuthenticatedUser()?.methods.some((it) => it.method === authMethod) ??
-    false
-  );
-}
-
-export function isUsingAuthenticationReactive(authMethod: AuthMethod): boolean {
-  return authenticationMemos[authMethod]?.()?.isInUse ?? false;
-}
-
-/**
- * Returns the Zod schema for password validation.
- *
- * Set `isNew: true` for registration/creation flows (strict rules).
- * Omit it for re-authentication flows (lenient: just non-empty).
- *
- * @param options - Set `isNew: true` for password creation/registration.
- * @returns A Zod string schema.
- */
-export function getPasswordSchema(options?: { isNew: boolean }): ZodString {
-  if (!options?.isNew) return PasswordSchema;
-  if (isDevEnvironment()) return z.string().min(6);
-  return NewPasswordSchema;
-}
-
-export function isUsingPasswordAuthentication(): boolean {
-  return isUsingAuthentication("password");
-}
-
-export function hasAdditionalAuthMethods(authMethod: AuthMethod): boolean {
-  return typedKeys(authMethods).some(
-    (it) => it !== authMethod && isUsingAuthentication(it),
-  );
-}
-
-export function getAuthMethodEmailReactive(
-  authMethod: AuthMethod,
-): string | undefined {
-  return authenticationMemos[authMethod]?.()?.email;
-}
-
-export function hasAdditionalAuthMethodsReactive(
-  authMethod: AuthMethod,
-): boolean {
-  return authenticationMemos[authMethod]?.()?.hasAdditionalAuthMethods ?? false;
-}
-
-export function getAuthMethodDisplay(authMethod: AuthMethod): string {
-  return authMethods[authMethod].display;
-}
-
-export function getAuthMethodIcon(authMethod: AuthMethod): FaObject {
-  return authMethods[authMethod].fa;
 }

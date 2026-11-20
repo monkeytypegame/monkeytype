@@ -1,7 +1,8 @@
 import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
-import { addAuthProvider, getPasswordSchema } from "../../../auth/actions";
+import { addAuthProvider } from "../../../auth/actions";
+import { getPasswordSchema } from "../../../auth/methods";
 import { showSimpleModal } from "../../../states/simple-modal";
 
 export function showAddPasswordAuthModal(): void {

@@ -2,11 +2,11 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
 import Ape from "../../../ape";
+import { reauthenticate } from "../../../auth/actions";
 import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
-  reauthenticate,
-} from "../../../auth/actions";
+} from "../../../auth/methods";
 import { isAuthenticated } from "../../../auth/state";
 import { updateName, getUserData } from "../../../queries/user";
 import { showSimpleModal } from "../../../states/simple-modal";

@@ -1,15 +1,18 @@
 import { createSignal, Show } from "solid-js";
 
-import {
-  addAuthProvider,
+import type {
   AuthMethod,
+  ThirdPartyAuthMethod,
+} from "../../../auth/providers/types";
+
+import { addAuthProvider } from "../../../auth/actions";
+import {
   getAuthMethodDisplay,
   getAuthMethodEmailReactive,
   getAuthMethodIcon,
   hasAdditionalAuthMethodsReactive,
   isUsingAuthenticationReactive,
-  ProviderAuthMethod,
-} from "../../../auth/actions";
+} from "../../../auth/methods";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";
@@ -73,7 +76,7 @@ function PasswordAuthentication() {
   );
 }
 
-function ProviderAuthentication(props: { authMethod: ProviderAuthMethod }) {
+function ProviderAuthentication(props: { authMethod: ThirdPartyAuthMethod }) {
   return (
     <Section
       title={`${getAuthMethodDisplay(props.authMethod)}`}

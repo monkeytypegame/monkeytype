@@ -12,10 +12,15 @@ import {
   finishSignUp,
   getAuthenticatedUser,
   initAuth,
+  linkProvider,
   isAuthAvailable,
   signIn,
 } from "../../src/ts/auth/session";
-import { getAuthState, getUserId } from "../../src/ts/auth/state";
+import {
+  getAuthMethods,
+  getAuthState,
+  getUserId,
+} from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 
 const user: AuthUser = {
@@ -46,6 +51,12 @@ const provider = {
   signIn: vi.fn(async () => {
     providerReports(user);
     return { user, isNewUser: fake.isNewUser };
+  }),
+  linkProvider: vi.fn(async (method) => {
+    fake.currentUser = {
+      ...user,
+      methods: [...user.methods, { method, email: null }],
+    };
   }),
   createUser: vi.fn(async () => {
     providerReports(user);
@@ -142,6 +153,16 @@ describe("auth session", () => {
     expect(getUserId()).toBeNull();
     providerReports(user);
     expect(getUserId()).toBe("uid");
+  });
+  it("linking a method updates the auth methods signal", async () => {
+    providerReports(user);
+    expect(getAuthMethods()).toEqual([]);
+
+    await linkProvider("github");
+    expect(getAuthMethods()).toEqual([{ method: "github", email: null }]);
+
+    providerReports(null);
+    expect(getAuthMethods()).toEqual([]);
   });
 });
 

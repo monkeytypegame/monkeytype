@@ -1,15 +1,22 @@
 import { batch } from "solid-js";
 import { addBanner } from "../states/banners";
-import { setAuthState, setUserId, setUserVerified } from "./state";
+import {
+  setAuthMethods,
+  setAuthState,
+  setUserId,
+  setUserVerified,
+} from "./state";
 import { showGoogleSignUpModal } from "../states/google-sign-up";
 import { isDevEnvironment } from "../utils/env";
 import { promiseWithResolvers } from "../utils/misc";
 
 import {
+  AuthMethod,
   AuthProvider,
   AuthUser,
   SignInOptions,
   SignInResult,
+  ThirdPartyAuthMethod,
 } from "./providers/types";
 
 let provider: AuthProvider | undefined;
@@ -51,7 +58,7 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
   }
 }
 
-export function requireAuthProvider(): AuthProvider {
+function requireAuthProvider(): AuthProvider {
   if (provider === undefined) throw new Error("Authentication uninitialized");
   return provider;
 }
@@ -136,16 +143,62 @@ export async function cancelSignUp(): Promise<void> {
   await provider?.signOut();
 }
 
-/** The only writer of the auth signals (auth state, user id, verified). */
+/** Deletes the signed in user from the auth provider. */
+export async function deleteUser(): Promise<void> {
+  await requireAuthProvider().deleteUser();
+}
+
+/** Proves the user is present before a sensitive change. */
+export async function reauthenticate(
+  options:
+    | { method: "password"; password: string }
+    | { method: ThirdPartyAuthMethod },
+): Promise<void> {
+  await requireAuthProvider().reauthenticate(options);
+}
+
+/** Adds password auth with this email, which becomes the account's email. */
+export async function linkPassword(
+  email: string,
+  password: string,
+): Promise<void> {
+  await requireAuthProvider().linkPassword(email, password);
+  refreshUserState();
+}
+
+export async function linkProvider(
+  method: ThirdPartyAuthMethod,
+): Promise<void> {
+  await requireAuthProvider().linkProvider(method);
+  refreshUserState();
+}
+
+export async function unlink(method: AuthMethod): Promise<void> {
+  await requireAuthProvider().unlink(method);
+  refreshUserState();
+}
+
+/** Rewrites the auth signals after the signed in user changed in place. */
+function refreshUserState(): void {
+  if (holdUserChanges) return;
+  setUserState(getAuthenticatedUser());
+}
+
+/**
+ * The only writer of the auth signals (auth state, user id, verified, auth
+ * methods).
+ */
 function setUserState(user: AuthUser | null): void {
   batch(() => {
     if (user === null) {
       setUserId(null);
       setUserVerified(false);
+      setAuthMethods([]);
       setAuthState("signedOut");
     } else {
       setUserId(user.uid);
       setUserVerified(user.emailVerified);
+      setAuthMethods(user.methods);
       setAuthState("signedIn");
     }
   });

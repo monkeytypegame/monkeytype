@@ -3,11 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 
 import Ape from "../../ape";
 import { sendVerificationEmail } from "../../auth/actions";
-import {
-  cancelSignUp,
-  finishSignUp,
-  requireAuthProvider,
-} from "../../auth/session";
+import { cancelSignUp, finishSignUp, deleteUser } from "../../auth/session";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,
@@ -106,11 +102,9 @@ async function afterHide(): Promise<void> {
 async function cancelGoogleSignUp(): Promise<void> {
   try {
     await Ape.users.delete();
-    await requireAuthProvider()
-      .deleteUser()
-      .catch(() => {
-        //user might be deleted already by the server
-      });
+    await deleteUser().catch(() => {
+      //user might be deleted already by the server
+    });
   } finally {
     await cancelSignUp();
     setGoogleSignUpUser(undefined);

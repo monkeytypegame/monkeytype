@@ -1,13 +1,14 @@
 import { z } from "zod";
 
+import type { AuthMethod } from "../../../auth/providers/types";
+
+import { removeAuthProvider } from "../../../auth/actions";
 import {
-  AuthMethod,
   getAuthMethodDisplay,
   getPasswordSchema,
   hasAdditionalAuthMethods,
   isUsingPasswordAuthentication,
-  removeAuthProvider,
-} from "../../../auth/actions";
+} from "../../../auth/methods";
 import { isAuthenticated } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";

@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 import Ape from "../../../ape";
+import { reauthenticate } from "../../../auth/actions";
 import {
   getPasswordSchema,
   isUsingPasswordAuthentication,
-  reauthenticate,
-} from "../../../auth/actions";
+} from "../../../auth/methods";
 import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { resetPersonalBests } from "../../../queries/user";

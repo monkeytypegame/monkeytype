@@ -1,11 +1,8 @@
 import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
-import {
-  AuthResult,
-  getAuthMethodDisplay,
-  signIn,
-} from "../../../auth/actions";
+import { AuthResult, signIn } from "../../../auth/actions";
+import { getAuthMethodDisplay } from "../../../auth/methods";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
