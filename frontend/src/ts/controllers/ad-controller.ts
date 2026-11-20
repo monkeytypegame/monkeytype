@@ -5,6 +5,7 @@ import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { adSlotMediaQueries } from "../components/common/Advertisement";
 import { isTestActive } from "../test/engine/state";
+import { isDevEnvironment } from "../utils/env";
 import {
   getAdBlock,
   getCookieBlocker,
@@ -14,6 +15,9 @@ import {
 // import { createEffect } from "solid-js";
 
 let initialised = false;
+
+// dev: the slots show as empty placeholders, no third party ad scripts load
+const noAdScripts = isDevEnvironment();
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
 const choice: "eg" | "pw" = "pw";
@@ -103,7 +107,7 @@ export async function checkCookieblocker(): Promise<void> {
 }
 
 export async function reinstate(): Promise<boolean> {
-  if (Config.ads === "off") return false;
+  if (Config.ads === "off" || noAdScripts) return false;
   if (!initialised) {
     init();
     return true;
@@ -120,7 +124,7 @@ export async function reinstate(): Promise<boolean> {
 }
 
 export async function renderResult(): Promise<void> {
-  if (Config.ads === "off") return;
+  if (Config.ads === "off" || noAdScripts) return;
   if (!initialised) {
     init();
   }
@@ -138,6 +142,7 @@ export async function renderResult(): Promise<void> {
 }
 
 export function showConsentPopup(): void {
+  if (noAdScripts) return;
   if (choice === "eg") {
     //@ts-expect-error 3rd party ad code, doesnt have types
     // oxlint-disable-next-line no-unsafe-call
