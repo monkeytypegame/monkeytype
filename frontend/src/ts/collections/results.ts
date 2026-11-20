@@ -815,14 +815,15 @@ export async function getSecondsTypedSinceOnce(since: number): Promise<number> {
       .from({ r: resultsCollection })
       .where(({ r }) => gte(r.timestamp, since))
       .select(({ r }) => ({
-        testDuration: r.testDuration,
-        incompleteTestSeconds: r.incompleteTestSeconds,
-        afkDuration: r.afkDuration,
+        testDuration: sum(r.testDuration),
+        incompleteTestSeconds: sum(r.incompleteTestSeconds),
+        afkDuration: sum(r.afkDuration),
       })),
   );
-  return results.reduce(
-    (seconds, r) =>
-      seconds + r.testDuration + r.incompleteTestSeconds - r.afkDuration,
-    0,
+  // no results today: no row
+  const totals = results[0];
+  if (totals === undefined) return 0;
+  return (
+    totals.testDuration + totals.incompleteTestSeconds - totals.afkDuration
   );
 }
