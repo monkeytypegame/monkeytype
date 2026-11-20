@@ -51,11 +51,6 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
   }
 }
 
-/** The provider, or `undefined` when auth is unavailable. */
-export function getAuthProvider(): AuthProvider | undefined {
-  return provider;
-}
-
 export function requireAuthProvider(): AuthProvider {
   if (provider === undefined) throw new Error("Authentication uninitialized");
   return provider;
