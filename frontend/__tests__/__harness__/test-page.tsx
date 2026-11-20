@@ -72,7 +72,7 @@ import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
-import { isRestartAnimating } from "../../src/ts/states/test";
+import { isRestartAnimating, isTestFadedOut } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import {
   isResultPending,
@@ -210,6 +210,8 @@ export type TestPageHarness = {
   };
   /** What the result screen shows: the result, or the spinner meanwhile. */
   resultScreen: () => { result: boolean; spinner: boolean };
+  /** The test has faded out on finish (the ads show), until a restart swaps the new one in. */
+  isTestFadedOut: () => boolean;
   /** Holds the next result build (as a slow one) until releaseResult(). */
   holdResult: () => void;
   releaseResult: () => void;
@@ -369,6 +371,7 @@ export async function renderTestPage(
       acc: liveStats.acc,
       seconds: liveStats.seconds,
     }),
+    isTestFadedOut,
     resultScreen: () => ({
       result: container.querySelector("#result") !== null,
       spinner:

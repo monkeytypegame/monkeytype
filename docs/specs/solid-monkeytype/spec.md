@@ -308,7 +308,7 @@ From restarts via the config flag (T6b):
 From the finish split (T6c):
 
 - The test counts as finished on the finish keystroke, not after the words' fade-out: input stops there, keys still held are released with estimated keyups and later events (eg. the last key's real keyup) are dropped, and result-screen state (`isTestFinished`, the fart reverb) switches at once. The result is built during the fade-out, not after it.
-- The test page's vertical ads follow `isTestFinished()`: they show from the finish keystroke and hide as soon as a restart starts, rather than with the result's render and fade-out (~150ms apart). What the test page shows (test, spinner, result) is TestPage's own state.
+- The ads hidden on the test page (vertical and footer) show once the test has faded out on finish (`isTestFadedOut`: spinner or result) until a restart swaps the new test in, and when navigating they follow the page on screen (`getVisiblePage`), switching once the old page has faded out. Before, they followed the finished phase and the route, switching at the finish keystroke and at the start of a navigation. What the test page shows (test, spinner, result) is TestPage's own state.
 
 From user data (U1):
 

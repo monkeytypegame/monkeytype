@@ -2,13 +2,14 @@
 // registration, and app-only side effects (title, og:url, focus, ads).
 // Importing it creates the router - tests use createAppRouter instead
 
+import { createEffect, createRoot, on } from "solid-js";
 import * as AdController from "../controllers/ad-controller";
 import { signOut } from "../auth";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
 import { getAuthState } from "../states/core";
-import { getRoutePage } from "../states/router";
+import { getRoutePage, getVisiblePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";
 import { updateTitle } from "../utils/misc";
@@ -53,8 +54,15 @@ router.subscribe("onResolved", () => {
 
   updatePageTitle(page);
   setFocusMode(false);
-  void AdController.reinstate();
 });
+
+// ads follow the page on screen: the old one has faded out (see
+// isTestPageHidingAds)
+createRoot(() =>
+  createEffect(
+    on(getVisiblePage, () => void AdController.reinstate(), { defer: true }),
+  ),
+);
 
 function updatePageTitle(page: PageName): void {
   if (page === "test") {

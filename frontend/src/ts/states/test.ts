@@ -37,6 +37,11 @@ export const [getLoadedChallenge, setLoadedChallenge] =
  * fade-in. Input waits for it; other restart requests are dropped meanwhile.
  */
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
+/**
+ * The typing test has faded out on finish (spinner or result shown), until a
+ * restart swaps the new test in. Set by TestPage only, with its display.
+ */
+export const [isTestFadedOut, setTestFadedOut] = createSignal(false);
 
 // focus mode: everything but the test hidden while typing, until the mouse
 // moves (FocusModeExit). Not the same as testFocusState (out of focus).

@@ -268,6 +268,26 @@ describe("TestPage", () => {
       expect(page.resultScreen()).toEqual({ result: true, spinner: false });
     });
 
+    it("counts the test as faded out (ads show) from the end of the words' fade-out until a restart swaps the new test in", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      await page.type("the fox");
+      // finished, the words still fading out
+      expect(page.phase()).toBe("finished");
+      expect(page.isTestFadedOut()).toBe(false);
+
+      await page.advance(500);
+      expect(page.resultScreen().result).toBe(true);
+      expect(page.isTestFadedOut()).toBe(true);
+
+      page.restart();
+      // the result fades out first
+      expect(page.isTestFadedOut()).toBe(true);
+      await page.advance(1000);
+      expect(page.phase()).toBe("ready");
+      expect(page.isTestFadedOut()).toBe(false);
+    });
+
     it("keeps the spinner until a slow result is built", async () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
       page.holdResult();

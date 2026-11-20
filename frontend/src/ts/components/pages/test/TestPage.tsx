@@ -34,6 +34,7 @@ import {
   setRestartAnimating,
   setWordsInputPosition,
   setTestFocusState,
+  setTestFadedOut,
 } from "../../../states/test";
 import { replaceWords, resetWordsRender } from "../../../states/words-render";
 import * as CustomText from "../../../test/custom-text";
@@ -193,6 +194,12 @@ export function TestPage(): JSXElement {
   const [getDisplay, setDisplay] = createSignal<"test" | "spinner" | "result">(
     "test",
   );
+  // the ads follow it (isTestFadedOut): set together, before the ad
+  // controller renders the result's ads
+  const showDisplay = (display: "test" | "spinner" | "result"): void => {
+    setDisplay(display);
+    setTestFadedOut(display !== "test");
+  };
   const isSpinnerShown = (): boolean => getDisplay() === "spinner";
   const isTestShown = (): boolean => getDisplay() === "test";
   const isResultShown = (): boolean => getDisplay() === "result";
@@ -202,7 +209,7 @@ export function TestPage(): JSXElement {
     await fade(typingTestRef, "out", false);
     if (finishDisplay !== "out" || !isStillFinished()) return;
     finishDisplay = "spinner";
-    setDisplay("spinner");
+    showDisplay("spinner");
     // after the spinner is painted
     await new Promise((resolve) =>
       requestAnimationFrame(() => setTimeout(resolve, 0)),
@@ -247,7 +254,7 @@ export function TestPage(): JSXElement {
     }
     void Funbox.clear();
     // fade sets the opacity before the result can paint
-    setDisplay("result");
+    showDisplay("result");
     // the test's input lets go of the focus
     blurInputElement();
     void AdController.renderResult();
@@ -260,7 +267,7 @@ export function TestPage(): JSXElement {
    * replaceWords measures the new words as they render.
    */
   const showNewTest = (): void => {
-    setDisplay("test");
+    showDisplay("test");
     setWordsInputPosition((position) => ({ ...position, left: 0 }));
     setFocusMode(false);
     setLayoutfluidTimerVisible(false);
@@ -372,6 +379,7 @@ export function TestPage(): JSXElement {
     display = "idle";
     finishDisplay = "idle";
     setRestartAnimating(false);
+    setTestFadedOut(false);
   });
 
   // WordsInput takes the focus; during a test Words keeps the active line in
