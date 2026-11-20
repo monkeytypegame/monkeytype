@@ -29,6 +29,7 @@ Missing either → modal never shows.
 ## Solid migration
 
 - When migrating a module, convert its importers to named imports too, and rename overly generic exports (`getState` → `getClientState`) so named imports stay readable.
+- Build it the Solid way, not as a port: state in signals, stores or queries; derived values as memos or plain functions; effects only for real side effects; components own their elements and lifecycle. A straight port or bridge is allowed only as a stepping stone (splits the work, or unblocks other conversions), and gets a comment saying it's temporary, what replaces it, and the roadmap step if one matches (`// Stepping stone: replaced by <what> in T7`). See spec, "Built the Solid way, not ported".
 
 ## Types
 
