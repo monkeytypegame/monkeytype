@@ -65,19 +65,22 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
   }
 }
 
-/** The provider, `undefined` while auth is unavailable. */
-function getStartedProvider(): AuthProvider | undefined {
-  return available ? provider : undefined;
-}
-
-function requireAuthProvider(): AuthProvider {
-  const started = getStartedProvider();
-  if (started === undefined) throw new Error("Authentication uninitialized");
+/**
+ * The provider, `undefined` while auth is unavailable; `required` throws
+ * instead.
+ */
+function getAuthProvider(required: true): AuthProvider;
+function getAuthProvider(required?: false): AuthProvider | undefined;
+function getAuthProvider(required = false): AuthProvider | undefined {
+  const started = available ? provider : undefined;
+  if (required && started === undefined) {
+    throw new Error("Authentication uninitialized");
+  }
   return started;
 }
 
 export function isAuthAvailable(): boolean {
-  return getStartedProvider() !== undefined;
+  return getAuthProvider() !== undefined;
 }
 
 /** The auth methods the provider offers, most preferred first. */
@@ -107,16 +110,16 @@ export function getAuthMethodDisplay(method: string): string {
  * @returns the current user if authenticated, else `null`
  */
 export function getAuthenticatedUser(): AuthUser | null {
-  return getStartedProvider()?.getUser() ?? null;
+  return getAuthProvider()?.getUser() ?? null;
 }
 
 export async function getIdToken(): Promise<string | null> {
-  return (await getStartedProvider()?.getToken()) ?? null;
+  return (await getAuthProvider()?.getToken()) ?? null;
 }
 
 export async function signOut(): Promise<void> {
   console.log("auth signout");
-  await getStartedProvider()?.signOut();
+  await getAuthProvider()?.signOut();
 }
 
 /**
@@ -124,7 +127,7 @@ export async function signOut(): Promise<void> {
  * the sign-up modal, still signed out.
  */
 export async function signIn(options: SignInOptions): Promise<void> {
-  const authProvider = requireAuthProvider();
+  const authProvider = getAuthProvider(true);
   holdUserChanges = true;
   let result: SignInResult;
   try {
@@ -153,7 +156,7 @@ export async function createUser(options: {
   password: string;
   name: string;
 }): Promise<AuthUser> {
-  const authProvider = requireAuthProvider();
+  const authProvider = getAuthProvider(true);
   holdUserChanges = true;
   return authProvider.createUser(options);
 }
@@ -175,19 +178,19 @@ export function finishSignUp(): void {
  */
 export async function cancelSignUp(): Promise<void> {
   holdUserChanges = false;
-  await getStartedProvider()?.signOut();
+  await getAuthProvider()?.signOut();
 }
 
 /** Deletes the signed in user from the auth provider. */
 export async function deleteUser(): Promise<void> {
-  await requireAuthProvider().deleteUser();
+  await getAuthProvider(true).deleteUser();
 }
 
 /** Proves the user is present before a sensitive change. */
 export async function reauthenticate(
   options: Parameters<AuthProvider["reauthenticate"]>[0],
 ): Promise<void> {
-  await requireAuthProvider().reauthenticate(options);
+  await getAuthProvider(true).reauthenticate(options);
 }
 
 /**
@@ -196,13 +199,13 @@ export async function reauthenticate(
 export async function addMethod(
   options: Parameters<AuthProvider["addMethod"]>[0],
 ): Promise<void> {
-  await requireAuthProvider().addMethod(options);
+  await getAuthProvider(true).addMethod(options);
   refreshUserState();
 }
 
 /** Unlinks an auth method: `"password"`, or a third party id. */
 export async function removeMethod(method: string): Promise<void> {
-  await requireAuthProvider().removeMethod(method);
+  await getAuthProvider(true).removeMethod(method);
   refreshUserState();
 }
 
