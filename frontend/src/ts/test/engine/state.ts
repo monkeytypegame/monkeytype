@@ -31,6 +31,11 @@ export function isTestActive(): boolean {
   return getTestPhase() === "active";
 }
 
+/** The test ended: from finish() until a restart. */
+export function isTestFinished(): boolean {
+  return getTestPhase() === "finished";
+}
+
 // ---- restart
 
 /** Options of a restart: the request that started it sets them. */
@@ -125,7 +130,7 @@ export const [getResultData, setResultData] = createSignal<ResultData | null>(
 
 /** The test finished and its result isn't built yet. */
 export function isResultPending(): boolean {
-  return getTestPhase() === "finished" && getResultData() === null;
+  return isTestFinished() && getResultData() === null;
 }
 
 /**

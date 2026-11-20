@@ -11,6 +11,7 @@ import {
   getActiveWordIndex,
   getTestPhase,
   isTestActive,
+  isTestFinished,
 } from "../../test/engine/state";
 
 export function onCompositionStart(event: CompositionEvent): void {
@@ -23,7 +24,7 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    getTestPhase() === "finished" ||
+    isTestFinished() ||
     isRestartAnimating()
   ) {
     return;
@@ -49,7 +50,7 @@ export function onCompositionUpdate(event: CompositionEvent): void {
 
   if (
     getTestPhase() === "restarting" ||
-    getTestPhase() === "finished" ||
+    isTestFinished() ||
     isRestartAnimating()
   ) {
     return;
@@ -73,7 +74,7 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
 
   if (
     getTestPhase() === "restarting" ||
-    getTestPhase() === "finished" ||
+    isTestFinished() ||
     isRestartAnimating()
   ) {
     return;

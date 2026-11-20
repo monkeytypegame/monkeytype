@@ -10,7 +10,7 @@ import {
   getActiveWordIndex,
   isTestActive,
   getTestEnd,
-  getTestPhase,
+  isTestFinished,
   liveStats,
 } from "../test/engine/state";
 
@@ -83,7 +83,7 @@ export function getBarTarget(): {
   // the active word index stops on the last word instead of going one past it,
   // so the word count alone tops out at (n-1)/n — fill the bar on finish.
   // finished: the bar outlives the words fading out
-  if (getTestPhase() === "finished" && getTestEnd()?.type !== "bailedOut") {
+  if (isTestFinished() && getTestEnd()?.type !== "bailedOut") {
     return { width: "100vw", duration: 125 };
   }
   return {

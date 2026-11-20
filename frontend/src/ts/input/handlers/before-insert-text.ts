@@ -8,7 +8,11 @@ import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { isRestartAnimating } from "../../states/test";
-import { getTestPhase, wordsHaveNewline } from "../../test/engine/state";
+import {
+  getTestPhase,
+  isTestFinished,
+  wordsHaveNewline,
+} from "../../test/engine/state";
 import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
@@ -29,7 +33,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (getTestPhase() === "finished") {
+  if (isTestFinished()) {
     return true;
   }
 

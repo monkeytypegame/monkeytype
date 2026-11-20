@@ -12,7 +12,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { getTestPhase } from "../test/engine/state";
+import { isTestFinished } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -44,7 +44,7 @@ export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
  * rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
-  return getTestPhase() === "finished";
+  return isTestFinished();
 }
 
 // focus mode: everything but the test hidden while typing, until the mouse

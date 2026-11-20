@@ -21,6 +21,7 @@ import {
   setSaveStatus,
   getActiveWordIndex,
   isTestActive,
+  isTestFinished,
   setTestEnd,
   setKoreanStatus,
   getTestPhase,
@@ -70,7 +71,7 @@ export function finish(end: TestEnd): void {
   });
   const token = ++finishCount;
   afterPaint(() => {
-    if (token !== finishCount || getTestPhase() !== "finished") return;
+    if (token !== finishCount || !isTestFinished()) return;
     cleanupData();
     if (isDevEnvironment()) logEventsDataToTheConsoleTable();
     const log = buildEventLog();

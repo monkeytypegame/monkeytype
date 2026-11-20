@@ -11,7 +11,11 @@ import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
 import * as TestWords from "../../test/engine/test-words";
 import { isRestartAnimating, getCompositionData } from "../../states/test";
-import { getActiveWordIndex, getTestPhase } from "../../test/engine/state";
+import {
+  getActiveWordIndex,
+  getTestPhase,
+  isTestFinished,
+} from "../../test/engine/state";
 import { getCurrentInput } from "../../test/engine/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
@@ -94,7 +98,7 @@ export async function onInput(event: InputEvent): Promise<void> {
 
   // just in case before input doesn't catch this
   if (
-    getTestPhase() === "finished" ||
+    isTestFinished() ||
     getTestPhase() === "restarting" ||
     isRestartAnimating()
   ) {

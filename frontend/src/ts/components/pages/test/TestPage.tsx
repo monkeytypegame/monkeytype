@@ -47,6 +47,7 @@ import {
   getResultData,
   getTestPhase,
   isTestActive,
+  isTestFinished,
 } from "../../../test/engine/state";
 import { getTestSettings } from "../../../test/engine/test-settings";
 import * as TestWords from "../../../test/engine/test-words";
@@ -218,7 +219,7 @@ export function TestPage(): JSXElement {
 
   /** False once a restart began: it shows the new test instead. */
   const isStillFinished = (): boolean => {
-    if (untrack(getTestPhase) === "finished") return true;
+    if (untrack(isTestFinished)) return true;
     finishDisplay = "idle";
     return false;
   };
