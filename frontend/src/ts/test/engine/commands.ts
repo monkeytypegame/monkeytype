@@ -12,7 +12,7 @@ import {
   resetTestEvents,
 } from "./events/data";
 import { afterPaint } from "./after-paint";
-import { buildResult } from "./result";
+import { buildResultData } from "./result";
 import {
   clearLiveStats,
   getSaveStatus,
@@ -74,7 +74,7 @@ export function finish(end: TestEnd): void {
     cleanupData();
     if (isDevEnvironment()) logEventsDataToTheConsoleTable();
     const log = buildEventLog();
-    const result = buildResult(log, end);
+    const result = buildResultData(log, end);
     batch(() => {
       setFrozenLog(log);
       setResult(result);

@@ -66,7 +66,7 @@ export type ResultData = {
  * Builds the finished test's result from its frozen log. Reads the test
  * settings, and the active tags as they are now (tags are live).
  */
-export function buildResult(eventLog: EventLog, end: TestEnd): ResultData {
+export function buildResultData(eventLog: EventLog, end: TestEnd): ResultData {
   const completedEvent = buildCompletedEvent(eventLog);
   const bailedOut = end.type === "bailedOut";
   const afkDetected =
