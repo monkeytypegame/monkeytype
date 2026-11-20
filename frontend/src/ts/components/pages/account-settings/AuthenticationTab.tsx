@@ -3,12 +3,12 @@ import { createSignal, For, Show } from "solid-js";
 import type { AuthMethodInfo } from "../../../auth/providers/types";
 
 import { addAuthMethod } from "../../../auth/actions";
-import { getThirdParties, supportsPassword } from "../../../auth/session";
 import {
   getAuthMethodEmail,
   hasOtherAuthMethods,
   isUsingAuthMethod,
 } from "../../../auth/state";
+import { getThirdParties, supportsPassword } from "../../../auth/system";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";

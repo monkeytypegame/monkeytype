@@ -6,7 +6,7 @@ import { createMemo, createRoot, JSX } from "solid-js";
 import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
-import { getAuthenticatedUser } from "../../auth/session";
+import { getAuthenticatedUser } from "../../auth/system";
 import {
   saveLocalResult,
   SaveLocalResultData,

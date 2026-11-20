@@ -22,11 +22,11 @@ import {
   addMethod,
   getAuthMethodDisplay,
   getOfferedAuthMethods,
-  reauthenticate as sessionReauthenticate,
-  signIn as sessionSignIn,
-  signOut as sessionSignOut,
+  reauthenticate as systemReauthenticate,
+  signIn as systemSignIn,
+  signOut as systemSignOut,
   removeMethod,
-} from "./session";
+} from "./system";
 import { isAuthenticated, isUsingAuthMethod } from "./state";
 
 export type AuthResult =
@@ -77,7 +77,7 @@ export async function signIn(options: SignInOptions): Promise<AuthResult> {
     return { success: false, message: "Authentication uninitialized" };
   }
 
-  const { error } = await tryCatch(sessionSignIn(options));
+  const { error } = await tryCatch(systemSignIn(options));
 
   if (error !== null) {
     return { success: false, message: error.message };
@@ -185,7 +185,7 @@ export function signOut(): void {
     return;
   }
   if (!isAuthenticated()) return;
-  void sessionSignOut();
+  void systemSignOut();
 }
 
 export async function signUp(
@@ -270,12 +270,12 @@ export async function reauthenticate(
           message: "Failed to reauthenticate using password: password missing.",
         };
       }
-      await sessionReauthenticate({
+      await systemReauthenticate({
         method: "password",
         password: options.password,
       });
     } else {
-      await sessionReauthenticate({ method: authMethod });
+      await systemReauthenticate({ method: authMethod });
     }
 
     return {

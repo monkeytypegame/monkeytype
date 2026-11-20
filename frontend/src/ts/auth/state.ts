@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 
 import type { AuthUser } from "./providers/types";
 
-// written only by the auth session module (auth/session.ts)
+// written only by the auth system module (auth/system.ts)
 
 export type AuthState = "unknown" | "signedIn" | "signedOut";
 /** unknown until the auth provider reports the first auth state (or fails to load). */

@@ -6,7 +6,7 @@ import { createEffect, createRoot, on } from "solid-js";
 import * as AdController from "../controllers/ad-controller";
 import { signOut } from "../auth/actions";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
-import { isAuthAvailable } from "../auth/session";
+import { isAuthAvailable } from "../auth/system";
 import { queryClient } from "../queries";
 import { getAuthState } from "../auth/state";
 import { getRoutePage, getVisiblePage } from "../states/router";

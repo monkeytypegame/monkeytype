@@ -8,7 +8,7 @@ const { config, auth } = vi.hoisted(() => ({
 vi.mock("../../src/ts/config/lifecycle", () => ({
   loadFromLocalStorage: vi.fn(async () => config.promise),
 }));
-vi.mock("../../src/ts/auth/session", () => ({
+vi.mock("../../src/ts/auth/system", () => ({
   authPromise: auth.promise,
   initAuth: vi.fn(async () => undefined),
 }));
@@ -37,7 +37,7 @@ vi.mock("../../src/ts/utils/env", () => ({ isDevEnvironment: () => false }));
 import * as ServerConfiguration from "../../src/ts/ape/server-configuration";
 import { boot } from "../../src/ts/boot";
 import { loadFromLocalStorage } from "../../src/ts/config/lifecycle";
-import { initAuth } from "../../src/ts/auth/session";
+import { initAuth } from "../../src/ts/auth/system";
 import * as MerchBanner from "../../src/ts/elements/merch-banner";
 import * as Psa from "../../src/ts/elements/psa";
 import { initConnection } from "../../src/ts/states/connection";

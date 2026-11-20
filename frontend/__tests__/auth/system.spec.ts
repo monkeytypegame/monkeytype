@@ -15,7 +15,7 @@ import {
   addMethod,
   isAuthAvailable,
   signIn,
-} from "../../src/ts/auth/session";
+} from "../../src/ts/auth/system";
 import {
   getAuthMethods,
   getAuthState,
@@ -65,7 +65,7 @@ const provider = {
   }),
 } as Partial<AuthProvider> as AuthProvider;
 
-describe("auth session", () => {
+describe("auth system", () => {
   beforeAll(async () => {
     await initAuth(provider);
   });

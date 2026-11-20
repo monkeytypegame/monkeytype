@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 
 import Ape from "../../ape";
 import { sendVerificationEmail } from "../../auth/actions";
-import { cancelSignUp, finishSignUp, deleteUser } from "../../auth/session";
+import { cancelSignUp, finishSignUp, deleteUser } from "../../auth/system";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,

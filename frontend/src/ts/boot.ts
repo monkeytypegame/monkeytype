@@ -4,7 +4,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 import * as Cookies from "./cookies";
 import * as MerchBanner from "./elements/merch-banner";
 import * as Psa from "./elements/psa";
-import { initAuth, authPromise } from "./auth/session";
+import { initAuth, authPromise } from "./auth/system";
 import { firebaseAuthProvider } from "./auth/providers/firebase";
 import { initConnection } from "./states/connection";
 import { setAppReady, setVersion } from "./states/core";

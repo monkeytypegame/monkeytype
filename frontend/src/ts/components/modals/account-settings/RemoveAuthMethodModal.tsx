@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 import { removeAuthMethod } from "../../../auth/actions";
-import { getAuthMethodDisplay, getThirdParties } from "../../../auth/session";
 import {
   hasOtherAuthMethods,
   isAuthenticated,
   isUsingPasswordAuth,
 } from "../../../auth/state";
+import { getAuthMethodDisplay, getThirdParties } from "../../../auth/system";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { getPasswordSchema } from "../../ui/form/utils";
