@@ -73,7 +73,17 @@ export function getAuthMethodEmail(id: string): string | undefined {
   return getAuthUser()?.methods.find((it) => it.id === id)?.email ?? undefined;
 }
 
+/**
+ * The signed in user's most preferred auth method (in the provider's order),
+ * except `exclude`.
+ */
+export function getPreferredAuthMethod(exclude?: string): string | undefined {
+  return getProviderAuthMethods()
+    .map((it) => it.id)
+    .find((it) => it !== exclude && isUsingAuthMethod(it));
+}
+
 /** Whether the signed in user could still sign in without this auth method. */
 export function hasOtherAuthMethods(id: string): boolean {
-  return getAuthUser()?.methods.some((it) => it.id !== id) ?? false;
+  return getPreferredAuthMethod(id) !== undefined;
 }

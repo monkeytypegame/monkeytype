@@ -29,11 +29,10 @@ import {
 } from "./system";
 import {
   getAuthMethodDisplay,
-  getProviderAuthMethods,
+  getPreferredAuthMethod,
   getPendingSignUpUser,
   isAuthAvailable,
   isAuthenticated,
-  isUsingAuthMethod,
 } from "./state";
 
 /**
@@ -349,7 +348,7 @@ async function tryReauthenticate(
     };
   }
 
-  const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
+  const authMethod = getPreferredAuthMethod(options.excludeMethod);
 
   try {
     if (authMethod === undefined) {
@@ -398,13 +397,4 @@ async function tryReauthenticate(
       };
     }
   }
-}
-
-/** The signed in user's most preferred auth method, in the provider's order. */
-function getPreferredAuthenticationMethod(
-  exclude?: string,
-): string | undefined {
-  return getProviderAuthMethods()
-    .map((it) => it.id)
-    .find((it) => it !== exclude && isUsingAuthMethod(it));
 }
