@@ -16,12 +16,21 @@ export function cacheWithTTL<T>(
 ): () => Promise<T | undefined> {
   let lastFetchTime = 0;
   let cache: T | undefined;
+  let pending: Promise<T> | undefined;
 
   return async () => {
-    if (lastFetchTime < Date.now() - ttlMs) {
+    if (pending === undefined && lastFetchTime < Date.now() - ttlMs) {
       lastFetchTime = Date.now();
-      cache = await fn();
+      pending = fn()
+        .then((data) => {
+          cache = data;
+          return data;
+        })
+        .finally(() => {
+          pending = undefined;
+        });
     }
+    await pending;
     return cache;
   };
 }
