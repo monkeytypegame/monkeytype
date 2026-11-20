@@ -111,11 +111,12 @@ export function Keymap3D(props: {
 
   return (
     <div class="relative">
-      {/* soft shadow on the page below the board; must stay outside the
-          perspective element, whose stacking context would make the
-          multiply blend against transparent and render as a bright halo */}
+      {/* soft shadow on the page below the board, ahead of the perspective
+          element so the board paints over it. Normal blend (not multiply):
+          a multiply shadow vanishes on dark themes, where this should read as
+          a light glow */}
       <div
-        class="absolute right-[15%] -bottom-3 left-[15%] h-6 rounded-full bg-text opacity-30 mix-blend-multiply blur-xl"
+        class="absolute right-[15%] -bottom-3 left-[15%] h-6 rounded-full bg-text opacity-30 blur-xl"
         aria-hidden
       ></div>
       <div
