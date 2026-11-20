@@ -7,7 +7,7 @@ import qwertzLayout from "../../../../static/layouts/qwertz.json";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
 import {
   Alt,
-  BackspaceShort,
+  Backspace,
   Ctrl,
   EnterShort,
   Hyper,
@@ -118,7 +118,7 @@ describe("keymap converter", () => {
         // Test only keys added when showAllKeys is true (not covered by basic staggered test)
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          ...expectLegend("Backspace"),
+          ...expectLegend(Backspace),
           width: 2,
         });
 
@@ -284,7 +284,7 @@ describe("keymap converter", () => {
 
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          ...expectLegend("Backspace"),
+          ...expectLegend(Backspace),
           width: 2,
         });
 
@@ -596,7 +596,7 @@ describe("keymap converter", () => {
 
         // Row1: BS added at end
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          ...expectLegend(BackspaceShort),
+          ...expectLegend(Backspace),
         });
 
         // Row2: Tab added at start
@@ -904,7 +904,7 @@ describe("keymap converter", () => {
           x: 0.15,
         });
         expect(row1?.[row1.length - 1], "row1 last").toEqual({
-          ...expectLegend("Backspace"),
+          ...expectLegend(Backspace),
           width: 2,
         });
 
