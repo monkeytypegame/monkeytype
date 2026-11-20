@@ -16,6 +16,7 @@ import {
   showNoticeNotification,
   showErrorNotification,
   showSuccessNotification,
+  removeNotification,
 } from "../states/notifications";
 import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
@@ -44,37 +45,22 @@ import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
-  setKoreanStatus,
-  setFrozenLog,
-  setIsTestRestarting,
-  isTestRestarting,
   getCurrentQuote,
   getIncompleteSeconds,
   getIncompleteTests,
   getRestartCount,
   isPaceRepeat,
   isRepeated,
-  isTestActive,
   pushIncompleteTest,
   resetIncompleteTests,
   setIsPaceRepeat,
   setIsRepeated,
-  setIsTestInvalid,
-  isTestInvalid,
   setLastResult,
-  getActiveWordIndex,
-  resetActiveWordIndex,
-  getBailedOut,
   isResultCalculating,
-  setBailedOut,
   setLastSignedOutResult,
   setResultCalculating,
-  setTestFinished,
-  setTestActive,
-  setWordsHaveNewline,
-  setWordsHaveNumbers,
-  setWordsHaveTab,
-  isTestFinished,
+  isResultScreen,
+  setResultFadingOut,
   CompletedResult,
   setResultLoading,
   setTestInitError,
@@ -85,11 +71,22 @@ import {
   setCompositionData,
   highlightKeymapKey,
   setFocusMode,
-  setCurrentLiveStats,
   setLayoutfluidTimerVisible,
   setTestFocusState,
   setWordsInputPosition,
 } from "../states/test";
+import {
+  clearLiveStats,
+  getActiveWordIndex,
+  getTestEnd,
+  getTestPhase,
+  isTestActive,
+  publishFrozenLog,
+  setWordsInfo,
+  type TestEnd,
+} from "./engine/state";
+import * as Engine from "./engine/commands";
+import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import {
@@ -135,13 +132,7 @@ import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
 import { Config } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
-import {
-  resetTestEvents,
-  cleanupData,
-  logEventsDataToTheConsoleTable,
-  forceReleaseAllKeys,
-  buildEventLog,
-} from "./engine/events/data";
+import { buildEventLog } from "./engine/events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -162,7 +153,6 @@ import {
 } from "./engine/events/stats";
 import { getLiveCachedAccuracy } from "./engine/events/live-cache";
 import { calculateWpm } from "../utils/numbers";
-import { isDevEnvironment } from "../utils/env";
 import { EventLog } from "./engine/events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
@@ -172,7 +162,7 @@ import {
   resetWordsRender,
 } from "../states/words-render";
 
-let failReason = "";
+let slowTimerNotificationIds: number[] = [];
 
 export function startTest(now: number): boolean {
   if (!canStartTest()) return false;
@@ -183,8 +173,11 @@ export function startTest(now: number): boolean {
     void AnalyticsController.log("testStartedNoLogin");
   }
 
-  setTestActive(true);
-  TestTimer.clear();
+  Engine.start();
+  for (const id of slowTimerNotificationIds) {
+    removeNotification(id, "clear");
+  }
+  slowTimerNotificationIds = [];
 
   for (const fb of getActiveFunboxesWithFunction("start")) {
     fb.functions.start();
@@ -201,13 +194,6 @@ export function startTest(now: number): boolean {
     onFail: fail,
   });
   setFocusMode(true);
-  setCurrentLiveStats({
-    wpm: 0,
-    acc: 100,
-    raw: 0,
-    burst: 0,
-    seconds: 0,
-  });
   return true;
 }
 
@@ -225,20 +211,14 @@ function recordIncompleteTest(): void {
 }
 
 function resetTestState(): void {
-  resetTestEvents();
-  TestTimer.clear();
-  setIsTestInvalid(false);
+  Engine.reset();
   resetModifierState();
-  setTestActive(false);
   Replay.pauseReplay();
-  setBailedOut(false);
   PaceCaret.reset();
-  setKoreanStatus(false);
   clearQuoteStats();
   setComposing(false);
   setCompositionData("");
   testReinitCount = 0;
-  failReason = "";
 }
 
 /**
@@ -246,7 +226,7 @@ function resetTestState(): void {
  * test page). Ignores the no_quit funbox.
  */
 export function stop(): void {
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (getTestPhase() === "restarting" || isResultCalculating()) return;
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
@@ -297,7 +277,7 @@ export async function restartTest(
     return;
   }
 
-  if (isTestRestarting() || isResultCalculating()) {
+  if (getTestPhase() === "restarting" || isResultCalculating()) {
     options.event?.preventDefault();
     return;
   }
@@ -347,7 +327,7 @@ export async function restartTest(
     currentQuote !== null &&
     Config.language.startsWith(currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
-    (isTestActive() || failReason !== "")
+    (isTestActive() || getTestEnd()?.type === "failed")
   ) {
     options.withSameWordset = true;
   }
@@ -389,12 +369,13 @@ export async function restartTest(
 
   // restart
 
-  const source: "testPage" | "resultPage" = isTestFinished()
+  const source: "testPage" | "resultPage" = isResultScreen()
     ? "resultPage"
     : "testPage";
   const noAnim = options.noAnim ?? false;
 
-  setIsTestRestarting(true);
+  setResultFadingOut(source === "resultPage");
+  Engine.restart();
 
   await fadeTest(
     source === "resultPage" ? "result" : "typingTest",
@@ -402,7 +383,7 @@ export async function restartTest(
     noAnim,
   );
 
-  setTestFinished(false);
+  setResultFadingOut(false);
   setInputElementValue("");
 
   await Funbox.rememberSettings();
@@ -410,7 +391,7 @@ export async function restartTest(
   const initResult = await init();
 
   if (!initResult) {
-    setIsTestRestarting(false);
+    Engine.endRestart();
     return;
   }
 
@@ -424,13 +405,7 @@ export async function restartTest(
   setTypingTestHidden(false);
   setWordsInputPosition((position) => ({ ...position, left: 0 }));
   setFocusMode(false);
-  setCurrentLiveStats({
-    wpm: undefined,
-    acc: undefined,
-    raw: undefined,
-    burst: undefined,
-    seconds: undefined,
-  });
+  clearLiveStats();
   setLayoutfluidTimerVisible(false);
   setTestInitFailed(false);
   setTestInitError(null);
@@ -449,7 +424,7 @@ export async function restartTest(
 
   // sets the typing test's opacity to 0 at once, before anything paints
   await fadeTest("typingTest", "in", noAnim);
-  setIsTestRestarting(false);
+  Engine.endRestart();
 }
 
 let lastInitError: Error | null = null;
@@ -465,12 +440,11 @@ async function init(): Promise<boolean> {
       setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
     setTestInitFailed(true);
-    setIsTestRestarting(false);
+    Engine.endRestart();
     return false;
   }
 
-  TestWords.words.reset();
-  resetActiveWordIndex();
+  TestWords.resetWords();
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
@@ -618,20 +592,22 @@ async function init(): Promise<boolean> {
     return await init();
   }
 
-  setWordsHaveNumbers(wordsHaveNumbers);
-  setWordsHaveTab(wordsHaveTab);
-  setWordsHaveNewline(wordsHaveNewline);
-  setKoreanStatus(wordsKoreanStatus);
+  setWordsInfo({
+    hasNumbers: wordsHaveNumbers,
+    hasTab: wordsHaveTab,
+    hasNewline: wordsHaveNewline,
+    hasKorean: wordsKoreanStatus,
+  });
 
   for (let i = 0; i < generatedWords.length; i++) {
-    TestWords.words.push(
+    TestWords.pushWord(
       generatedWords[i] as string,
       generatedSectionIndexes[i] as number,
     );
   }
 
   if (WordsGenerator.areAllWordsGenerated()) {
-    TestWords.words.removeCommitCharacterFromLastWord();
+    TestWords.removeCommitCharFromLastWord();
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -710,7 +686,7 @@ export async function addWord(): Promise<void> {
           break;
         }
         wordCount++;
-        const newWord = TestWords.words.push(
+        const newWord = TestWords.pushWord(
           WordsGenerator.appendCommitCharacter(word),
           i,
         );
@@ -727,7 +703,7 @@ export async function addWord(): Promise<void> {
       TestWords.words.get(TestWords.words.length - 2)?.text,
     );
 
-    const newWord = TestWords.words.push(
+    const newWord = TestWords.pushWord(
       randomWord.word,
       randomWord.sectionIndex,
     );
@@ -746,7 +722,7 @@ export async function addWord(): Promise<void> {
   // strip the trailing commit separator once the final word has been generated
   // (covers the section and lazy paths)
   if (WordsGenerator.areAllWordsGenerated()) {
-    TestWords.words.removeCommitCharacterFromLastWord();
+    TestWords.removeCommitCharFromLastWord();
   }
 }
 
@@ -862,7 +838,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     timestamp: Date.now(),
     mode: Config.mode,
     mode2: Misc.getMode2(Config, currentQuote),
-    bailedOut: getBailedOut(),
+    bailedOut: getTestEnd()?.type === "bailedOut",
     funbox: Config.funbox,
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
@@ -888,8 +864,14 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
   return completedEvent;
 }
 
-export async function finish(difficultyFailed = false): Promise<void> {
+/** Ends the test: completed by default, or bailed out / failed (see fail()). */
+export async function finish(
+  end: TestEnd = { type: "completed" },
+): Promise<void> {
   if (!isTestActive()) return;
+  Engine.recordEnd(end);
+  const bailedOut = end.type === "bailedOut";
+  const failReason = end.type === "failed" ? end.reason : null;
   setResultCalculating(true);
   const now = performance.now();
   TestTimer.clear(true, now);
@@ -908,18 +890,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     setIsRepeated(false);
   }
 
-  forceReleaseAllKeys();
-
-  setTestFinished(true);
-  setTestActive(false);
-
-  cleanupData();
-
-  if (isDevEnvironment()) {
-    logEventsDataToTheConsoleTable();
-  }
-
-  const eventLog = buildEventLog();
+  const eventLog = Engine.finish();
+  const difficultyFailed = failReason !== null;
   const ce = buildCompletedEvent(eventLog);
   PaceCaret.setLastTestWpm(ce.wpm);
 
@@ -941,6 +913,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   let dontSave = false;
+  // T6c: the engine returns validity with its result
+  let invalid = false;
 
   if (countUndefined(ce) > 0) {
     console.log(ce);
@@ -953,7 +927,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   batch(() => {
-    setFrozenLog(eventLog);
+    publishFrozenLog();
     setLastResult(structuredClone(completedEvent));
   });
 
@@ -963,7 +937,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = getKeypressesPerSecond(eventLog)
     .slice(-5)
     .every((kps) => kps === 0);
-  if (getBailedOut()) afkDetected = false;
+  if (bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -972,13 +946,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
   if (
     Config.mode === "time" &&
-    !getBailedOut() &&
+    !bailedOut &&
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
     showNoticeNotification("Test invalid - inconsistent test duration");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (difficultyFailed) {
     showNoticeNotification(`Test failed - ${failReason}`, {
@@ -1005,16 +979,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     showNoticeNotification("Test invalid - too short");
-    setIsTestInvalid(true);
+    invalid = true;
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
     showNoticeNotification("Test invalid - AFK detected");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (isRepeated()) {
     showNoticeNotification("Test invalid - repeated");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     completedEvent.wpm < 0 ||
@@ -1026,7 +1000,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - wpm");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     completedEvent.rawWpm < 0 ||
@@ -1038,7 +1012,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode2 === "10")
   ) {
     showNoticeNotification("Test invalid - raw");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   } else if (
     (!getUserData()?.lbOptOut &&
@@ -1047,7 +1021,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
     showNoticeNotification("Test invalid - accuracy");
-    setIsTestInvalid(true);
+    invalid = true;
     dontSave = true;
   }
 
@@ -1067,7 +1041,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      getBailedOut() ||
+      bailedOut ||
       getInputHistory(eventLog).length < TestWords.words.length
     ) {
       // They bailed out
@@ -1153,11 +1127,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const resultUpdatePromise = showResult(completedEvent, dontSave, {
     difficultyFailed,
-    failReason,
+    failReason: failReason ?? "",
     afkDetected,
     isRepeated: isRepeated(),
     tooShort,
-    invalid: isTestInvalid(),
+    invalid,
     stopOnError: Config.stopOnError,
     deleteOnError: Config.deleteOnError,
     quote: Config.mode === "quote" ? getCurrentQuote() : null,
@@ -1313,7 +1287,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (isTestFinished()) {
+    if (isResultScreen()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }
@@ -1371,8 +1345,17 @@ async function saveResult(
 }
 
 export function fail(reason: string): void {
-  failReason = reason;
-  void finish(true);
+  if (reason === "slow timer") {
+    showNoticeNotification(
+      'This could be caused by "efficiency mode" on Microsoft Edge.',
+    );
+    slowTimerNotificationIds.push(
+      showErrorNotification(
+        "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+      ),
+    );
+  }
+  void finish({ type: "failed", reason });
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
@@ -1431,7 +1414,7 @@ export function repeatTest(): void {
 export function restartIfNotStarted(): void {
   if (
     !isTestActive() &&
-    !isTestFinished() &&
+    !isResultScreen() &&
     (Config.mode === "time" || Config.mode === "words")
   ) {
     void restartTest({

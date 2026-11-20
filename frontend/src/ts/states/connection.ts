@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { showSuccessNotification } from "./notifications";
 import { addBanner, removeBanner } from "./banners";
-import { isTestActive } from "./test";
+import { isTestActive } from "../test/engine/state";
 
 const [isOnline, setOnline] = createSignal(navigator.onLine);
 export { isOnline };

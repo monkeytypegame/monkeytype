@@ -15,7 +15,7 @@ import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { isTestActive } from "../states/test";
+import { isTestActive } from "../test/engine/state";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,

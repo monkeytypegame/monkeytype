@@ -107,12 +107,8 @@ import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
 import { canStartTest } from "../../src/ts/states/router";
-import {
-  isTestActive,
-  setIsTestRestarting,
-  setResultCalculating,
-  setTestActive,
-} from "../../src/ts/states/test";
+import { setResultCalculating } from "../../src/ts/states/test";
+import { isTestActive, setTestPhase } from "../../src/ts/test/engine/state";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
@@ -308,9 +304,9 @@ vi.mock("../../src/ts/components/pages/test/TestPage", stubPage("TestPage"));
 // Leaving the test page just ends the test here: tests start a test (app.test),
 // then check whether it is still running
 vi.mock("../../src/ts/test/test-logic", async () => {
-  const { setTestActive } = await import("../../src/ts/states/test");
+  const { setTestPhase } = await import("../../src/ts/test/engine/state");
   return {
-    leaveTestPage: () => setTestActive(false),
+    leaveTestPage: () => setTestPhase("idle"),
     // the debug handle exposes it
     restartTest: () => undefined,
   };
@@ -558,13 +554,14 @@ export type TestControls = {
 };
 
 const testControls: TestControls = {
-  start: () => setTestActive(true),
+  start: () => setTestPhase("active"),
   // like the test's startTest
   type: () => {
-    if (canStartTest()) setTestActive(true);
+    if (canStartTest()) setTestPhase("active");
   },
   isRunning: () => isTestActive(),
-  setRestarting: (restarting) => setIsTestRestarting(restarting),
+  setRestarting: (restarting) =>
+    setTestPhase(restarting ? "restarting" : "idle"),
   setResultCalculating: (calculating) => setResultCalculating(calculating),
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
@@ -760,8 +757,7 @@ export function cleanupApp(): void {
   setRouter(undefined);
   setPreloading(true);
   resetLoadingBar();
-  setTestActive(false);
-  setIsTestRestarting(false);
+  setTestPhase("idle");
   setResultCalculating(false);
   configTesting.replaceConfig({});
   userTesting.setUser(undefined);

@@ -3,7 +3,7 @@ import { createStore, produce } from "solid-js/store";
 import * as Sound from "../../../../controllers/sound-controller";
 import * as Arrays from "../../../../utils/arrays";
 import { Config } from "../../../../config/store";
-import { getFrozenLog } from "../../../../states/test";
+import { getFrozenLog } from "../../../../test/engine/state";
 import {
   getEventsForWord,
   getInputFromDom,

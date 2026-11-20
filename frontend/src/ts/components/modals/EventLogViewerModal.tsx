@@ -65,7 +65,6 @@ import {
   type SyncKind,
 } from "../../states/event-log-viewer";
 import { hideModal } from "../../states/modals";
-import { getFrozenLog } from "../../states/test";
 import { getTheme } from "../../states/theme";
 import { getInputFromDom } from "../../test/engine/events/helpers";
 import {
@@ -81,6 +80,7 @@ import {
   type Significant,
 } from "../../test/engine/events/timing-stats";
 import { EVENT_LOG_VERSION } from "../../test/engine/events/types";
+import { getFrozenLog } from "../../test/engine/state";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";

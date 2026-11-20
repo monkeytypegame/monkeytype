@@ -58,6 +58,7 @@ import {
   RegisteredRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { createEffect, createRoot } from "solid-js";
 import { vi } from "vitest";
 
 import type { WordStatus } from "../../src/ts/components/pages/test/Word";
@@ -67,14 +68,9 @@ import { TestPage } from "../../src/ts/components/pages/test/TestPage";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
-import {
-  currentLiveStats,
-  isTestActive,
-  isResultCalculating,
-  isTestFinished,
-  isTestRestarting,
-} from "../../src/ts/states/test";
+import { isResultCalculating, isResultScreen } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
+import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 
 // tests check the rendered DOM itself, not the registry's refs, so they
@@ -135,7 +131,7 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 // draws on a canvas, which jsdom lacks
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
 
-export type TestPhase = "ready" | "active" | "finished";
+export type PagePhase = "ready" | "active" | "finished";
 
 export type RenderTestPageOptions = {
   /** The test shows exactly these words, in order (a custom test). */
@@ -159,7 +155,7 @@ export type TestPageHarness = {
     state: WordStatus;
     isActive: boolean;
   };
-  phase: () => TestPhase;
+  phase: () => PagePhase;
   caret: () => { shown: boolean };
   paceCaret: () => {
     shown: boolean;
@@ -197,6 +193,14 @@ export async function renderTestPage(
     ...options.config,
   });
 
+  let sawRestart = false;
+  const stopWatchingRestart = createRoot((dispose) => {
+    createEffect(() => {
+      if (getTestPhase() === "restarting") sawRestart = true;
+    });
+    return dispose;
+  });
+
   const root = createRootRoute();
   const router = createRouter({
     routeTree: root.addChildren([
@@ -213,9 +217,13 @@ export async function renderTestPage(
   await router.load();
   const { container } = render(() => <RouterProvider router={router} />);
 
-  // the restart on mount: fade out, generate words, fade in
-  for (let i = 0; i < 50 && isTestRestarting(); i++) await frame();
-  if (isTestRestarting()) throw new Error("The test page never got ready");
+  // the restart on mount: fade out, generate words, fade in. It may only
+  // begin a frame in, after a previous spec's finished test
+  const ready = (): boolean => sawRestart && getTestPhase() === "idle";
+  for (let i = 0; i < 50 && !ready(); i++) await frame();
+  stopWatchingRestart();
+  if (!ready()) throw new Error("The test page never got ready");
+  // the live stats and the render flush on the next frame
   await frame();
 
   const wordElement = (index: number): Element => {
@@ -269,7 +277,11 @@ export async function renderTestPage(
       },
     }),
     phase: () =>
-      isTestFinished() ? "finished" : isTestActive() ? "active" : "ready",
+      isResultScreen()
+        ? "finished"
+        : getTestPhase() === "active"
+          ? "active"
+          : "ready",
     caret: () => ({ shown: isShown("caret") }),
     paceCaret: () => {
       const target = paceCaretTarget();
@@ -284,10 +296,10 @@ export async function renderTestPage(
       };
     },
     liveStats: () => ({
-      wpm: currentLiveStats.wpm,
-      raw: currentLiveStats.raw,
-      acc: currentLiveStats.acc,
-      seconds: currentLiveStats.seconds,
+      wpm: liveStats.wpm,
+      raw: liveStats.raw,
+      acc: liveStats.acc,
+      seconds: liveStats.seconds,
     }),
   };
 }

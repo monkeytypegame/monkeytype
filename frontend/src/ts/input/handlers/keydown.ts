@@ -17,7 +17,8 @@ import {
 } from "../state";
 import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
+import { loadKeymapLayout } from "../../states/test";
+import { wordsHaveTab } from "../../test/engine/state";
 
 import { getCustomTextIndicator } from "../../states/core";
 import {
@@ -25,7 +26,7 @@ import {
   getInputForWord,
   logTestEvent,
 } from "../../test/engine/events/data";
-import { getTestEventCode } from "../../test/engine/events/helpers";
+import { getTestEventCode, keysToTrack } from "../helpers/test-event-code";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -67,8 +68,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        setBailedOut(true);
-        void TestLogic.finish();
+        void TestLogic.finish({ type: "bailedOut" });
         return;
       }
     }
@@ -80,9 +80,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.oppositeShiftMode === "keymap" &&
     Config.keymapLayout !== "overrideSync"
   ) {
-    let keymapLayout = await __nonReactive
-      .getKeymapLayout()
-      .catch(() => undefined);
+    let keymapLayout = await loadKeymapLayout().catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");
 
@@ -129,13 +127,16 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   const now = performance.now();
 
-  logTestEvent("keydown", now, {
-    code: getTestEventCode(event),
-    ctrl: event.ctrlKey ? true : undefined,
-    shift: event.shiftKey ? true : undefined,
-    alt: event.altKey ? true : undefined,
-    meta: event.metaKey ? true : undefined,
-  });
+  const code = getTestEventCode(event);
+  if (keysToTrack.has(code)) {
+    logTestEvent("keydown", now, {
+      code,
+      ctrl: event.ctrlKey ? true : undefined,
+      shift: event.shiftKey ? true : undefined,
+      alt: event.altKey ? true : undefined,
+      meta: event.metaKey ? true : undefined,
+    });
+  }
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");

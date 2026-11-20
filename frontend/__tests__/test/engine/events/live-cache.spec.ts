@@ -11,10 +11,14 @@ vi.mock("../../../../src/ts/test/engine/test-words", () => ({
 
 vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
-  getActiveWordIndex: () => 0,
   isResultCalculating: () => false,
-  getBailedOut: () => false,
+}));
+
+vi.mock("../../../../src/ts/test/engine/state", () => ({
+  getActiveWordIndex: () => 0,
+  getTestEnd: () => null,
   getKoreanStatus: () => false,
+  scheduleLiveStatsFlush: () => undefined,
 }));
 
 import {

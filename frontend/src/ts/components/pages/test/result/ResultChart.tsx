@@ -37,7 +37,7 @@ import {
   isResultShown,
   resultState,
 } from "../../../../states/result";
-import { CompletedResult, getFrozenLog } from "../../../../states/test";
+import { CompletedResult } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
@@ -45,6 +45,7 @@ import {
   getWordIndexesForSecond,
 } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
+import { getFrozenLog } from "../../../../test/engine/state";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {

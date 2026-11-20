@@ -4,19 +4,19 @@ import { getInputElementValue } from "../input-element";
 import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/engine/events/data";
+import { isResultCalculating } from "../../states/test";
 import {
-  isTestRestarting,
   getActiveWordIndex,
-  isResultCalculating,
+  getTestPhase,
   isTestActive,
-} from "../../states/test";
+} from "../../test/engine/state";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!isTestActive()) {
     event.preventDefault();
     return;
   }
-  if (isTestRestarting()) {
+  if (getTestPhase() === "restarting") {
     event.preventDefault();
     return;
   }

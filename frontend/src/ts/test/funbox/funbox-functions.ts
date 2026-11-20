@@ -20,7 +20,6 @@ import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import {
-  getActiveWordIndex,
   setReadAheadDisabled,
   setWordsHidden,
   setWordsWrapperHidden,
@@ -29,6 +28,7 @@ import {
   setMemoryTimerDuration,
   highlightKeymapKey,
 } from "../../states/test";
+import { getActiveWordIndex } from "../engine/state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";

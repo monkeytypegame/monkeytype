@@ -16,11 +16,17 @@ vi.mock("../../../../../src/ts/states/router", () => ({
 import { ResultButtons } from "../../../../../src/ts/components/pages/test/result/ResultButtons";
 import { setConfigStore } from "../../../../../src/ts/config/store";
 import "../../../../../src/ts/input/hotkeys";
-import {
-  setIsLongTest,
-  setWordsHaveNewline,
-  setWordsHaveTab,
-} from "../../../../../src/ts/states/test";
+import { setIsLongTest } from "../../../../../src/ts/states/test";
+import { setWordsInfo } from "../../../../../src/ts/test/engine/state";
+
+function setWordsHave(has: { tab?: boolean; newline?: boolean }): void {
+  setWordsInfo({
+    hasTab: has.tab ?? false,
+    hasNewline: has.newline ?? false,
+    hasNumbers: false,
+    hasKorean: false,
+  });
+}
 
 describe("ResultButtons", () => {
   describe("tab with quick restart off", () => {
@@ -31,15 +37,17 @@ describe("ResultButtons", () => {
 
     afterEach(() => {
       setIsLongTest(false);
-      setWordsHaveTab(false);
-      setWordsHaveNewline(false);
+      setWordsHave({});
     });
 
     it.each([
       { name: "short test", setup: () => undefined },
       { name: "long test", setup: () => setIsLongTest(true) },
-      { name: "words have tab", setup: () => setWordsHaveTab(true) },
-      { name: "words have newline", setup: () => setWordsHaveNewline(true) },
+      { name: "words have tab", setup: () => setWordsHave({ tab: true }) },
+      {
+        name: "words have newline",
+        setup: () => setWordsHave({ newline: true }),
+      },
     ])("focuses the next test button ($name)", async ({ setup }) => {
       setup();
       const { container } = render(() => <ResultButtons glarses={false} />);

@@ -43,41 +43,47 @@ vi.mock("../../../src/ts/test/engine/test-words", () => {
   type CommitChar = " " | "\n" | "";
   type Word = { text: string; textWithCommit: string; commit: CommitChar };
   const list: Word[] = [];
-  return {
-    words: {
-      list,
-      get: (index?: number) => (index === undefined ? [...list] : list[index]),
-      getCurrent: () => list[mockState.activeWordIndex],
-      push(word: string, _index?: number) {
-        let commit: CommitChar = "";
-        if (word.endsWith(" ")) {
-          commit = " ";
-          word = word.slice(0, -1);
-        } else if (word.endsWith("\n")) {
-          commit = "\n";
-          word = word.slice(0, -1);
-        }
-        list.push({ text: word, textWithCommit: word + commit, commit });
-      },
-      reset() {
-        list.length = 0;
-      },
-      get length() {
-        return list.length;
-      },
+  const words = {
+    list,
+    get: (index?: number) => (index === undefined ? [...list] : list[index]),
+    getCurrent: () => list[mockState.activeWordIndex],
+    push(word: string, _index?: number) {
+      let commit: CommitChar = "";
+      if (word.endsWith(" ")) {
+        commit = " ";
+        word = word.slice(0, -1);
+      } else if (word.endsWith("\n")) {
+        commit = "\n";
+        word = word.slice(0, -1);
+      }
+      list.push({ text: word, textWithCommit: word + commit, commit });
     },
+    reset() {
+      list.length = 0;
+    },
+    get length() {
+      return list.length;
+    },
+  };
+  return {
+    words,
+    pushWord: (word: string, index: number) => words.push(word, index),
+    resetWords: () => words.reset(),
   };
 });
 
-vi.mock("../../../src/ts/states/test", () => ({
+vi.mock("../../../src/ts/test/engine/state", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isTestActive: () => true,
-  isResultCalculating: () => false,
-  isTestRestarting: () => false,
   wordsHaveNewline: () => false,
-  getCurrentQuote: () => null,
-  getBailedOut: () => false,
+  getTestEnd: () => null,
   getKoreanStatus: () => false,
+  scheduleLiveStatsFlush: () => undefined,
+}));
+
+vi.mock("../../../src/ts/states/test", () => ({
+  isResultCalculating: () => false,
+  getCurrentQuote: () => null,
   isComposing: () => false,
   getCompositionData: () => "",
   flashKeymapKey: vi.fn(),
@@ -138,7 +144,7 @@ import {
   getEventsForWord,
 } from "../../../src/ts/test/engine/events/helpers";
 import type { InputEventNoMs } from "../../../src/ts/test/engine/events/types";
-import { words as TestWords } from "../../../src/ts/test/engine/test-words";
+import * as TestWords from "../../../src/ts/test/engine/test-words";
 import { __testing } from "../../../src/ts/config/testing";
 import { DeleteInputType } from "../../../src/ts/test/engine/input-type";
 
@@ -178,7 +184,7 @@ nav.goToPreviousWord.mockImplementation((inputType: DeleteInputType) => {
 
 function pushWords(...words: string[]): void {
   words.forEach((word, i) => {
-    TestWords.push(i === words.length - 1 ? word : `${word} `, i);
+    TestWords.pushWord(i === words.length - 1 ? word : `${word} `, i);
   });
 }
 
@@ -208,7 +214,7 @@ describe("onInsertText - delete on error", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetTestEvents();
-    TestWords.reset();
+    TestWords.resetWords();
     mockState.activeWordIndex = 0;
     mockState.correctShiftUsed = true;
     mockState.wordsScrolledOff.clear();

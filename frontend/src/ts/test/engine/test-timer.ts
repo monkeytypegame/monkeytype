@@ -1,20 +1,12 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
+import { createSignal } from "solid-js";
 import { Config } from "../../config/store";
-import { setConfig } from "../../config/setters";
+// oxlint-disable-next-line no-restricted-imports -- T6b: the time limit comes from the test settings
 import * as CustomText from "../custom-text";
-import * as TestWords from "./test-words";
-import {
-  showNoticeNotification,
-  showErrorNotification,
-  removeNotification,
-} from "../../states/notifications";
-import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
-import * as SoundController from "../../controllers/sound-controller";
-import { clearLowFpsMode, setLowFpsMode } from "../../anim";
 import { createTimer } from "animejs";
-import { buildEventLog, getCurrentInput, logTestEvent } from "./events/data";
+import { buildEventLog, logTestEvent } from "./events/data";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import {
   getLiveCachedAccuracy,
@@ -24,18 +16,7 @@ import {
 } from "./events/live-cache";
 import { getChars } from "./events/stats";
 import { calculateWpm } from "../../utils/numbers";
-import {
-  getActiveWordIndex,
-  isTestActive,
-  setCurrentLiveStats,
-  setLayoutfluidTimerText,
-  setLayoutfluidTimerVisible,
-  isSlowTimer,
-  setSlowTimer,
-  clearSlowTimer,
-  highlightKeymapKey,
-} from "../../states/test";
-import { capitalizeFirstLetter } from "../../utils/strings";
+import { getActiveWordIndex, isTestActive, setTimerLiveStats } from "./state";
 
 export type TimerHandlers = {
   onFinish: () => void;
@@ -48,11 +29,35 @@ let onFail: TimerHandlers["onFail"] = () => undefined;
 
 let emittedTicks = 0;
 let stopped = true;
+
+// Seconds elapsed, one write per tick (catch-up ticks included), 0 before the
+// first. Per-tick side effects outside the engine (time warning, layoutfluid)
+// are effects on it: test/timer-effects.ts.
+const [getTimerTick, setTimerTick] = createSignal(0);
+export { getTimerTick };
+
+// false once the timer stops (finish, fail, restart)
+const [isTimerRunning, setTimerRunning] = createSignal(false);
+export { isTimerRunning };
+
+// the timer drifted too far: animations stay off until it's cleared on restart.
+const [isSlowTimer, setIsSlowTimer] = createSignal(false);
+export { isSlowTimer };
+
+function setSlowTimer(): void {
+  if (isSlowTimer()) return;
+  setIsSlowTimer(true);
+  console.error("Slow timer, disabling animations");
+}
+
+function clearSlowTimer(): void {
+  setIsSlowTimer(false);
+}
 const newTimer = createTimer({
   duration: 1000,
   autoplay: false,
   onComplete: () => {
-    // sync guard — finish() is async and isTestActive() flips behind an await
+    // sync guard — finish() is async and the phase flips behind an await
     if (stopped) return;
 
     const timerStartMs = getLiveCachedTimerStartMs();
@@ -126,7 +131,6 @@ type TimerStats = {
 };
 
 let slowTimerCount = 0;
-let slowTimerNotifIds: number[] = [];
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
 let expected = 0;
@@ -143,7 +147,7 @@ export function enableTimerDebug(): void {
 
 export function clear(logEnd = false, now = performance.now()): void {
   stopped = true;
-  clearLowFpsMode();
+  setTimerRunning(false);
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
   if (logEnd) {
@@ -153,52 +157,6 @@ export function clear(logEnd = false, now = performance.now()): void {
       date: new Date().getTime(),
     });
   }
-}
-
-function layoutfluid(time: number): void {
-  if (timerDebug) console.time("layoutfluid");
-
-  if (Config.funbox.includes("layoutfluid") && Config.mode === "time") {
-    const layouts = Config.customLayoutfluid;
-    const switchTime = Config.time / layouts.length;
-    const index = Math.floor(time / switchTime);
-    const layout = layouts[index];
-    const flooredSwitchTimes: number[] = [];
-
-    for (let i = 1; i < layouts.length; i++) {
-      flooredSwitchTimes.push(Math.floor(switchTime * i));
-    }
-
-    const secondsUntilSwitch = [3, 2, 1].find((sec) =>
-      flooredSwitchTimes.includes(time + sec),
-    );
-    if (secondsUntilSwitch !== undefined) {
-      const nextLayout = capitalizeFirstLetter(layouts[index + 1] as string);
-      setLayoutfluidTimerText(`${nextLayout} in: ${secondsUntilSwitch}s`);
-      setLayoutfluidTimerVisible(true);
-    }
-
-    if (Config.layout !== layout && layout !== undefined) {
-      setLayoutfluidTimerVisible(false);
-      setConfig("layout", layout as Layout, {
-        nosave: true,
-      });
-      setConfig("keymapLayout", layout as KeymapLayout, {
-        nosave: true,
-      });
-
-      if (Config.keymapMode === "next") {
-        setTimeout(() => {
-          highlightKeymapKey(
-            TestWords.words
-              .getCurrent()
-              ?.text.charAt(getCurrentInput().length) ?? "",
-          );
-        }, 1);
-      }
-    }
-  }
-  if (timerDebug) console.timeEnd("layoutfluid");
 }
 
 function checkIfFailed(
@@ -250,26 +208,6 @@ function checkIfTimeIsUp(testTime: number): void {
   if (timerDebug) console.timeEnd("times up check");
 }
 
-function playTimeWarning(testTime: number): void {
-  if (timerDebug) console.time("play timer warning");
-
-  let maxTime = undefined;
-
-  if (Config.mode === "time") {
-    maxTime = Config.time;
-  } else if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
-    maxTime = CustomText.getLimitValue();
-  }
-
-  if (
-    maxTime !== undefined &&
-    testTime === maxTime - parseInt(Config.playTimeWarning, 10)
-  ) {
-    void SoundController.playTimeWarning();
-  }
-  if (timerDebug) console.timeEnd("play timer warning");
-}
-
 // ---------------------------------------
 
 let timerStats: TimerStats[] = [];
@@ -285,10 +223,10 @@ function timerStep(now: number, catchingUp: boolean): void {
   const testTime = emittedTicks;
 
   if (catchingUp) {
-    // cheap per-tick side effects — must run for every missed tick during catch-up
-    // so warnings/layout switches still fire on the correct seconds
-    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
-    layoutfluid(testTime);
+    // cheap per-tick side effects (timer-effects) must run for every missed
+    // tick during catch-up so warnings/layout switches still fire on the
+    // correct seconds
+    setTimerTick(testTime);
     checkIfTimeIsUp(testTime);
   } else {
     //calc — only the final, real-time tick pays for these
@@ -310,16 +248,14 @@ function timerStep(now: number, catchingUp: boolean): void {
       ),
     };
 
-    setCurrentLiveStats({
+    setTimerLiveStats({
       wpm: wpmAndRaw.wpm,
-      acc: acc ?? 100,
       raw: wpmAndRaw.raw,
       seconds: getLiveCachedTestSeconds(now),
     });
 
     //logic
-    if (Config.playTimeWarning !== "off") playTimeWarning(testTime);
-    layoutfluid(testTime);
+    setTimerTick(testTime);
     const failed = checkIfFailed(wpmAndRaw, acc);
     if (!failed) checkIfTimeIsUp(testTime);
   }
@@ -336,25 +272,13 @@ function checkIfTimerIsSlow(drift: number): void {
     if (drift > 125) {
       //slow timer
       setSlowTimer();
-      setLowFpsMode();
     }
     if (drift > 250) {
       slowTimerCount++;
     }
 
     if (drift > 500 || slowTimerCount > 5) {
-      //slow timer
-
-      showNoticeNotification(
-        'This could be caused by "efficiency mode" on Microsoft Edge.',
-      );
-
-      slowTimerNotifIds.push(
-        showErrorNotification(
-          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-        ),
-      );
-
+      // test-logic's fail shows the notifications
       onFail("slow timer");
     }
   }
@@ -368,16 +292,14 @@ export async function start(
   clearSlowTimer();
   slowTimerCount = 0;
   emittedTicks = 0;
-  for (const id of slowTimerNotifIds) {
-    removeNotification(id, "clear");
-  }
-  slowTimerNotifIds = [];
+  setTimerTick(0);
   void _startNew(now);
   // void _startOld(now);
 }
 
 async function _startNew(now: number): Promise<void> {
   stopped = false;
+  setTimerRunning(true);
   newTimer.duration = 1000;
   newTimer.play();
   logTestEvent("timer", now, {

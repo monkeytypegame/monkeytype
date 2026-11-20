@@ -1,15 +1,14 @@
-// What follows each test input: render buffer writes, live stats, keymap
+// What follows each test input: render buffer writes, keymap
 // highlight, focus mode and sounds. Buffered, rendered in the next words frame.
 import { Config } from "../../config/store";
 import { createEvent } from "../../hooks/createEvent";
 import * as SoundController from "../../controllers/sound-controller";
 import {
-  getActiveWordIndex,
   getCompositionData,
   highlightKeymapKey,
-  setCurrentLiveStats,
   setFocusMode,
 } from "../../states/test";
+import { getActiveWordIndex } from "../../test/engine/state";
 import {
   setActiveWord,
   setWordInput,
@@ -17,9 +16,7 @@ import {
   truncateWords,
 } from "../../states/words-render";
 import { getCurrentInput } from "../../test/engine/events/data";
-import { getLiveCachedAccuracy } from "../../test/engine/events/live-cache";
 import * as TestWords from "../../test/engine/test-words";
-import * as Numbers from "@monkeytype/util/numbers";
 
 /** Dispatched after each typed character, with whether it was correct. */
 export const textInsertedEvent = createEvent<boolean>();
@@ -54,11 +51,6 @@ function afterAnyTestInput(
     }
   } else if (type === "delete") {
     void SoundController.playClick();
-  }
-
-  const acc = Numbers.roundTo2(getLiveCachedAccuracy() ?? 100);
-  if (!isNaN(acc)) {
-    setCurrentLiveStats({ acc });
   }
 
   highlightNextKey();
@@ -100,18 +92,11 @@ export function beforeTestWordChange(direction: "forward" | "back"): void {
   }
 }
 
-export function afterTestWordChange(
-  direction: "forward" | "back",
-  lastBurst?: number | null,
-): void {
+export function afterTestWordChange(direction: "forward" | "back"): void {
   const activeWordIndex = getActiveWordIndex();
   if (direction === "forward") setWordTyped(activeWordIndex - 1, true);
   setWordTyped(activeWordIndex, false);
   setActiveWord(activeWordIndex, direction);
-
-  if (lastBurst !== null && Numbers.isSafeNumber(lastBurst)) {
-    setCurrentLiveStats({ burst: Math.round(lastBurst) });
-  }
 
   highlightNextKey();
 

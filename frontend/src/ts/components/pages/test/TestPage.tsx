@@ -22,8 +22,7 @@ import {
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
   isResultLoading,
-  isTestActive,
-  isTestFinished,
+  isResultScreen,
   isTestInitFailed,
   isTypingTestHidden,
   isWordsWrapperHidden,
@@ -31,6 +30,7 @@ import {
   setTestFocusState,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
+import { isTestActive } from "../../../test/engine/state";
 import {
   leaveTestPage,
   onRestartButtonClick,
@@ -131,7 +131,7 @@ export function TestPage(): JSXElement {
     // before the test, keeps it in view. During one, Words keeps the active
     // line in view
     const keepTestInView = debounce(250, () => {
-      if (isTestActive() || isTestFinished()) return;
+      if (isTestActive() || isResultScreen()) return;
       Misc.scrollToCenterOrTop(typingTestRef ?? null);
     });
     window.addEventListener("resize", keepTestInView, { signal });
@@ -185,7 +185,7 @@ export function TestPage(): JSXElement {
 
   createEffect(
     on(
-      isTestFinished,
+      isResultScreen,
       (finished) => {
         if (finished && Config.playSoundOnClick === "16") {
           void SoundController.playFartReverb();

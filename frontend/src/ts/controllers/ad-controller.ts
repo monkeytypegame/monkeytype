@@ -4,7 +4,7 @@ import { Config } from "../config/store";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 import { adSlotMediaQueries } from "../components/common/Advertisement";
-import { isTestActive } from "../states/test";
+import { isTestActive } from "../test/engine/state";
 import {
   getAdBlock,
   getCookieBlocker,
