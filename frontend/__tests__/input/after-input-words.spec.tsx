@@ -47,10 +47,12 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
+import * as CustomText from "../../src/ts/test/custom-text";
 import {
   incrementActiveWordIndex,
   resetActiveWordIndex,
 } from "../../src/ts/test/engine/state";
+import { takeTestSettings } from "../../src/ts/test/engine/test-settings";
 import * as TestWords from "../../src/ts/test/engine/test-words";
 import {
   focusWordsEvent,
@@ -164,6 +166,8 @@ describe("after-input words rendering", () => {
       showAllLines: true,
       fontSize: 1,
     });
+    // as a restart takes them before generating the words
+    takeTestSettings(CustomText.getData());
     resetActiveWordIndex();
     currentInput = "";
     caretGoTo = vi.spyOn(Caret.prototype, "goTo").mockImplementation(() => {

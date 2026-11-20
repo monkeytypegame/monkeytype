@@ -6,6 +6,7 @@ import {
   isResultCalculating,
   setComposing,
   setCompositionData,
+  isRestartAnimating,
 } from "../../states/test";
 import {
   getActiveWordIndex,
@@ -21,7 +22,13 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   const now = performance.now();
 
-  if (getTestPhase() === "restarting" || isResultCalculating()) return;
+  if (
+    getTestPhase() === "restarting" ||
+    isRestartAnimating() ||
+    isResultCalculating()
+  ) {
+    return;
+  }
   setComposing(true);
   setCompositionData("");
   setLastInsertCompositionTextData("");
@@ -41,7 +48,13 @@ export function onCompositionUpdate(event: CompositionEvent): void {
     data: event.data,
   });
 
-  if (getTestPhase() === "restarting" || isResultCalculating()) return;
+  if (
+    getTestPhase() === "restarting" ||
+    isRestartAnimating() ||
+    isResultCalculating()
+  ) {
+    return;
+  }
   setCompositionData(event.data);
 
   const now = performance.now();
@@ -59,7 +72,13 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
     data: event.data,
   });
 
-  if (getTestPhase() === "restarting" || isResultCalculating()) return;
+  if (
+    getTestPhase() === "restarting" ||
+    isRestartAnimating() ||
+    isResultCalculating()
+  ) {
+    return;
+  }
   setComposing(false);
   setCompositionData("");
   setLastInsertCompositionTextData("");

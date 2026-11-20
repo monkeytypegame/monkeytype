@@ -13,12 +13,17 @@ import {
 import { EventLog } from "./events/types";
 import {
   freezeLog,
+  clearLiveStats,
   getActiveWordIndex,
   isTestActive,
   setTestEnd,
   setKoreanStatus,
+  getTestPhase,
   setLastBurst,
+  setRestartOptions,
+  setTestId,
   setTestPhase,
+  type RestartOptions,
   startLiveStats,
   type TestEnd,
 } from "./state";
@@ -73,14 +78,46 @@ export function reset(): void {
   });
 }
 
-/** A restart began: its fade-out starts. */
-export function restart(): void {
-  setTestPhase("restarting");
+// ---- restart
+
+// the current generation's token: a newer request supersedes the one running
+let generation = 0;
+
+/**
+ * Starts a restart: the phase is restarting until commitRestart(). During
+ * one, a request supersedes the generation in progress (the options stay).
+ * Returns the token the generation checks with isCurrentRestart().
+ */
+export function requestRestart(options: Partial<RestartOptions>): number {
+  if (getTestPhase() !== "restarting") {
+    batch(() => {
+      setRestartOptions({
+        withSameWordset: options.withSameWordset ?? false,
+        noAnim: options.noAnim ?? false,
+      });
+      setTestPhase("restarting");
+    });
+  }
+  return ++generation;
 }
 
-/** The restart is over: the new test is ready, or init gave up. */
-export function endRestart(): void {
-  setTestPhase("idle");
+/** Whether the generation holding `token` is still the one to commit. */
+export function isCurrentRestart(token: number): boolean {
+  return token === generation && getTestPhase() === "restarting";
+}
+
+/**
+ * The generation holding `token` is done (or init gave up): commits a new
+ * test id and switches to idle. False when it was superseded.
+ */
+export function commitRestart(token: number): boolean {
+  if (!isCurrentRestart(token)) return false;
+  batch(() => {
+    setTestId((id) => id + 1);
+    setTestPhase("idle");
+    clearLiveStats();
+  });
+  return true;
 }
 
 /**

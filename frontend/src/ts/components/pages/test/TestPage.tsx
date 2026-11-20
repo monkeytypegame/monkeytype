@@ -5,6 +5,7 @@ import {
   onCleanup,
   onMount,
   Show,
+  untrack,
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
@@ -12,11 +13,13 @@ import { Config, getConfig } from "../../../config/store";
 import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
+import * as MonkeyPower from "../../../elements/monkey-power";
+import { isOnline, showOfflineBanner } from "../../../states/connection";
 import { getCustomTextIndicator } from "../../../states/core";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { isResultShown } from "../../../states/result";
+import { isResultShown, setResultShown } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
@@ -27,21 +30,33 @@ import {
   isTypingTestHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
+  setFocusMode,
+  setLayoutfluidTimerVisible,
+  setRestartAnimating,
+  setTypingTestHidden,
+  setWordsInputPosition,
   setTestFocusState,
 } from "../../../states/test";
+import { replaceWords } from "../../../states/words-render";
 import * as CustomText from "../../../test/custom-text";
-import { isTestActive } from "../../../test/engine/state";
+import {
+  getActiveWordIndex,
+  getRestartOptions,
+  getTestId,
+  getTestPhase,
+  isTestActive,
+} from "../../../test/engine/state";
+import { getTestSettings } from "../../../test/engine/test-settings";
+import * as TestWords from "../../../test/engine/test-words";
 import {
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
-  restartIfNotStarted,
 } from "../../../test/test-logic";
 import {
   focusWordsEvent,
   markTestPageMounted,
-  registerFade,
-  testRestartedEvent,
+  registerFinishFadeOut,
 } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
@@ -80,6 +95,7 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
+  let resultRef: HTMLDivElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -150,37 +166,140 @@ export function TestPage(): JSXElement {
     );
   });
 
-  const unregisterFade = registerFade(
-    "typingTest",
-    async (direction, duration) => {
+  /** Resolves when the animation ends, or at once without the element. */
+  const fade = async (
+    el: HTMLElement | undefined,
+    direction: "in" | "out",
+    noAnim: boolean,
+  ): Promise<void> => {
+    if (el === undefined) return;
+    // synchronous, so the shown test can't paint before the fade starts
+    if (direction === "in") el.style.opacity = "0";
+    await Misc.promiseAnimate(el, {
+      opacity: direction === "in" ? [0, 1] : 0,
+      duration: noAnim ? 0 : Misc.applyReducedMotion(125),
+    });
+  };
+  // T6c: the finish fade-out follows the phase here
+  onCleanup(
+    registerFinishFadeOut(async (duration) => {
       if (typingTestRef === undefined) return;
-      // synchronous, so the shown test can't paint before the fade starts
-      if (direction === "in") typingTestRef.style.opacity = "0";
-      await Misc.promiseAnimate(typingTestRef, {
-        opacity: direction === "in" ? [0, 1] : 0,
-        duration,
-      });
-    },
+      await Misc.promiseAnimate(typingTestRef, { opacity: 0, duration });
+    }),
   );
-  onCleanup(unregisterFade);
+
+  /**
+   * Shows the restarted test while hidden. Outside effects and batches:
+   * replaceWords measures the new words as they render.
+   */
+  const showNewTest = (): void => {
+    setResultShown(false);
+    setTypingTestHidden(false);
+    setWordsInputPosition((position) => ({ ...position, left: 0 }));
+    setFocusMode(false);
+    setLayoutfluidTimerVisible(false);
+    if (!isOnline()) showOfflineBanner();
+    const zen = getTestSettings().mode === "zen";
+    replaceWords(zen ? [{ display: "" }] : TestWords.words.get(), {
+      activeWordIndex: getActiveWordIndex(),
+      zen,
+    });
+  };
+
+  /**
+   * Little roadblock for basic cheating: restarts an unstarted test when the
+   * window regains focus or becomes visible.
+   */
+  const restartIfNotStarted = (): void => {
+    if (
+      !isTestActive() &&
+      !isResultScreen() &&
+      (getTestSettings().mode === "time" || getTestSettings().mode === "words")
+    ) {
+      void restartTest({ noAnim: true });
+    }
+  };
+
+  // Restart display: the engine generates at once; this fades out what's on
+  // screen, then swaps the new test in (hidden) once the restart committed,
+  // and fades it in. A restart during the fade-out shows only its own result.
+  let display: "idle" | "out" | "waiting" | "in" = "idle";
+  let source: "testPage" | "resultPage" = "testPage";
+
+  const fadeOutForRestart = async (): Promise<void> => {
+    display = "out";
+    setRestartAnimating(true);
+    const { noAnim } = untrack(getRestartOptions);
+    // what's rendered: the phase is already "restarting"
+    source = untrack(isResultShown) ? "resultPage" : "testPage";
+    await fade(
+      source === "resultPage" ? resultRef : typingTestRef,
+      "out",
+      noAnim,
+    );
+    display = "waiting";
+    void swapInRestartedTest();
+  };
+
+  const swapInRestartedTest = async (): Promise<void> => {
+    if (display !== "waiting" || untrack(getTestPhase) === "restarting") {
+      return;
+    }
+    display = "in";
+    // init gave up: TestInitFailed shows instead
+    if (!untrack(isTestInitFailed)) {
+      showNewTest();
+      // while hidden: focusing restarts the caret's blink. Input waits for
+      // the fade-in (isRestartAnimating)
+      focusWordsEvent.dispatch({ force: true });
+      // the restart's side effects
+      ResultWordHighlight.destroy();
+      if (source === "resultPage") {
+        if (Config.randomTheme !== "off") {
+          void ThemeController.randomizeTheme();
+        }
+        skipBreakdownEvent.dispatch();
+      }
+      AdController.destroyResult();
+      void SoundController.clearAllSounds();
+      MonkeyPower.reset();
+    }
+    // fade hides the test synchronously, before the new words paint
+    await fade(typingTestRef, "in", untrack(getRestartOptions).noAnim);
+    // a restart began meanwhile: it fades the test out again
+    if (display !== "in") return;
+    display = "idle";
+    setRestartAnimating(false);
+  };
+
+  createEffect(
+    on(getTestPhase, (phase) => {
+      if (phase !== "restarting") return;
+      // already fading out or waiting: it shows the latest restart
+      if (display === "out" || display === "waiting") return;
+      void fadeOutForRestart();
+    }),
+  );
+  // the restart committed a new test
+  createEffect(
+    on(
+      getTestId,
+      // outside the effect and the commit's batch: replaceWords lays out the
+      // new words as they render
+      () => queueMicrotask(() => void swapInRestartedTest()),
+      { defer: true },
+    ),
+  );
+  onCleanup(() => {
+    display = "idle";
+    setRestartAnimating(false);
+  });
 
   // WordsInput takes the focus; during a test Words keeps the active line in
   // view
   focusWordsEvent.useListener(() => {
     if (isTestActive()) return;
     Misc.scrollToCenterOrTop(typingTestRef ?? null);
-  });
-
-  testRestartedEvent.useListener((source) => {
-    ResultWordHighlight.destroy();
-    if (source === "resultPage") {
-      if (Config.randomTheme !== "off") {
-        void ThemeController.randomizeTheme();
-      }
-      skipBreakdownEvent.dispatch();
-    }
-    AdController.destroyResult();
-    void SoundController.clearAllSounds();
   });
 
   createEffect(
@@ -300,7 +419,7 @@ export function TestPage(): JSXElement {
         </div>
       </Show>
       <Show when={isResultShown()}>
-        <TestResult />
+        <TestResult ref={(el) => (resultRef = el)} />
       </Show>
     </>
   );

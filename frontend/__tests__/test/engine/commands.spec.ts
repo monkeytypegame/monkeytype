@@ -5,6 +5,8 @@ import {
   clearLiveStats,
   getActiveWordIndex,
   getFrozenLog,
+  getRestartOptions,
+  getTestId,
   getTestPhase,
   getTestEnd,
   liveStats,
@@ -70,13 +72,30 @@ describe("engine", () => {
       Engine.reset();
       expect(getTestPhase()).toBe("finished");
     });
+  });
 
-    it("restart lasts until endRestart", () => {
+  describe("restart", () => {
+    it("is restarting until the current generation commits", () => {
       Engine.start();
       Engine.finish();
-      Engine.restart();
+      const id = getTestId();
+      const token = Engine.requestRestart({ noAnim: true });
       expect(getTestPhase()).toBe("restarting");
-      Engine.endRestart();
+      expect(Engine.isCurrentRestart(token)).toBe(true);
+      expect(Engine.commitRestart(token)).toBe(true);
+      expect(getTestPhase()).toBe("idle");
+      expect(getTestId()).toBe(id + 1);
+      expect(Engine.isCurrentRestart(token)).toBe(false);
+    });
+
+    it("a newer request supersedes the generation, keeping the options", () => {
+      const first = Engine.requestRestart({ withSameWordset: true });
+      const second = Engine.requestRestart({});
+      expect(Engine.isCurrentRestart(first)).toBe(false);
+      expect(Engine.commitRestart(first)).toBe(false);
+      expect(getTestPhase()).toBe("restarting");
+      expect(getRestartOptions().withSameWordset).toBe(true);
+      expect(Engine.commitRestart(second)).toBe(true);
       expect(getTestPhase()).toBe("idle");
     });
   });

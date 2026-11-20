@@ -23,7 +23,7 @@ import { EventLog } from "./events/types";
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
 // T6c: finish/fail switch the phase on their first line, not after the words
-// fade-out; T6b: restart fades follow the phase.
+// fade-out.
 // setters exported for engine/commands only
 export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
@@ -31,6 +31,29 @@ export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 export function isTestActive(): boolean {
   return getTestPhase() === "active";
 }
+
+// ---- restart
+
+/** Options of a restart: the request that started it sets them. */
+export type RestartOptions = {
+  /** Same words as the last test. */
+  withSameWordset: boolean;
+  /** Skip the fades. */
+  noAnim: boolean;
+};
+
+// setters for engine/commands only
+export const [getRestartOptions, setRestartOptions] =
+  createSignal<RestartOptions>({
+    withSameWordset: false,
+    noAnim: false,
+  });
+
+/**
+ * Changes when a restart commits a new test (generated, or init gave up).
+ * TestPage swaps the new test in once it has faded the old one out.
+ */
+export const [getTestId, setTestId] = createSignal(0);
 
 // ---- words
 
@@ -44,8 +67,9 @@ export const [
   resetActiveWordIndex: (set) => set(0),
 });
 
-// Facts about the generated words. Words aren't reactive (T6b regenerates
-// them from the test settings), so these are set with them, not derived.
+// Facts about the generated words. Words aren't reactive (a restart
+// regenerates them from the test settings), so these are set with them, not
+// derived.
 const [wordsHaveNewline, setWordsHaveNewline] = createSignal(false);
 const [wordsHaveTab, setWordsHaveTab] = createSignal(false);
 const [wordsHaveNumbers, setWordsHaveNumbers] = createSignal(false);

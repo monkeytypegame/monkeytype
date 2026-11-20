@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { isResultShown } from "../../../../src/ts/states/result";
 import {
   cleanupTestPage,
   renderTestPage,
@@ -244,6 +245,108 @@ describe("TestPage", () => {
       // the test fades out before it counts as finished
       await page.advance(500);
       expect(page.phase()).toBe("finished");
+    });
+  });
+
+  describe("restart", () => {
+    it("restarts once for test settings changed while the old test fades out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.setConfig("mode", "time");
+      expect(page.phase()).toBe("restarting");
+      page.setConfig("time", 15);
+      await page.frame();
+      // the old test fades out as it was
+      expect(
+        page
+          .word(0)
+          .letters()
+          .map((l) => l.char),
+      ).toEqual(["t", "h", "e"]);
+      await page.advance(1000);
+
+      expect(page.phase()).toBe("ready");
+      expect(page.getRestartCount()).toBe(1);
+      expect(page.testSettings().mode).toBe("time");
+      expect(page.testSettings().time).toBe(15);
+    });
+
+    it("restarts once for a preset changing several test settings", async () => {
+      const page = await renderTestPage({ config: { mode: "time", time: 30 } });
+
+      await page.applyConfig({
+        mode: "words",
+        words: 10,
+        punctuation: true,
+      });
+      await page.advance(1000);
+
+      expect(page.getRestartCount()).toBe(1);
+      expect(page.testSettings().mode).toBe("words");
+      expect(page.testSettings().words).toBe(10);
+      expect(page.testSettings().punctuation).toBe(true);
+    });
+
+    it("doesn't restart for a setting that isn't a test setting", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.setConfig("blindMode", true);
+      await page.advance(500);
+
+      expect(page.getRestartCount()).toBe(0);
+    });
+
+    it("drops a second request during a restart", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      page.restart();
+      await page.advance(1000);
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.getRestartCount()).toBe(2);
+      expect(page.phase()).toBe("ready");
+    });
+
+    it("restarts once for a second request while the new test fades in", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      // past the fade-out: the new test is generated
+      await page.advance(130);
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.getRestartCount()).toBe(1);
+      expect(page.phase()).toBe("ready");
+    });
+
+    it("restarts again for a settings change after the new words are generated", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      page.restart();
+      await page.advance(130);
+      page.setConfig("mode", "time");
+      await page.advance(1000);
+
+      expect(page.testSettings().mode).toBe("time");
+      expect(page.phase()).toBe("ready");
+    });
+
+    it("keeps the result on screen until it has faded out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+      await page.type("the fox");
+      await page.advance(500);
+      expect(page.phase()).toBe("finished");
+
+      page.restart();
+
+      expect(page.phase()).not.toBe("finished");
+      expect(isResultShown()).toBe(true);
+      await page.advance(1000);
+      expect(page.phase()).toBe("ready");
+      expect(isResultShown()).toBe(false);
     });
   });
 

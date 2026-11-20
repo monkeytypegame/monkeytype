@@ -1,10 +1,13 @@
 // the react rule doesn't know Solid's on: (native listener) bindings
 /* oxlint-disable react/no-unknown-property */
-import { JSXElement, onCleanup, onMount } from "solid-js";
+import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
 
 import { Config, getConfig } from "../../../config/store";
 import { ModifierKeys } from "../../../constants/modifier-keys";
-import { registerInputElement } from "../../../input/input-element";
+import {
+  registerInputElement,
+  setInputElementValue,
+} from "../../../input/input-element";
 import {
   onCompositionEnd,
   onCompositionStart,
@@ -26,7 +29,7 @@ import {
   triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
-import { isTestActive } from "../../../test/engine/state";
+import { getTestId, isTestActive } from "../../../test/engine/state";
 import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
@@ -39,6 +42,18 @@ import { isAnyPopupVisible } from "../../../utils/misc";
  */
 export function WordsInput(): JSXElement {
   let inputRef: HTMLTextAreaElement | undefined;
+
+  // a restart committed a new test: the old test's input goes (keys are
+  // refused until it has faded in)
+  createEffect(
+    on(
+      getTestId,
+      () => {
+        if (inputRef !== undefined) setInputElementValue("");
+      },
+      { defer: true },
+    ),
+  );
 
   onMount(() => {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
