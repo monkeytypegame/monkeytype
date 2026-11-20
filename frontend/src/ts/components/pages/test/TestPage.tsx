@@ -189,16 +189,15 @@ export function TestPage(): JSXElement {
   // (CSS, shown after a delay) keeps animating while it's slow. The engine
   // has built the result during the fade-out; if not, the spinner waits for it.
   let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
-  // hidden between the words fading out and the next restart
-  const [isTestShown, setTestShown] = createSignal(true);
   const [isSpinnerShown, setSpinnerShown] = createSignal(false);
+  // hidden once the words faded out, until the next restart
+  const isTestShown = (): boolean => !isSpinnerShown() && !isResultShown();
 
   const fadeOutForFinish = async (): Promise<void> => {
     finishDisplay = "out";
     await fade(typingTestRef, "out", false);
     if (finishDisplay !== "out" || !isStillFinished()) return;
     finishDisplay = "spinner";
-    setTestShown(false);
     setSpinnerShown(true);
     // after the spinner is painted
     await new Promise((resolve) =>
@@ -258,7 +257,6 @@ export function TestPage(): JSXElement {
   const showNewTest = (): void => {
     setSpinnerShown(false);
     setResultShown(false);
-    setTestShown(true);
     setWordsInputPosition((position) => ({ ...position, left: 0 }));
     setFocusMode(false);
     setLayoutfluidTimerVisible(false);
