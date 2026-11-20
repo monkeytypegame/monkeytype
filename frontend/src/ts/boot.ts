@@ -27,11 +27,11 @@ export async function boot(): Promise<void> {
     setVersion(data);
   });
 
+  const authStarted = startAuth(firebaseAuthProvider);
   const accepted = Cookies.getAcceptedCookies();
   if (accepted === null) {
     showModal("Cookies");
   }
-  const authStarted = startAuth(firebaseAuthProvider);
 
   await configLoaded;
   await authStarted;
