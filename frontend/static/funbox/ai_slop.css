@@ -1,0 +1,363 @@
+/*
+ * AI slop funbox: makes the site look like a website an AI would generate.
+ * Everything gets a border, a neon glow and hover animations, and aurora
+ * blobs drift behind the page with a scroll parallax, where scroll-driven
+ * animations are supported.
+ *
+ * All colors are color-mix()ed from the active theme's root variables, so
+ * any theme works. Hover/focus animations are silenced by the global
+ * prefers-reduced-motion rule (media-queries.scss); the blobs live on the
+ * body's own pseudo, which that rule does not cover, so they get their own
+ * block below.
+ */
+
+body.aismode {
+  --ai-slop-main-glow: color-mix(in srgb, var(--main-color) 55%, transparent);
+  --ai-slop-sub-glow: color-mix(in srgb, var(--sub-color) 55%, transparent);
+  --ai-slop-error-glow: color-mix(in srgb, var(--error-color) 60%, transparent);
+  --ai-slop-border: color-mix(in srgb, var(--main-color) 50%, var(--sub-color));
+  --ai-slop-border-hot: color-mix(
+    in srgb,
+    var(--main-color) 85%,
+    var(--sub-color)
+  );
+}
+
+/* aurora blobs behind everything (above the custom background at -z-999) */
+body.aismode::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38rem 38rem at 15% 20%,
+      color-mix(in srgb, var(--main-color) 25%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      42rem 42rem at 85% 15%,
+      color-mix(in srgb, var(--sub-alt-color) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      46rem 46rem at 75% 85%,
+      color-mix(in srgb, var(--error-color) 18%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 50rem at 20% 80%,
+      color-mix(in srgb, var(--main-color) 15%, transparent),
+      transparent 70%
+    );
+  animation: ai-slop-blobs 30s ease-in-out infinite alternate;
+}
+
+/*
+ * Scroll parallax: the fixed blobs shift up with the scroll, so they appear
+ * to move slower than the content. Capped at 3000px of scroll so short pages
+ * don't get a fast drift; older browsers without scroll-driven animations
+ * just get the drift above.
+ */
+@supports (animation-timeline: scroll()) {
+  body.aismode::before {
+    animation:
+      ai-slop-blobs 30s ease-in-out infinite alternate,
+      ai-slop-parallax 1s linear;
+    animation-timeline: auto, scroll();
+    animation-range:
+      normal,
+      0 3000px;
+    animation-fill-mode: none, forwards;
+  }
+}
+
+@keyframes ai-slop-parallax {
+  to {
+    translate: 0 -7rem;
+  }
+}
+
+/* the body's own pseudo is not covered by the global rule above */
+@media (prefers-reduced-motion) {
+  body.aismode::before {
+    animation: none;
+  }
+}
+
+@keyframes ai-slop-blobs {
+  to {
+    transform: translate3d(3%, 4%, 0) rotate(2deg) scale(1.08);
+  }
+}
+
+/* cards: border + glow + inner haze */
+body.aismode [data-ui-element="keymap"],
+body.aismode [data-ui-element="notificationBubble"],
+body.aismode .balloon,
+body.aismode .modal {
+  border: 1px solid var(--ai-slop-border);
+  border-radius: 1rem;
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    inset 0 0 2rem color-mix(in srgb, var(--main-color) 8%, transparent);
+}
+
+/* the result glows, but its invisible container gets no border */
+body.aismode #result {
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    inset 0 0 2rem color-mix(in srgb, var(--main-color) 8%, transparent);
+}
+
+/* glassmorphism for modals */
+body.aismode .modal {
+  background: color-mix(in srgb, var(--bg-color) 72%, transparent);
+  backdrop-filter: blur(0.75rem);
+}
+
+/* test config cards lose their background, the glows do the work */
+body.aismode [data-ui-element="testConfig"] .card {
+  background: transparent;
+}
+
+/* interactive elements: resting state */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    input,
+    textarea,
+    select
+  ) {
+  border: 1px solid var(--ai-slop-border);
+  border-radius: 0.625rem;
+  box-shadow: 0 0 0.625rem var(--ai-slop-sub-glow);
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    transform 150ms ease;
+}
+
+/* interactive elements: hover lifts and pulses */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    input,
+    textarea,
+    select
+  ):hover:not(:disabled) {
+  transform: translateY(-0.125rem) scale(1.04);
+  border-color: var(--ai-slop-border-hot);
+  box-shadow:
+    0 0 1.25rem var(--ai-slop-main-glow),
+    0 0 2.5rem var(--ai-slop-sub-glow);
+  animation: ai-slop-pulse 1.1s ease-in-out infinite;
+}
+
+/* interactive elements: keyboard focus ring + pulse */
+body.aismode
+  :is(
+    button,
+    [data-ui-element="button"],
+    input,
+    textarea,
+    select
+  ):focus-visible {
+  border-color: var(--ai-slop-border-hot);
+  box-shadow:
+    0 0 0 0.125rem var(--bg-color),
+    0 0 1.75rem var(--ai-slop-main-glow);
+  animation: ai-slop-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes ai-slop-pulse {
+  50% {
+    box-shadow:
+      0 0 2rem var(--ai-slop-main-glow),
+      0 0 3.5rem var(--ai-slop-sub-glow),
+      0 0 5rem var(--ai-slop-main-glow);
+  }
+}
+
+/* the command line input keeps its own look: no funbox chrome at all */
+body.aismode #CommandlineModal :is(input, textarea, select) {
+  border: 0;
+  border-radius: var(--roundness);
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+  transition: none;
+  animation: none;
+  background: none;
+}
+
+/* tables stay calmer: no funbox chrome on their buttons and links */
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ),
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ):hover:not(:disabled),
+body.aismode
+  table
+  :is(
+    button,
+    [data-ui-element="button"],
+    .button,
+    .textButton,
+    .scrollToTopButton,
+    a
+  ):focus-visible {
+  border: 0;
+  box-shadow: none;
+  text-shadow: none;
+  transform: none;
+  transition: none;
+  animation: none;
+}
+
+/*
+ * stripe the table rows up: the striped rows get a gradient, a hairline glow
+ * border and a corner glow, so they read as floating cards. The table's base
+ * striping fades out at the row edges, the gradient follows that.
+ */
+body.aismode table tbody tr:not([data-state="selected"]):nth-child(odd) > td {
+  background:
+    linear-gradient(
+      90deg,
+      var(--sub-alt-color),
+      color-mix(in srgb, var(--main-color) 16%, var(--sub-alt-color)) 35%,
+      var(--sub-alt-color)
+    ),
+    color-mix(in srgb, var(--main-color) 7%, transparent);
+  border-block: 1px solid color-mix(in srgb, var(--main-color) 25%, transparent);
+}
+
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:first-child {
+  border-radius: 0.625rem 0 0 0.625rem;
+  border-left: 1px solid color-mix(in srgb, var(--main-color) 45%, transparent);
+}
+
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:last-child {
+  border-radius: 0 0.625rem 0.625rem 0;
+  border-right: 1px solid color-mix(in srgb, var(--main-color) 45%, transparent);
+}
+
+body.aismode
+  table
+  tbody
+  tr:not([data-state="selected"]):nth-child(odd)
+  > td:only-child {
+  border-inline: 1px solid
+    color-mix(in srgb, var(--main-color) 45%, transparent);
+  border-radius: 0.625rem;
+}
+
+/* nav items glow in their own color */
+body.aismode [data-nav-item] {
+  text-shadow: 0 0 0.75rem color-mix(in srgb, currentColor 60%, transparent);
+  transition: transform 150ms ease;
+}
+
+body.aismode [data-nav-item]:hover {
+  transform: scale(1.1);
+  text-shadow:
+    0 0 0.75rem color-mix(in srgb, currentColor 85%, transparent),
+    0 0 2.25rem currentColor;
+}
+
+/* headings glow in their own color */
+body.aismode h1,
+body.aismode h3 {
+  text-shadow: 0 0 1rem color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* h2s get the full neon treatment */
+body.aismode h2 {
+  text-shadow:
+    0 0 0.625rem color-mix(in srgb, currentColor 75%, transparent),
+    0 0 1.75rem var(--ai-slop-main-glow);
+}
+
+/* words: untyped glow strongest, typed fade, errors burn */
+body.aismode [data-ui-element="word"] {
+  text-shadow: 0 0 0.875rem color-mix(in srgb, currentColor 30%, transparent);
+}
+
+body.aismode [data-ui-element="word"][data-ui-state="untyped"] {
+  text-shadow: 0 0 1.25rem color-mix(in srgb, currentColor 50%, transparent);
+}
+
+body.aismode [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
+  text-shadow: 0 0 1.125rem var(--ai-slop-error-glow);
+}
+
+body.aismode [data-ui-element="word"][data-ui-active] {
+  text-shadow:
+    0 0 0.5rem currentColor,
+    0 0 1.75rem var(--ai-slop-main-glow);
+}
+
+/* carets burn */
+body.aismode [data-ui-element="caret"],
+body.aismode [data-ui-element="paceCaret"] {
+  box-shadow: 0 0 0.875rem var(--ai-slop-main-glow);
+}
+
+body.aismode [data-ui-element="typoHint"] {
+  text-shadow: 0 0 0.625rem var(--ai-slop-error-glow);
+}
+
+/* result stats glow in their own color */
+body.aismode [data-ui-element="resultStatValue"] {
+  text-shadow: 0 0 1.25rem color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* key tips and kbd hints get a border too */
+body.aismode kbd {
+  border: 1px solid var(--ai-slop-border);
+  box-shadow: 0 0 0.5rem var(--ai-slop-sub-glow);
+}
+
+/* the logo is neon */
+body.aismode [data-ui-element="logo"] svg {
+  filter: drop-shadow(0 0 0.75rem var(--ai-slop-main-glow));
+}
+
+/* content links glow on hover (buttons are handled above) */
+body.aismode a:not([data-ui-element="button"]):hover {
+  text-shadow:
+    0 0 0.75rem color-mix(in srgb, currentColor 70%, transparent),
+    0 0 1.75rem var(--ai-slop-main-glow);
+}
