@@ -2,7 +2,7 @@ import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement } from "solid-js";
 
 import { AuthResult, signIn } from "../../../auth/actions";
-import { getThirdParties } from "../../../auth/system";
+import { getThirdParties } from "../../../auth/state";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,

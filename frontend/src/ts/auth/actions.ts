@@ -14,6 +14,7 @@ import {
 import { createErrorMessage } from "../utils/error";
 import {
   AuthError,
+  AuthProvider,
   AuthUser,
   isPasswordMethod,
   SignInOptions,
@@ -24,16 +25,20 @@ import {
   deleteProviderUser,
   finishSignUp,
   getAuthenticatedUser,
-  isAuthAvailable,
   linkMethod,
-  getAuthMethodDisplay,
-  getOfferedAuthMethods,
   reauthenticate as systemReauthenticate,
   signIn as systemSignIn,
   signOut as systemSignOut,
   unlinkMethod,
+  initAuth,
 } from "./system";
-import { isAuthenticated, isUsingAuthMethod } from "./state";
+import {
+  getAuthMethodDisplay,
+  getOfferedAuthMethods,
+  isAuthAvailable,
+  isAuthenticated,
+  isUsingAuthMethod,
+} from "./state";
 
 export type AuthResult =
   | {
@@ -60,6 +65,16 @@ type ReauthenticateOptions = {
   excludeMethod?: string;
   password?: string;
 };
+
+/**
+ * Starts auth with the provider boot picked; resolves once the first auth
+ * state is known, or auth failed to start.
+ */
+export async function startAuth(provider: AuthProvider): Promise<void> {
+  await initAuth(provider);
+}
+
+export { getAuthenticatedUser };
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {

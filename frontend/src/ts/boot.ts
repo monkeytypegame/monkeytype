@@ -4,7 +4,7 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 import * as Cookies from "./cookies";
 import * as MerchBanner from "./elements/merch-banner";
 import * as Psa from "./elements/psa";
-import { initAuth, authPromise } from "./auth/system";
+import { startAuth } from "./auth/actions";
 import { firebaseAuthProvider } from "./auth/providers/firebase";
 import { initConnection } from "./states/connection";
 import { setAppReady, setVersion } from "./states/core";
@@ -31,14 +31,15 @@ export async function boot(): Promise<void> {
   if (accepted === null) {
     showModal("Cookies");
   }
-  void initAuth(firebaseAuthProvider).then(() => {
+  const authStarted = startAuth(firebaseAuthProvider);
+  void authStarted.then(() => {
     if (accepted !== null) {
       Cookies.activateWhatsAccepted();
     }
   });
 
   await configLoaded;
-  await authPromise;
+  await authStarted;
 
   MerchBanner.showIfNotClosedBefore();
 

@@ -27,8 +27,7 @@ import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigKey } from "../config/metadata";
 import { signOut } from "../auth/actions";
-import { isAuthAvailable } from "../auth/system";
-import { isAuthenticated } from "../auth/state";
+import { isAuthAvailable, isAuthenticated } from "../auth/state";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,

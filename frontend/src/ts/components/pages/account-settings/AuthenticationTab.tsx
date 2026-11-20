@@ -5,10 +5,11 @@ import type { AuthMethodInfo } from "../../../auth/providers/types";
 import { addAuthMethod } from "../../../auth/actions";
 import {
   getAuthMethodEmail,
+  getThirdParties,
   hasOtherAuthMethods,
   isUsingAuthMethod,
+  supportsPassword,
 } from "../../../auth/state";
-import { getThirdParties, supportsPassword } from "../../../auth/system";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";

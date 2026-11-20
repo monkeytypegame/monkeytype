@@ -13,13 +13,13 @@ import {
   getAuthenticatedUser,
   initAuth,
   linkMethod,
-  isAuthAvailable,
   signIn,
 } from "../../src/ts/auth/system";
 import {
   getAuthMethods,
   getAuthState,
   getUserId,
+  isAuthAvailable,
 } from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 

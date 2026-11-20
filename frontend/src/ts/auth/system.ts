@@ -1,27 +1,26 @@
 import { batch } from "solid-js";
 import { addBanner } from "../states/banners";
 import {
+  isAuthAvailable,
+  setAuthAvailable,
   setAuthMethods,
   setAuthState,
+  setOfferedAuthMethods,
   setUserId,
   setUserVerified,
 } from "./state";
 import { showGoogleSignUpModal } from "../states/google-sign-up";
 import { isDevEnvironment } from "../utils/env";
-import { promiseWithResolvers } from "../utils/misc";
 
 import {
   AuthProvider,
   AuthUser,
   SignInOptions,
   SignInResult,
-  AuthMethodInfo,
 } from "./providers/types";
 
 /** The provider boot picked. */
 let provider: AuthProvider | undefined;
-/** Whether the provider started; auth is unavailable when it failed. */
-let available = false;
 
 /**
  * Hold back the provider's user changes. Used during a sign up, which signs in
@@ -29,12 +28,14 @@ let available = false;
  */
 let holdUserChanges = false;
 
-const { promise: authPromise, resolve: resolveAuthPromise } =
-  promiseWithResolvers();
-
+/**
+ * Starts the provider; resolves once it reported the first auth state, or
+ * failed to start (auth is then unavailable).
+ */
 export async function initAuth(authProvider: AuthProvider): Promise<void> {
   provider = authProvider;
-  available = true;
+  setOfferedAuthMethods(authProvider.methods);
+  setAuthAvailable(true);
   try {
     // a provider nobody can sign in with is misconfigured
     if (authProvider.methods.length === 0) {
@@ -50,7 +51,7 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
       setUserState(user);
     });
   } catch (e) {
-    available = false;
+    setAuthAvailable(false);
     console.error("Firebase failed to initialize", e);
     setUserState(null);
     if (isDevEnvironment()) {
@@ -60,8 +61,6 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
         icon: "fas fa-exclamation-triangle",
       });
     }
-  } finally {
-    resolveAuthPromise();
   }
 }
 
@@ -72,37 +71,11 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
 function getAuthProvider(required: true): AuthProvider;
 function getAuthProvider(required?: false): AuthProvider | undefined;
 function getAuthProvider(required = false): AuthProvider | undefined {
-  const started = available ? provider : undefined;
+  const started = isAuthAvailable() ? provider : undefined;
   if (required && started === undefined) {
     throw new Error("Authentication uninitialized");
   }
   return started;
-}
-
-export function isAuthAvailable(): boolean {
-  return getAuthProvider() !== undefined;
-}
-
-/** The auth methods the provider offers, most preferred first. */
-export function getOfferedAuthMethods(): readonly AuthMethodInfo[] {
-  return provider?.methods ?? [];
-}
-
-/** Whether the provider offers password auth. */
-export function supportsPassword(): boolean {
-  return getOfferedAuthMethods().some((it) => it.id === "password");
-}
-
-/** The third parties the provider offers, most preferred first. */
-export function getThirdParties(): readonly AuthMethodInfo[] {
-  return getOfferedAuthMethods().filter((it) => it.id !== "password");
-}
-
-/** An auth method's name to show. */
-export function getAuthMethodDisplay(method: string): string {
-  return (
-    getOfferedAuthMethods().find((it) => it.id === method)?.display ?? method
-  );
 }
 
 /**
@@ -234,5 +207,3 @@ function setUserState(user: AuthUser | null): void {
     }
   });
 }
-
-export { authPromise };
