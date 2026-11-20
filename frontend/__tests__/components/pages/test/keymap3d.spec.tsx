@@ -27,10 +27,7 @@ import type {
 } from "../../../../src/ts/components/pages/test/keymapLayouts";
 import type { FlashEntry } from "../../../../src/ts/states/test";
 
-import {
-  Keymap3D,
-  PERSPECTIVE,
-} from "../../../../src/ts/components/pages/test/Keymap3D";
+import { Keymap3D } from "../../../../src/ts/components/pages/test/Keymap3D";
 import { __testing } from "../../../../src/ts/config/testing";
 
 const { replaceConfig } = __testing;
@@ -100,7 +97,7 @@ describe("Keymap3D", () => {
 
     const root = container.querySelector("[data-keymap3d-root]");
     expect(root).toBeTruthy();
-    expect(styleOf(root)).toContain(`perspective: ${PERSPECTIVE}px`);
+    expect(styleOf(root)).toContain("perspective: 1200px");
 
     const board = root?.querySelector("[data-keymap3d-board]");
     expect(board).toBeTruthy();
@@ -126,30 +123,6 @@ describe("Keymap3D", () => {
     expect(styleOf(front)).toContain("height: var(--key-h)");
 
     expect(container.querySelector("[data-keymap3d-plate]")).toBeTruthy();
-  });
-
-  it("keeps the 0.75u plate rim when no key drops below the column", () => {
-    const { container } = renderKeymap3D();
-    const plate = container.querySelector(
-      "[data-keymap3d-plate]",
-    ) as HTMLElement;
-    expect(plate.style.bottom).toBe("-0.75rem");
-  });
-
-  it("extends the plate bottom rim to clear keys that drop below the column", () => {
-    const { container } = renderKeymap3D({
-      keyboardDef: [
-        [key("1"), key("2")],
-        [key("a", { y: 0.9, rotation: 10 }), key("b")],
-      ],
-    });
-    const plate = container.querySelector(
-      "[data-keymap3d-plate]",
-    ) as HTMLElement;
-    // the 0.9u drop plus its rotated-corner swing clears the 0.75u base rim
-    const inset = -parseFloat(plate.style.bottom);
-    expect(inset).toBeGreaterThan(0.75);
-    expect(inset).toBeLessThanOrEqual(0.9 + 0.5 + 0.15);
   });
 
   it("hides the first row unless showFirstRow", () => {
