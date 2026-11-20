@@ -15,7 +15,7 @@ import {
   AuthUser,
   SignInOptions,
   SignInResult,
-  ThirdParty,
+  AuthMethodInfo,
 } from "./providers/types";
 
 /** The provider boot picked. */
@@ -76,20 +76,26 @@ export function isAuthAvailable(): boolean {
   return getStartedProvider() !== undefined;
 }
 
+/** The auth methods the provider offers, most preferred first. */
+export function getOfferedAuthMethods(): readonly AuthMethodInfo[] {
+  return provider?.methods ?? [];
+}
+
 /** Whether the provider offers password auth. */
 export function supportsPassword(): boolean {
-  return provider?.password ?? false;
+  return getOfferedAuthMethods().some((it) => it.id === "password");
 }
 
 /** The third parties the provider offers, most preferred first. */
-export function getThirdParties(): readonly ThirdParty[] {
-  return provider?.thirdParties ?? [];
+export function getThirdParties(): readonly AuthMethodInfo[] {
+  return getOfferedAuthMethods().filter((it) => it.id !== "password");
 }
 
-/** A method's name to show: `Password`, or the third party's. */
-export function getAuthMethodDisplay(id: string): string {
-  if (id === "password") return "Password";
-  return getThirdParties().find((it) => it.id === id)?.display ?? id;
+/** An auth method's name to show. */
+export function getAuthMethodDisplay(method: string): string {
+  return (
+    getOfferedAuthMethods().find((it) => it.id === method)?.display ?? method
+  );
 }
 
 /**
@@ -175,30 +181,24 @@ export async function deleteUser(): Promise<void> {
 
 /** Proves the user is present before a sensitive change. */
 export async function reauthenticate(
-  options:
-    | { method: "password"; password: string }
-    | { method: "thirdParty"; id: string },
+  options: Parameters<AuthProvider["reauthenticate"]>[0],
 ): Promise<void> {
   await requireAuthProvider().reauthenticate(options);
 }
 
-/** Adds password auth with this email, which becomes the account's email. */
-export async function linkPassword(
-  email: string,
-  password: string,
+/**
+ * Links an auth method; password auth's email becomes the account's email.
+ */
+export async function addMethod(
+  options: Parameters<AuthProvider["addMethod"]>[0],
 ): Promise<void> {
-  await requireAuthProvider().linkPassword(email, password);
+  await requireAuthProvider().addMethod(options);
   refreshUserState();
 }
 
-export async function linkThirdParty(id: string): Promise<void> {
-  await requireAuthProvider().linkThirdParty(id);
-  refreshUserState();
-}
-
-/** Unlinks a third party by its id, or password auth with `"password"`. */
-export async function unlink(id: string): Promise<void> {
-  await requireAuthProvider().unlink(id);
+/** Unlinks an auth method: `"password"`, or a third party id. */
+export async function removeMethod(method: string): Promise<void> {
+  await requireAuthProvider().removeMethod(method);
   refreshUserState();
 }
 

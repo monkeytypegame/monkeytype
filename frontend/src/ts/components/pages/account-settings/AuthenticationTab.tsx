@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from "solid-js";
 
-import type { ThirdParty } from "../../../auth/providers/types";
+import type { AuthMethodInfo } from "../../../auth/providers/types";
 
 import { addAuthMethod } from "../../../auth/actions";
 import { getThirdParties, supportsPassword } from "../../../auth/session";
@@ -75,7 +75,7 @@ function PasswordAuthentication() {
   );
 }
 
-function ThirdPartyAuthentication(props: { thirdParty: ThirdParty }) {
+function ThirdPartyAuthentication(props: { thirdParty: AuthMethodInfo }) {
   return (
     <Section
       title={props.thirdParty.display}
@@ -89,12 +89,7 @@ function ThirdPartyAuthentication(props: { thirdParty: ThirdParty }) {
           fallback=<Button
             class="w-full"
             text={`add ${props.thirdParty.display} authentication`}
-            onClick={() =>
-              void addAuthMethod({
-                method: "thirdParty",
-                id: props.thirdParty.id,
-              })
-            }
+            onClick={() => void addAuthMethod({ method: props.thirdParty.id })}
           />
         >
           <Button

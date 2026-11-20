@@ -80,8 +80,7 @@ export function Login(): JSXElement {
                 void trySignIn(
                   async () =>
                     signIn({
-                      method: "thirdParty",
-                      id: thirdParty.id,
+                      method: thirdParty.id,
                       rememberMe: form.getFieldValue("rememberMe"),
                     }),
                   thirdParty.display,

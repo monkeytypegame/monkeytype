@@ -1,7 +1,20 @@
 import type { FaObject } from "../../types/font-awesome";
 
-/** A third party the provider signs in with (eg. Google), as the UI shows it. */
-export type ThirdParty = { id: string; display: string; fa: FaObject };
+/**
+ * An auth method the provider offers, as the UI shows it: `"password"`, or a
+ * third party (eg. `"google"`).
+ */
+export type AuthMethodInfo = { id: string; display: string; fa: FaObject };
+
+/**
+ * Narrows auth method options to their password form. A third party's
+ * `method` is its id, a `string`, so comparing alone doesn't narrow.
+ */
+export function isPasswordMethod<T extends { method: string }>(
+  options: T,
+): options is Extract<T, { method: "password" }> {
+  return options.method === "password";
+}
 
 /** The signed in user as the auth provider sees it. */
 export type AuthUser = {
@@ -34,7 +47,7 @@ export class AuthError extends Error {
 
 export type SignInOptions = (
   | { method: "password"; email: string; password: string }
-  | { method: "thirdParty"; id: string }
+  | { method: string }
 ) & { rememberMe: boolean };
 
 export type SignInResult = { user: AuthUser; isNewUser: boolean };
@@ -51,10 +64,11 @@ export type SignInResult = { user: AuthUser; isNewUser: boolean };
  * them, with links from the backend's auth provider.
  */
 export type AuthProvider = {
-  /** Whether users can sign in with a password. */
-  readonly password: boolean;
-  /** The third parties users can sign in with, most preferred first. */
-  readonly thirdParties: readonly ThirdParty[];
+  /**
+   * The auth methods users can sign in with (`"password"` when offered, and
+   * third parties), most preferred first.
+   */
+  readonly methods: readonly AuthMethodInfo[];
   /**
    * Throws when the provider can't start; auth is then unavailable. Reports
    * every sign in and out. A provider that signs in by redirect reports the
@@ -90,17 +104,19 @@ export type AuthProvider = {
    * a session provider: a fresh sign in). May redirect for a third party.
    */
   reauthenticate(
-    options:
-      | { method: "password"; password: string }
-      | { method: "thirdParty"; id: string },
+    options: { method: "password"; password: string } | { method: string },
   ): Promise<void>;
   /**
-   * Adds password auth with this email, which becomes the account's email.
-   * Providers that only set passwords server-side do it through their server.
+   * Links an auth method. Password auth takes this email, which becomes the
+   * account's email (providers that only set passwords server-side do it
+   * through their server); a third party links by popup, or a redirect that
+   * never resolves.
    */
-  linkPassword(email: string, password: string): Promise<void>;
-  /** Links a third party (popup, or a redirect that never resolves). */
-  linkThirdParty(id: string): Promise<void>;
-  /** Unlinks a third party by its id, or password auth with `"password"`. */
-  unlink(id: string): Promise<void>;
+  addMethod(
+    options:
+      | { method: "password"; email: string; password: string }
+      | { method: string },
+  ): Promise<void>;
+  /** Unlinks an auth method: `"password"`, or a third party id. */
+  removeMethod(method: string): Promise<void>;
 };

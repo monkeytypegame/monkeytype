@@ -110,8 +110,7 @@ describe("firebase auth provider", () => {
     sdk.isNewUser = true;
     expect(
       await firebaseAuthProvider.signIn({
-        method: "thirdParty",
-        id: "google",
+        method: "google",
         rememberMe: false,
       }),
     ).toEqual({ user: authUser, isNewUser: true });
@@ -120,8 +119,7 @@ describe("firebase auth provider", () => {
     expect(
       (
         await firebaseAuthProvider.signIn({
-          method: "thirdParty",
-          id: "google",
+          method: "google",
           rememberMe: false,
         })
       ).isNewUser,
@@ -136,8 +134,7 @@ describe("firebase auth provider", () => {
 
     await expect(
       firebaseAuthProvider.signIn({
-        method: "thirdParty",
-        id: "github",
+        method: "github",
         rememberMe: false,
       }),
     ).rejects.toThrow(new AuthError("unknown", "Popup closed by user"));

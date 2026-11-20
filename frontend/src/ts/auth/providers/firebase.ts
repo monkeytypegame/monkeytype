@@ -43,13 +43,14 @@ import {
   AuthErrorCode,
   AuthProvider,
   AuthUser,
-  ThirdParty,
+  AuthMethodInfo,
+  isPasswordMethod,
 } from "./types";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
-const thirdParties: (ThirdParty & { firebase: FirebaseAuthProvider })[] = [
+const thirdParties: (AuthMethodInfo & { firebase: FirebaseAuthProvider })[] = [
   {
     id: "google",
     display: "Google",
@@ -78,12 +79,10 @@ function toMethodId(providerId: string): string | undefined {
 
 /** Firebase as the auth provider. */
 export const firebaseAuthProvider: AuthProvider = {
-  password: true,
-  thirdParties: thirdParties.map(({ id, display, fa }) => ({
-    id,
-    display,
-    fa,
-  })),
+  methods: [
+    { id: "password", display: "Password", fa: { icon: "fa-lock" } },
+    ...thirdParties.map(({ id, display, fa }) => ({ id, display, fa })),
+  ],
 
   async init(onUserChange) {
     try {
@@ -124,15 +123,15 @@ export const firebaseAuthProvider: AuthProvider = {
     const auth = requireAuth();
     await setPersistence(options.rememberMe, true);
 
-    const isPassword = options.method === "password";
+    const isPassword = isPasswordMethod(options);
     const { data: result, error } = await tryCatch(
-      isPassword
+      isPasswordMethod(options)
         ? firebaseSignInWithEmailAndPassword(
             auth,
             options.email,
             options.password,
           )
-        : firebaseSignInWithPopup(auth, popupProvider(options.id)),
+        : firebaseSignInWithPopup(auth, popupProvider(options.method)),
     );
     if (error !== null) {
       console.error(error);
@@ -168,7 +167,7 @@ export const firebaseAuthProvider: AuthProvider = {
 
   async reauthenticate(options) {
     const user = requireUser();
-    if (options.method === "password") {
+    if (isPasswordMethod(options)) {
       const credential = EmailAuthProvider.credential(
         user.email as string,
         options.password,
@@ -176,25 +175,28 @@ export const firebaseAuthProvider: AuthProvider = {
       await wrapErrors(reauthenticateWithCredential(user, credential));
     } else {
       await wrapErrors(
-        reauthenticateWithPopup(user, popupProvider(options.id)),
+        reauthenticateWithPopup(user, popupProvider(options.method)),
       );
     }
   },
 
-  async linkPassword(email, password) {
+  async addMethod(options) {
     const user = requireUser();
-    const credential = EmailAuthProvider.credential(email, password);
-    await wrapErrors(linkWithCredential(user, credential));
-    await wrapErrors(updateEmail(user, email));
+    if (isPasswordMethod(options)) {
+      const credential = EmailAuthProvider.credential(
+        options.email,
+        options.password,
+      );
+      await wrapErrors(linkWithCredential(user, credential));
+      await wrapErrors(updateEmail(user, options.email));
+    } else {
+      await wrapErrors(linkWithPopup(user, popupProvider(options.method)));
+    }
   },
 
-  async linkThirdParty(id) {
-    await wrapErrors(linkWithPopup(requireUser(), popupProvider(id)));
-  },
-
-  async unlink(id) {
+  async removeMethod(method) {
     const providerId =
-      id === "password" ? "password" : popupProvider(id).providerId;
+      method === "password" ? "password" : popupProvider(method).providerId;
     await wrapErrors(unlink(requireUser(), providerId));
   },
 };

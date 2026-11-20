@@ -12,7 +12,7 @@ import {
   finishSignUp,
   getAuthenticatedUser,
   initAuth,
-  linkThirdParty,
+  addMethod,
   isAuthAvailable,
   signIn,
 } from "../../src/ts/auth/session";
@@ -52,10 +52,10 @@ const provider = {
     providerReports(user);
     return { user, isNewUser: fake.isNewUser };
   }),
-  linkThirdParty: vi.fn(async (id) => {
+  addMethod: vi.fn(async ({ method }) => {
     fake.currentUser = {
       ...user,
-      methods: [...user.methods, { id, email: null }],
+      methods: [...user.methods, { id: method, email: null }],
     };
   }),
   createUser: vi.fn(async () => {
@@ -89,7 +89,7 @@ describe("auth session", () => {
   });
 
   it("signs in an existing user from a provider popup", async () => {
-    await signIn({ method: "thirdParty", id: "github", rememberMe: false });
+    await signIn({ method: "github", rememberMe: false });
 
     expect(getUserId()).toBe("uid");
     expect(showGoogleSignUpModal).not.toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe("auth session", () => {
   // #8046: signing in before the backend user exists makes backend calls fail
   it("a new user from a provider popup stays signed out until the sign up finishes", async () => {
     fake.isNewUser = true;
-    await signIn({ method: "thirdParty", id: "google", rememberMe: false });
+    await signIn({ method: "google", rememberMe: false });
 
     expect(showGoogleSignUpModal).toHaveBeenCalledWith(user);
     expect(getUserId()).toBeNull();
@@ -114,7 +114,7 @@ describe("auth session", () => {
       new Error("Popup closed by user"),
     );
     await expect(
-      signIn({ method: "thirdParty", id: "google", rememberMe: false }),
+      signIn({ method: "google", rememberMe: false }),
     ).rejects.toThrow("Popup closed by user");
 
     providerReports(user);
@@ -154,11 +154,11 @@ describe("auth session", () => {
     providerReports(user);
     expect(getUserId()).toBe("uid");
   });
-  it("linking a method updates the auth methods signal", async () => {
+  it("adding a method updates the auth methods signal", async () => {
     providerReports(user);
     expect(getAuthMethods()).toEqual([]);
 
-    await linkThirdParty("github");
+    await addMethod({ method: "github" });
     expect(getAuthMethods()).toEqual([{ id: "github", email: null }]);
 
     providerReports(null);

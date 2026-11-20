@@ -7,21 +7,25 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import { createErrorMessage } from "../utils/error";
-import { AuthError, AuthUser, SignInOptions } from "./providers/types";
+import {
+  AuthError,
+  AuthUser,
+  isPasswordMethod,
+  SignInOptions,
+} from "./providers/types";
 import {
   cancelSignUp,
   createUser,
   finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
-  linkPassword,
+  addMethod,
   getAuthMethodDisplay,
-  getThirdParties,
-  linkThirdParty,
+  getOfferedAuthMethods,
   reauthenticate as sessionReauthenticate,
   signIn as sessionSignIn,
   signOut as sessionSignOut,
-  unlink,
+  removeMethod,
 } from "./session";
 import { isAuthenticated, isUsingAuthMethod } from "./state";
 
@@ -83,29 +87,23 @@ export async function signIn(options: SignInOptions): Promise<AuthResult> {
 
 export async function addAuthMethod(
   options:
-    | { method: "thirdParty"; id: string }
-    | {
-        method: "password";
-        email: string;
-        password: string;
-      },
+    | { method: "password"; email: string; password: string }
+    | { method: string },
 ): Promise<void> {
   if (!isAuthAvailable()) {
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
   const user = getAuthenticatedUser();
-  const providerName = getAuthMethodDisplay(
-    options.method === "password" ? "password" : options.id,
-  );
+  const providerName = getAuthMethodDisplay(options.method);
 
   if (!user) return;
   showLoaderBar();
   try {
-    if (options.method === "password") {
+    if (isPasswordMethod(options)) {
       await addPasswordProvider(options);
     } else {
-      await linkThirdParty(options.id);
+      await addMethod(options);
     }
 
     showSuccessNotification(`${providerName} authentication added`);
@@ -126,7 +124,11 @@ async function addPasswordProvider(options: {
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
-  await linkPassword(options.email, options.password);
+  await addMethod({
+    method: "password",
+    email: options.email,
+    password: options.password,
+  });
   const response = await Ape.users.updateEmail({
     body: {
       newEmail: options.email,
@@ -157,7 +159,7 @@ export async function removeAuthMethod(
     };
   }
   try {
-    await unlink(authMethod);
+    await removeMethod(authMethod);
   } catch (e) {
     const message = createErrorMessage(
       e,
@@ -273,7 +275,7 @@ export async function reauthenticate(
         password: options.password,
       });
     } else {
-      await sessionReauthenticate({ method: "thirdParty", id: authMethod });
+      await sessionReauthenticate({ method: authMethod });
     }
 
     return {
@@ -305,11 +307,11 @@ export async function reauthenticate(
   }
 }
 
-/** The signed in user's most preferred auth method: password, then the provider's third parties in order. */
+/** The signed in user's most preferred auth method, in the provider's order. */
 function getPreferredAuthenticationMethod(
   exclude?: string,
 ): string | undefined {
-  return ["password", ...getThirdParties().map((it) => it.id)].find(
-    (it) => it !== exclude && isUsingAuthMethod(it),
-  );
+  return getOfferedAuthMethods()
+    .map((it) => it.id)
+    .find((it) => it !== exclude && isUsingAuthMethod(it));
 }
