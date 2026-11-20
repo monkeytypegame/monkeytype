@@ -17,7 +17,7 @@ import {
   getTestId,
   getTestPhase,
   getTestEnd,
-  getResult,
+  getResultData,
   getSaveStatus,
   isResultPending,
   liveStats,
@@ -73,7 +73,7 @@ describe("engine", () => {
       Engine.finish({ type: "failed", reason: "min accuracy" });
       expect(getTestPhase()).toBe("finished");
       expect(getTestEnd()).toEqual({ type: "failed", reason: "min accuracy" });
-      expect(getResult()).toBeNull();
+      expect(getResultData()).toBeNull();
       expect(isResultPending()).toBe(true);
       Engine.reset();
       expect(getTestEnd()).toBeNull();
@@ -96,11 +96,11 @@ describe("engine", () => {
       Engine.start();
       Engine.finish({ type: "completed" });
       frame();
-      expect(getResult()).toBeNull();
+      expect(getResultData()).toBeNull();
       vi.advanceTimersByTime(1);
 
       expect(isResultPending()).toBe(false);
-      expect(getResult()?.end).toEqual({ type: "completed" });
+      expect(getResultData()?.end).toEqual({ type: "completed" });
       expect(getFrozenLog()).not.toBeNull();
     });
 
@@ -112,17 +112,17 @@ describe("engine", () => {
       paint();
       activeTags.ids = [];
 
-      expect(getResult()?.completedEvent.tags).toEqual(["b"]);
+      expect(getResultData()?.completedEvent.tags).toEqual(["b"]);
     });
 
     it("is kept after a restart", () => {
       Engine.start();
       Engine.finish({ type: "completed" });
       paint();
-      const result = getResult();
+      const result = getResultData();
       Engine.reset();
       Engine.commitRestart(Engine.requestRestart({}));
-      expect(getResult()).toBe(result);
+      expect(getResultData()).toBe(result);
     });
   });
 

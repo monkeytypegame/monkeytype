@@ -18,7 +18,7 @@ import type { ResultData } from "./result-data";
  * - idle: words ready, waiting for the first keystroke
  * - active: typing, the timer runs
  * - finished: from finish() (the finish keystroke) until a restart, passed or
- *   failed (see getTestEnd). The result follows a paint later (getResult)
+ *   failed (see getTestEnd). The result follows a paint later (getResultData)
  * - restarting: from the restart request until the new test is generated
  */
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
@@ -119,11 +119,13 @@ export { getFrozenLog, setFrozenLog };
  * The last finished test's result: null from finish() until the engine built
  * it, then kept until the next finish (a restart keeps it).
  */
-export const [getResult, setResult] = createSignal<ResultData | null>(null);
+export const [getResultData, setResultData] = createSignal<ResultData | null>(
+  null,
+);
 
 /** The test finished and its result isn't built yet. */
 export function isResultPending(): boolean {
-  return getTestPhase() === "finished" && getResult() === null;
+  return getTestPhase() === "finished" && getResultData() === null;
 }
 
 /**

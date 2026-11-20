@@ -109,7 +109,7 @@ import { isLoadingBarShown } from "../../src/ts/states/loading-page";
 import { canStartTest } from "../../src/ts/states/router";
 import {
   isTestActive,
-  setResult,
+  setResultData,
   setTestPhase,
 } from "../../src/ts/test/engine/state";
 
@@ -567,7 +567,7 @@ const testControls: TestControls = {
   setRestarting: (restarting) =>
     setTestPhase(restarting ? "restarting" : "idle"),
   setResultPending: (pending) => {
-    setResult(null);
+    setResultData(null);
     setTestPhase(pending ? "finished" : "idle");
   },
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),

@@ -67,7 +67,7 @@ import {
   getTestPhase,
   isTestActive,
   getFrozenLog,
-  getResult,
+  getResultData,
   isResultPending,
   setWordsInfo,
   type RestartOptions,
@@ -932,7 +932,7 @@ const invalidMessages: Record<Exclude<ResultCheck, "ok" | "failed">, string> = {
 createRoot(() => {
   createEffect(
     on(
-      getResult,
+      getResultData,
       (result) => {
         if (result !== null) onResult(result);
       },

@@ -45,7 +45,7 @@ import {
   getActiveWordIndex,
   getRestartOptions,
   getTestId,
-  getResult,
+  getResultData,
   getTestPhase,
   isTestActive,
 } from "../../../test/engine/state";
@@ -210,7 +210,7 @@ export function TestPage(): JSXElement {
   };
 
   const showResultWhenBuilt = async (): Promise<void> => {
-    if (finishDisplay !== "waiting" || untrack(getResult) === null) return;
+    if (finishDisplay !== "waiting" || untrack(getResultData) === null) return;
     finishDisplay = "idle";
     showResult();
     setSpinnerShown(false);
@@ -353,7 +353,7 @@ export function TestPage(): JSXElement {
   // the result was built after the spinner showed: render it, outside the
   // effect (test-logic has set the result's own state by then)
   createEffect(
-    on(getResult, () => queueMicrotask(() => void showResultWhenBuilt()), {
+    on(getResultData, () => queueMicrotask(() => void showResultWhenBuilt()), {
       defer: true,
     }),
   );

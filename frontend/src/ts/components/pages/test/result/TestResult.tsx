@@ -11,7 +11,7 @@ import { getGlarsesMode } from "../../../../states/glarses-mode";
 import * as Engine from "../../../../test/engine/commands";
 import {
   getFrozenLog,
-  getResult,
+  getResultData,
   getSaveStatus,
 } from "../../../../test/engine/state";
 import { restartTest } from "../../../../test/test-logic";
@@ -42,7 +42,7 @@ export function TestResult(props: {
   onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
   const lastTest = createMemo(() => {
-    const result = getResult()?.completedEvent ?? null;
+    const result = getResultData()?.completedEvent ?? null;
     const eventLog = getFrozenLog();
     return result !== null && eventLog !== null ? { result, eventLog } : null;
   });

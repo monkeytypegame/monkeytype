@@ -17,7 +17,7 @@ import {
   clearLiveStats,
   getSaveStatus,
   setFrozenLog,
-  setResult,
+  setResultData,
   setSaveStatus,
   getActiveWordIndex,
   isTestActive,
@@ -56,7 +56,7 @@ let finishCount = 0;
  * Ends the test, synchronously: stops the timer, force-releases held keys and
  * freezes the log (later events are dropped), then switches to finished. The
  * result is built after the next paint, so the words' fade-out can start
- * first (getResult; isResultPending until then).
+ * first (getResultData; isResultPending until then).
  */
 export function finish(end: TestEnd): void {
   if (!isTestActive()) return;
@@ -65,7 +65,7 @@ export function finish(end: TestEnd): void {
   freezeEvents();
   batch(() => {
     setTestEnd(end);
-    setResult(null);
+    setResultData(null);
     setTestPhase("finished");
   });
   const token = ++finishCount;
@@ -77,7 +77,7 @@ export function finish(end: TestEnd): void {
     const result = buildResultData(log, end);
     batch(() => {
       setFrozenLog(log);
-      setResult(result);
+      setResultData(result);
     });
   });
 }
