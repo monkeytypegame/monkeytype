@@ -14,6 +14,7 @@ import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
+import { blurInputElement } from "../../../input/input-element";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
 import { getCustomTextIndicator } from "../../../states/core";
 import { getGlarsesMode } from "../../../states/glarses-mode";
@@ -243,6 +244,8 @@ export function TestPage(): JSXElement {
     void Funbox.clear();
     // fade sets the opacity before the result can paint
     setTestPageDisplay("result");
+    // the test's input lets go of the focus
+    blurInputElement();
     void AdController.renderResult();
     // the result is shown: free the test words DOM
     resetWordsRender();

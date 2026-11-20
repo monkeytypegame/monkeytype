@@ -26,17 +26,12 @@ import { z } from "zod";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
-import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
 import { getTag } from "../../../../queries/tags";
 import { getLocalPB } from "../../../../queries/user";
 import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
-import {
-  getSmoothedBurst,
-  getTestPageDisplay,
-  resultState,
-} from "../../../../states/result";
+import { getSmoothedBurst, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
@@ -552,39 +547,20 @@ function buildChartConfig(
   };
 }
 
-const emptyChartData: ChartData = {
-  labels: [],
-  wpm: [],
-  raw: [],
-  burst: [],
-  err: [],
-};
-
 export function ResultChart(props: {
   result: CompletedResult;
   eventLog: EventLog;
 }): JSXElement {
-  let chart: Chart<"line" | "scatter", number[]> | undefined;
-
   // read once per result - saveResult() overwrites the local pb with this result
   const localPbWpm = createMemo(() => {
     const result = props.result;
     return untrack(() => getLocalPbWpm(result));
   });
 
-  const chartConfig = createMemo((prev: ChartConfig | undefined) => {
+  const chartConfig = createMemo(() => {
     const unit = getTypingSpeedUnit(getConfig.typingSpeedUnit);
     const theme = getTheme();
     const vis = getChartDataVisibility();
-
-    // only build while visible - the result outlives the result screen, and
-    // showResult() shows it after the details and tags are set, so this runs once per result
-    // (plus once more if tags load after the result shows)
-    if (getTestPageDisplay() !== "result") {
-      return (
-        prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
-      );
-    }
 
     const result = props.result;
     const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
@@ -621,15 +597,6 @@ export function ResultChart(props: {
 
     return buildChartConfig(data, vis, annotations, min, max, unit, theme);
   });
-
-  // the canvas has no size while the result is hidden
-  createEffectOn(
-    () => getTestPageDisplay() === "result",
-    (shown) => {
-      if (shown) chart?.resize();
-    },
-    { defer: true },
-  );
 
   return (
     <div class={cn("group/chart relative h-50 w-full")}>
@@ -713,7 +680,6 @@ export function ResultChart(props: {
           type="line"
           data={chartConfig().data}
           options={chartConfig().options}
-          onChartInit={(c) => (chart = c)}
         />
       </div>
     </div>
