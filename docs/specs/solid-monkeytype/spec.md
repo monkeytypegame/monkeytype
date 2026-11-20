@@ -308,6 +308,7 @@ From restarts via the config flag (T6b):
 From the finish split (T6c):
 
 - The test counts as finished on the finish keystroke, not after the words' fade-out: input stops there, keys still held are released with estimated keyups and later events (eg. the last key's real keyup) are dropped, and result-screen state (`isResultScreen`, the fart reverb) switches at once. The result is built during the fade-out, not after it.
+- The test page's vertical ads follow `isResultScreen` (the finished phase): they show from the finish keystroke and hide as soon as a restart starts, rather than with the result's render and fade-out (~150ms apart). What the test page shows (test, spinner, result) is TestPage's own state.
 
 From user data (U1):
 

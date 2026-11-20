@@ -2,9 +2,8 @@ import { Ads } from "@monkeytype/schemas/configs";
 import { JSXElement, onCleanup, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
-import { getTestPageDisplay } from "../../states/result";
 import { getRoutePage } from "../../states/router";
-import { isFocusMode } from "../../states/test";
+import { isFocusMode, isResultScreen } from "../../states/test";
 import { cn } from "../../utils/cn";
 import { AdIcon } from "./AdIcon";
 
@@ -77,7 +76,7 @@ export function Advertisement(props: {
     cn(adSlotClass(size), {
       "opacity-0": isFocusMode(),
       // hidden while testing, shown again on the result
-      "hidden!": getRoutePage() === "test" && getTestPageDisplay() !== "result",
+      "hidden!": getRoutePage() === "test" && !isResultScreen(),
     });
 
   const horizontal = () => (

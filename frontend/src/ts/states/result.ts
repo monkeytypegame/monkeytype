@@ -65,15 +65,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
   },
 });
 
-/**
- * What the test page shows: the test, the spinner (from the words' fade-out
- * until the result renders) or the result. Set by TestPage only; the fades
- * are animated imperatively. Whether the test has ended: isResultScreen()
- */
-export type TestPageDisplay = "test" | "spinner" | "result";
-export const [getTestPageDisplay, setTestPageDisplay] =
-  createSignal<TestPageDisplay>("test");
-
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });
 }

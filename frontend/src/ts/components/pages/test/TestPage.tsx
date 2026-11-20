@@ -1,5 +1,6 @@
 import {
   createEffect,
+  createSignal,
   JSXElement,
   on,
   onCleanup,
@@ -21,7 +22,6 @@ import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { getTestPageDisplay, setTestPageDisplay } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
@@ -189,16 +189,21 @@ export function TestPage(): JSXElement {
   // (CSS, shown after a delay) keeps animating while it's slow. The engine
   // has built the result during the fade-out; if not, the spinner waits for it.
   let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
-  const isSpinnerShown = (): boolean => getTestPageDisplay() === "spinner";
-  const isTestShown = (): boolean => getTestPageDisplay() === "test";
-  const isResultShown = (): boolean => getTestPageDisplay() === "result";
+  // what's shown: the test, the spinner (from the words' fade-out until the
+  // result renders) or the result
+  const [getDisplay, setDisplay] = createSignal<"test" | "spinner" | "result">(
+    "test",
+  );
+  const isSpinnerShown = (): boolean => getDisplay() === "spinner";
+  const isTestShown = (): boolean => getDisplay() === "test";
+  const isResultShown = (): boolean => getDisplay() === "result";
 
   const fadeOutForFinish = async (): Promise<void> => {
     finishDisplay = "out";
     await fade(typingTestRef, "out", false);
     if (finishDisplay !== "out" || !isStillFinished()) return;
     finishDisplay = "spinner";
-    setTestPageDisplay("spinner");
+    setDisplay("spinner");
     // after the spinner is painted
     await new Promise((resolve) =>
       requestAnimationFrame(() => setTimeout(resolve, 0)),
@@ -243,7 +248,7 @@ export function TestPage(): JSXElement {
     }
     void Funbox.clear();
     // fade sets the opacity before the result can paint
-    setTestPageDisplay("result");
+    setDisplay("result");
     // the test's input lets go of the focus
     blurInputElement();
     void AdController.renderResult();
@@ -256,7 +261,7 @@ export function TestPage(): JSXElement {
    * replaceWords measures the new words as they render.
    */
   const showNewTest = (): void => {
-    setTestPageDisplay("test");
+    setDisplay("test");
     setWordsInputPosition((position) => ({ ...position, left: 0 }));
     setFocusMode(false);
     setLayoutfluidTimerVisible(false);
