@@ -58,12 +58,24 @@ describe("ConfigMeta", () => {
     expect(configsWithTriggeResize).toEqual(
       [
         "fontSize",
+        "keymapDimension",
         "keymapSize",
         "maxLineWidth",
         "tapeMode",
         "tapeMargin",
       ].sort(),
     );
+  });
+
+  it("registers the keymap dimension setting", () => {
+    const meta = configMetadata.keymapDimension;
+
+    expect(meta.displayString).toEqual("keymap dimension");
+    expect(meta.group).toEqual("appearance");
+    expect(meta.changeRequiresRestart).toEqual(false);
+    expect(meta.fa?.icon).toBeTruthy();
+    expect(meta.commandline?.alias).toEqual("keyboard");
+    expect(meta.commandline?.subgroup?.options).toEqual("fromSchema");
   });
   describe("overrideValue", () => {
     const testCases: TestsByConfig<{

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { CustomBackgroundSchema } from "@monkeytype/schemas/configs";
+import {
+  ConfigKeySchema,
+  CustomBackgroundSchema,
+  KeymapDimensionSchema,
+} from "@monkeytype/schemas/configs";
 
 describe("config schema", () => {
   describe("CustomBackgroundSchema", () => {
@@ -79,5 +83,22 @@ describe("config schema", () => {
         expect(parsed.success).toEqual(true);
       }
     });
+  });
+});
+
+describe("KeymapDimensionSchema", () => {
+  it.for([
+    { name: "2d", input: "2d" },
+    { name: "3d", input: "3d" },
+  ])("$name is valid", ({ input }) => {
+    expect(KeymapDimensionSchema.parse(input)).toEqual(input);
+  });
+
+  it.each(["3D", "2D", "off", "flat"])("%s is invalid", (input: string) => {
+    expect(KeymapDimensionSchema.safeParse(input).success).toEqual(false);
+  });
+
+  it("is a config key", () => {
+    expect(ConfigKeySchema.options).toContain("keymapDimension");
   });
 });

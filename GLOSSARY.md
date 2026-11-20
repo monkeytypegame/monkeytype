@@ -97,6 +97,10 @@ _Avoid_: test config, config snapshot
 A setting whose change restarts the test: the test fades out, the change applies while it's hidden, and a new test fades in. Changes made during one restart share it.
 _Avoid_: restarting setting, test-affecting config
 
+**Keymap**:
+The keyboard view on the test page: the user's layout drawn as keys, rendered flat (2d) or as a rotatable 3d board. In react mode keys flash when pressed; in next mode the next key is highlighted.
+_Avoid_: on-screen keyboard, key visualizer, keyboard view
+
 ## Theming
 
 **Theme attributes**:

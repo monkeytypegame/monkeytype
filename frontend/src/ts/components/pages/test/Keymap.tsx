@@ -1,27 +1,22 @@
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { showCommandline } from "../../../states/commandline";
 import { getModifierState, isCapsLockOn } from "../../../states/modifiers";
 import {
   FlashEntry,
   getKeymapFlashState,
-  getKeymapHighlightKey,
   getKeymapLayout,
   keymapLayoutObject,
-  setKeymapFlashState,
   wordsHaveNumbers,
 } from "../../../states/test";
-import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import { isMacLike } from "../../../utils/misc";
-import { Anime } from "../../common/anime";
-import { Button } from "../../common/Button";
+import { Anime } from "../../common/anime/Anime";
+import { Keymap3D } from "./Keymap3D";
 import { convertLayoutToKeymap } from "./keymapConverter";
+import { createKeyVisualState, keyLabel, KeyContent } from "./keymapKey";
 import { KeyboardDefinition, KeyDefinition } from "./keymapLayouts";
-
-const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
 
 export function Keymap() {
   return (
@@ -84,18 +79,45 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
     }),
   );
 
+  const zoomClass =
+    "w-fit xxs:zoom-(--kb-zoom-xxs) xs:zoom-(--kb-zoom-xs) sm:zoom-(--kb-zoom-sm) md:zoom-(--kb-zoom-md) lg:zoom-(--kb-zoom-lg) xl:zoom-(--kb-zoom-xl) 2xl:zoom-(--kb-zoom-2xl)";
+
+  const zoomVars = {
+    "--kb-zoom-xxs": Math.min(getConfig.keymapSize, 0.5),
+    "--kb-zoom-xs": Math.min(getConfig.keymapSize, 0.7),
+    "--kb-zoom-sm": Math.min(getConfig.keymapSize, 1),
+    "--kb-zoom-md": Math.min(getConfig.keymapSize, 1.3),
+    "--kb-zoom-lg": Math.min(getConfig.keymapSize, 1.7),
+    "--kb-zoom-xl": Math.min(getConfig.keymapSize, 2.2),
+    "--kb-zoom-2xl": Math.min(getConfig.keymapSize, 2.9),
+  };
+
   return (
     <div
       data-ui-element="keymap"
       class="flex w-full flex-col items-center py-8 text-sm text-sub"
     >
       <Show when={keyboardDef()} fallback={<div>Loading...</div>}>
-        <KeyboardDefinitionRenderer
-          keyboardDef={keyboardDef()}
-          layer={layer()}
-          showFirstRow={showFirstRow()}
-          flashState={getKeymapFlashState}
-        />
+        <div class={zoomClass} style={zoomVars}>
+          <Show
+            when={getConfig.keymapDimension === "3d"}
+            fallback={
+              <KeyboardDefinitionRenderer
+                keyboardDef={keyboardDef()}
+                layer={layer()}
+                showFirstRow={showFirstRow()}
+                flashState={getKeymapFlashState}
+              />
+            }
+          >
+            <Keymap3D
+              keyboardDef={keyboardDef()}
+              layer={layer()}
+              showFirstRow={showFirstRow()}
+              flashState={getKeymapFlashState}
+            />
+          </Show>
+        </div>
       </Show>
     </div>
   );
@@ -108,55 +130,24 @@ function KeyboardDefinitionRenderer(props: {
   flashState: Record<string, FlashEntry | undefined>;
 }) {
   return (
-    <div
-      class="w-fit xxs:zoom-(--kb-zoom-xxs) xs:zoom-(--kb-zoom-xs) sm:zoom-(--kb-zoom-sm) md:zoom-(--kb-zoom-md) lg:zoom-(--kb-zoom-lg) xl:zoom-(--kb-zoom-xl) 2xl:zoom-(--kb-zoom-2xl)"
-      style={{
-        "--kb-zoom-xxs": Math.min(getConfig.keymapSize, 0.5),
-        "--kb-zoom-xs": Math.min(getConfig.keymapSize, 0.7),
-        "--kb-zoom-sm": Math.min(getConfig.keymapSize, 1),
-        "--kb-zoom-md": Math.min(getConfig.keymapSize, 1.3),
-        "--kb-zoom-lg": Math.min(getConfig.keymapSize, 1.7),
-        "--kb-zoom-xl": Math.min(getConfig.keymapSize, 2.2),
-        "--kb-zoom-2xl": Math.min(getConfig.keymapSize, 2.9),
-      }}
-    >
-      <For each={props.keyboardDef}>
-        {(keys, rowNum) => (
-          <Show when={rowNum() !== 0 || props.showFirstRow}>
-            <div class="flex h-8 flex-row">
-              <For each={keys}>
-                {(key) => {
-                  const label = () => {
-                    let label = key.legends[props.layer.index];
-
-                    if (props.layer.symbolIndex !== undefined) {
-                      const keyIsSymbol = [
-                        key.legends[props.layer.index],
-                        key.legends[props.layer.symbolIndex],
-                      ].some((character) =>
-                        symbolsPattern.test(character ?? ""),
-                      );
-
-                      if (keyIsSymbol) {
-                        label = key.legends[props.layer.symbolIndex];
-                      }
-                    }
-                    return label ?? "";
-                  };
-                  const flashEntry = () =>
-                    key.legends
-                      .map((legend) => props.flashState[legend])
-                      .find((it) => it !== undefined);
-                  return (
-                    <Key {...key} label={label()} flashEntry={flashEntry} />
-                  );
-                }}
-              </For>
-            </div>
-          </Show>
-        )}
-      </For>
-    </div>
+    <For each={props.keyboardDef}>
+      {(keys, rowNum) => (
+        <Show when={rowNum() !== 0 || props.showFirstRow}>
+          <div class="flex h-8 flex-row">
+            <For each={keys}>
+              {(key) => {
+                const label = () => keyLabel(key, props.layer);
+                const flashEntry = () =>
+                  key.legends
+                    .map((legend) => props.flashState[legend])
+                    .find((it) => it !== undefined);
+                return <Key {...key} label={label()} flashEntry={flashEntry} />;
+              }}
+            </For>
+          </div>
+        </Show>
+      )}
+    </For>
   );
 }
 
@@ -166,93 +157,7 @@ function Key(
     flashEntry: () => FlashEntry | undefined;
   } & KeyDefinition,
 ) {
-  const isSteno = () =>
-    getConfig.keymapStyle === "steno" ||
-    getConfig.keymapStyle === "steno_matrix";
-
-  // Steno keys never flash.
-  const flashInfo = createMemo(() => {
-    if (isSteno() || getConfig.keymapMode !== "react") {
-      return { tick: 0, correct: true };
-    }
-
-    const entry = props.flashEntry();
-    return {
-      tick: entry?.tick ?? 0,
-      correct: getConfig.blindMode || (entry?.correct ?? true),
-    };
-  });
-
-  const isNext = createMemo(
-    () =>
-      getConfig.keymapMode === "next" &&
-      !isSteno() &&
-      props.legends?.some((legend) => legend === getKeymapHighlightKey()),
-  );
-
-  const keyMatchesHighlight = createMemo(() =>
-    props.legends?.some((legend) => legend === getKeymapHighlightKey()),
-  );
-
-  // Fade when leaving "next" mode
-  const [isFading, setIsFading] = createSignal(false);
-  let prevKeymapMode = getConfig.keymapMode;
-  let prevKeyWasHighlighted = false;
-  createEffect(() => {
-    const mode = getConfig.keymapMode;
-    const isStenoMode = isSteno();
-    const keyWasHighlighted = keyMatchesHighlight() && !isStenoMode;
-
-    if (prevKeymapMode === "next" && mode !== "next" && prevKeyWasHighlighted) {
-      setIsFading(true);
-    }
-    prevKeymapMode = mode;
-    prevKeyWasHighlighted = keyWasHighlighted;
-  });
-
-  const baseKeyBgColor = () => {
-    if (isFading()) {
-      return getTheme().main;
-    }
-    return isNext() ? getTheme().main : getTheme().subAlt;
-  };
-
-  const baseKeyColor = () => {
-    if (isFading()) {
-      return getTheme().bg;
-    }
-    return isNext() ? getTheme().bg : getTheme().sub;
-  };
-
-  const animKeyBgColor = createMemo(() => {
-    if (isFading()) {
-      return [getTheme().main, getTheme().subAlt];
-    }
-    if (flashInfo().tick === 0) {
-      return [isNext() ? getTheme().main : getTheme().subAlt];
-    }
-    return [
-      flashInfo().correct ? getTheme().main : getTheme().error,
-      isNext() ? getTheme().main : getTheme().subAlt,
-    ];
-  });
-
-  const animKeyColor = createMemo(() => {
-    if (isFading()) {
-      return [getTheme().bg, getTheme().sub];
-    }
-    if (flashInfo().tick === 0) {
-      return [isNext() ? getTheme().bg : getTheme().sub];
-    }
-    return [getTheme().bg, isNext() ? getTheme().bg : getTheme().sub];
-  });
-
-  // Don't apply reduced motion. If the user activates react/next they want animations.
-  const animDuration = createMemo(() => {
-    if (isFading()) return 250;
-    if (flashInfo().tick === 0) return 0;
-    return 250;
-  });
+  const visual = createKeyVisualState(props);
 
   return (
     <Anime
@@ -265,8 +170,8 @@ function Key(
         },
       )}
       style={{
-        "--keybgcolor": baseKeyBgColor(),
-        "--keycolor": baseKeyColor(),
+        "--keybgcolor": visual.baseKeyBgColor(),
+        "--keycolor": visual.baseKeyColor(),
         height: `${(props.height ?? 1) * 2}rem`,
         width: `${(props.width ?? 1) * 2}rem`,
         "margin-left": `${(props.x ?? 0) * 2}rem`,
@@ -279,42 +184,13 @@ function Key(
       // Don't apply reduced motion. If the user activates react/next they want animations.
       respectReducedMotion={false}
       animation={{
-        "--keybgcolor": animKeyBgColor(),
-        "--keycolor": animKeyColor(),
-        duration: animDuration(),
-        onComplete: () => {
-          props.legends.forEach((l) => setKeymapFlashState(l, undefined));
-          if (isFading()) {
-            setIsFading(false);
-          }
-        },
+        "--keybgcolor": visual.animKeyBgColor(),
+        "--keycolor": visual.animKeyColor(),
+        duration: visual.animDuration(),
+        onComplete: () => visual.resetFlash(),
       }}
     >
-      <Show
-        when={
-          props.isLayoutIndicator && getConfig.keymapLegendStyle !== "blank"
-        }
-        fallback={
-          <>
-            {props.label}
-            <Show when={props.isHoming}>
-              <div
-                class={cn(
-                  "bg-em-xs absolute bottom-0.75 left-auto h-0.5 w-2 rounded bg-bg",
-                )}
-              ></div>
-            </Show>
-          </>
-        }
-      >
-        <Button
-          variant="text"
-          class="text-[0.5em] [--themable-button-bg:transparent] [--themable-button-text:var(--keycolor)]"
-          text={getKeymapLayout().layoutNameDisplayString}
-          onClick={() => showCommandline({ subgroupOverride: "keymapLayout" })}
-          tabIndex={-1}
-        />
-      </Show>
+      <KeyContent {...props} visual={visual} />
     </Anime>
   );
 }

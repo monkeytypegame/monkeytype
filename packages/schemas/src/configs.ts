@@ -133,6 +133,9 @@ export type KeymapKeys = z.infer<typeof KeymapKeysSchema>;
 export const KeymapSizeSchema = z.number().min(0.5).max(3.5).step(0.1);
 export type KeymapSize = z.infer<typeof KeymapSizeSchema>;
 
+export const KeymapDimensionSchema = z.enum(["2d", "3d"]);
+export type KeymapDimension = z.infer<typeof KeymapDimensionSchema>;
+
 export const SingleListCommandLineSchema = z.enum(["manual", "on"]);
 export type SingleListCommandLine = z.infer<typeof SingleListCommandLineSchema>;
 
@@ -486,6 +489,7 @@ export const ConfigSchema = z
     keymapLegendStyle: KeymapLegendStyleSchema,
     keymapKeys: KeymapKeysSchema,
     keymapSize: KeymapSizeSchema,
+    keymapDimension: KeymapDimensionSchema,
 
     // theme
     flipTestColors: z.boolean(),

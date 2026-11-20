@@ -1586,6 +1586,24 @@ const configMetadataEntries = {
       },
     },
   },
+  keymapDimension: {
+    key: "keymapDimension",
+    fa: { icon: "fa-keyboard" },
+    displayString: "keymap dimension",
+    changeRequiresRestart: false,
+    triggerResize: true,
+    group: "appearance",
+    description:
+      "Renders the keymap as a flat keyboard or as a 3D board, which can be rotated by dragging it.",
+    overrideConfig: ({ currentConfig }) =>
+      currentConfig.keymapMode === "off" ? { keymapMode: "static" } : {},
+    commandline: {
+      alias: "keyboard",
+      subgroup: {
+        options: "fromSchema",
+      },
+    },
+  },
 
   // theme
   flipTestColors: {
