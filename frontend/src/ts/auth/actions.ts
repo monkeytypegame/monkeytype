@@ -45,11 +45,8 @@ type ReauthResult =
   | { status: "success"; user: AuthUser }
   | { status: "notice" | "error"; message: string };
 
-type ReauthenticateOptions = {
-  /** an auth method id: a third party id, or `"password"` */
-  excludeMethod?: string;
-  password?: string;
-};
+/** How to prove the user is present: their password, or a third party popup. */
+export type ReauthOptions = Parameters<AuthProvider["reauthenticate"]>[0];
 
 const unavailable = "Authentication uninitialized";
 
@@ -133,7 +130,10 @@ async function addPasswordMethod(options: {
   email: string;
   password: string;
 }): Promise<void> {
-  const reauth = await tryReauthenticate({ password: options.password });
+  // the user has no password yet: a third party proves it
+  const method = getPreferredAuthMethod();
+  if (method === undefined) throw new Error(noReauthMethod);
+  const reauth = await tryReauthenticate({ method });
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
@@ -159,12 +159,9 @@ async function addPasswordMethod(options: {
 /** Removes an auth method: a third party by its id, or `"password"`. */
 export async function removeAuthMethod(
   authMethod: string,
-  options?: { password?: string },
+  reauthOptions: ReauthOptions,
 ): Promise<AuthActionResult> {
-  const reauth = await reauthenticate({
-    password: options?.password,
-    excludeMethod: authMethod,
-  });
+  const reauth = await reauthenticate(reauthOptions);
   if (reauth.status !== "success") return reauth;
 
   try {
@@ -315,12 +312,27 @@ async function abortThirdPartySignUp(): Promise<void> {
   }
 }
 
+const noReauthMethod =
+  "Failed to reauthenticate: there is no valid authentication present on the account.";
+
 /**
- * Proves the user is present with their most preferred auth method (a popup
- * for a third party). Shows its own failure notification.
+ * The auth method to reauthenticate with: the user's most preferred one,
+ * except `exclude` (the one being removed). Tells the user and returns
+ * `undefined` when there's none.
+ */
+export function pickReauthMethod(exclude?: string): string | undefined {
+  const method = getPreferredAuthMethod(exclude);
+  if (method === undefined) showErrorNotification(noReauthMethod);
+  return method;
+}
+
+/**
+ * Proves the user is present: with their password, or a third party popup
+ * (pick the method with `pickReauthMethod`). Shows its own failure
+ * notification.
  */
 export async function reauthenticate(
-  options: ReauthenticateOptions,
+  options: ReauthOptions,
 ): Promise<ReauthResult> {
   const result = await tryReauthenticate(options);
   if (result.status !== "success") {
@@ -331,7 +343,7 @@ export async function reauthenticate(
 
 /** `reauthenticate`, telling the caller what failed instead of the user. */
 async function tryReauthenticate(
-  options: ReauthenticateOptions,
+  options: ReauthOptions,
 ): Promise<ReauthResult> {
   if (!isAuthAvailable()) {
     return {
@@ -348,32 +360,8 @@ async function tryReauthenticate(
     };
   }
 
-  const authMethod = getPreferredAuthMethod(options.excludeMethod);
-
   try {
-    if (authMethod === undefined) {
-      return {
-        status: "error",
-        message:
-          "Failed to reauthenticate: there is no valid authentication present on the account.",
-      };
-    }
-
-    if (authMethod === "password") {
-      if (options.password === undefined) {
-        return {
-          status: "error",
-          message: "Failed to reauthenticate using password: password missing.",
-        };
-      }
-      await reauthenticateWithProvider({
-        method: "password",
-        password: options.password,
-      });
-    } else {
-      await reauthenticateWithProvider({ method: authMethod });
-    }
-
+    await reauthenticateWithProvider(options);
     return { status: "success", user };
   } catch (e) {
     const code = e instanceof AuthError ? e.code : "unknown";

@@ -46,7 +46,7 @@ export function showUpdateEmailModal(): void {
         };
       }
 
-      const reauth = await reauthenticate({ password });
+      const reauth = await reauthenticate({ method: "password", password });
       if (reauth.status !== "success") {
         // reauthenticate already told the user
         return { status: reauth.status, showNotification: false };

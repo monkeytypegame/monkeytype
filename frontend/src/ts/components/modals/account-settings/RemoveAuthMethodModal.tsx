@@ -1,12 +1,11 @@
 import { z } from "zod";
 
-import { removeAuthMethod } from "../../../auth/actions";
+import { pickReauthMethod, removeAuthMethod } from "../../../auth/actions";
 import {
   getAuthMethodDisplay,
   getThirdParties,
   hasOtherAuthMethods,
   isAuthenticated,
-  isUsingPasswordAuth,
 } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
@@ -26,6 +25,10 @@ export function showRemoveAuthMethodModal(options: {
     return;
   }
 
+  const reauthMethod = pickReauthMethod(options.authMethod);
+  if (reauthMethod === undefined) return;
+  const withPassword = reauthMethod === "password";
+
   const methodDisplay = getAuthMethodDisplay(options.authMethod);
 
   showSimpleModal({
@@ -41,7 +44,7 @@ export function showRemoveAuthMethodModal(options: {
       password: {
         placeholder: "Password",
         type: "password",
-        hidden: !isUsingPasswordAuth() || options.authMethod === "password",
+        hidden: !withPassword,
       },
       checked: {
         type: "checkbox",
@@ -54,7 +57,12 @@ export function showRemoveAuthMethodModal(options: {
 
     execFn: async ({ password }) => {
       // shows its own notifications
-      const result = await removeAuthMethod(options.authMethod, { password });
+      const result = await removeAuthMethod(
+        options.authMethod,
+        withPassword
+          ? { method: "password", password }
+          : { method: reauthMethod },
+      );
       return { status: result.status, showNotification: false };
     },
   });

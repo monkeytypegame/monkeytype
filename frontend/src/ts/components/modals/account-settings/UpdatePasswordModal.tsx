@@ -50,7 +50,10 @@ export function showUpdatePasswordModal(): void {
         };
       }
 
-      const reauth = await reauthenticate({ password: previousPass });
+      const reauth = await reauthenticate({
+        method: "password",
+        password: previousPass,
+      });
       if (reauth.status !== "success") {
         // reauthenticate already told the user
         return { status: reauth.status, showNotification: false };
