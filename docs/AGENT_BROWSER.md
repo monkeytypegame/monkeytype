@@ -55,6 +55,7 @@ The console buffer survives reloads, so hot-reload errors from earlier edits loo
 - A hot-updated module can leave stale state behind (two copies of a state module's signals), faking bugs like invisible words. Edits, checkouts, stash and commits (lint-staged rewrites files) all hot-update: when `__mt.hotUpdates()` isn't empty, navigate to reload before measuring. If something looks like a regression, reproduce it on a fresh load first.
 - `static/` files (themes, quotes, sounds, images) never hot-reload and `__mt.hotUpdates()` stays empty: reload the page manually before measuring, and hard-reload (bypass cache) if a plain reload still serves the old file.
 - `resize_window` does nothing to a maximized or fullscreen window: check `innerHeight` after resizing. To get a words wrapper taller than the window, raise `fontSize` with `__mt.setConfig` instead (and restore it after).
+- Signed in, the account's config is applied once its data loads (seconds after a page load) and replaces earlier `__mt.setConfig` changes: `await __mt.whenUserDataLoaded()` first. `__mt.quickLogin()` already waits for it.
 - `__mt` is dev only. Production builds (`vite preview`) are driven through localStorage and the DOM.
 
 ## Profiling
