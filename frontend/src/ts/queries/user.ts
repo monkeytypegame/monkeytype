@@ -13,6 +13,7 @@ import {
   Badge,
   TestActivity,
   UserProfileDetails,
+  UserChallenges,
 } from "@monkeytype/schemas/users";
 import { Result } from "@monkeytype/util/trycatch";
 import { differenceInDays, isBefore, isSameDay } from "date-fns";
@@ -90,6 +91,7 @@ async function fetchUser(): Promise<UserData> {
     quoteRatings: userData.quoteRatings,
     details: userData.profileDetails,
     inventory: userData.inventory,
+    challenges: userData.challenges,
     xp: userData.xp ?? 0,
     inboxUnreadSize: userData.inboxUnreadSize ?? 0,
     streak: userData.streak?.length ?? 0,
@@ -204,11 +206,15 @@ export function resetPersonalBests(): void {
 export function setDiscordLink(link: {
   discordId?: string;
   discordAvatar?: string;
+  challenges?: UserChallenges;
 }): void {
   userQuery.update((user) => {
     if (link.discordId !== undefined) user.discordId = link.discordId;
     if (link.discordAvatar !== undefined) {
       user.discordAvatar = link.discordAvatar;
+    }
+    if (link.challenges !== undefined) {
+      user.challenges = link.challenges;
     }
   });
 }

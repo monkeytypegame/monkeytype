@@ -650,6 +650,9 @@ importers:
       '@monkeytype/schemas':
         specifier: workspace:*
         version: link:../schemas
+      '@monkeytype/util':
+        specifier: workspace:*
+        version: link:../util
     devDependencies:
       '@monkeytype/tsup-config':
         specifier: workspace:*
@@ -672,6 +675,9 @@ importers:
       tsup:
         specifier: 8.4.0
         version: 8.4.0(jiti@2.7.0)(postcss@8.5.8)(supports-color@10.2.2)(tsx@4.21.0)(typescript@7.0.2)(yaml@2.8.3)
+      tsx:
+        specifier: 4.21.0
+        version: 4.21.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -712,6 +718,9 @@ importers:
       tsup:
         specifier: 8.4.0
         version: 8.4.0(jiti@2.7.0)(postcss@8.5.8)(supports-color@10.2.2)(tsx@4.21.0)(typescript@7.0.2)(yaml@2.8.3)
+      tsx:
+        specifier: 4.21.0
+        version: 4.21.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2

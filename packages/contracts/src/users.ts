@@ -177,6 +177,14 @@ export const EditCustomThemeRequstSchema = z.object({
 });
 export type EditCustomThemeRequst = z.infer<typeof EditCustomThemeRequstSchema>;
 
+export const GetDiscordOauthLinkQuerySchema = z.object({
+  includeRoles: z.boolean().optional(),
+});
+
+export type GetDiscordOauthLinkQuery = z.infer<
+  typeof GetDiscordOauthLinkQuerySchema
+>;
+
 export const GetDiscordOauthLinkResponseSchema = responseWithData(
   z.object({
     url: z.string().url(),
@@ -190,11 +198,12 @@ export const LinkDiscordRequestSchema = z.object({
   tokenType: z.string(),
   accessToken: z.string(),
   state: z.string().length(20),
+  scope: z.array(z.string()).optional(),
 });
 export type LinkDiscordRequest = z.infer<typeof LinkDiscordRequestSchema>;
 
 export const LinkDiscordResponseSchema = responseWithData(
-  UserSchema.pick({ discordId: true, discordAvatar: true }),
+  UserSchema.pick({ discordId: true, discordAvatar: true, challenges: true }),
 );
 export type LinkDiscordResponse = z.infer<typeof LinkDiscordResponseSchema>;
 
@@ -665,6 +674,7 @@ export const usersContract = c.router(
       description: "Start OAuth authentication with discord",
       method: "GET",
       path: "/discord/oauth",
+      query: GetDiscordOauthLinkQuerySchema.strict(),
       responses: {
         200: GetDiscordOauthLinkResponseSchema,
       },

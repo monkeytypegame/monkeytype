@@ -102,29 +102,6 @@ export function lastElementFromArray<T>(array: T[]): T | undefined {
 }
 
 /**
- * Checks if two unsorted arrays are equal, i.e., they have the same elements regardless of order.
- * @param a The first array.
- * @param b The second array.
- * @returns True if the arrays are equal, false otherwise.
- */
-export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
-  return a.length === b.length && a.every((v) => b.includes(v));
-}
-
-/**
- * Checks if two sorted arrays are equal, i.e., they have the same elements in the same order.
- * @param a The first array.
- * @param b The second array.
- * @returns True if the arrays are equal, false otherwise.
- */
-export function areSortedArraysEqual<T>(
-  a: readonly T[],
-  b: readonly T[],
-): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-/**
  * Returns a random element from an array.
  * @param array The input array.
  * @returns A random element from the array.

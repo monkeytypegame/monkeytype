@@ -19,6 +19,7 @@ import {
   setTheme,
   ThemeIdentifier,
 } from "../states/theme";
+import { areSortedArraysEqual } from "@monkeytype/util/arrays";
 
 let isPreviewingTheme = false;
 let randomThemeIndex = 0;
@@ -90,7 +91,7 @@ function updateThemeIndicator(nameOverride?: string): void {
   if (Config.customTheme && nameOverride === undefined) {
     // Match current custom theme by colors since Config does not store custom theme IDs
     const matchedTheme = getCustomThemes().find((ct) =>
-      Arrays.areSortedArraysEqual(ct.colors, Config.customThemeColors),
+      areSortedArraysEqual(ct.colors, Config.customThemeColors),
     );
 
     if (matchedTheme) {

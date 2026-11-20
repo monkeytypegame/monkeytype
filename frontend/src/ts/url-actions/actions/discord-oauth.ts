@@ -17,6 +17,7 @@ const DiscordTokenSchema = z.object({
   access_token: z.string(),
   token_type: z.string(),
   state: z.string(),
+  scope: z.string().optional(),
 });
 
 // the token is single use, the rest of the hash goes with it
@@ -39,6 +40,7 @@ async function applyDiscordToken(
         accessToken: token.access_token,
         tokenType: token.token_type,
         state: token.state,
+        scope: token.scope?.split(" "),
       },
     })
     .finally(hideLoaderBar);

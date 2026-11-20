@@ -12,6 +12,7 @@ import { formatTopPercentage } from "../../../utils/misc";
 import { DeepReadonly } from "../../../utils/types";
 import { Button } from "../../common/Button";
 import { ActivityCalendar } from "./ActivityCalendar";
+import { Challenges } from "./Challenges";
 import { UserDetails } from "./UserDetails";
 
 export function UserProfile(props: {
@@ -19,7 +20,7 @@ export function UserProfile(props: {
   isAccountPage?: true;
 }): JSXElement {
   return (
-    <div class="grid w-full gap-8">
+    <div class="grid w-full min-w-0 gap-8">
       <UserDetails
         profile={props.profile}
         isAccountPage={props.isAccountPage}
@@ -57,6 +58,10 @@ export function UserProfile(props: {
           props.isAccountPage ? undefined : props.profile.testActivity
         }
         isAccountPage={props.isAccountPage}
+      />
+      <Challenges
+        isAccountPage={props.isAccountPage}
+        challenges={props.profile.challenges}
       />
     </div>
   );

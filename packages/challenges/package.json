@@ -6,6 +6,11 @@
       "types": "./src/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.js"
     }
   },
   "scripts": {
@@ -18,7 +23,8 @@
     "george-mapping": "tsx ./scripts/challenge-roles"
   },
   "dependencies": {
-    "@monkeytype/schemas": "workspace:*"
+    "@monkeytype/schemas": "workspace:*",
+    "@monkeytype/util": "workspace:*"
   },
   "devDependencies": {
     "@monkeytype/tsup-config": "workspace:*",
@@ -28,6 +34,7 @@
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "7.0.2004",
     "tsup": "8.4.0",
+    "tsx": "4.21.0",
     "typescript": "7.0.2",
     "vitest": "4.1.0"
   }

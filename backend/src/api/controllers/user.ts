@@ -40,6 +40,7 @@ import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
+  UserChallenges,
 } from "@monkeytype/schemas/users";
 import { addImportantLog, addLog } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
@@ -60,6 +61,7 @@ import {
   ForgotPasswordEmailRequest,
   GetCurrentTestActivityResponse,
   GetCustomThemesResponse,
+  GetDiscordOauthLinkQuery,
   GetDiscordOauthLinkResponse,
   GetFavoriteQuotesResponse,
   GetFriendsResponse,
@@ -94,6 +96,15 @@ import { MonkeyRequest } from "../types";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import * as ConnectionsDal from "../../dal/connections";
 import { PersonalBest } from "@monkeytype/schemas/shared";
+
+import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { getChallenges } from "@monkeytype/challenges";
+
+const challengeNameByRoleId: Record<string, ChallengeName> = Object.fromEntries(
+  getChallenges()
+    .filter((it) => it.discordRoleId !== undefined)
+    .map((it) => [it.discordRoleId, it.name]),
+);
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -581,12 +592,13 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
 }
 
 export async function getOauthLink(
-  req: MonkeyRequest,
+  req: MonkeyRequest<GetDiscordOauthLinkQuery>,
 ): Promise<GetDiscordOauthLinkResponse> {
   const { uid } = req.ctx.decodedToken;
+  const { includeRoles } = req.query;
 
   //build the url
-  const url = await DiscordUtils.getOauthLink(uid);
+  const url = await DiscordUtils.getOauthLink(uid, { includeRoles });
 
   //return
   return new MonkeyResponse("Discord oauth link generated", {
@@ -598,7 +610,7 @@ export async function linkDiscord(
   req: MonkeyRequest<undefined, LinkDiscordRequest>,
 ): Promise<LinkDiscordResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { tokenType, accessToken, state } = req.body;
+  const { tokenType, accessToken, state, scope } = req.body;
 
   if (!(await DiscordUtils.iStateValidForUser(state, uid))) {
     throw new MonkeyError(403, "Invalid user token");
@@ -608,6 +620,7 @@ export async function linkDiscord(
     "banned",
     "discordId",
     "lbOptOut",
+    "challenges",
   ]);
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
@@ -616,11 +629,33 @@ export async function linkDiscord(
   const { id: discordId, avatar: discordAvatar } =
     await DiscordUtils.getDiscordUser(tokenType, accessToken);
 
+  let roles = await DiscordUtils.getDiscordRoleIds(
+    tokenType,
+    accessToken,
+    scope,
+  );
+
+  const challenges: UserChallenges = Object.fromEntries(
+    roles
+      .map((roleId) => challengeNameByRoleId[roleId])
+      .filter((it) => it !== undefined)
+      .map((it) => [
+        it,
+        { addedAt: userInfo.challenges?.[it]?.addedAt ?? Date.now() },
+      ]),
+  );
+
   if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
-    await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
+    await UserDAL.linkDiscord(
+      uid,
+      userInfo.discordId,
+      discordAvatar,
+      challenges,
+    );
     return new MonkeyResponse("Discord avatar updated", {
       discordId,
       discordAvatar,
+      challenges,
     });
   }
 
@@ -644,7 +679,7 @@ export async function linkDiscord(
     throw new MonkeyError(409, "The Discord account is blocked");
   }
 
-  await UserDAL.linkDiscord(uid, discordId, discordAvatar);
+  await UserDAL.linkDiscord(uid, discordId, discordAvatar, challenges);
 
   await GeorgeQueue.linkDiscord(discordId, uid, userInfo.lbOptOut ?? false);
   void addImportantLog("user_discord_link", `linked to ${discordId}`, uid);
@@ -652,6 +687,7 @@ export async function linkDiscord(
   return new MonkeyResponse("Discord account linked", {
     discordId,
     discordAvatar,
+    challenges,
   });
 }
 
@@ -958,6 +994,13 @@ export async function getProfile(
   } else {
     delete profileData.testActivity;
   }
+
+  if (user.profileDetails?.showChallengesOnPublicProfile) {
+    profileData.challenges = user.challenges;
+  } else {
+    delete profileData.challenges;
+  }
+
   return new MonkeyResponse("Profile retrieved", profileData);
 }
 
@@ -971,6 +1014,7 @@ export async function updateProfile(
     socialProfiles,
     selectedBadgeId,
     showActivityOnPublicProfile,
+    showChallengesOnPublicProfile,
   } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "update user profile", [
@@ -1000,6 +1044,7 @@ export async function updateProfile(
       ]),
     ),
     showActivityOnPublicProfile,
+    showChallengesOnPublicProfile,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);

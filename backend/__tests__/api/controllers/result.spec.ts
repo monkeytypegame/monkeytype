@@ -4,6 +4,7 @@ import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as PublicDal from "../../../src/dal/public";
+import * as GeorgeQueue from "../../../src/queues/george-queue";
 import * as LogsDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
@@ -11,6 +12,7 @@ import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
 import { omit } from "../../../src/utils/misc";
 import { CompletedEvent } from "@monkeytype/schemas/results";
+import * as ChallengeVerify from "@monkeytype/challenges/verify";
 
 const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -552,12 +554,18 @@ describe("result controller test", () => {
     const userCheckIfPbMock = vi.spyOn(UserDal, "checkIfPb");
     const userIncrementXpMock = vi.spyOn(UserDal, "incrementXp");
     const userUpdateTypingStatsMock = vi.spyOn(UserDal, "updateTypingStats");
+    const userUpdateChallengeMock = vi.spyOn(UserDal, "updateChallenge");
+    const georgeAwardChallengeMock = vi.spyOn(
+      GeorgeQueue.default,
+      "awardChallenge",
+    );
     const resultAddMock = vi.spyOn(ResultDal, "addResult");
     const resultGetLastTimestampMock = vi.spyOn(
       ResultDal,
       "getLastResultTimestamp",
     );
     const publicUpdateStatsMock = vi.spyOn(PublicDal, "updateStats");
+    const challengeVerifyMock = vi.spyOn(ChallengeVerify, "verify");
 
     beforeEach(async () => {
       await enableResultsSaving(true);
@@ -570,19 +578,25 @@ describe("result controller test", () => {
         userCheckIfPbMock,
         userIncrementXpMock,
         userUpdateTypingStatsMock,
+        userUpdateChallengeMock,
+        georgeAwardChallengeMock,
         resultAddMock,
         resultGetLastTimestampMock,
         publicUpdateStatsMock,
+        challengeVerifyMock,
       ].forEach((it) => it.mockClear());
 
       userGetMock.mockResolvedValue({ name: "bob" } as any);
       userUpdateStreakMock.mockResolvedValue(0);
       userCheckIfTagPbMock.mockResolvedValue([]);
       userCheckIfPbMock.mockResolvedValue(true);
+      userUpdateChallengeMock.mockResolvedValue();
+      georgeAwardChallengeMock.mockResolvedValue();
       resultAddMock.mockResolvedValue({ insertedId });
       //a prior result exists so incomplete-test time is credited (not zeroed)
       resultGetLastTimestampMock.mockResolvedValue(0);
       userIncrementXpMock.mockResolvedValue();
+      challengeVerifyMock.mockReturnValue({ state: "success" } as any);
     });
 
     it("should add result", async () => {
@@ -664,6 +678,122 @@ describe("result controller test", () => {
         15.1 + 2 - 5, //duration + incompleteTestSeconds-afk
       );
     });
+    it("should add result with challenge", async () => {
+      //GIVEN
+      userGetMock.mockClear();
+      userGetMock.mockResolvedValue({
+        uid,
+        name: "bob",
+        discordId: "discordId",
+      } as any);
+
+      const completedEvent = buildCompletedEvent({
+        challenge: "69",
+      });
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(userUpdateChallengeMock).toHaveBeenCalledWith(uid, "69");
+      expect(georgeAwardChallengeMock).toHaveBeenCalledWith("discordId", "69");
+    });
+
+    it("should not add challenge if not auto-role", async () => {
+      //GIVEN
+      userGetMock.mockClear();
+      userGetMock.mockResolvedValue({
+        uid,
+        name: "bob",
+        discordId: "discordId",
+      } as any);
+
+      const completedEvent = buildCompletedEvent({
+        challenge: "roleAddict",
+      });
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+    it("should dd challenge without discord connected", async () => {
+      const completedEvent = buildCompletedEvent({
+        challenge: "69",
+      });
+      //WHEN
+      await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: completedEvent,
+        })
+        .expect(200);
+
+      //THEN
+      expect(userUpdateChallengeMock).toHaveBeenCalledWith(uid, "69");
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+    it("should fail when challenge verification fails", async () => {
+      //GIVEN
+      challengeVerifyMock.mockReturnValue({
+        state: "failed",
+        reason: "Challenge failed: WPM below 69",
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            challenge: "69",
+          }),
+        })
+        .expect(400);
+
+      //THEN
+      expect(body.message).toEqual("Challenge failed: WPM below 69");
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+
+    it("should fail when challenge verification has error", async () => {
+      //GIVEN
+      challengeVerifyMock.mockReturnValue({
+        state: "error",
+        errorMessage: "failed to verify challenge",
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send({
+          result: buildCompletedEvent({
+            challenge: "69",
+          }),
+        })
+        .expect(500);
+
+      //THEN
+      expect(body.message).toEqual("failed to verify challenge");
+      expect(userUpdateChallengeMock).not.toHaveBeenCalled();
+      expect(georgeAwardChallengeMock).not.toHaveBeenCalled();
+    });
+
     it("should add first result finished before signup within the grace", async () => {
       //GIVEN
       resultGetLastTimestampMock.mockRejectedValue(
@@ -702,6 +832,7 @@ describe("result controller test", () => {
       expect(body.message).toEqual("Invalid result spacing");
       expect(resultAddMock).not.toHaveBeenCalled();
     });
+
     it("should fail if result saving is disabled", async () => {
       //GIVEN
       await enableResultsSaving(false);
