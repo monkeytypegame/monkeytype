@@ -6,7 +6,7 @@ import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import { EventLog } from "./events/types";
-import type { ResultData } from "./result";
+import type { ResultData } from "./result-data";
 
 /**
  * Engine state: only this folder writes it. Everything else reads the signals

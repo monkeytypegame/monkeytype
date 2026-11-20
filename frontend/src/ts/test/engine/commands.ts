@@ -12,7 +12,7 @@ import {
   resetTestEvents,
 } from "./events/data";
 import { afterPaint } from "./after-paint";
-import { buildResultData } from "./result";
+import { buildResultData } from "./result-data";
 import {
   clearLiveStats,
   getSaveStatus,
