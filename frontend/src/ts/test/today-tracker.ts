@@ -6,13 +6,22 @@ import * as DateTime from "../utils/date-and-time";
 const [seconds, setSeconds] = createSignal(0);
 // whether seconds started from today's saved results, not this session
 const [addedAllToday, setAddedAllToday] = createSignal(false);
-let dayToday: number;
+// local midnight of the day being counted
+let todayStart: number;
+
+function startOfDay(ms: number): number {
+  const date = new Date(ms);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
 
 /** A finished test's seconds (afk excluded). */
 export function addSeconds(s: number): void {
   if (addedAllToday()) {
-    const nowDate = new Date().getDate();
-    if (nowDate > dayToday) {
+    const nowStart = startOfDay(Date.now());
+    // a new day (or month, or year): count from this test
+    if (nowStart > todayStart) {
+      todayStart = nowStart;
       setSeconds(s);
       return;
     }
@@ -28,13 +37,7 @@ export function getTimeTodayString(): string {
 
 /** Starts the count from today's saved results (the results are loaded). */
 export async function addAllFromToday(): Promise<void> {
-  const todayDate = new Date();
-  todayDate.setSeconds(0);
-  todayDate.setMinutes(0);
-  todayDate.setHours(0);
-  todayDate.setMilliseconds(0);
-  dayToday = todayDate.getDate();
-
-  setSeconds(await getSecondsTypedSinceOnce(todayDate.getTime()));
+  todayStart = startOfDay(Date.now());
+  setSeconds(await getSecondsTypedSinceOnce(todayStart));
   setAddedAllToday(true);
 }
