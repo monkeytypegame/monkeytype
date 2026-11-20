@@ -5,7 +5,6 @@ import {
   AuthResult,
   getAuthMethodDisplay,
   signIn,
-  signInWithProvider,
 } from "../../../auth/actions";
 import {
   disableLoginPageInputs,
@@ -51,7 +50,12 @@ export function Login(): JSXElement {
     },
     onSubmit: async ({ value }) =>
       await trySignIn(async () =>
-        signIn(value.email, value.password, value.rememberMe),
+        signIn({
+          method: "password",
+          email: value.email,
+          password: value.password,
+          rememberMe: value.rememberMe,
+        }),
       ),
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
@@ -76,7 +80,8 @@ export function Login(): JSXElement {
           onClick={() =>
             void trySignIn(
               async () =>
-                signInWithProvider("google", {
+                signIn({
+                  method: "google",
                   rememberMe: form.getFieldValue("rememberMe"),
                 }),
               getAuthMethodDisplay("google"),
@@ -89,7 +94,8 @@ export function Login(): JSXElement {
           onClick={() =>
             void trySignIn(
               async () =>
-                signInWithProvider("github", {
+                signIn({
+                  method: "github",
                   rememberMe: form.getFieldValue("rememberMe"),
                 }),
               getAuthMethodDisplay("github"),

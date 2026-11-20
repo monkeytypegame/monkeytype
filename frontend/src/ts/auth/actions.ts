@@ -15,10 +15,10 @@ import {
   getAuthenticatedUser,
   isAuthAvailable,
   cancelSignUp,
-  ProviderAuthMethod,
+  ThirdPartyAuthMethod,
   requireAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithProvider as providerSignIn,
+  signIn as providerSignIn,
+  SignInOptions,
 } from "./provider";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createEffectOn } from "../hooks/effects";
@@ -56,7 +56,7 @@ const authMethods = {
   },
 } as const satisfies Record<AuthMethod, AuthMethodInfo>;
 
-export type { AuthMethod, ProviderAuthMethod };
+export type { AuthMethod, ThirdPartyAuthMethod as ProviderAuthMethod };
 
 export type AuthResult =
   | {
@@ -139,36 +139,12 @@ export async function sendVerificationEmail(): Promise<void> {
   }
 }
 
-export async function signIn(
-  email: string,
-  password: string,
-  rememberMe: boolean,
-): Promise<AuthResult> {
+export async function signIn(options: SignInOptions): Promise<AuthResult> {
   if (!isAuthAvailable()) {
     return { success: false, message: "Authentication uninitialized" };
   }
 
-  const { error } = await tryCatch(
-    signInWithEmailAndPassword(email, password, rememberMe),
-  );
-
-  if (error !== null) {
-    return { success: false, message: error.message };
-  }
-  return { success: true };
-}
-
-export async function signInWithProvider(
-  authMethod: ProviderAuthMethod,
-  options: { rememberMe: boolean },
-): Promise<AuthResult> {
-  if (!isAuthAvailable()) {
-    return { success: false, message: "Authentication uninitialized" };
-  }
-
-  const { error } = await tryCatch(
-    providerSignIn(authMethod, options.rememberMe),
-  );
+  const { error } = await tryCatch(providerSignIn(options));
 
   if (error !== null) {
     return { success: false, message: error.message };
@@ -178,7 +154,7 @@ export async function signInWithProvider(
 
 export async function addAuthProvider(
   options:
-    | { authMethod: ProviderAuthMethod }
+    | { authMethod: ThirdPartyAuthMethod }
     | {
         authMethod: "password";
         email: string;

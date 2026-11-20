@@ -6,7 +6,7 @@ import { isDevEnvironment } from "../utils/env";
 import { promiseWithResolvers } from "../utils/misc";
 
 export type AuthMethod = "password" | "github" | "google";
-export type ProviderAuthMethod = Exclude<AuthMethod, "password">;
+export type ThirdPartyAuthMethod = Exclude<AuthMethod, "password">;
 
 /** The signed in user as the auth provider sees it. */
 export type AuthUser = {
@@ -34,7 +34,12 @@ export class AuthError extends Error {
   }
 }
 
-export type ProviderSignInResult = { user: AuthUser; isNewUser: boolean };
+export type SignInOptions = (
+  | { method: "password"; email: string; password: string }
+  | { method: ThirdPartyAuthMethod }
+) & { rememberMe: boolean };
+
+export type SignInResult = { user: AuthUser; isNewUser: boolean };
 
 /**
  * An auth backend: Firebase, or a self-hosted one (eg. Better Auth). Shaped to
@@ -63,19 +68,12 @@ export type AuthProvider = {
   getUser(): AuthUser | null;
   /** Bearer token for the API, `null` when signed out. */
   getToken(): Promise<string | null>;
-  signInWithPassword(
-    email: string,
-    password: string,
-    rememberMe: boolean,
-  ): Promise<AuthUser>;
   /**
-   * Signs in with a third party. A popup resolves with the user; a redirect
-   * leaves the page and never resolves (the user arrives through `init`).
+   * Signs in with a password or a third party. A third party's popup resolves
+   * with the user; a redirect leaves the page and never resolves (the user
+   * arrives through `init`). Only a third party can create a user here.
    */
-  signInWithProvider(
-    method: ProviderAuthMethod,
-    rememberMe: boolean,
-  ): Promise<ProviderSignInResult>;
+  signIn(options: SignInOptions): Promise<SignInResult>;
   /** Creates a password user with this display name and signs it in. */
   createUser(options: {
     email: string;
@@ -92,7 +90,7 @@ export type AuthProvider = {
   reauthenticate(
     options:
       | { method: "password"; password: string }
-      | { method: ProviderAuthMethod },
+      | { method: ThirdPartyAuthMethod },
   ): Promise<void>;
   /**
    * Adds password auth with this email, which becomes the account's email.
@@ -100,7 +98,7 @@ export type AuthProvider = {
    */
   linkPassword(email: string, password: string): Promise<void>;
   /** Links a third party (popup, or a redirect that never resolves). */
-  linkProvider(method: ProviderAuthMethod): Promise<void>;
+  linkProvider(method: ThirdPartyAuthMethod): Promise<void>;
   unlink(method: AuthMethod): Promise<void>;
 };
 
@@ -174,27 +172,16 @@ export async function signOut(): Promise<void> {
   await provider?.signOut();
 }
 
-export async function signInWithEmailAndPassword(
-  email: string,
-  password: string,
-  rememberMe: boolean,
-): Promise<AuthUser> {
-  return requireAuthProvider().signInWithPassword(email, password, rememberMe);
-}
-
 /**
- * Signs in with a third party. A new user goes to the sign-up modal, still
- * signed out.
+ * Signs in with a password or a third party. A new (third party) user goes to
+ * the sign-up modal, still signed out.
  */
-export async function signInWithProvider(
-  method: ProviderAuthMethod,
-  rememberMe: boolean,
-): Promise<void> {
+export async function signIn(options: SignInOptions): Promise<void> {
   const authProvider = requireAuthProvider();
   holdUserChanges = true;
-  let result: ProviderSignInResult;
+  let result: SignInResult;
   try {
-    result = await authProvider.signInWithProvider(method, rememberMe);
+    result = await authProvider.signIn(options);
   } catch (e) {
     holdUserChanges = false;
     throw e;

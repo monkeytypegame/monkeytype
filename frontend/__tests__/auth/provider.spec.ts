@@ -14,7 +14,7 @@ import {
   getAuthenticatedUser,
   initAuth,
   isAuthAvailable,
-  signInWithProvider,
+  signIn,
 } from "../../src/ts/auth/provider";
 import { getAuthState, getUserId } from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
@@ -44,7 +44,7 @@ const provider = {
   }),
   getUser: () => fake.currentUser,
   signOut: vi.fn(async () => providerReports(null)),
-  signInWithProvider: vi.fn(async () => {
+  signIn: vi.fn(async () => {
     providerReports(user);
     return { user, isNewUser: fake.isNewUser };
   }),
@@ -79,7 +79,7 @@ describe("auth provider", () => {
   });
 
   it("signs in an existing user from a provider popup", async () => {
-    await signInWithProvider("github", false);
+    await signIn({ method: "github", rememberMe: false });
 
     expect(getUserId()).toBe("uid");
     expect(showGoogleSignUpModal).not.toHaveBeenCalled();
@@ -88,7 +88,7 @@ describe("auth provider", () => {
   // #8046: signing in before the backend user exists makes backend calls fail
   it("a new user from a provider popup stays signed out until the sign up finishes", async () => {
     fake.isNewUser = true;
-    await signInWithProvider("google", false);
+    await signIn({ method: "google", rememberMe: false });
 
     expect(showGoogleSignUpModal).toHaveBeenCalledWith(user);
     expect(getUserId()).toBeNull();
@@ -100,12 +100,12 @@ describe("auth provider", () => {
   });
 
   it("a failed popup listens to user changes again", async () => {
-    vi.mocked(provider.signInWithProvider).mockRejectedValueOnce(
+    vi.mocked(provider.signIn).mockRejectedValueOnce(
       new Error("Popup closed by user"),
     );
-    await expect(signInWithProvider("google", false)).rejects.toThrow(
-      "Popup closed by user",
-    );
+    await expect(
+      signIn({ method: "google", rememberMe: false }),
+    ).rejects.toThrow("Popup closed by user");
 
     providerReports(user);
     expect(getUserId()).toBe("uid");

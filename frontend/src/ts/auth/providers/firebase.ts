@@ -45,13 +45,13 @@ import {
   AuthMethod,
   AuthProvider,
   AuthUser,
-  ProviderAuthMethod,
+  ThirdPartyAuthMethod,
 } from "../provider";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
-const popupProviders: Record<ProviderAuthMethod, FirebaseAuthProvider> = {
+const popupProviders: Record<ThirdPartyAuthMethod, FirebaseAuthProvider> = {
   github: new GithubAuthProvider(),
   google: new GoogleAuthProvider(),
 };
@@ -99,33 +99,28 @@ export const firebaseAuthProvider: AuthProvider = {
     return firebaseGetIdToken(user);
   },
 
-  async signInWithPassword(email, password, rememberMe) {
+  async signIn(options) {
     const auth = requireAuth();
-    await setPersistence(rememberMe, true);
+    await setPersistence(options.rememberMe, true);
 
+    const isPassword = options.method === "password";
     const { data: result, error } = await tryCatch(
-      firebaseSignInWithEmailAndPassword(auth, email, password),
+      isPassword
+        ? firebaseSignInWithEmailAndPassword(
+            auth,
+            options.email,
+            options.password,
+          )
+        : firebaseSignInWithPopup(auth, popupProviders[options.method]),
     );
     if (error !== null) {
       console.error(error);
       throw translateSignInError(
         error,
-        "Failed to sign in with email and password",
+        isPassword
+          ? "Failed to sign in with email and password"
+          : "Failed to sign in with popup",
       );
-    }
-    return toAuthUser(result.user);
-  },
-
-  async signInWithProvider(method, rememberMe) {
-    const auth = requireAuth();
-    await setPersistence(rememberMe, true);
-
-    const { data: result, error } = await tryCatch(
-      firebaseSignInWithPopup(auth, popupProviders[method]),
-    );
-    if (error !== null) {
-      console.log(error);
-      throw translateSignInError(error, "Failed to sign in with popup");
     }
     return {
       user: toAuthUser(result.user),

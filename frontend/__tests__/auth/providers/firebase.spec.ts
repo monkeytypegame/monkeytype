@@ -109,13 +109,20 @@ describe("firebase auth provider", () => {
 
     sdk.isNewUser = true;
     expect(
-      await firebaseAuthProvider.signInWithProvider("google", false),
+      await firebaseAuthProvider.signIn({
+        method: "google",
+        rememberMe: false,
+      }),
     ).toEqual({ user: authUser, isNewUser: true });
 
     sdk.isNewUser = false;
     expect(
-      (await firebaseAuthProvider.signInWithProvider("google", false))
-        .isNewUser,
+      (
+        await firebaseAuthProvider.signIn({
+          method: "google",
+          rememberMe: false,
+        })
+      ).isNewUser,
     ).toBe(false);
   });
 
@@ -123,10 +130,10 @@ describe("firebase auth provider", () => {
     sdk.signInWithPopup.mockRejectedValue(
       new sdk.FirebaseError("auth/popup-closed-by-user", "Firebase: Error"),
     );
-    vi.spyOn(console, "log").mockImplementation(() => undefined);
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     await expect(
-      firebaseAuthProvider.signInWithProvider("github", false),
+      firebaseAuthProvider.signIn({ method: "github", rememberMe: false }),
     ).rejects.toThrow(new AuthError("unknown", "Popup closed by user"));
   });
 
