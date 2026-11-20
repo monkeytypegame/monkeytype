@@ -6,7 +6,7 @@ import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
 import { EventLog } from "./events/types";
-import type { TestResult } from "./result";
+import type { ResultData } from "./result";
 
 /**
  * Engine state: only this folder writes it. Everything else reads the signals
@@ -119,7 +119,7 @@ export { getFrozenLog, setFrozenLog };
  * The last finished test's result: null from finish() until the engine built
  * it, then kept until the next finish (a restart keeps it).
  */
-export const [getResult, setResult] = createSignal<TestResult | null>(null);
+export const [getResult, setResult] = createSignal<ResultData | null>(null);
 
 /** The test finished and its result isn't built yet. */
 export function isResultPending(): boolean {

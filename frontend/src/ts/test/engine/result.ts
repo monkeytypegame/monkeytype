@@ -51,7 +51,7 @@ export type ResultCheck =
   | "accuracy";
 
 /** A finished test's result: the engine builds it after finish(). */
-export type TestResult = {
+export type ResultData = {
   /** the result object, before the server adds hash and uid */
   completedEvent: CompletedResult;
   /** a field is undefined or NaN: never saved */
@@ -66,7 +66,7 @@ export type TestResult = {
  * Builds the finished test's result from its frozen log. Reads the test
  * settings, and the active tags as they are now (tags are live).
  */
-export function buildResult(eventLog: EventLog, end: TestEnd): TestResult {
+export function buildResult(eventLog: EventLog, end: TestEnd): ResultData {
   const completedEvent = buildCompletedEvent(eventLog);
   const bailedOut = end.type === "bailedOut";
   const afkDetected =

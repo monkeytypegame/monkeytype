@@ -74,7 +74,7 @@ import {
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
-import type { ResultCheck, TestResult } from "./engine/result";
+import type { ResultCheck, ResultData } from "./engine/result";
 import {
   TEST_SETTINGS_KEYS,
   getTestSettings,
@@ -749,7 +749,7 @@ function onResult({
   check,
   afkDetected,
   end,
-}: TestResult): void {
+}: ResultData): void {
   const eventLog = getFrozenLog();
   if (eventLog === null) return;
   const bailedOut = end.type === "bailedOut";
