@@ -14,10 +14,11 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isResultScreen, isErrorBorderDisabled } from "../../../../states/test";
+import { isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
+import { isTestFinished } from "../../../../test/engine/state";
 import {
   buildWordsHistory,
   copyMissedWordsList,
@@ -288,7 +289,7 @@ function Word(props: {
       <Show
         when={
           isHovered() &&
-          isResultScreen() &&
+          isTestFinished() &&
           props.word.input !== "" &&
           !getIsScreenshotting()
         }

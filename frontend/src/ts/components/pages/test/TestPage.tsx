@@ -26,7 +26,6 @@ import {
   isFocusMode,
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
-  isResultScreen,
   isTestInitFailed,
   isWordsWrapperHidden,
   resetIncompleteTests,
@@ -151,7 +150,7 @@ export function TestPage(): JSXElement {
     // before the test, keeps it in view. During one, Words keeps the active
     // line in view
     const keepTestInView = debounce(250, () => {
-      if (isTestActive() || isResultScreen()) return;
+      if (isTestActive() || isTestFinished()) return;
       Misc.scrollToCenterOrTop(typingTestRef ?? null);
     });
     window.addEventListener("resize", keepTestInView, { signal });
@@ -280,7 +279,7 @@ export function TestPage(): JSXElement {
   const restartIfNotStarted = (): void => {
     if (
       !isTestActive() &&
-      !isResultScreen() &&
+      !isTestFinished() &&
       (getTestSettings().mode === "time" || getTestSettings().mode === "words")
     ) {
       void restartTest({ noAnim: true });
@@ -384,7 +383,7 @@ export function TestPage(): JSXElement {
 
   createEffect(
     on(
-      isResultScreen,
+      isTestFinished,
       (finished) => {
         if (finished && Config.playSoundOnClick === "16") {
           void SoundController.playFartReverb();
