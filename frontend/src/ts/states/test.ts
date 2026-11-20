@@ -35,10 +35,8 @@ import { clearTimeouts } from "../utils/misc";
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-// What's on screen during a restart: set by TestPage only, around its fades.
-// The engine's phase is already "restarting" (then "idle") meanwhile.
-/** True while a restart fades the result out. */
-export const [isResultLeaving, setResultLeaving] = createSignal(false);
+// Set by TestPage only, around its fades. The engine's phase is already
+// "restarting" (then "idle") meanwhile.
 /**
  * True from the start of a restart's fade-out to the end of the new test's
  * fade-in. Input waits for it; other restart requests are dropped meanwhile.
@@ -46,11 +44,11 @@ export const [isResultLeaving, setResultLeaving] = createSignal(false);
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
 /**
- * From the end of the words fade-out on finish until a restart has faded the
- * result out. Whether the result is rendered: isResultShown()
+ * From the end of the words fade-out on finish until a restart. Whether the
+ * result is rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
-  return getTestPhase() === "finished" || isResultLeaving();
+  return getTestPhase() === "finished";
 }
 
 // True from the first line of TestLogic.finish() until the result is built, so

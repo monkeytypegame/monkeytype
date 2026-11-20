@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { isResultShown } from "../../../../src/ts/states/result";
 import {
   cleanupTestPage,
   renderTestPage,
@@ -341,9 +342,11 @@ describe("TestPage", () => {
 
       page.restart();
 
-      expect(page.phase()).toBe("finished");
+      expect(page.phase()).not.toBe("finished");
+      expect(isResultShown()).toBe(true);
       await page.advance(1000);
       expect(page.phase()).toBe("ready");
+      expect(isResultShown()).toBe(false);
     });
   });
 
