@@ -137,17 +137,16 @@ async function addPasswordMethod(options: {
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
+  // before linking, which changes the account's email; a third party
+  // account may have none (eg. GitHub), and the backend needs an email
+  const previousEmail = reauth.user.email ?? options.email;
   await linkMethod({
     method: "password",
     email: options.email,
     password: options.password,
   });
   const response = await Ape.users.updateEmail({
-    body: {
-      newEmail: options.email,
-      // read after linking, which updates the account's email
-      previousEmail: getProviderUser()?.email as string,
-    },
+    body: { newEmail: options.email, previousEmail },
   });
   if (response.status !== 200) {
     throw new Error(
