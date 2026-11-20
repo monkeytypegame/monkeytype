@@ -316,6 +316,11 @@ From user data (U1):
 - User changes (name, Discord unlink, streak offset, quote rating, favourite quote, profile) show at once and roll back if the request fails; they used to show only after the request.
 - The account page's activity calendar updates after a test without a reload.
 
+From the auth provider interface (U8a):
+
+- A Google or GitHub sign-up no longer sets the Firebase display name.
+- Its verification email comes from our server (skipped when the account is already verified), and a failed send no longer cancels the sign-up.
+
 From commandline metadata (C5): generated config commands use the settings labels (`displayString`, `optionsMetadata`).
 
 - Renamed commands: Minimum speed → Min speed, Minimum accuracy → Min accuracy (both get a "minimum" alias), Sound on click/error → Play sound on click/error, Pace caret mode → Pace caret, Live progress color/opacity → Timer color/opacity (a "progress" alias), Key tips → Show key tips, Out of focus warning → Show out of focus warning.
