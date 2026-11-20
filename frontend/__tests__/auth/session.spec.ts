@@ -43,6 +43,7 @@ function providerReports(reported: AuthUser | null): void {
 }
 
 const provider = {
+  methods: [{ id: "password", display: "Password", fa: { icon: "fa-lock" } }],
   init: vi.fn(async (onUserChange) => {
     fake.onUserChange = onUserChange;
   }),
@@ -169,6 +170,9 @@ describe("auth session", () => {
 describe("auth provider failing to start", () => {
   it("leaves auth unavailable and signed out", async () => {
     const failing = {
+      methods: [
+        { id: "password", display: "Password", fa: { icon: "fa-lock" } },
+      ],
       init: vi.fn(async () => {
         throw new Error("no config");
       }),
@@ -180,5 +184,18 @@ describe("auth provider failing to start", () => {
     expect(isAuthAvailable()).toBe(false);
     expect(getAuthenticatedUser()).toBeNull();
     expect(getAuthState()).toBe("signedOut");
+  });
+
+  it("fails to start without auth methods", async () => {
+    const noMethods = {
+      methods: [],
+      init: vi.fn(async () => undefined),
+    } as Partial<AuthProvider> as AuthProvider;
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    await initAuth(noMethods);
+
+    expect(noMethods.init).not.toHaveBeenCalled();
+    expect(isAuthAvailable()).toBe(false);
   });
 });

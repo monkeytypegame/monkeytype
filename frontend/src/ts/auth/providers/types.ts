@@ -66,7 +66,8 @@ export type SignInResult = { user: AuthUser; isNewUser: boolean };
 export type AuthProvider = {
   /**
    * The auth methods users can sign in with (`"password"` when offered, and
-   * third parties), most preferred first.
+   * third parties), most preferred first. Never empty: auth fails to start
+   * without one.
    */
   readonly methods: readonly AuthMethodInfo[];
   /**

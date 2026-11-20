@@ -36,6 +36,10 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
   provider = authProvider;
   available = true;
   try {
+    // a provider nobody can sign in with is misconfigured
+    if (authProvider.methods.length === 0) {
+      throw new Error("The auth provider offers no auth methods");
+    }
     await authProvider.init((user, info) => {
       if (holdUserChanges) return;
       if (user !== null && info?.isNewUser === true) {
