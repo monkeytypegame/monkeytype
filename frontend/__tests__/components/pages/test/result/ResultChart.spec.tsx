@@ -40,20 +40,20 @@ vi.mock("../../../../../src/ts/components/common/ChartJs", () => ({
 
 import { ResultChart } from "../../../../../src/ts/components/pages/test/result/ResultChart";
 import {
-  setResultShown,
+  setTestPageDisplay,
   setResultState,
 } from "../../../../../src/ts/states/result";
 import { CompletedResult } from "../../../../../src/ts/states/test";
 
 describe("ResultChart", () => {
   afterEach(() => {
-    setResultShown(false);
+    setTestPageDisplay("test");
     setResultState("tags", []);
   });
 
   it("draws the chart before tags load, adds tag pb lines when they arrive", () => {
     setResultState("tags", [{ id: "tag1", isPb: false, chartPb: 100 }]);
-    setResultShown(true);
+    setTestPageDisplay("result");
 
     const { queryByTestId, getByTestId, queryByText } = render(() => (
       <Suspense fallback={<div>suspended</div>}>
