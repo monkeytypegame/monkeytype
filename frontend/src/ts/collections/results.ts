@@ -27,13 +27,12 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo, createRoot } from "solid-js";
+import { Accessor, createMemo, createRoot, createSignal } from "solid-js";
 import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
-import { getLastResult, setLastResult } from "../states/last-result";
 import {
   areTagsLoaded,
   getActiveTags,
@@ -87,6 +86,13 @@ export type NormalizedLocalResult<M extends Mode> = Omit<
   timeTyping: number;
   dayTimestamp: number;
 };
+
+// set from the first results fetch and on each save
+const [getLastResult, setLastResult] = createSignal<
+  NormalizedLocalResult<Mode> | undefined
+>(undefined);
+/** The user's latest saved result. */
+export { getLastResult };
 
 export type ResultsQueryState = {
   difficulty: NormalizedLocalResult<Mode>["difficulty"][];
