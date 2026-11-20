@@ -78,6 +78,7 @@ function toMethodId(providerId: string): string | undefined {
 
 /** Firebase as the auth provider. */
 export const firebaseAuthProvider: AuthProvider = {
+  password: true,
   thirdParties: thirdParties.map(({ id, display, fa }) => ({
     id,
     display,

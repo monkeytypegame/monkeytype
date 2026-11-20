@@ -3,7 +3,7 @@ import { createSignal, For, Show } from "solid-js";
 import type { ThirdParty } from "../../../auth/providers/types";
 
 import { addAuthMethod } from "../../../auth/actions";
-import { getThirdParties } from "../../../auth/session";
+import { getThirdParties, supportsPassword } from "../../../auth/session";
 import {
   getAuthMethodEmail,
   hasOtherAuthMethods,
@@ -20,7 +20,9 @@ import { Section } from "./utils";
 export function AuthenticationTab() {
   return (
     <>
-      <PasswordAuthentication />
+      <Show when={supportsPassword()}>
+        <PasswordAuthentication />
+      </Show>
       <For each={getThirdParties()}>
         {(thirdParty) => <ThirdPartyAuthentication thirdParty={thirdParty} />}
       </For>

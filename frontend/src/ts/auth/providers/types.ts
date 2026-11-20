@@ -51,10 +51,9 @@ export type SignInResult = { user: AuthUser; isNewUser: boolean };
  * them, with links from the backend's auth provider.
  */
 export type AuthProvider = {
-  /**
-   * The third parties users can sign in with, most preferred first. Every
-   * provider offers password auth.
-   */
+  /** Whether users can sign in with a password. */
+  readonly password: boolean;
+  /** The third parties users can sign in with, most preferred first. */
   readonly thirdParties: readonly ThirdParty[];
   /**
    * Throws when the provider can't start; auth is then unavailable. Reports
