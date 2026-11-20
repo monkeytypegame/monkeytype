@@ -8,11 +8,11 @@ vi.mock("../../src/ts/states/banners", () => ({ addBanner: vi.fn() }));
 import { AuthProvider, AuthUser } from "../../src/ts/auth/providers/types";
 import {
   cancelSignUp,
-  createUser,
+  createProviderUser,
   finishSignUp,
   getAuthenticatedUser,
   initAuth,
-  addMethod,
+  linkMethod,
   isAuthAvailable,
   signIn,
 } from "../../src/ts/auth/system";
@@ -137,7 +137,11 @@ describe("auth system", () => {
   });
 
   it("a new email user stays signed out until the sign up finishes", async () => {
-    await createUser({ email: "a@b.c", password: "password", name: "a" });
+    await createProviderUser({
+      email: "a@b.c",
+      password: "password",
+      name: "a",
+    });
 
     expect(getUserId()).toBeNull();
 
@@ -146,7 +150,11 @@ describe("auth system", () => {
   });
 
   it("a cancelled sign up signs out of the provider and listens to it again", async () => {
-    await createUser({ email: "a@b.c", password: "password", name: "a" });
+    await createProviderUser({
+      email: "a@b.c",
+      password: "password",
+      name: "a",
+    });
 
     await cancelSignUp();
 
@@ -159,7 +167,7 @@ describe("auth system", () => {
     providerReports(user);
     expect(getAuthMethods()).toEqual([]);
 
-    await addMethod({ method: "github" });
+    await linkMethod({ method: "github" });
     expect(getAuthMethods()).toEqual([{ id: "github", email: null }]);
 
     providerReports(null);

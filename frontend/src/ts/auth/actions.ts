@@ -3,7 +3,12 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import Ape from "../ape";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
+  getGoogleSignUpUser,
+  setGoogleSignUpUser,
+} from "../states/google-sign-up";
+import {
   showErrorNotification,
+  showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
 import { createErrorMessage } from "../utils/error";
@@ -15,17 +20,18 @@ import {
 } from "./providers/types";
 import {
   cancelSignUp,
-  createUser,
+  createProviderUser,
+  deleteProviderUser,
   finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
-  addMethod,
+  linkMethod,
   getAuthMethodDisplay,
   getOfferedAuthMethods,
   reauthenticate as systemReauthenticate,
   signIn as systemSignIn,
   signOut as systemSignOut,
-  removeMethod,
+  unlinkMethod,
 } from "./system";
 import { isAuthenticated, isUsingAuthMethod } from "./state";
 
@@ -103,7 +109,7 @@ export async function addAuthMethod(
     if (isPasswordMethod(options)) {
       await addPasswordProvider(options);
     } else {
-      await addMethod(options);
+      await linkMethod(options);
     }
 
     showSuccessNotification(`${providerName} authentication added`);
@@ -124,7 +130,7 @@ async function addPasswordProvider(options: {
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
-  await addMethod({
+  await linkMethod({
     method: "password",
     email: options.email,
     password: options.password,
@@ -159,7 +165,7 @@ export async function removeAuthMethod(
     };
   }
   try {
-    await removeMethod(authMethod);
+    await unlinkMethod(authMethod);
   } catch (e) {
     const message = createErrorMessage(
       e,
@@ -199,7 +205,7 @@ export async function signUp(
   }
 
   try {
-    const createdAuthUser = await createUser({ email, password, name });
+    const createdAuthUser = await createProviderUser({ email, password, name });
 
     const signInResponse = await Ape.users.create({
       body: {
@@ -231,6 +237,76 @@ export async function signUp(
     showErrorNotification(message);
     void cancelSignUp();
     return { success: false, message };
+  }
+}
+
+/**
+ * Finishes a third party sign up: the new user (held back, see
+ * `startProviderSignUp`) picked a name. Creates the backend user, or cancels
+ * the sign up when that fails.
+ */
+export async function completeThirdPartySignUp(
+  name: string,
+  captcha: string,
+): Promise<void> {
+  const signedInUser = getGoogleSignUpUser();
+  if (!signedInUser) {
+    showErrorNotification(
+      "Missing user credential. Please close the popup and try again.",
+    );
+    return;
+  }
+  if (!captcha) {
+    showNoticeNotification("Please complete the captcha");
+    return;
+  }
+
+  showLoaderBar();
+  try {
+    if (name.length === 0) throw new Error("Name cannot be empty");
+    const response = await Ape.users.create({ body: { name, captcha } });
+    if (response.status !== 200) {
+      throw new Error(`Failed to create user: ${response.body.message}`);
+    }
+
+    // our server sends it, like for an email sign up; a third party may
+    // already have verified the email
+    if (!signedInUser.emailVerified) await sendVerificationEmail();
+    finishSignUp();
+    showSuccessNotification("Account created");
+    setGoogleSignUpUser(undefined);
+  } catch (e) {
+    console.log(e);
+    showErrorNotification("Failed to sign in with Google", { error: e });
+    await abortThirdPartySignUp();
+  } finally {
+    hideLoaderBar();
+  }
+}
+
+/** Cancels a third party sign up the user walked away from. */
+export async function cancelThirdPartySignUp(): Promise<void> {
+  // finished, or a failed completion already aborted it
+  if (getGoogleSignUpUser() === undefined) return;
+  showNoticeNotification("Sign up process cancelled", {
+    durationMs: 5000,
+  });
+  await abortThirdPartySignUp();
+}
+
+/**
+ * Deletes the new user the sign up created (it only runs for one), and signs
+ * out of the auth provider.
+ */
+async function abortThirdPartySignUp(): Promise<void> {
+  try {
+    await Ape.users.delete();
+    await deleteProviderUser().catch(() => {
+      //user might be deleted already by the server
+    });
+  } finally {
+    await cancelSignUp();
+    setGoogleSignUpUser(undefined);
   }
 }
 

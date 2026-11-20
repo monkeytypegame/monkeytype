@@ -2,19 +2,12 @@ import { UserNameSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 
 import Ape from "../../ape";
-import { sendVerificationEmail } from "../../auth/actions";
-import { cancelSignUp, finishSignUp, deleteUser } from "../../auth/system";
 import {
-  getGoogleSignUpUser,
-  setGoogleSignUpUser,
-} from "../../states/google-sign-up";
-import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
+  cancelThirdPartySignUp,
+  completeThirdPartySignUp,
+} from "../../auth/actions";
 import { hideModal, ModalId } from "../../states/modals";
-import {
-  showErrorNotification,
-  showNoticeNotification,
-  showSuccessNotification,
-} from "../../states/notifications";
+import { showNoticeNotification } from "../../states/notifications";
 import { remoteValidationForm } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Captcha } from "../ui/form/Captcha";
@@ -87,66 +80,16 @@ export function GoogleSignupModal() {
 }
 
 async function afterHide(): Promise<void> {
-  // finished, or a failed apply already cancelled it
-  if (getGoogleSignUpUser() === undefined) return;
-  showNoticeNotification("Sign up process cancelled", {
-    durationMs: 5000,
-  });
-  await cancelGoogleSignUp();
+  await cancelThirdPartySignUp();
 }
 
-/**
- * Deletes the new user the sign up created (the modal only opens for one), and
- * signs out of the auth provider.
- */
-async function cancelGoogleSignUp(): Promise<void> {
-  try {
-    await Ape.users.delete();
-    await deleteUser().catch(() => {
-      //user might be deleted already by the server
-    });
-  } finally {
-    await cancelSignUp();
-    setGoogleSignUpUser(undefined);
-  }
-}
 async function apply(options: {
   username: string;
   captcha: string;
 }): Promise<void> {
-  const { username: name, captcha } = options;
-  const signedInUser = getGoogleSignUpUser();
-  if (!signedInUser) {
-    showErrorNotification(
-      "Missing user credential. Please close the popup and try again.",
-    );
-    return;
-  }
-  if (!captcha) {
-    showNoticeNotification("Please complete the captcha");
-    return;
-  }
-
-  showLoaderBar();
   try {
-    if (name.length === 0) throw new Error("Name cannot be empty");
-    const response = await Ape.users.create({ body: { name, captcha } });
-    if (response.status !== 200) {
-      throw new Error(`Failed to create user: ${response.body.message}`);
-    }
-
-    // our server sends it, like for an email sign up; a third party may
-    // already have verified the email
-    if (!signedInUser.emailVerified) await sendVerificationEmail();
-    finishSignUp();
-    showSuccessNotification("Account created");
-    setGoogleSignUpUser(undefined);
-  } catch (e) {
-    console.log(e);
-    showErrorNotification("Failed to sign in with Google", { error: e });
-    await cancelGoogleSignUp();
+    await completeThirdPartySignUp(options.username, options.captcha);
   } finally {
-    hideLoaderBar();
     hideModal(modalId);
   }
 }

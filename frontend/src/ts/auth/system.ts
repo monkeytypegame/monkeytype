@@ -151,7 +151,7 @@ function startProviderSignUp(user: AuthUser): void {
 }
 
 /** Stays signed out until `finishSignUp`. */
-export async function createUser(options: {
+export async function createProviderUser(options: {
   email: string;
   password: string;
   name: string;
@@ -182,7 +182,7 @@ export async function cancelSignUp(): Promise<void> {
 }
 
 /** Deletes the signed in user from the auth provider. */
-export async function deleteUser(): Promise<void> {
+export async function deleteProviderUser(): Promise<void> {
   await getAuthProvider(true).deleteUser();
 }
 
@@ -196,7 +196,7 @@ export async function reauthenticate(
 /**
  * Links an auth method; password auth's email becomes the account's email.
  */
-export async function addMethod(
+export async function linkMethod(
   options: Parameters<AuthProvider["addMethod"]>[0],
 ): Promise<void> {
   await getAuthProvider(true).addMethod(options);
@@ -204,7 +204,7 @@ export async function addMethod(
 }
 
 /** Unlinks an auth method: `"password"`, or a third party id. */
-export async function removeMethod(method: string): Promise<void> {
+export async function unlinkMethod(method: string): Promise<void> {
   await getAuthProvider(true).removeMethod(method);
   refreshUserState();
 }
