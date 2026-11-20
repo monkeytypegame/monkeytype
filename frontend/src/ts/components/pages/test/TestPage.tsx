@@ -34,7 +34,6 @@ import {
   setFocusMode,
   setLayoutfluidTimerVisible,
   setRestartAnimating,
-  setResultLeaving,
   setTypingTestHidden,
   setWordsInputPosition,
   setTestFocusState,
@@ -296,13 +295,11 @@ export function TestPage(): JSXElement {
     const { noAnim } = untrack(getRestartOptions);
     // what's rendered: the phase is already "restarting"
     source = untrack(isResultShown) ? "resultPage" : "testPage";
-    if (source === "resultPage") setResultLeaving(true);
     await fade(
       source === "resultPage" ? resultRef : typingTestRef,
       "out",
       noAnim,
     );
-    setResultLeaving(false);
     display = "waiting";
     void swapInRestartedTest();
   };
@@ -371,7 +368,6 @@ export function TestPage(): JSXElement {
     display = "idle";
     finishDisplay = "idle";
     setRestartAnimating(false);
-    setResultLeaving(false);
   });
 
   // WordsInput takes the focus; during a test Words keeps the active line in

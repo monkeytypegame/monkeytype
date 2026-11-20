@@ -31,10 +31,8 @@ import { clearTimeouts } from "../utils/misc";
 
 export const [getLoadedChallenge, setLoadedChallenge] =
   createSignal<Challenge | null>(null);
-// What's on screen during a restart: set by TestPage only, around its fades.
-// The engine's phase is already "restarting" (then "idle") meanwhile.
-/** True while a restart fades the result out. */
-export const [isResultLeaving, setResultLeaving] = createSignal(false);
+// Set by TestPage only, around its fades. The engine's phase is already
+// "restarting" (then "idle") meanwhile.
 /**
  * True from the start of a restart's fade-out to the end of the new test's
  * fade-in. Input waits for it; other restart requests are dropped meanwhile.
@@ -42,11 +40,11 @@ export const [isResultLeaving, setResultLeaving] = createSignal(false);
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
 /**
- * From finish (the finish keystroke) until a restart has faded the result
- * out. Whether the result is rendered: isResultShown()
+ * From finish (the finish keystroke) until a restart. Whether the result is
+ * rendered: isResultShown()
  */
 export function isResultScreen(): boolean {
-  return getTestPhase() === "finished" || isResultLeaving();
+  return getTestPhase() === "finished";
 }
 
 // focus mode: everything but the test hidden while typing, until the mouse
