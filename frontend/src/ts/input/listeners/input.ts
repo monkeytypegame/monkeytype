@@ -13,7 +13,7 @@ import * as TestWords from "../../test/engine/test-words";
 import { isRestartAnimating, getCompositionData } from "../../states/test";
 import {
   getActiveWordIndex,
-  getTestPhase,
+  isTestRestarting,
   isTestFinished,
 } from "../../test/engine/state";
 import { getCurrentInput } from "../../test/engine/events/data";
@@ -97,11 +97,7 @@ export async function onInput(event: InputEvent): Promise<void> {
   }
 
   // just in case before input doesn't catch this
-  if (
-    isTestFinished() ||
-    getTestPhase() === "restarting" ||
-    isRestartAnimating()
-  ) {
+  if (isTestFinished() || isTestRestarting() || isRestartAnimating()) {
     return;
   }
 

@@ -23,7 +23,7 @@ import type { ResultData } from "./result-data";
  */
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
-// setters exported for engine/commands only
+// engine only: outside, read the phase through the helpers below
 export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
 
 /** The test is running: typing, the timer runs. */
@@ -34,6 +34,11 @@ export function isTestActive(): boolean {
 /** The test ended: from finish() until a restart. */
 export function isTestFinished(): boolean {
   return getTestPhase() === "finished";
+}
+
+/** From the restart request until the new test is generated. */
+export function isTestRestarting(): boolean {
+  return getTestPhase() === "restarting";
 }
 
 // ---- restart

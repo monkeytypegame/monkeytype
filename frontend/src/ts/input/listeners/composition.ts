@@ -9,7 +9,7 @@ import {
 } from "../../states/test";
 import {
   getActiveWordIndex,
-  getTestPhase,
+  isTestRestarting,
   isTestActive,
   isTestFinished,
 } from "../../test/engine/state";
@@ -22,11 +22,7 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   const now = performance.now();
 
-  if (
-    getTestPhase() === "restarting" ||
-    isTestFinished() ||
-    isRestartAnimating()
-  ) {
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
     return;
   }
   setComposing(true);
@@ -48,11 +44,7 @@ export function onCompositionUpdate(event: CompositionEvent): void {
     data: event.data,
   });
 
-  if (
-    getTestPhase() === "restarting" ||
-    isTestFinished() ||
-    isRestartAnimating()
-  ) {
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
     return;
   }
   setCompositionData(event.data);
@@ -72,11 +64,7 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
     data: event.data,
   });
 
-  if (
-    getTestPhase() === "restarting" ||
-    isTestFinished() ||
-    isRestartAnimating()
-  ) {
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
     return;
   }
   setComposing(false);

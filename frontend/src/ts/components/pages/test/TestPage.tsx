@@ -45,7 +45,7 @@ import {
   getRestartOptions,
   getTestId,
   getResultData,
-  getTestPhase,
+  isTestRestarting,
   isTestActive,
   isTestFinished,
 } from "../../../test/engine/state";
@@ -306,7 +306,7 @@ export function TestPage(): JSXElement {
   };
 
   const swapInRestartedTest = async (): Promise<void> => {
-    if (display !== "waiting" || untrack(getTestPhase) === "restarting") {
+    if (display !== "waiting" || untrack(isTestRestarting)) {
       return;
     }
     display = "in";
@@ -337,12 +337,13 @@ export function TestPage(): JSXElement {
   };
 
   createEffect(
-    on(getTestPhase, (phase, previous) => {
-      if (phase === "finished" && previous === "active") {
-        void fadeOutForFinish();
-        return;
-      }
-      if (phase !== "restarting") return;
+    on(isTestFinished, (finished, wasFinished) => {
+      if (finished && wasFinished === false) void fadeOutForFinish();
+    }),
+  );
+  createEffect(
+    on(isTestRestarting, (restarting) => {
+      if (!restarting) return;
       // already fading out or waiting: it shows the latest restart
       if (display === "out" || display === "waiting") return;
       void fadeOutForRestart();

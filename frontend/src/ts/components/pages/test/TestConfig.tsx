@@ -8,7 +8,7 @@ import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { isResultScreen, isFocusMode } from "../../../states/test";
-import { getTestPhase } from "../../../test/engine/state";
+import { isTestRestarting } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
@@ -78,7 +78,7 @@ function TCButton(props: {
       text={props.text}
       active={props.active}
       onClick={() => {
-        if (getTestPhase() === "restarting") return;
+        if (isTestRestarting()) return;
         props.onClick();
       }}
       disabled={isFocusMode() || isResultScreen() || props.disabled}

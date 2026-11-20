@@ -64,7 +64,7 @@ import {
   getActiveWordIndex,
   getRestartOptions,
   getTestEnd,
-  getTestPhase,
+  isTestRestarting,
   isTestActive,
   getFrozenLog,
   getResultData,
@@ -187,7 +187,7 @@ function resetTestState(): void {
  * test page). Ignores the no_quit funbox.
  */
 export function stop(): void {
-  if (getTestPhase() === "restarting" || isResultPending()) return;
+  if (isTestRestarting() || isResultPending()) return;
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
@@ -235,7 +235,7 @@ export async function restartTest(
 }
 
 function requestRestart(options: RestartRequestOptions): void {
-  const restarting = getTestPhase() === "restarting";
+  const restarting = isTestRestarting();
   if (restarting || untrack(isRestartAnimating)) {
     options.event?.preventDefault();
     if (!(options.settingsChanged ?? false)) return;

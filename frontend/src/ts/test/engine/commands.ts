@@ -22,9 +22,9 @@ import {
   getActiveWordIndex,
   isTestActive,
   isTestFinished,
+  isTestRestarting,
   setTestEnd,
   setKoreanStatus,
-  getTestPhase,
   setLastBurst,
   setRestartOptions,
   setTestId,
@@ -147,7 +147,7 @@ let generation = 0;
  * Returns the token the generation checks with isCurrentRestart().
  */
 export function requestRestart(options: Partial<RestartOptions>): number {
-  if (getTestPhase() !== "restarting") {
+  if (!isTestRestarting()) {
     batch(() => {
       setRestartOptions({
         withSameWordset: options.withSameWordset ?? false,
@@ -161,7 +161,7 @@ export function requestRestart(options: Partial<RestartOptions>): number {
 
 /** Whether the generation holding `token` is still the one to commit. */
 export function isCurrentRestart(token: number): boolean {
-  return token === generation && getTestPhase() === "restarting";
+  return token === generation && isTestRestarting();
 }
 
 /**

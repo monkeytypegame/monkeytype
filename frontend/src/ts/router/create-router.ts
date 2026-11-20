@@ -12,7 +12,7 @@ import { isLoadingBarShown } from "../states/loading-page";
 import { showNoticeNotification } from "../states/notifications";
 import { getRoutePage } from "../states/router";
 import {
-  getTestPhase,
+  isTestRestarting,
   isResultPending,
   isTestActive,
 } from "../test/engine/state";
@@ -107,9 +107,9 @@ export function createAppRouter(
         );
         return true;
       }
-      if (getTestPhase() === "restarting" || isResultPending()) {
+      if (isTestRestarting() || isResultPending()) {
         console.debug(
-          `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${getTestPhase() === "restarting"}, resultPending: ${isResultPending()})`,
+          `navigation to ${nextLocation.href} blocked, page is busy (testRestarting: ${isTestRestarting()}, resultPending: ${isResultPending()})`,
         );
         return true;
       }

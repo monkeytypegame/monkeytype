@@ -9,7 +9,7 @@ import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
 import { isRestartAnimating } from "../../states/test";
 import {
-  getTestPhase,
+  isTestRestarting,
   isTestFinished,
   wordsHaveNewline,
 } from "../../test/engine/state";
@@ -25,7 +25,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (getTestPhase() === "restarting" || isRestartAnimating()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     return true;
   }
 

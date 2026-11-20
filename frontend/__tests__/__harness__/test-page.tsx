@@ -75,8 +75,9 @@ import { setRouter } from "../../src/ts/router/instance";
 import { isResultScreen, isRestartAnimating } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import {
-  getTestPhase,
   isResultPending,
+  isTestActive,
+  isTestRestarting,
   liveStats,
 } from "../../src/ts/test/engine/state";
 import { getTestSettings } from "../../src/ts/test/engine/test-settings";
@@ -239,7 +240,7 @@ export async function renderTestPage(
   let sawRestart = false;
   const stopWatchingRestart = createRoot((dispose) => {
     createEffect(() => {
-      if (getTestPhase() === "restarting") sawRestart = true;
+      if (isTestRestarting()) sawRestart = true;
     });
     return dispose;
   });
@@ -263,7 +264,7 @@ export async function renderTestPage(
   // the restart on mount: fade out, generate words, fade in. It may only
   // begin a frame in, after a previous spec's finished test
   const ready = (): boolean =>
-    sawRestart && getTestPhase() === "idle" && !isRestartAnimating();
+    sawRestart && !isTestRestarting() && !isRestartAnimating();
   for (let i = 0; i < 50 && !ready(); i++) await frame();
   stopWatchingRestart();
   if (!ready()) throw new Error("The test page never got ready");
@@ -275,7 +276,7 @@ export async function renderTestPage(
   stopCountingRestarts = createRoot((dispose) => {
     createEffect(
       on(
-        () => getTestPhase() === "restarting",
+        isTestRestarting,
         (restarting) => {
           if (restarting) restarts++;
         },
@@ -338,9 +339,9 @@ export async function renderTestPage(
     phase: () =>
       isResultScreen()
         ? "finished"
-        : getTestPhase() === "active"
+        : isTestActive()
           ? "active"
-          : getTestPhase() === "restarting"
+          : isTestRestarting()
             ? "restarting"
             : "ready",
     getRestartCount: () => restarts,

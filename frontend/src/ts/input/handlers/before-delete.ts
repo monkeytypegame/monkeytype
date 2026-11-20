@@ -7,7 +7,7 @@ import { getInputForWord } from "../../test/engine/events/data";
 import { isRestartAnimating } from "../../states/test";
 import {
   getActiveWordIndex,
-  getTestPhase,
+  isTestRestarting,
   isTestActive,
 } from "../../test/engine/state";
 
@@ -16,7 +16,7 @@ export function onBeforeDelete(event: InputEvent): void {
     event.preventDefault();
     return;
   }
-  if (getTestPhase() === "restarting" || isRestartAnimating()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     event.preventDefault();
     return;
   }
