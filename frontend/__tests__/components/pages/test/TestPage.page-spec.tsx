@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { isResultShown } from "../../../../src/ts/states/result";
 import {
   cleanupTestPage,
   renderTestPage,
@@ -228,8 +227,6 @@ describe("TestPage", () => {
       const page = await renderTestPage({ words: ["the", "fox"] });
 
       await page.type("the fox");
-      // the test fades out before it counts as finished
-      await page.advance(500);
 
       expect(page.phase()).toBe("finished");
     });
@@ -242,9 +239,73 @@ describe("TestPage", () => {
       expect(page.phase()).toBe("active");
 
       await page.advance(1000);
-      // the test fades out before it counts as finished
-      await page.advance(500);
       expect(page.phase()).toBe("finished");
+    });
+
+    it("shows the result once the words have faded out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      await page.type("the fox");
+      await page.advance(100);
+      expect(page.resultScreen()).toEqual({ result: false, spinner: false });
+
+      await page.advance(400);
+      expect(page.resultScreen()).toEqual({ result: true, spinner: false });
+    });
+
+    it("paints the delayed spinner for a frame before rendering the result", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      await page.type("the fox");
+      // the fade-out ends on a frame
+      for (let i = 0; i < 20 && !page.resultScreen().spinner; i++) {
+        await page.frame();
+      }
+      expect(page.resultScreen()).toEqual({ result: false, spinner: true });
+
+      await page.frame();
+      await page.advance(1);
+      expect(page.resultScreen()).toEqual({ result: true, spinner: false });
+    });
+
+    it("keeps the spinner until a slow result is built", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+      page.holdResult();
+
+      await page.type("the fox");
+      await page.advance(500);
+      expect(page.resultScreen()).toEqual({ result: false, spinner: true });
+
+      page.releaseResult();
+      await page.frame();
+      expect(page.resultScreen()).toEqual({ result: true, spinner: false });
+    });
+
+    it("drops a restart while the result is built", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+      page.holdResult();
+
+      await page.type("the fox");
+      page.restart();
+      await page.advance(500);
+
+      expect(page.getRestartCount()).toBe(0);
+      page.releaseResult();
+      await page.advance(500);
+      expect(page.resultScreen().result).toBe(true);
+    });
+
+    it("restarts straight to the new test while the words fade out", async () => {
+      const page = await renderTestPage({ words: ["the", "fox"] });
+
+      await page.type("the fox");
+      // the result is built, the words still fading out
+      await page.advance(50);
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.phase()).toBe("ready");
+      expect(page.resultScreen()).toEqual({ result: false, spinner: false });
     });
   });
 
@@ -343,10 +404,10 @@ describe("TestPage", () => {
       page.restart();
 
       expect(page.phase()).not.toBe("finished");
-      expect(isResultShown()).toBe(true);
+      expect(page.resultScreen().result).toBe(true);
       await page.advance(1000);
       expect(page.phase()).toBe("ready");
-      expect(isResultShown()).toBe(false);
+      expect(page.resultScreen().result).toBe(false);
     });
   });
 

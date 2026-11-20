@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Config } from "../config/store";
 import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { isResultScreen } from "../states/test";
-import { getFrozenLog, getKoreanStatus } from "./engine/state";
+import { getKoreanStatus, getResultData } from "./engine/state";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -170,8 +170,8 @@ export function toggleResultWords(noAnimation = false): void {
 }
 
 export async function copyWordsList(): Promise<void> {
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return;
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return;
   let words;
   if (Config.mode === "zen") {
     words = getInputHistory(eventLog).join("");
@@ -186,8 +186,8 @@ export async function copyWordsList(): Promise<void> {
 }
 
 export async function copyMissedWordsList(): Promise<void> {
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return;
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return;
   let words;
   if (Config.mode === "zen") {
     words = getInputHistory(eventLog).join("");
@@ -198,8 +198,8 @@ export async function copyMissedWordsList(): Promise<void> {
 }
 
 export function copySlowWordsList(): void {
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return;
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return;
 
   const burstHistory = getWordBurstHistory(eventLog);
   const validBursts = burstHistory.filter(

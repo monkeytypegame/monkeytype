@@ -12,21 +12,17 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { getTestPhase } from "../test/engine/state";
+import { isTestFinished } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
-import * as CustomText from "../test/custom-text";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { isTestPageMounted } from "../test/test-page-bridge";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";
 import { mirrorLayoutKeys } from "../utils/key-converter";
-import { canQuickRestart } from "../utils/quick-restart";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
-import { getCustomTextIndicator } from "./core";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
 
@@ -43,18 +39,16 @@ export const [getLoadedChallenge, setLoadedChallenge] =
  */
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
+// TODO: same as isTestFinished() since isResultLeaving went: fold its readers
+// into it and delete this
 /**
- * From the end of the words fade-out on finish until a restart. Whether the
- * result is rendered: isResultShown()
+ * From finish (the finish keystroke) until a restart. Whether the result is
+ * rendered is TestPage's (it fades it in after the words).
  */
 export function isResultScreen(): boolean {
-  return getTestPhase() === "finished";
+  return isTestFinished();
 }
 
-// True from the first line of TestLogic.finish() until the result is built, so
-// it covers the words fade-out that isResultScreen() is still false during.
-// T6c: the engine's result signal replaces it.
-export const [isResultCalculating, setResultCalculating] = createSignal(false);
 // focus mode: everything but the test hidden while typing, until the mouse
 // moves (FocusModeExit). Not the same as testFocusState (out of focus).
 const [isFocusMode, setFocusModeNow] = createSignal(false);
@@ -140,8 +134,6 @@ export const [isWordsWrapperHidden, setWordsWrapperHidden] =
 export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
 export const [isErrorBorderDisabled, setErrorBorderDisabled] =
   createSignal(false);
-// hidden between the words fading out and the next restart
-export const [isTypingTestHidden, setTypingTestHidden] = createSignal(false);
 // script with no spaces between words (or custom/zen) - words may wrap mid-word
 export const [isJoiningScript, setJoiningScript] = createSignal(false);
 
@@ -169,9 +161,6 @@ export const [getTestInitError, setTestInitError] = createSignal<string | null>(
   null,
 );
 
-// shown between the words fading out and the result appearing.
-export const [isResultLoading, setResultLoading] = createSignal(false);
-
 // IME composition in progress and its data so far, pushed from the
 // composition events. Read by the input handlers, the caret and the
 // composition display.
@@ -189,13 +178,9 @@ createRoot(() =>
     ),
   ),
 );
-export const [isLongTest, setIsLongTest] = createSignal(false);
 // a finished test's result, before the server adds hash and uid
 export type CompletedResult = Omit<CompletedEvent, "hash" | "uid">;
 
-// T6c: the result moves to the engine
-export const [getLastResult, setLastResult] =
-  createSignal<CompletedResult | null>(null);
 export const [
   getIncompleteTests,
   { push: pushIncompleteTest, reset: resetIncompleteTests },
@@ -222,22 +207,6 @@ export const [getCurrentQuote, setCurrentQuote] =
 
 export const [getLastSignedOutResult, setLastSignedOutResult] =
   createSignal<CompletedEvent | null>(null);
-
-createRoot(() =>
-  createEffect(() => {
-    // custom text settings aren't reactive - re-read them when the test page mounts
-    isTestPageMounted();
-    setIsLongTest(
-      !canQuickRestart(
-        getConfig.mode,
-        getConfig.words,
-        getConfig.time,
-        CustomText.getData(),
-        getCustomTextIndicator()?.isLong ?? false,
-      ),
-    );
-  }),
-);
 
 export const getKeymapLayout = createRoot(() =>
   createMemo<{

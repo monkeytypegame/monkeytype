@@ -31,6 +31,7 @@ vi.mock("../../src/ts/test/engine/events/data", async (importOriginal) => ({
 }));
 
 import { Caret } from "../../src/ts/components/pages/test/caret";
+import { focusWordsEvent } from "../../src/ts/components/pages/test/focus-words";
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
@@ -54,10 +55,7 @@ import {
 } from "../../src/ts/test/engine/state";
 import { takeTestSettings } from "../../src/ts/test/engine/test-settings";
 import * as TestWords from "../../src/ts/test/engine/test-words";
-import {
-  focusWordsEvent,
-  markTestPageMounted,
-} from "../../src/ts/test/test-page-bridge";
+import { markTestPageMounted } from "../../src/ts/test/test-page-bridge";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
 // jsdom has no layout: words get a fake one, 5 per line

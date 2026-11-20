@@ -1,20 +1,12 @@
-import { getLocalPB, getUserData } from "../queries/user";
+import { getLocalPB } from "../queries/user";
 import {
   getRememberLazyMode,
   setRememberLazyMode,
   getPrefersArabicLazyMode,
   setPrefersArabicLazyMode,
 } from "../states/lazy-mode";
-import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
-import {
-  batch,
-  createEffect,
-  createMemo,
-  createRoot,
-  on,
-  untrack,
-} from "solid-js";
+import { createEffect, createMemo, createRoot, on, untrack } from "solid-js";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
@@ -32,7 +24,6 @@ import * as PaceCaret from "./pace-caret";
 import * as TestTimer from "./engine/test-timer";
 import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
-import { getActiveTags } from "../queries/tags";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import { clearQuoteStats } from "../states/quote-rate";
@@ -43,37 +34,26 @@ import {
   updateCrown,
 } from "./result-pb";
 import { showConfetti } from "../elements/confetti";
-import * as AdController from "../controllers/ad-controller";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
-import { closeResultWords, toggleResultWords } from "./words-history";
 import { getCustomTextIndicator, isAuthenticated } from "../states/core";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
   getCurrentQuote,
-  getIncompleteSeconds,
-  getIncompleteTests,
-  getRestartCount,
   isPaceRepeat,
   isRepeated,
   pushIncompleteTest,
   resetIncompleteTests,
   setIsPaceRepeat,
   setIsRepeated,
-  setLastResult,
-  isResultCalculating,
   setLastSignedOutResult,
-  setResultCalculating,
   isResultScreen,
   isRestartAnimating,
-  CompletedResult,
-  setResultLoading,
   setTestInitError,
   setTestInitFailed,
   setJoiningScript,
-  setTypingTestHidden,
   setComposing,
   setCompositionData,
   highlightKeymapKey,
@@ -84,14 +64,16 @@ import {
   getActiveWordIndex,
   getRestartOptions,
   getTestEnd,
-  getTestPhase,
+  isTestRestarting,
   isTestActive,
-  publishFrozenLog,
+  getResultData,
+  isResultPending,
   setWordsInfo,
   type RestartOptions,
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
+import type { ResultDataCheck, ResultData } from "./engine/result-data";
 import {
   TEST_SETTINGS_KEYS,
   getTestSettings,
@@ -101,17 +83,14 @@ import { changeRequiresRestart } from "../config/metadata";
 import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
-import { fadeOutForFinish, isTestPageMounted } from "./test-page-bridge";
+import { isTestPageMounted } from "./test-page-bridge";
 import { configEvent } from "../events/config";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
 import { Mode } from "@monkeytype/schemas/shared";
-import {
-  CompletedEvent,
-  CompletedEventCustomText,
-} from "@monkeytype/schemas/results";
+import { CompletedEvent } from "@monkeytype/schemas/results";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
@@ -127,13 +106,7 @@ import { tryCatch } from "@monkeytype/util/trycatch";
 import * as Sentry from "../sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { canQuickRestart } from "../utils/quick-restart";
-import {
-  ResultDetails,
-  setResultShown,
-  resultState,
-  setResultState,
-  setCrownType,
-} from "../states/result";
+import { ResultDetails, setResultState, setCrownType } from "../states/result";
 import { blurInputElement } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
@@ -141,29 +114,13 @@ import { Config, getConfig } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import { buildEventLog } from "./engine/events/data";
 import {
-  getKeypressDurations,
-  getChars,
-  getBurstHistory,
-  getLastKeypressToEndMs,
-  getStartToFirstKeypressMs,
-  getTestDurationMs,
-  getAccuracy,
-  getKeypressOverlap,
-  getErrorCountHistory,
-  getWpmHistory,
-  getAfkDuration,
   getIncompleteTestSeconds,
-  getDateBasedTestDurationMs,
   getInputHistory,
-  getKeypressesPerSecond,
-  getKeypressSpacing,
 } from "./engine/events/stats";
 import { getLiveCachedAccuracy } from "./engine/events/live-cache";
-import { calculateWpm } from "../utils/numbers";
-import { EventLog } from "./engine/events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
-import { appendRenderedWord, resetWordsRender } from "../states/words-render";
+import { appendRenderedWord } from "../states/words-render";
 
 let slowTimerNotificationIds: number[] = [];
 
@@ -193,7 +150,7 @@ export function startTest(now: number): boolean {
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   void TestTimer.start(now, {
-    onFinish: () => void finish(),
+    onFinish: () => finish(),
     onFail: fail,
   });
   setFocusMode(true);
@@ -229,7 +186,7 @@ function resetTestState(): void {
  * test page). Ignores the no_quit funbox.
  */
 export function stop(): void {
-  if (getTestPhase() === "restarting" || isResultCalculating()) return;
+  if (isTestRestarting() || isResultPending()) return;
 
   if (isTestActive()) recordIncompleteTest();
   resetTestState();
@@ -277,7 +234,7 @@ export async function restartTest(
 }
 
 function requestRestart(options: RestartRequestOptions): void {
-  const restarting = getTestPhase() === "restarting";
+  const restarting = isTestRestarting();
   if (restarting || untrack(isRestartAnimating)) {
     options.event?.preventDefault();
     if (!(options.settingsChanged ?? false)) return;
@@ -299,7 +256,7 @@ function requestRestart(options: RestartRequestOptions): void {
     return;
   }
 
-  if (isResultCalculating()) {
+  if (isResultPending()) {
     options.event?.preventDefault();
     return;
   }
@@ -423,8 +380,8 @@ async function prepareRestart(token: number): Promise<void> {
 }
 
 // Changing a test setting restarts the test: one restart, however many
-// change (a preset applies them in one batch). T7: moves into the engine with
-// the request steps above.
+// change (a preset applies them in one batch). Moves into the engine with the
+// request steps above (no roadmap row yet).
 createRoot(() => {
   for (const key of TEST_SETTINGS_KEYS) {
     // serialized, so changes inside arrays (funbox, quote length) count
@@ -755,310 +712,68 @@ export async function addWord(): Promise<void> {
   }
 }
 
-let retrySavingEvent: CompletedEvent | null = null;
-
-export async function retrySavingResult(): Promise<void> {
-  const completedEvent = retrySavingEvent;
-
-  if (completedEvent === null) {
-    showNoticeNotification(
-      "Could not retry saving the result as the result no longer exists.",
-      {
-        durationMs: 5000,
-        important: true,
-      },
-    );
-
-    return;
-  }
-
-  if (!resultState.canRetrySaving) {
-    return;
-  }
-
-  setResultState("canRetrySaving", false);
-
-  showNoticeNotification("Retrying to save...");
-
-  await saveResult(completedEvent, true);
-}
-
-function buildCompletedEvent(eventLog: EventLog): CompletedResult {
-  const chars = getChars(eventLog);
-
-  //tags
-  const activeTagsIds: string[] = getActiveTags().map((tag) => tag._id);
-
-  let language = getTestSettings().language;
-  if (getTestSettings().mode === "quote") {
-    language = Strings.removeLanguageSize(getTestSettings().language);
-  }
-
-  let customText: CompletedEventCustomText | undefined = undefined;
-  if (getTestSettings().mode === "custom") {
-    const temp = getTestSettings().customText;
-    customText = {
-      textLen: temp.text.length,
-      mode: temp.mode,
-      pipeDelimiter: temp.pipeDelimiter,
-      limit: { ...temp.limit },
-    };
-  }
-
-  let duration = getTestDurationMs(eventLog) / 1000;
-
-  const rawPerSecond = getBurstHistory(eventLog);
-  const afkDuration = getAfkDuration(eventLog);
-  const stddev = Numbers.stdDev(rawPerSecond);
-  const avg = Numbers.mean(rawPerSecond);
-  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
-  if (!consistency || isNaN(consistency)) {
-    consistency = 0;
-  }
-
-  const keypressSpacing = getKeypressSpacing(eventLog);
-
-  let keyConsistencyArray = [...keypressSpacing];
-  if (keypressSpacing.length > 0) {
-    keyConsistencyArray = keyConsistencyArray.slice(
-      0,
-      keyConsistencyArray.length - 1,
-    );
-  }
-  const keyStddev = Numbers.stdDev(keyConsistencyArray);
-  const keyAvg = Numbers.mean(keyConsistencyArray);
-  let keyConsistency = Numbers.roundTo2(Numbers.kogasa(keyStddev / keyAvg));
-  if (!keyConsistency || isNaN(keyConsistency)) {
-    keyConsistency = 0;
-  }
-
-  const wpmHistory = getWpmHistory(eventLog);
-  const wpmCons = Numbers.roundTo2(
-    Numbers.kogasa(Numbers.stdDev(wpmHistory) / Numbers.mean(wpmHistory)),
-  );
-  const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
-
-  const chartData = {
-    wpm: wpmHistory,
-    burst: rawPerSecond,
-    err: getErrorCountHistory(eventLog),
-  };
-
-  const currentQuote = getCurrentQuote();
-  const completedEvent: CompletedResult = {
-    wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
-    rawWpm: Numbers.roundTo2(
-      calculateWpm(chars.allCorrect + chars.incorrect + chars.extra, duration),
-    ),
-    charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
-    charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage ?? 0),
-    language: language,
-    testDuration: duration,
-    lastKeyToEnd: getLastKeypressToEndMs(eventLog),
-    startToFirstKey: getStartToFirstKeypressMs(eventLog),
-    afkDuration: afkDuration,
-    quoteLength: currentQuote?.group ?? -1,
-    customText: customText,
-    tags: activeTagsIds,
-    punctuation: getTestSettings().punctuation,
-    numbers: getTestSettings().numbers,
-    lazyMode: getTestSettings().lazyMode,
-    timestamp: Date.now(),
-    mode: getTestSettings().mode,
-    mode2: Misc.getMode2(getTestSettings(), currentQuote),
-    bailedOut: getTestEnd()?.type === "bailedOut",
-    funbox: [...getTestSettings().funbox],
-    difficulty: getTestSettings().difficulty,
-    blindMode: Config.blindMode,
-    stopOnLetter: getTestSettings().stopOnError === "letter",
-    restartCount: getRestartCount(),
-    incompleteTests: getIncompleteTests(),
-    incompleteTestSeconds:
-      getIncompleteSeconds() < 0 ? 0 : Numbers.roundTo2(getIncompleteSeconds()),
-
-    consistency: consistency,
-    wpmConsistency: wpmConsistency,
-    keyConsistency: keyConsistency,
-    chartData: chartData,
-
-    keySpacing: keypressSpacing,
-    keyDuration: getKeypressDurations(eventLog),
-    keyOverlap: getKeypressOverlap(eventLog),
-  };
-
-  if (completedEvent.mode !== "custom") delete completedEvent.customText;
-  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
-
-  return completedEvent;
-}
-
 /** Ends the test: completed by default, or bailed out / failed (see fail()). */
-export async function finish(
-  end: TestEnd = { type: "completed" },
-): Promise<void> {
+export function finish(end: TestEnd = { type: "completed" }): void {
   if (!isTestActive()) return;
-  Engine.recordEnd(end);
-  const bailedOut = end.type === "bailedOut";
-  const failReason = end.type === "failed" ? end.reason : null;
-  setResultCalculating(true);
-  const now = performance.now();
-  TestTimer.clear(true, now);
-
-  // fade out the test and show loading
-  // because the css animation has a delay,
-  // if the test calculation is fast the loading will not show
-  await fadeOutForFinish();
-  setTypingTestHidden(true);
-  setResultLoading(true);
-  await Misc.sleep(0); //allow ui update
-
-  setTestFocusState("focused");
-
+  // a repeated quote counts
   if (isRepeated() && getTestSettings().mode === "quote") {
     setIsRepeated(false);
   }
+  setTestFocusState("focused");
+  Engine.finish(end);
+}
 
-  const eventLog = Engine.finish();
+const sarcasticMessages = [
+  "Congratulations. You just wasted {time} seconds of your life by typing nothing. Be proud of yourself.",
+  "Bravo! You've managed to waste {time} seconds and accomplish exactly zero. A true productivity icon.",
+  "That was {time} seconds of absolutely legendary idleness. History will remember this moment.",
+  "Wow, {time} seconds of typing... nothing. Bold. Mysterious. Completely useless.",
+  "Thank you for those {time} seconds of utter nothingness. The keyboard needed the break.",
+  "A breathtaking display of inactivity. {time} seconds of absolutely nothing. Powerful.",
+  "You just gave {time} seconds of your life to the void. And the void says thanks.",
+  "Stunning. {time} seconds of intense... whatever that wasn't. Keep it up, champ.",
+  "Is it performance art? A protest? Or just {time} seconds of glorious nothing? We may never know.",
+  "You typed nothing for {time} seconds. And in that moment, you became legend.",
+];
+
+/**
+ * The engine published a finished test's result: everything but showing it
+ * (TestPage shows it once the words faded out). Notifications, incomplete
+ * tests, long custom text progress, today's time, the crown and tag pbs,
+ * starting the save.
+ */
+function onResult({
+  completedEvent: ce,
+  malformed,
+  check,
+  afkDetected,
+  end,
+  eventLog,
+}: ResultData): void {
+  const bailedOut = end.type === "bailedOut";
+  const failReason = end.type === "failed" ? end.reason : null;
   const difficultyFailed = failReason !== null;
-  const ce = buildCompletedEvent(eventLog);
   PaceCaret.setLastTestWpm(ce.wpm);
 
   console.debug("Completed event object", ce);
 
-  function countUndefined(input: unknown): number {
-    if (typeof input === "number") {
-      return isNaN(input) ? 1 : 0;
-    } else if (typeof input === "undefined") {
-      return 1;
-    } else if (typeof input === "object" && input !== null) {
-      return Object.values(input).reduce(
-        (a, b) => (a + countUndefined(b)) as number,
-        0,
-      ) as number;
-    } else {
-      return 0;
-    }
-  }
-
-  let dontSave = false;
-  // T6c: the engine returns validity with its result
-  let invalid = false;
-
-  if (countUndefined(ce) > 0) {
+  if (malformed) {
     console.log(ce);
     showErrorNotification(
       "Failed to build result object: One of the fields is undefined or NaN",
     );
-    dontSave = true;
   }
-
-  const completedEvent = structuredClone(ce) as CompletedEvent;
-
-  batch(() => {
-    publishFrozenLog();
-    setLastResult(structuredClone(completedEvent));
-  });
-
-  ///////// completed event ready
-
-  //afk check
-  let afkDetected = getKeypressesPerSecond(eventLog)
-    .slice(-5)
-    .every((kps) => kps === 0);
-  if (bailedOut) afkDetected = false;
-
-  const mode2Number = parseInt(completedEvent.mode2);
-
-  let tooShort = false;
-  //fail checks
-  const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
-  if (
-    getTestSettings().mode === "time" &&
-    !bailedOut &&
-    (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
-    ce.testDuration <= 120
-  ) {
-    showNoticeNotification("Test invalid - inconsistent test duration");
-    console.error("Test duration inconsistent", ce.testDuration, dateDur);
-    invalid = true;
-    dontSave = true;
-  } else if (difficultyFailed) {
+  if (check === "failed") {
     showNoticeNotification(`Test failed - ${failReason}`, {
       durationMs: 1000,
     });
-    dontSave = true;
-  } else if (
-    completedEvent.testDuration < 1 ||
-    (getTestSettings().mode === "time" &&
-      mode2Number < 15 &&
-      mode2Number > 0) ||
-    (getTestSettings().mode === "time" &&
-      mode2Number === 0 &&
-      completedEvent.testDuration < 15) ||
-    (getTestSettings().mode === "words" &&
-      mode2Number < 10 &&
-      mode2Number > 0) ||
-    (getTestSettings().mode === "words" &&
-      mode2Number === 0 &&
-      completedEvent.testDuration < 15) ||
-    (getTestSettings().mode === "custom" &&
-      (getTestSettings().customText.limit.mode === "word" ||
-        getTestSettings().customText.limit.mode === "section") &&
-      getTestSettings().customText.limit.value < 10) ||
-    (getTestSettings().mode === "custom" &&
-      getTestSettings().customText.limit.mode === "time" &&
-      getTestSettings().customText.limit.value < 15) ||
-    (getTestSettings().mode === "zen" && completedEvent.testDuration < 15)
-  ) {
-    showNoticeNotification("Test invalid - too short");
-    invalid = true;
-    tooShort = true;
-    dontSave = true;
-  } else if (afkDetected) {
-    showNoticeNotification("Test invalid - AFK detected");
-    invalid = true;
-    dontSave = true;
-  } else if (isRepeated()) {
-    showNoticeNotification("Test invalid - repeated");
-    invalid = true;
-    dontSave = true;
-  } else if (
-    completedEvent.wpm < 0 ||
-    (completedEvent.wpm > 350 &&
-      completedEvent.mode !== "words" &&
-      completedEvent.mode2 !== "10") ||
-    (completedEvent.wpm > 420 &&
-      completedEvent.mode === "words" &&
-      completedEvent.mode2 === "10")
-  ) {
-    showNoticeNotification("Test invalid - wpm");
-    invalid = true;
-    dontSave = true;
-  } else if (
-    completedEvent.rawWpm < 0 ||
-    (completedEvent.rawWpm > 350 &&
-      completedEvent.mode !== "words" &&
-      completedEvent.mode2 !== "10") ||
-    (completedEvent.rawWpm > 420 &&
-      completedEvent.mode === "words" &&
-      completedEvent.mode2 === "10")
-  ) {
-    showNoticeNotification("Test invalid - raw");
-    invalid = true;
-    dontSave = true;
-  } else if (
-    (!getUserData()?.lbOptOut &&
-      (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
-    (getUserData()?.lbOptOut === true &&
-      (completedEvent.acc < 50 || completedEvent.acc > 100))
-  ) {
-    showNoticeNotification("Test invalid - accuracy");
-    invalid = true;
-    dontSave = true;
+  } else if (check !== "ok") {
+    showNoticeNotification(`Test invalid - ${invalidMessages[check]}`);
   }
+  let dontSave = malformed || check !== "ok";
+  const invalid = check !== "ok" && check !== "failed";
 
-  // test is valid
+  const completedEvent = structuredClone(ce) as CompletedEvent;
 
   if (isRepeated() || difficultyFailed) {
     if (Config.resultSaving) {
@@ -1122,10 +837,7 @@ export async function finish(
   TodayTracker.addSeconds(
     completedEvent.testDuration - completedEvent.afkDuration,
   );
-  setResultState("timeToday", TodayTracker.getString());
 
-  let savingResultPromise: ReturnType<typeof saveResult> =
-    Promise.resolve(null);
   const user = getAuthenticatedUser();
   if (user !== null) {
     // logged in
@@ -1141,11 +853,12 @@ export async function finish(
 
       completedEvent.uid = user.uid;
 
-      savingResultPromise = saveResult(completedEvent, false);
-      void savingResultPromise.then((response) => {
-        if (response?.status === 200) {
+      Engine.save(async (isRetrying) => {
+        const outcome = await saveResult(completedEvent, isRetrying);
+        if (outcome.saved && !isRetrying) {
           void AnalyticsController.log("testCompleted");
         }
+        return outcome;
       });
     }
   } else {
@@ -1158,72 +871,42 @@ export async function finish(
     dontSave = true;
   }
 
-  const resultUpdatePromise = showResult(completedEvent, dontSave, {
+  const details: ResultDetails = {
     difficultyFailed,
     failReason: failReason ?? "",
     afkDetected,
     isRepeated: isRepeated(),
-    tooShort,
+    tooShort: check === "tooShort",
     invalid,
     stopOnError: getTestSettings().stopOnError,
     deleteOnError: Config.deleteOnError,
     quote: getTestSettings().mode === "quote" ? getCurrentQuote() : null,
-  });
+  };
 
-  await Promise.all([savingResultPromise, resultUpdatePromise]);
-}
-
-const sarcasticMessages = [
-  "Congratulations. You just wasted {time} seconds of your life by typing nothing. Be proud of yourself.",
-  "Bravo! You've managed to waste {time} seconds and accomplish exactly zero. A true productivity icon.",
-  "That was {time} seconds of absolutely legendary idleness. History will remember this moment.",
-  "Wow, {time} seconds of typing... nothing. Bold. Mysterious. Completely useless.",
-  "Thank you for those {time} seconds of utter nothingness. The keyboard needed the break.",
-  "A breathtaking display of inactivity. {time} seconds of absolutely nothing. Powerful.",
-  "You just gave {time} seconds of your life to the void. And the void says thanks.",
-  "Stunning. {time} seconds of intense... whatever that wasn't. Keep it up, champ.",
-  "Is it performance art? A protest? Or just {time} seconds of glorious nothing? We may never know.",
-  "You typed nothing for {time} seconds. And in that moment, you became legend.",
-];
-
-async function showResult(
-  result: CompletedEvent,
-  dontSave: boolean,
-  details: ResultDetails,
-): Promise<void> {
-  closeResultWords();
-  Replay.resetReplay();
-  blurInputElement();
-
-  if (!isOnline()) {
-    showOfflineBanner();
-  }
-
-  const pbEligibility = getPbEligibility(result, dontSave);
-  updateCrown(result, pbEligibility);
+  const pbEligibility = getPbEligibility(completedEvent, dontSave);
+  updateCrown(completedEvent, pbEligibility);
   setResultState({
     details,
-    tags: getResultTags(result, pbEligibility),
+    tags: getResultTags(completedEvent, pbEligibility),
     resultId: "",
     dailyLeaderboardRank: undefined,
-    canRetrySaving: false,
   });
 
   if (getGlarsesMode()) {
     console.log(
-      `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`,
+      `Test Completed: ${completedEvent.wpm} wpm ${completedEvent.acc}% acc ${completedEvent.rawWpm} raw ${completedEvent.consistency}% consistency`,
     );
   }
 
   if (
-    result.wpm === 0 &&
-    !details.difficultyFailed &&
-    result.testDuration >= 5 &&
+    completedEvent.wpm === 0 &&
+    !difficultyFailed &&
+    completedEvent.testDuration >= 5 &&
     getSarcasticResultMessage()
   ) {
     const message = Arrays.randomElementFromArray(sarcasticMessages).replace(
       "{time}",
-      Math.round(result.testDuration).toString(),
+      Math.round(completedEvent.testDuration).toString(),
     );
     showConfetti();
     showNoticeNotification(message, {
@@ -1232,46 +915,46 @@ async function showResult(
       important: true,
     });
   }
-
-  setFocusMode(false);
-
-  const canQuickRestartTest = canQuickRestart(
-    getTestSettings().mode,
-    getTestSettings().words,
-    getTestSettings().time,
-    getTestSettings().customText,
-    getCustomTextIndicator()?.isLong ?? false,
-  );
-  if (
-    Config.alwaysShowWordsHistory &&
-    canQuickRestartTest &&
-    !getGlarsesMode()
-  ) {
-    toggleResultWords(true);
-  }
-  void Funbox.clear();
-
-  setResultLoading(false);
-  setResultShown(true);
-
-  void AdController.renderResult();
-  setResultCalculating(false);
-  // the result is shown: free the test words DOM
-  resetWordsRender();
 }
+
+const invalidMessages: Record<
+  Exclude<ResultDataCheck, "ok" | "failed">,
+  string
+> = {
+  inconsistentDuration: "inconsistent test duration",
+  tooShort: "too short",
+  afk: "AFK detected",
+  repeated: "repeated",
+  wpm: "wpm",
+  raw: "raw",
+  accuracy: "accuracy",
+};
+
+createRoot(() => {
+  createEffect(
+    on(
+      getResultData,
+      (result) => {
+        if (result !== null) onResult(result);
+      },
+      { defer: true },
+    ),
+  );
+});
 
 async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
-): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
+): Promise<Engine.SaveOutcome> {
   if (!Config.resultSaving) {
     showErrorNotification("Result not saved: disabled by user", {
       durationMs: 3000,
       customTitle: "Notice",
       important: true,
     });
-    return null;
+    return { saved: false, canRetry: false };
   }
+  if (isRetrying) showNoticeNotification("Retrying to save...");
 
   const result = structuredClone(completedEvent);
 
@@ -1292,12 +975,7 @@ async function saveResult(
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
-    if (![460, 461, 463, 464, 465, 466].includes(response.status)) {
-      setResultState("canRetrySaving", true);
-      if (!isRetrying) {
-        retrySavingEvent = result;
-      }
-    }
+    const canRetry = ![460, 461, 463, 464, 465, 466].includes(response.status);
     console.log("Error saving result", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
@@ -1310,7 +988,7 @@ async function saveResult(
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
     showErrorNotification("Failed to save result", { response });
-    return response;
+    return { saved: false, canRetry };
   }
 
   const data = response.body.data;
@@ -1366,15 +1044,12 @@ async function saveResult(
     showErrorCrownIfNeeded();
   }
 
-  setResultState({
-    dailyLeaderboardRank: data.dailyLeaderboardRank,
-    canRetrySaving: false,
-  });
+  setResultState("dailyLeaderboardRank", data.dailyLeaderboardRank);
   if (isRetrying) {
     showSuccessNotification("Result saved", { important: true });
   }
   saveLocalResult(localDataToSave);
-  return response;
+  return { saved: true };
 }
 
 export function fail(reason: string): void {
@@ -1388,7 +1063,7 @@ export function fail(reason: string): void {
       ),
     );
   }
-  void finish({ type: "failed", reason });
+  finish({ type: "failed", reason });
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
@@ -1418,7 +1093,7 @@ const debouncedZipfCheck = debounce(250, async () => {
 });
 
 export function onRestartButtonClick(): void {
-  if (isResultCalculating()) return;
+  if (isResultPending()) return;
   if (
     isTestActive() &&
     Config.repeatQuotes === "typing" &&

@@ -60,7 +60,6 @@ vi.mock("../../../../src/ts/test/engine/test-settings", async () => {
 
 vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
-  isResultCalculating: () => false,
 }));
 
 vi.mock("../../../../src/ts/test/engine/state", () => ({

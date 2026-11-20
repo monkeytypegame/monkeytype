@@ -107,8 +107,11 @@ import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
 import { canStartTest } from "../../src/ts/states/router";
-import { setResultCalculating } from "../../src/ts/states/test";
-import { isTestActive, setTestPhase } from "../../src/ts/test/engine/state";
+import {
+  isTestActive,
+  setResultData,
+  setTestPhase,
+} from "../../src/ts/test/engine/state";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
@@ -548,7 +551,8 @@ export type TestControls = {
   type: () => void;
   isRunning: () => boolean;
   setRestarting: (restarting: boolean) => void;
-  setResultCalculating: (calculating: boolean) => void;
+  /** Finished, the result not built yet. */
+  setResultPending: (pending: boolean) => void;
   /** Activates the no quit funbox. */
   enableNoQuit: () => void;
 };
@@ -562,7 +566,10 @@ const testControls: TestControls = {
   isRunning: () => isTestActive(),
   setRestarting: (restarting) =>
     setTestPhase(restarting ? "restarting" : "idle"),
-  setResultCalculating: (calculating) => setResultCalculating(calculating),
+  setResultPending: (pending) => {
+    setResultData(null);
+    setTestPhase(pending ? "finished" : "idle");
+  },
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
 
@@ -758,7 +765,6 @@ export function cleanupApp(): void {
   setPreloading(true);
   resetLoadingBar();
   setTestPhase("idle");
-  setResultCalculating(false);
   configTesting.replaceConfig({});
   userTesting.setUser(undefined);
   for (const name of ["results", "friends"] as const) {

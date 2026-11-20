@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import { createMemo, JSXElement, Match, onMount, Show, Switch } from "solid-js";
+import { JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
@@ -8,15 +8,11 @@ import { getUserData } from "../../../../queries/user";
 import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
-import { resultState } from "../../../../states/result";
-import { getLastResult } from "../../../../states/test";
-import { getFrozenLog } from "../../../../test/engine/state";
-import { restartTest, retrySavingResult } from "../../../../test/test-logic";
+import * as Engine from "../../../../test/engine/commands";
+import { getResultData, getSaveStatus } from "../../../../test/engine/state";
+import { restartTest } from "../../../../test/test-logic";
 import { cn } from "../../../../utils/cn";
-import {
-  applyReducedMotion,
-  scrollToCenterOrTop,
-} from "../../../../utils/misc";
+import { scrollToCenterOrTop } from "../../../../utils/misc";
 import { AdIcon } from "../../../common/AdIcon";
 import { adSlotClass, adSlotRef } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
@@ -34,28 +30,17 @@ const INTERACTIVE_SELECTOR =
   'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
 
 export function TestResult(props: {
-  /** the result element: TestPage fades it out on restart */
+  /** the result element: TestPage fades it in, and out on restart */
   ref?: (el: HTMLDivElement) => void;
 }): JSXElement {
   let prefocusRef: HTMLDivElement | undefined;
 
   onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
-  const lastTest = createMemo(() => {
-    const result = getLastResult();
-    const eventLog = getFrozenLog();
-    return result !== null && eventLog !== null ? { result, eventLog } : null;
-  });
-
   const [resultRef, resultEl] = useRefWithUtils<HTMLDivElement>();
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-
-    void el.promiseAnimate({
-      opacity: [0, 1],
-      duration: applyReducedMotion(125),
-    });
     scrollToCenterOrTop(el.native);
   });
 
@@ -81,7 +66,7 @@ export function TestResult(props: {
         </div>
       </Show>
       <Show
-        when={lastTest()}
+        when={getResultData()}
         fallback={
           <>
             <div class="mx-auto">Missing last test result data.</div>
@@ -99,15 +84,15 @@ export function TestResult(props: {
             <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
                 <ResultChart
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
               </div>
-              <ResultSecondaryStats result={test().result} />
+              <ResultSecondaryStats result={test().completedEvent} />
               <ResultWordsHistory eventLog={test().eventLog} />
               <ResultReplay />
               <RetrySavingButton />
@@ -144,13 +129,18 @@ function LoginPrompt(): JSXElement {
 
 function RetrySavingButton(): JSXElement {
   return (
-    <Show when={resultState.canRetrySaving}>
+    <Show
+      when={(() => {
+        const status = getSaveStatus();
+        return status.state === "failed" && status.canRetry;
+      })()}
+    >
       <div class="grid w-full justify-center">
         <Button
           type="button"
           class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
           id="retrySavingResultButton"
-          onClick={() => void retrySavingResult()}
+          onClick={() => Engine.retrySave()}
           text="Retry saving result"
           fa={{ icon: "fa-redo" }}
         />

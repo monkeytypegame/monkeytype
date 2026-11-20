@@ -7,7 +7,7 @@ import { getRoutePage } from "../../states/router";
 import { hotkeys, quickRestartHotkeyMap } from "../../states/hotkeys";
 import { createHotkey } from "./utils";
 import { getConfig } from "../../config/store";
-import { isLongTest } from "../../states/test";
+import { isLongTest } from "../../test/engine/test-settings";
 import { wordsHaveNewline, wordsHaveTab } from "../../test/engine/state";
 
 function quickRestart(e: KeyboardEvent): void {

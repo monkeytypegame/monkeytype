@@ -368,7 +368,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         allWordsGenerated: areAllWordsGenerated(),
       })
     ) {
-      void TestLogic.finish();
+      TestLogic.finish();
     }
   }
 }

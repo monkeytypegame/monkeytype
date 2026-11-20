@@ -1,5 +1,6 @@
 import {
   createEffect,
+  createSignal,
   JSXElement,
   on,
   onCleanup,
@@ -14,50 +15,51 @@ import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
+import { blurInputElement } from "../../../input/input-element";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
 import { getCustomTextIndicator } from "../../../states/core";
+import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import { isResultShown, setResultShown } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
   isLayoutfluidTimerVisible,
-  isResultLoading,
   isResultScreen,
   isTestInitFailed,
-  isTypingTestHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
   setFocusMode,
   setLayoutfluidTimerVisible,
   setRestartAnimating,
-  setTypingTestHidden,
   setWordsInputPosition,
   setTestFocusState,
 } from "../../../states/test";
-import { replaceWords } from "../../../states/words-render";
+import { replaceWords, resetWordsRender } from "../../../states/words-render";
 import * as CustomText from "../../../test/custom-text";
 import {
   getActiveWordIndex,
   getRestartOptions,
   getTestId,
-  getTestPhase,
+  getResultData,
+  isTestRestarting,
   isTestActive,
+  isTestFinished,
 } from "../../../test/engine/state";
 import { getTestSettings } from "../../../test/engine/test-settings";
 import * as TestWords from "../../../test/engine/test-words";
+import * as Funbox from "../../../test/funbox/funbox";
 import {
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
 } from "../../../test/test-logic";
+import { markTestPageMounted } from "../../../test/test-page-bridge";
 import {
-  focusWordsEvent,
-  markTestPageMounted,
-  registerFinishFadeOut,
-} from "../../../test/test-page-bridge";
+  closeResultWords,
+  toggleResultWords,
+} from "../../../test/words-history";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
@@ -65,6 +67,7 @@ import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
+import { focusWordsEvent } from "./focus-words";
 import { FunboxTimer } from "./FunboxTimer";
 import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
@@ -75,6 +78,7 @@ import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
+import * as Replay from "./result/replay";
 import * as ResultWordHighlight from "./result/result-word-highlight";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
@@ -180,21 +184,84 @@ export function TestPage(): JSXElement {
       duration: noAnim ? 0 : Misc.applyReducedMotion(125),
     });
   };
-  // T6c: the finish fade-out follows the phase here
-  onCleanup(
-    registerFinishFadeOut(async (duration) => {
-      if (typingTestRef === undefined) return;
-      await Misc.promiseAnimate(typingTestRef, { opacity: 0, duration });
-    }),
+  // Finish display: on finish the words fade out, then the result fades in.
+  // Rendering the result runs on the main thread: a spinner painted first
+  // (CSS, shown after a delay) keeps animating while it's slow. The engine
+  // has built the result during the fade-out; if not, the spinner waits for it.
+  let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
+  // what's shown: the test, the spinner (from the words' fade-out until the
+  // result renders) or the result
+  const [getDisplay, setDisplay] = createSignal<"test" | "spinner" | "result">(
+    "test",
   );
+  const isSpinnerShown = (): boolean => getDisplay() === "spinner";
+  const isTestShown = (): boolean => getDisplay() === "test";
+  const isResultShown = (): boolean => getDisplay() === "result";
+
+  const fadeOutForFinish = async (): Promise<void> => {
+    finishDisplay = "out";
+    await fade(typingTestRef, "out", false);
+    if (finishDisplay !== "out" || !isStillFinished()) return;
+    finishDisplay = "spinner";
+    setDisplay("spinner");
+    // after the spinner is painted
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => setTimeout(resolve, 0)),
+    );
+    if (finishDisplay !== "spinner" || !isStillFinished()) return;
+    finishDisplay = "waiting";
+    await showResultWhenBuilt();
+  };
+
+  const showResultWhenBuilt = async (): Promise<void> => {
+    if (finishDisplay !== "waiting" || untrack(getResultData) === null) return;
+    finishDisplay = "idle";
+    showResult();
+    await fade(resultRef, "in", false);
+  };
+
+  /** False once a restart began: it shows the new test instead. */
+  const isStillFinished = (): boolean => {
+    if (untrack(isTestFinished)) return true;
+    finishDisplay = "idle";
+    return false;
+  };
+
+  /** Shows the result while it's still transparent. */
+  const showResult = (): void => {
+    closeResultWords();
+    Replay.resetReplay();
+    if (!isOnline()) showOfflineBanner();
+    setFocusMode(false);
+    if (
+      Config.alwaysShowWordsHistory &&
+      canQuickRestart(
+        getTestSettings().mode,
+        getTestSettings().words,
+        getTestSettings().time,
+        getTestSettings().customText,
+        getCustomTextIndicator()?.isLong ?? false,
+      ) &&
+      !getGlarsesMode()
+    ) {
+      toggleResultWords(true);
+    }
+    void Funbox.clear();
+    // fade sets the opacity before the result can paint
+    setDisplay("result");
+    // the test's input lets go of the focus
+    blurInputElement();
+    void AdController.renderResult();
+    // the result is shown: free the test words DOM
+    resetWordsRender();
+  };
 
   /**
    * Shows the restarted test while hidden. Outside effects and batches:
    * replaceWords measures the new words as they render.
    */
   const showNewTest = (): void => {
-    setResultShown(false);
-    setTypingTestHidden(false);
+    setDisplay("test");
     setWordsInputPosition((position) => ({ ...position, left: 0 }));
     setFocusMode(false);
     setLayoutfluidTimerVisible(false);
@@ -242,7 +309,7 @@ export function TestPage(): JSXElement {
   };
 
   const swapInRestartedTest = async (): Promise<void> => {
-    if (display !== "waiting" || untrack(getTestPhase) === "restarting") {
+    if (display !== "waiting" || untrack(isTestRestarting)) {
       return;
     }
     display = "in";
@@ -273,11 +340,23 @@ export function TestPage(): JSXElement {
   };
 
   createEffect(
-    on(getTestPhase, (phase) => {
-      if (phase !== "restarting") return;
+    on(isTestFinished, (finished, wasFinished) => {
+      if (finished && wasFinished === false) void fadeOutForFinish();
+    }),
+  );
+  createEffect(
+    on(isTestRestarting, (restarting) => {
+      if (!restarting) return;
       // already fading out or waiting: it shows the latest restart
       if (display === "out" || display === "waiting") return;
       void fadeOutForRestart();
+    }),
+  );
+  // the result was built after the spinner showed: render it, outside the
+  // effect (test-logic has set the result's own state by then)
+  createEffect(
+    on(getResultData, () => queueMicrotask(() => void showResultWhenBuilt()), {
+      defer: true,
     }),
   );
   // the restart committed a new test
@@ -292,6 +371,7 @@ export function TestPage(): JSXElement {
   );
   onCleanup(() => {
     display = "idle";
+    finishDisplay = "idle";
     setRestartAnimating(false);
   });
 
@@ -330,7 +410,7 @@ export function TestPage(): JSXElement {
         class={cn("content-grid", {
           content: getConfig.maxLineWidth === 0,
           "full-width-padding": getConfig.maxLineWidth !== 0,
-          hidden: isTestInitFailed() || isTypingTestHidden(),
+          hidden: isTestInitFailed() || !isTestShown(),
         })}
         style={{
           "max-width": isFullWidth() ? "100%" : `${getConfig.maxLineWidth}ch`,
@@ -413,8 +493,11 @@ export function TestPage(): JSXElement {
       <Show when={isTestInitFailed()}>
         <TestInitFailed />
       </Show>
-      <Show when={isResultLoading()}>
-        <div class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0">
+      <Show when={isSpinnerShown()}>
+        <div
+          class="animate-[fadeIn_0.125s_ease_0.5s_forwards] text-center text-[2rem] opacity-0"
+          data-ui-element="resultSpinner"
+        >
           <LoadingCircle />
         </div>
       </Show>

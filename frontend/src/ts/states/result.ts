@@ -7,7 +7,7 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { showSuccessNotification } from "./notifications";
 
 /**
- * State of the result screen that can't be derived from getLastResult() / getFrozenLog().
+ * State of the result screen that can't be derived from getResultData().
  * The test engine (test/test-logic) is still vanilla and writes here.
  */
 
@@ -45,8 +45,6 @@ type ResultState = {
   // id of the saved result, empty until the server accepts it
   resultId: string;
   dailyLeaderboardRank?: number;
-  canRetrySaving: boolean;
-  timeToday: string;
   crown: {
     visible: boolean;
     type: CrownType;
@@ -59,8 +57,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
   details: null,
   tags: [],
   resultId: "",
-  canRetrySaving: false,
-  timeToday: "",
   crown: {
     visible: false,
     type: "normal",
@@ -68,10 +64,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
     wide: false,
   },
 });
-
-// visibility of the #result element, set once the result is built. Fade in/out
-// is still animated imperatively. Whether the test has ended: isResultScreen()
-export const [isResultShown, setResultShown] = createSignal(false);
 
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });

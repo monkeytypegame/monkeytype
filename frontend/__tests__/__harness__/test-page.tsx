@@ -36,7 +36,9 @@
  *   an IME. Both end with a frame, so the words are rendered: pass
  *   `{ flush: false }` to check before it (input never renders synchronously).
  * - Reading: `word(i).letters()` / `word(i).state`, `phase()`, `liveStats()`,
- *   `caret()` / `paceCaret()` (shown, and the pace caret's target letter).
+ *   `caret()` / `paceCaret()` (shown, and the pace caret's target letter),
+ *   `resultScreen()` (result or spinner). `holdResult()` makes the next
+ *   result build wait for `releaseResult()`, as a slow one.
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
  * - Mocked: firebase (signed out, so a finished test isn't saved), the theme
@@ -70,13 +72,14 @@ import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
-import {
-  isResultCalculating,
-  isResultScreen,
-  isRestartAnimating,
-} from "../../src/ts/states/test";
+import { isResultScreen, isRestartAnimating } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
-import { getTestPhase, liveStats } from "../../src/ts/test/engine/state";
+import {
+  isResultPending,
+  isTestActive,
+  isTestRestarting,
+  liveStats,
+} from "../../src/ts/test/engine/state";
 import { getTestSettings } from "../../src/ts/test/engine/test-settings";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 import { restartTest } from "../../src/ts/test/test-logic";
@@ -138,6 +141,24 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 }));
 // draws on a canvas, which jsdom lacks
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
+// holdResult(): the engine's result build waits until releaseResult()
+const resultBuild = vi.hoisted(() => ({
+  held: false,
+  waiting: [] as (() => void)[],
+}));
+vi.mock("../../src/ts/test/engine/after-paint", async (importOriginal) => {
+  const { afterPaint } =
+    await importOriginal<
+      typeof import("../../src/ts/test/engine/after-paint")
+    >();
+  return {
+    afterPaint: (fn: () => void) =>
+      afterPaint(() => {
+        if (resultBuild.held) resultBuild.waiting.push(fn);
+        else fn();
+      }),
+  };
+});
 
 export type PagePhase = "ready" | "active" | "finished" | "restarting";
 
@@ -186,6 +207,11 @@ export type TestPageHarness = {
     acc?: number;
     seconds?: number;
   };
+  /** What the result screen shows: the result, or the spinner meanwhile. */
+  resultScreen: () => { result: boolean; spinner: boolean };
+  /** Holds the next result build (as a slow one) until releaseResult(). */
+  holdResult: () => void;
+  releaseResult: () => void;
 };
 
 async function frame(): Promise<void> {
@@ -214,7 +240,7 @@ export async function renderTestPage(
   let sawRestart = false;
   const stopWatchingRestart = createRoot((dispose) => {
     createEffect(() => {
-      if (getTestPhase() === "restarting") sawRestart = true;
+      if (isTestRestarting()) sawRestart = true;
     });
     return dispose;
   });
@@ -238,7 +264,7 @@ export async function renderTestPage(
   // the restart on mount: fade out, generate words, fade in. It may only
   // begin a frame in, after a previous spec's finished test
   const ready = (): boolean =>
-    sawRestart && getTestPhase() === "idle" && !isRestartAnimating();
+    sawRestart && !isTestRestarting() && !isRestartAnimating();
   for (let i = 0; i < 50 && !ready(); i++) await frame();
   stopWatchingRestart();
   if (!ready()) throw new Error("The test page never got ready");
@@ -250,7 +276,7 @@ export async function renderTestPage(
   stopCountingRestarts = createRoot((dispose) => {
     createEffect(
       on(
-        () => getTestPhase() === "restarting",
+        isTestRestarting,
         (restarting) => {
           if (restarting) restarts++;
         },
@@ -313,9 +339,9 @@ export async function renderTestPage(
     phase: () =>
       isResultScreen()
         ? "finished"
-        : getTestPhase() === "active"
+        : isTestActive()
           ? "active"
-          : getTestPhase() === "restarting"
+          : isTestRestarting()
             ? "restarting"
             : "ready",
     getRestartCount: () => restarts,
@@ -342,17 +368,32 @@ export async function renderTestPage(
       acc: liveStats.acc,
       seconds: liveStats.seconds,
     }),
+    resultScreen: () => ({
+      result: container.querySelector("#result") !== null,
+      spinner:
+        container.querySelector('[data-ui-element="resultSpinner"]') !== null,
+    }),
+    holdResult: () => {
+      resultBuild.held = true;
+    },
+    releaseResult,
   };
 }
 
 let stopCountingRestarts: (() => void) | undefined;
 
+function releaseResult(): void {
+  resultBuild.held = false;
+  for (const fn of resultBuild.waiting.splice(0)) fn();
+}
+
 /** Unmounts the page, ending its test. */
 export async function cleanupTestPage(): Promise<void> {
+  releaseResult();
   stopCountingRestarts?.();
   stopCountingRestarts = undefined;
-  // a finishing test can't be stopped: let it finish
-  for (let i = 0; i < 100 && isResultCalculating(); i++) await frame();
+  // a finishing test can't be stopped: let it build its result
+  for (let i = 0; i < 100 && isResultPending(); i++) await frame();
   cleanup();
   setRouter(undefined);
 }

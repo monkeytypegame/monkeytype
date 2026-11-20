@@ -82,7 +82,6 @@ vi.mock("../../../src/ts/test/engine/state", () => ({
 }));
 
 vi.mock("../../../src/ts/states/test", () => ({
-  isResultCalculating: () => false,
   getCurrentQuote: () => null,
   isComposing: () => false,
   getCompositionData: () => "",

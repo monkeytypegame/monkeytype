@@ -4,7 +4,7 @@ import { Config } from "./config/store";
 import { getUserData } from "./queries/user";
 import * as Sentry from "./sentry";
 import { toggleSmoothedBurst } from "./states/result";
-import { getFrozenLog } from "./test/engine/state";
+import { getResultData } from "./test/engine/state";
 import { buildEventLog } from "./test/engine/events/data";
 import * as TestTimer from "./test/engine/test-timer";
 import { qs, qsa, qsr } from "./utils/dom";
@@ -24,6 +24,6 @@ Object.assign(window, {
   qs,
   qsa,
   qsr,
-  lastEventLog: () => getFrozenLog(),
+  lastEventLog: () => getResultData()?.eventLog ?? null,
   currentEventLog: buildEventLog,
 });
