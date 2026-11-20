@@ -3,12 +3,21 @@ import * as DateTime from "../utils/date-and-time";
 
 let seconds = 0;
 let addedAllToday = false;
-let dayToday: number;
+// local midnight of the day being counted
+let todayStart: number;
+
+function startOfDay(ms: number): number {
+  const date = new Date(ms);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
 
 export function addSeconds(s: number): void {
   if (addedAllToday) {
-    const nowDate = new Date().getDate();
-    if (nowDate > dayToday) {
+    const nowStart = startOfDay(Date.now());
+    // a new day (or month, or year): count from this test
+    if (nowStart > todayStart) {
+      todayStart = nowStart;
       seconds = s;
       return;
     }
@@ -22,13 +31,8 @@ export function getString(): string {
 }
 
 export function addAllFromToday(): void {
-  const todayDate = new Date();
-  todayDate.setSeconds(0);
-  todayDate.setMinutes(0);
-  todayDate.setHours(0);
-  todayDate.setMilliseconds(0);
-  dayToday = todayDate.getDate();
-  const todayDateMS = todayDate.getTime();
+  todayStart = startOfDay(Date.now());
+  const todayDateMS = todayStart;
 
   seconds = 0;
   const results = __nonReactive.getResults();
