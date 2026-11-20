@@ -29,7 +29,6 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  // finished: the finish keystroke froze the test
   if (getTestPhase() === "finished") {
     return true;
   }
