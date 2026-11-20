@@ -51,8 +51,6 @@ export function TestResult(props: {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-
-    // TestPage fades it in
     scrollToCenterOrTop(el.native);
   });
 
