@@ -132,8 +132,6 @@ export const [isWordsWrapperHidden, setWordsWrapperHidden] =
 export const [isReadAheadDisabled, setReadAheadDisabled] = createSignal(false);
 export const [isErrorBorderDisabled, setErrorBorderDisabled] =
   createSignal(false);
-// hidden between the words fading out and the next restart
-export const [isTypingTestHidden, setTypingTestHidden] = createSignal(false);
 // script with no spaces between words (or custom/zen) - words may wrap mid-word
 export const [isJoiningScript, setJoiningScript] = createSignal(false);
 

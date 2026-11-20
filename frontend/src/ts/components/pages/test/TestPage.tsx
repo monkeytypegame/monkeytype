@@ -28,13 +28,11 @@ import {
   isLayoutfluidTimerVisible,
   isResultScreen,
   isTestInitFailed,
-  isTypingTestHidden,
   isWordsWrapperHidden,
   resetIncompleteTests,
   setFocusMode,
   setLayoutfluidTimerVisible,
   setRestartAnimating,
-  setTypingTestHidden,
   setWordsInputPosition,
   setTestFocusState,
 } from "../../../states/test";
@@ -191,6 +189,8 @@ export function TestPage(): JSXElement {
   // (CSS, shown after a delay) keeps animating while it's slow. The engine
   // has built the result during the fade-out; if not, the spinner waits for it.
   let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
+  // hidden between the words fading out and the next restart
+  const [isTestShown, setTestShown] = createSignal(true);
   const [isSpinnerShown, setSpinnerShown] = createSignal(false);
 
   const fadeOutForFinish = async (): Promise<void> => {
@@ -198,7 +198,7 @@ export function TestPage(): JSXElement {
     await fade(typingTestRef, "out", false);
     if (finishDisplay !== "out" || !isStillFinished()) return;
     finishDisplay = "spinner";
-    setTypingTestHidden(true);
+    setTestShown(false);
     setSpinnerShown(true);
     // after the spinner is painted
     await new Promise((resolve) =>
@@ -258,7 +258,7 @@ export function TestPage(): JSXElement {
   const showNewTest = (): void => {
     setSpinnerShown(false);
     setResultShown(false);
-    setTypingTestHidden(false);
+    setTestShown(true);
     setWordsInputPosition((position) => ({ ...position, left: 0 }));
     setFocusMode(false);
     setLayoutfluidTimerVisible(false);
@@ -407,7 +407,7 @@ export function TestPage(): JSXElement {
         class={cn("content-grid", {
           content: getConfig.maxLineWidth === 0,
           "full-width-padding": getConfig.maxLineWidth !== 0,
-          hidden: isTestInitFailed() || isTypingTestHidden(),
+          hidden: isTestInitFailed() || !isTestShown(),
         })}
         style={{
           "max-width": isFullWidth() ? "100%" : `${getConfig.maxLineWidth}ch`,
