@@ -15,7 +15,7 @@ import {
   getFrozenLog,
   getRestartOptions,
   getTestId,
-  getTestPhase,
+  __testing as stateTesting,
   getTestEnd,
   getResultData,
   getSaveStatus,
@@ -65,13 +65,13 @@ describe("engine", () => {
   describe("phase", () => {
     it("start makes the test active", () => {
       Engine.start();
-      expect(getTestPhase()).toBe("active");
+      expect(stateTesting.getTestPhase()).toBe("active");
     });
 
     it("finish is synchronous: finished, how it ended, the result pending", () => {
       Engine.start();
       Engine.finish({ type: "failed", reason: "min accuracy" });
-      expect(getTestPhase()).toBe("finished");
+      expect(stateTesting.getTestPhase()).toBe("finished");
       expect(getTestEnd()).toEqual({ type: "failed", reason: "min accuracy" });
       expect(getResultData()).toBeNull();
       expect(isResultPending()).toBe(true);
@@ -82,12 +82,12 @@ describe("engine", () => {
     it("reset ends an active test, but keeps a finished one", () => {
       Engine.start();
       Engine.reset();
-      expect(getTestPhase()).toBe("idle");
+      expect(stateTesting.getTestPhase()).toBe("idle");
 
       Engine.start();
       Engine.finish({ type: "completed" });
       Engine.reset();
-      expect(getTestPhase()).toBe("finished");
+      expect(stateTesting.getTestPhase()).toBe("finished");
     });
   });
 
@@ -209,10 +209,10 @@ describe("engine", () => {
       Engine.finish({ type: "completed" });
       const id = getTestId();
       const token = Engine.requestRestart({ noAnim: true });
-      expect(getTestPhase()).toBe("restarting");
+      expect(stateTesting.getTestPhase()).toBe("restarting");
       expect(Engine.isCurrentRestart(token)).toBe(true);
       expect(Engine.commitRestart(token)).toBe(true);
-      expect(getTestPhase()).toBe("idle");
+      expect(stateTesting.getTestPhase()).toBe("idle");
       expect(getTestId()).toBe(id + 1);
       expect(Engine.isCurrentRestart(token)).toBe(false);
     });
@@ -222,10 +222,10 @@ describe("engine", () => {
       const second = Engine.requestRestart({});
       expect(Engine.isCurrentRestart(first)).toBe(false);
       expect(Engine.commitRestart(first)).toBe(false);
-      expect(getTestPhase()).toBe("restarting");
+      expect(stateTesting.getTestPhase()).toBe("restarting");
       expect(getRestartOptions().withSameWordset).toBe(true);
       expect(Engine.commitRestart(second)).toBe(true);
-      expect(getTestPhase()).toBe("idle");
+      expect(stateTesting.getTestPhase()).toBe("idle");
     });
   });
 

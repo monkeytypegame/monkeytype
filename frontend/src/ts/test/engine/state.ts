@@ -23,8 +23,9 @@ import type { ResultData } from "./result-data";
  */
 export type TestPhase = "idle" | "active" | "finished" | "restarting";
 
-// engine only: outside, read the phase through the helpers below
-export const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
+// read through the helpers below; setter for engine/commands only
+const [getTestPhase, setTestPhase] = createSignal<TestPhase>("idle");
+export { setTestPhase };
 
 /** The test is running: typing, the timer runs. */
 export function isTestActive(): boolean {
@@ -239,4 +240,8 @@ export const liveStats = {
   get burst(): number | undefined {
     return liveBurst();
   },
+};
+
+export const __testing = {
+  getTestPhase,
 };
