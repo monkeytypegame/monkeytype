@@ -23,13 +23,13 @@ import {
 } from "solid-js";
 import { z } from "zod";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
 import { getTag } from "../../../../queries/tags";
 import { getLocalPB } from "../../../../queries/user";
-import { isAuthenticated } from "../../../../states/core";
 import { showSuccessNotification } from "../../../../states/notifications";
 import { getSmoothedBurst, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";

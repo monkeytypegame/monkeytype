@@ -37,7 +37,8 @@ import { showConfetti } from "../elements/confetti";
 import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
-import { getCustomTextIndicator, isAuthenticated } from "../states/core";
+import { getCustomTextIndicator } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,

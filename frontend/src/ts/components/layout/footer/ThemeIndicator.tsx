@@ -1,10 +1,11 @@
 import { JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
 import { getCustomThemes } from "../../../queries/custom-themes";
 import { showCommandline } from "../../../states/commandline";
-import { getThemeIndicator, isAuthenticated } from "../../../states/core";
+import { getThemeIndicator } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
 import { Fa } from "../../common/Fa";
 

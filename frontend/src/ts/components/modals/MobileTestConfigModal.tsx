@@ -6,9 +6,9 @@ import type { Mode } from "@monkeytype/schemas/shared";
 
 import { For, JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../auth/state";
 import { setConfig, setQuoteLengthAll } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { isAuthenticated } from "../../states/core";
 import { showModal } from "../../states/modals";
 import { restartTest } from "../../test/test-logic";
 import { areUnsortedArraysEqual } from "../../utils/arrays";

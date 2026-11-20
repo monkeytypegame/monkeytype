@@ -3,6 +3,7 @@ import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
@@ -23,7 +24,6 @@ import {
   editCustomTheme,
   getCustomThemes,
 } from "../../../../queries/custom-themes";
-import { isAuthenticated } from "../../../../states/core";
 import {
   showErrorNotification,
   showNoticeNotification,

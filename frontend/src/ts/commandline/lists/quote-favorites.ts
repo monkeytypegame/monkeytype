@@ -4,7 +4,7 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../auth/state";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { Command } from "../types";
 import { getCurrentQuote } from "../../states/test";

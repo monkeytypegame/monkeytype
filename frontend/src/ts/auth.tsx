@@ -20,6 +20,7 @@ import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
+import { getUserId, isAuthenticated } from "./auth/state";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
@@ -32,7 +33,6 @@ import {
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
-import { getUserId, isAuthenticated } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,

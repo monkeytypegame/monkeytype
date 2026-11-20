@@ -55,7 +55,8 @@ import {
   initFirebase,
   signInWithPopup,
 } from "../../src/ts/firebase";
-import { getAuthState, getUserId } from "../../src/ts/states/core";
+import { getAuthState } from "../../src/ts/states/core";
+import { getUserId } from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 
 const user = { uid: "uid", emailVerified: false } as User;

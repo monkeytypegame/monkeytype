@@ -10,6 +10,7 @@ import {
 
 import Ape from "../../../ape";
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
+import { isAuthenticated } from "../../../auth/state";
 import {
   clear as clearTestActivity,
   init as initTestActivity,
@@ -21,7 +22,6 @@ import {
 } from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getUserData } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { showErrorNotification } from "../../../states/notifications";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
