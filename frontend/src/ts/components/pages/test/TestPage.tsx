@@ -20,11 +20,7 @@ import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
-import {
-  getTestPageDisplay,
-  isResultShown,
-  setTestPageDisplay,
-} from "../../../states/result";
+import { getTestPageDisplay, setTestPageDisplay } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
@@ -194,6 +190,7 @@ export function TestPage(): JSXElement {
   let finishDisplay: "idle" | "out" | "spinner" | "waiting" = "idle";
   const isSpinnerShown = (): boolean => getTestPageDisplay() === "spinner";
   const isTestShown = (): boolean => getTestPageDisplay() === "test";
+  const isResultShown = (): boolean => getTestPageDisplay() === "result";
 
   const fadeOutForFinish = async (): Promise<void> => {
     finishDisplay = "out";

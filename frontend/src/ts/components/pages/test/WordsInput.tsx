@@ -21,7 +21,7 @@ import {
   onSelectionChange,
   preventDefault,
 } from "../../../input/listeners/misc";
-import { isResultShown } from "../../../states/result";
+import { getTestPageDisplay } from "../../../states/result";
 import {
   isRealWordsInputShown,
   isResultScreen,
@@ -59,7 +59,7 @@ export function WordsInput(): JSXElement {
   // the result is shown: the test's input lets go of the focus
   createEffect(
     on(
-      isResultShown,
+      () => getTestPageDisplay() === "result",
       (shown) => {
         if (shown && inputRef !== undefined) blurInputElement();
       },

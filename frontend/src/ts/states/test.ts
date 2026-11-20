@@ -41,7 +41,7 @@ export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
 /**
  * From finish (the finish keystroke) until a restart. Whether the result is
- * rendered: isResultShown()
+ * rendered: getTestPageDisplay()
  */
 export function isResultScreen(): boolean {
   return isTestFinished();

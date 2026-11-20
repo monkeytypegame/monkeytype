@@ -74,11 +74,6 @@ export type TestPageDisplay = "test" | "spinner" | "result";
 export const [getTestPageDisplay, setTestPageDisplay] =
   createSignal<TestPageDisplay>("test");
 
-/** The #result element is rendered (it may still be fading in or out). */
-export function isResultShown(): boolean {
-  return getTestPageDisplay() === "result";
-}
-
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });
 }
