@@ -21,7 +21,7 @@ import {
   getLoadedChallenge,
   setLoadedChallenge,
 } from "../states/test";
-import { areUnsortedArraysEqual } from "../utils/arrays";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 
 let challengeLoading = false;
 

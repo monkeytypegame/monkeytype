@@ -1,10 +1,9 @@
 import type { JSX, JSXElement } from "solid-js";
 
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import SlimSelectCore, { Config } from "slim-select";
 import { Optgroup, Option } from "slim-select/store";
 import { onMount, onCleanup, createEffect, createSignal } from "solid-js";
-
-import { areUnsortedArraysEqual } from "../../utils/arrays";
 
 // Helper: Update SlimSelect data and trigger renders
 function updateSlimSelectData(
