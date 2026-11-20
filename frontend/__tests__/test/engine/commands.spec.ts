@@ -12,7 +12,6 @@ vi.mock("../../../src/ts/queries/tags", async (importOriginal) => ({
 import {
   clearLiveStats,
   getActiveWordIndex,
-  getFrozenLog,
   getRestartOptions,
   getTestId,
   __testing as stateTesting,
@@ -92,7 +91,7 @@ describe("engine", () => {
   });
 
   describe("result", () => {
-    it("is built after a paint, with the frozen log", () => {
+    it("is built after a paint, with its event log", () => {
       Engine.start();
       Engine.finish({ type: "completed" });
       frame();
@@ -101,7 +100,7 @@ describe("engine", () => {
 
       expect(isResultPending()).toBe(false);
       expect(getResultData()?.end).toEqual({ type: "completed" });
-      expect(getFrozenLog()).not.toBeNull();
+      expect(getResultData()?.eventLog).toBeDefined();
     });
 
     it("reads the tags active when it's built", () => {
@@ -126,7 +125,7 @@ describe("engine", () => {
     });
   });
 
-  describe("frozen log", () => {
+  describe("event log", () => {
     it("force-releases held keys", () => {
       Engine.start();
       logTestEvent("keydown", performance.now(), { code: "KeyA" });
@@ -135,8 +134,10 @@ describe("engine", () => {
       Engine.finish({ type: "completed" });
       paint();
       expect(
-        getFrozenLog()
-          ?.events.filter((e) => e.type === "keydown" || e.type === "keyup")
+        getResultData()
+          ?.eventLog?.events.filter(
+            (e) => e.type === "keydown" || e.type === "keyup",
+          )
           .map((e) => e.type),
       ).toEqual(["keydown", "keyup"]);
     });
@@ -146,9 +147,9 @@ describe("engine", () => {
       Engine.finish({ type: "completed" });
       logTestEvent("keydown", 100, { code: "KeyA" });
       paint();
-      expect(getFrozenLog()?.events.some((e) => e.type === "keydown")).toBe(
-        false,
-      );
+      expect(
+        getResultData()?.eventLog?.events.some((e) => e.type === "keydown"),
+      ).toBe(false);
     });
   });
 

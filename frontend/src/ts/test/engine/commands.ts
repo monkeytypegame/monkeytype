@@ -16,7 +16,6 @@ import { buildResultData } from "./result-data";
 import {
   clearLiveStats,
   getSaveStatus,
-  setFrozenLog,
   setResultData,
   setSaveStatus,
   getActiveWordIndex,
@@ -74,12 +73,7 @@ export function finish(end: TestEnd): void {
     if (token !== finishCount || !isTestFinished()) return;
     cleanupData();
     if (isDevEnvironment()) logEventsDataToTheConsoleTable();
-    const log = buildEventLog();
-    const result = buildResultData(log, end);
-    batch(() => {
-      setFrozenLog(log);
-      setResultData(result);
-    });
+    setResultData(buildResultData(buildEventLog(), end));
   });
 }
 

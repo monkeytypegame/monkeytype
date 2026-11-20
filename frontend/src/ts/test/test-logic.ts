@@ -66,7 +66,6 @@ import {
   getTestEnd,
   isTestRestarting,
   isTestActive,
-  getFrozenLog,
   getResultData,
   isResultPending,
   setWordsInfo,
@@ -749,9 +748,8 @@ function onResult({
   check,
   afkDetected,
   end,
+  eventLog,
 }: ResultData): void {
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return;
   const bailedOut = end.type === "bailedOut";
   const failReason = end.type === "failed" ? end.reason : null;
   const difficultyFailed = failReason !== null;

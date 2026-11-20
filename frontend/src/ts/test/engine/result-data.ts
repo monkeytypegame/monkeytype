@@ -60,6 +60,8 @@ export type ResultData = {
   /** no keypresses in the last 5 seconds (never for a bail out) */
   afkDetected: boolean;
   end: TestEnd;
+  /** the finished test's frozen log: the result's input */
+  eventLog: EventLog;
 };
 
 /**
@@ -80,6 +82,7 @@ export function buildResultData(eventLog: EventLog, end: TestEnd): ResultData {
     check: checkResult(completedEvent, eventLog, end, afkDetected),
     afkDetected,
     end,
+    eventLog,
   };
 }
 

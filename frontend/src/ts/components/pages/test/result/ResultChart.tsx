@@ -45,7 +45,7 @@ import {
   getWordIndexesForSecond,
 } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
-import { getFrozenLog } from "../../../../test/engine/state";
+import { getResultData } from "../../../../test/engine/state";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {
@@ -378,8 +378,8 @@ let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
 
 function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
   if (prevTooltipItem === ti) return "";
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return "";
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return "";
 
   prevTooltipItem = ti;
   try {

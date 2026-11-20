@@ -5,7 +5,6 @@ import { createSignalWithSetters } from "../../hooks/createSignalWithSetters";
 import { createTrigger } from "../../hooks/createTrigger";
 import { requestDebouncedAnimationFrame } from "../../utils/debounced-animation-frame";
 import { getLiveCachedAccuracy } from "./events/live-cache";
-import { EventLog } from "./events/types";
 import type { ResultData } from "./result-data";
 
 /**
@@ -117,14 +116,6 @@ export type TestEnd =
 export const [getTestEnd, setTestEnd] = createSignal<TestEnd | null>(null);
 
 // ---- result
-
-// setters for engine/commands only
-const [getFrozenLog, setFrozenLog] = createSignal<EventLog | null>(null);
-/**
- * The finished test's event log: the result's input. Published with the
- * result, so readers never pair a new log with an old result.
- */
-export { getFrozenLog, setFrozenLog };
 
 /**
  * The last finished test's result: null from finish() until the engine built

@@ -13,7 +13,7 @@ import {
   getWordBurstHistory,
 } from "./engine/events/stats";
 import { setCustomTextIndicator } from "../states/core";
-import { getFrozenLog } from "./engine/state";
+import { getResultData } from "./engine/state";
 
 type Before = {
   mode: Mode | null;
@@ -33,8 +33,8 @@ export function init(
   missed: "off" | "words" | "biwords",
   slow: boolean,
 ): boolean {
-  const eventLog = getFrozenLog();
-  if (eventLog === null) return false;
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return false;
   if (Config.mode === "zen") return false;
   let limit;
   if ((missed === "words" && !slow) || (missed === "off" && slow)) {

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import { createMemo, JSXElement, Match, onMount, Show, Switch } from "solid-js";
+import { JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
@@ -9,11 +9,7 @@ import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import * as Engine from "../../../../test/engine/commands";
-import {
-  getFrozenLog,
-  getResultData,
-  getSaveStatus,
-} from "../../../../test/engine/state";
+import { getResultData, getSaveStatus } from "../../../../test/engine/state";
 import { restartTest } from "../../../../test/test-logic";
 import { cn } from "../../../../utils/cn";
 import { scrollToCenterOrTop } from "../../../../utils/misc";
@@ -40,12 +36,6 @@ export function TestResult(props: {
   let prefocusRef: HTMLDivElement | undefined;
 
   onMount(() => prefocusRef?.focus({ preventScroll: true }));
-
-  const lastTest = createMemo(() => {
-    const result = getResultData()?.completedEvent ?? null;
-    const eventLog = getFrozenLog();
-    return result !== null && eventLog !== null ? { result, eventLog } : null;
-  });
 
   const [resultRef, resultEl] = useRefWithUtils<HTMLDivElement>();
   onMount(() => {
@@ -76,7 +66,7 @@ export function TestResult(props: {
         </div>
       </Show>
       <Show
-        when={lastTest()}
+        when={getResultData()}
         fallback={
           <>
             <div class="mx-auto">Missing last test result data.</div>
@@ -94,15 +84,15 @@ export function TestResult(props: {
             <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
                 <ResultChart
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
               </div>
-              <ResultSecondaryStats result={test().result} />
+              <ResultSecondaryStats result={test().completedEvent} />
               <ResultWordsHistory eventLog={test().eventLog} />
               <ResultReplay />
               <RetrySavingButton />
