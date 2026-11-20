@@ -76,11 +76,6 @@ export function isAuthAvailable(): boolean {
   return getStartedProvider() !== undefined;
 }
 
-/** Whether the provider offers password auth. */
-export function supportsPassword(): boolean {
-  return provider?.password ?? false;
-}
-
 /** The third parties the provider offers, most preferred first. */
 export function getThirdParties(): readonly ThirdParty[] {
   return provider?.thirdParties ?? [];
