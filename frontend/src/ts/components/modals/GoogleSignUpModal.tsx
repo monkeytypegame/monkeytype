@@ -7,7 +7,7 @@ import {
   cancelSignUp,
   finishSignUp,
   requireAuthProvider,
-} from "../../auth/provider";
+} from "../../auth/session";
 import {
   getGoogleSignUpUser,
   setGoogleSignUpUser,

@@ -58,7 +58,7 @@ vi.mock("../../../src/ts/constants/firebase-config", () => ({
   firebaseConfig: {},
 }));
 
-import { AuthError, AuthUser } from "../../../src/ts/auth/provider";
+import { AuthError, AuthUser } from "../../../src/ts/auth/providers/types";
 import { firebaseAuthProvider } from "../../../src/ts/auth/providers/firebase";
 
 const firebaseUser = {

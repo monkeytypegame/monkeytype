@@ -1,4 +1,4 @@
-import type { AuthUser } from "../auth/provider";
+import type { AuthUser } from "../auth/providers/types";
 import { createSignal } from "solid-js";
 import { showModal } from "./modals";
 

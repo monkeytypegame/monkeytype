@@ -9,17 +9,19 @@ import {
   AuthError,
   AuthMethod,
   AuthUser,
+  ThirdPartyAuthMethod,
+  SignInOptions,
+} from "./providers/types";
+import {
   signOut as authSignOut,
   createUser,
   finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
   cancelSignUp,
-  ThirdPartyAuthMethod,
   requireAuthProvider,
   signIn as providerSignIn,
-  SignInOptions,
-} from "./provider";
+} from "./session";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createEffectOn } from "../hooks/effects";
 import { getUserId, isAuthenticated } from "./state";

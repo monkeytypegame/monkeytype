@@ -36,7 +36,7 @@ import {
 } from "../../src/ts/session-data";
 import { setUserId } from "../../src/ts/auth/state";
 
-// stands in for auth-provider.ts, the auth signals' writer
+// stands in for auth/session.ts, the auth signals' writer
 function signIn(uid = "uid"): void {
   setUserId(uid);
 }

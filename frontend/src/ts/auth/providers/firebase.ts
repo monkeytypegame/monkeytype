@@ -46,7 +46,7 @@ import {
   AuthProvider,
   AuthUser,
   ThirdPartyAuthMethod,
-} from "../provider";
+} from "./types";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;

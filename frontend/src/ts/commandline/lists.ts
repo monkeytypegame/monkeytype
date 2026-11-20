@@ -26,7 +26,7 @@ import {
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigKey } from "../config/metadata";
-import { isAuthAvailable, signOut } from "../auth/provider";
+import { isAuthAvailable, signOut } from "../auth/session";
 import { isAuthenticated } from "../auth/state";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {

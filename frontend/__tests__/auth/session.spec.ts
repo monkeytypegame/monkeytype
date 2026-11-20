@@ -5,9 +5,8 @@ vi.mock("../../src/ts/states/google-sign-up", () => ({
 }));
 vi.mock("../../src/ts/states/banners", () => ({ addBanner: vi.fn() }));
 
+import { AuthProvider, AuthUser } from "../../src/ts/auth/providers/types";
 import {
-  AuthProvider,
-  AuthUser,
   cancelSignUp,
   createUser,
   finishSignUp,
@@ -15,7 +14,7 @@ import {
   initAuth,
   isAuthAvailable,
   signIn,
-} from "../../src/ts/auth/provider";
+} from "../../src/ts/auth/session";
 import { getAuthState, getUserId } from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 
@@ -54,7 +53,7 @@ const provider = {
   }),
 } as Partial<AuthProvider> as AuthProvider;
 
-describe("auth provider", () => {
+describe("auth session", () => {
   beforeAll(async () => {
     await initAuth(provider);
   });

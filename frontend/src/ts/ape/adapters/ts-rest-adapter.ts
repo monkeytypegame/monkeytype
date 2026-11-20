@@ -5,7 +5,7 @@ import {
   type ApiFetcherArgs,
 } from "@ts-rest/core";
 import { envConfig } from "virtual:env-config";
-import { getIdToken } from "../../auth/provider";
+import { getIdToken } from "../../auth/session";
 import {
   COMPATIBILITY_CHECK,
   COMPATIBILITY_CHECK_HEADER,
