@@ -18,6 +18,87 @@
       }
     },
     {
+      // auth layers: only auth/actions calls auth/system, and only auth/system
+      // calls the provider (docs/specs/solid-monkeytype/spec.md). Overrides
+      // below that set no-restricted-imports repeat these patterns.
+      "files": ["src/ts/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // boot picks the provider
+      "files": ["src/ts/boot.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // TODO(U8d): analytics leaves the Firebase auth provider
+      "files": ["src/ts/controllers/analytics-controller.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // the API adapter needs the token; it can't use auth/actions, which
+      // imports the API
+      "files": ["src/ts/ape/adapters/ts-rest-adapter.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/ts/auth/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
       // input layer: browser input → engine commands and render buffer
       // writes, never UI (docs/specs/solid-monkeytype/spec.md)
       "files": ["src/ts/input/**"],
@@ -29,6 +110,14 @@
               {
                 "group": ["**/components/**", "**/elements/**"],
                 "message": "The input layer never imports UI: write to states or the render buffer instead."
+              },
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
               }
             ]
           }
@@ -66,6 +155,14 @@
                   "**/custom-text"
                 ],
                 "message": "The engine never imports the test modules around it (test-logic, funbox, custom text): they call the engine."
+              },
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
               }
             ]
           }
