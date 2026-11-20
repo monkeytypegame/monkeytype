@@ -18,10 +18,10 @@ import {
   ThirdParty,
 } from "./providers/types";
 
-/** The provider boot picked, kept when it fails to start. */
-let configuredProvider: AuthProvider | undefined;
-/** The started provider, `undefined` while auth is unavailable. */
+/** The provider boot picked. */
 let provider: AuthProvider | undefined;
+/** Whether the provider started; auth is unavailable when it failed. */
+let available = false;
 
 /**
  * Hold back the provider's user changes. Used during a sign up, which signs in
@@ -33,8 +33,8 @@ const { promise: authPromise, resolve: resolveAuthPromise } =
   promiseWithResolvers();
 
 export async function initAuth(authProvider: AuthProvider): Promise<void> {
-  configuredProvider = authProvider;
   provider = authProvider;
+  available = true;
   try {
     await authProvider.init((user, info) => {
       if (holdUserChanges) return;
@@ -46,7 +46,7 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
       setUserState(user);
     });
   } catch (e) {
-    provider = undefined;
+    available = false;
     console.error("Firebase failed to initialize", e);
     setUserState(null);
     if (isDevEnvironment()) {
@@ -61,23 +61,29 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
   }
 }
 
+/** The provider, `undefined` while auth is unavailable. */
+function getStartedProvider(): AuthProvider | undefined {
+  return available ? provider : undefined;
+}
+
 function requireAuthProvider(): AuthProvider {
-  if (provider === undefined) throw new Error("Authentication uninitialized");
-  return provider;
+  const started = getStartedProvider();
+  if (started === undefined) throw new Error("Authentication uninitialized");
+  return started;
 }
 
 export function isAuthAvailable(): boolean {
-  return provider !== undefined;
+  return getStartedProvider() !== undefined;
 }
 
 /** Whether the provider offers password auth. */
 export function supportsPassword(): boolean {
-  return configuredProvider?.password ?? false;
+  return provider?.password ?? false;
 }
 
 /** The third parties the provider offers, most preferred first. */
 export function getThirdParties(): readonly ThirdParty[] {
-  return configuredProvider?.thirdParties ?? [];
+  return provider?.thirdParties ?? [];
 }
 
 /** A method's name to show: `Password`, or the third party's. */
@@ -91,16 +97,16 @@ export function getAuthMethodDisplay(id: string): string {
  * @returns the current user if authenticated, else `null`
  */
 export function getAuthenticatedUser(): AuthUser | null {
-  return provider?.getUser() ?? null;
+  return getStartedProvider()?.getUser() ?? null;
 }
 
 export async function getIdToken(): Promise<string | null> {
-  return (await provider?.getToken()) ?? null;
+  return (await getStartedProvider()?.getToken()) ?? null;
 }
 
 export async function signOut(): Promise<void> {
   console.log("auth signout");
-  await provider?.signOut();
+  await getStartedProvider()?.signOut();
 }
 
 /**
@@ -159,7 +165,7 @@ export function finishSignUp(): void {
  */
 export async function cancelSignUp(): Promise<void> {
   holdUserChanges = false;
-  await provider?.signOut();
+  await getStartedProvider()?.signOut();
 }
 
 /** Deletes the signed in user from the auth provider. */
