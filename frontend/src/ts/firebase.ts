@@ -33,8 +33,8 @@ import {
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { showGoogleSignUpModal } from "./states/google-sign-up";
 import { addBanner } from "./states/banners";
-import { setAuthState, setUserVerified } from "./states/core";
-import { setUserId } from "./auth/state";
+import { setUserVerified } from "./states/core";
+import { setAuthState, setUserId } from "./auth/state";
 import { batch } from "solid-js";
 
 let app: FirebaseApp | undefined;

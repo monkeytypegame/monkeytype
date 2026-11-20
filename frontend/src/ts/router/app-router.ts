@@ -8,7 +8,7 @@ import { signOut } from "../auth";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../firebase";
 import { queryClient } from "../queries";
-import { getAuthState } from "../states/core";
+import { getAuthState } from "../auth/state";
 import { getRoutePage, getVisiblePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";
