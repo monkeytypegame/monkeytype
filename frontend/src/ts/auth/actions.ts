@@ -22,7 +22,7 @@ import {
 } from "./provider";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { createEffectOn } from "../hooks/effects";
-import { getUserId, isAuthenticated } from "../states/auth";
+import { getUserId, isAuthenticated } from "./state";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
   showErrorNotification,

@@ -7,8 +7,8 @@ import {
   isUsingPasswordAuthentication,
   reauthenticate,
 } from "../../../auth/actions";
+import { isAuthenticated } from "../../../auth/state";
 import { updateName, getUserData } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/auth";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
 

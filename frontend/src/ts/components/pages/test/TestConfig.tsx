@@ -1,11 +1,11 @@
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isAuthenticated } from "../../../states/auth";
 import { showModal } from "../../../states/modals";
 import { isFocusMode } from "../../../states/test";
 import { isTestRestarting, isTestFinished } from "../../../test/engine/state";

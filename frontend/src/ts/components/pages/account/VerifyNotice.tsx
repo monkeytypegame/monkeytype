@@ -1,7 +1,7 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 
 import { sendVerificationEmail } from "../../../auth/actions";
-import { isUserVerified } from "../../../states/auth";
+import { isUserVerified } from "../../../auth/state";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";

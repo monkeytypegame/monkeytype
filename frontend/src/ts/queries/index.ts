@@ -1,7 +1,7 @@
 import { createRoot } from "solid-js";
 import { QueryClient } from "@tanstack/solid-query";
 import { createEffectOn } from "../hooks/effects";
-import { isAuthenticated } from "../states/auth";
+import { isAuthenticated } from "../auth/state";
 
 export const queryClient = new QueryClient();
 

@@ -10,13 +10,13 @@ import {
 import { z } from "zod";
 
 import Ape from "../../ape";
+import { isAuthenticated } from "../../auth/state";
 import { setConfig } from "../../config/setters";
 import { Config } from "../../config/store";
 import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import { getUserData } from "../../queries/user";
-import { isAuthenticated } from "../../states/auth";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,

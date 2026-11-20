@@ -2,7 +2,7 @@ import { createSignal, createRoot } from "solid-js";
 import { z } from "zod";
 import { createEffectOn } from "../hooks/effects";
 import { FaSolidIcon } from "../types/font-awesome";
-import { isAuthenticated } from "./auth";
+import { isAuthenticated } from "../auth/state";
 
 export const [getLastGeneratedApeKey, setLastGeneratedApeKey] = createSignal<
   string | undefined

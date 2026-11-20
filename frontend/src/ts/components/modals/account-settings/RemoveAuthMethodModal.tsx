@@ -8,7 +8,7 @@ import {
   isUsingPasswordAuthentication,
   removeAuthProvider,
 } from "../../../auth/actions";
-import { isAuthenticated } from "../../../states/auth";
+import { isAuthenticated } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
 

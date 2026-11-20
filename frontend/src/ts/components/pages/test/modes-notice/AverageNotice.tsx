@@ -1,8 +1,8 @@
 import { createMemo, JSXElement } from "solid-js";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { useUserAverage10LiveQuery } from "../../../../collections/results";
 import { getConfig } from "../../../../config/store";
-import { isAuthenticated } from "../../../../states/auth";
 import { getFormatting } from "../../../../states/core";
 import { Notice } from "./Notice";
 

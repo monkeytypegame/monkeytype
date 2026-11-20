@@ -16,7 +16,7 @@ import {
   isAuthAvailable,
   signInWithProvider,
 } from "../../src/ts/auth/provider";
-import { getAuthState, getUserId } from "../../src/ts/states/auth";
+import { getAuthState, getUserId } from "../../src/ts/auth/state";
 import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 
 const user: AuthUser = {

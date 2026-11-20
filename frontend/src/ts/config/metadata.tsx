@@ -5,10 +5,10 @@ import { roundTo1 } from "@monkeytype/util/numbers";
 import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
 
+import { isAuthenticated } from "../auth/state";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
-import { isAuthenticated } from "../states/auth";
 import { showNoticeNotification } from "../states/notifications";
 import { setRandomTheme } from "../states/theme";
 import { FaObject } from "../types/font-awesome";

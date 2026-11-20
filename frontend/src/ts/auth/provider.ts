@@ -1,6 +1,6 @@
 import { batch } from "solid-js";
 import { addBanner } from "../states/banners";
-import { setAuthState, setUserId, setUserVerified } from "../states/auth";
+import { setAuthState, setUserId, setUserVerified } from "./state";
 import { showGoogleSignUpModal } from "../states/google-sign-up";
 import { isDevEnvironment } from "../utils/env";
 import { promiseWithResolvers } from "../utils/misc";

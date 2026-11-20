@@ -6,7 +6,7 @@
 import { createRoot } from "solid-js";
 
 import type { UserDataLoadState } from "../session-data";
-import type { AuthState } from "../states/auth";
+import type { AuthState } from "../auth/state";
 
 import { createEffectOn } from "../hooks/effects";
 import { promiseWithResolvers } from "../utils/misc";

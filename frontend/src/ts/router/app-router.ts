@@ -8,7 +8,7 @@ import { signOut } from "../auth/actions";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../auth/provider";
 import { queryClient } from "../queries";
-import { getAuthState } from "../states/auth";
+import { getAuthState } from "../auth/state";
 import { getRoutePage, getVisiblePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";

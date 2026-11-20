@@ -22,7 +22,7 @@ import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { UserData } from "../constants/user-data";
-import { isAuthenticated } from "../states/auth";
+import { isAuthenticated } from "../auth/state";
 import { setXpBarData } from "../states/header";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";

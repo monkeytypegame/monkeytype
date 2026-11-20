@@ -2,11 +2,11 @@ import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
 import { JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
 import { getUserData } from "../../../../queries/user";
 import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
-import { isAuthenticated } from "../../../../states/auth";
 import { getIsScreenshotting } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import * as Engine from "../../../../test/engine/commands";

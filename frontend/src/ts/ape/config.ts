@@ -1,5 +1,5 @@
 import { Config } from "@monkeytype/schemas/configs";
-import { isAuthenticated } from "../states/auth";
+import { isAuthenticated } from "../auth/state";
 import { showErrorNotification } from "../states/notifications";
 import Ape from ".";
 

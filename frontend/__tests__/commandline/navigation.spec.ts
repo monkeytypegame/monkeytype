@@ -11,8 +11,8 @@ import type { Command } from "../../src/ts/commandline/types";
 import { getRouter, setRouter } from "../../src/ts/router/instance";
 
 const { isAuthenticated } = vi.hoisted(() => ({ isAuthenticated: vi.fn() }));
-vi.mock("../../src/ts/states/auth", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("../../src/ts/states/auth")>()),
+vi.mock("../../src/ts/auth/state", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../src/ts/auth/state")>()),
   isAuthenticated,
 }));
 

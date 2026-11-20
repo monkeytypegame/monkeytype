@@ -34,7 +34,7 @@ import {
   getUserDataLoadState,
   reloadUserData,
 } from "../../src/ts/session-data";
-import { setUserId } from "../../src/ts/states/auth";
+import { setUserId } from "../../src/ts/auth/state";
 
 // stands in for auth-provider.ts, the auth signals' writer
 function signIn(uid = "uid"): void {

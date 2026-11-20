@@ -38,7 +38,7 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { getCustomTextIndicator } from "../states/core";
-import { isAuthenticated } from "../states/auth";
+import { isAuthenticated } from "../auth/state";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
