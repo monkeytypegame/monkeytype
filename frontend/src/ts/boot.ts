@@ -32,14 +32,13 @@ export async function boot(): Promise<void> {
     showModal("Cookies");
   }
   const authStarted = startAuth(firebaseAuthProvider);
-  void authStarted.then(() => {
-    if (accepted !== null) {
-      Cookies.activateWhatsAccepted();
-    }
-  });
 
   await configLoaded;
   await authStarted;
+
+  if (accepted !== null) {
+    Cookies.activateWhatsAccepted();
+  }
 
   MerchBanner.showIfNotClosedBefore();
 
