@@ -11,14 +11,16 @@ import { isDevEnvironment } from "../utils/env";
 import { promiseWithResolvers } from "../utils/misc";
 
 import {
-  AuthMethod,
   AuthProvider,
   AuthUser,
   SignInOptions,
   SignInResult,
-  ThirdPartyAuthMethod,
+  ThirdParty,
 } from "./providers/types";
 
+/** The provider boot picked, kept when it fails to start. */
+let configuredProvider: AuthProvider | undefined;
+/** The started provider, `undefined` while auth is unavailable. */
 let provider: AuthProvider | undefined;
 
 /**
@@ -31,6 +33,7 @@ const { promise: authPromise, resolve: resolveAuthPromise } =
   promiseWithResolvers();
 
 export async function initAuth(authProvider: AuthProvider): Promise<void> {
+  configuredProvider = authProvider;
   provider = authProvider;
   try {
     await authProvider.init((user, info) => {
@@ -65,6 +68,22 @@ function requireAuthProvider(): AuthProvider {
 
 export function isAuthAvailable(): boolean {
   return provider !== undefined;
+}
+
+/** Whether the provider offers password auth. */
+export function supportsPassword(): boolean {
+  return configuredProvider?.password ?? false;
+}
+
+/** The third parties the provider offers, most preferred first. */
+export function getThirdParties(): readonly ThirdParty[] {
+  return configuredProvider?.thirdParties ?? [];
+}
+
+/** A method's name to show: `Password`, or the third party's. */
+export function getAuthMethodDisplay(id: string): string {
+  if (id === "password") return "Password";
+  return getThirdParties().find((it) => it.id === id)?.display ?? id;
 }
 
 /**
@@ -152,7 +171,7 @@ export async function deleteUser(): Promise<void> {
 export async function reauthenticate(
   options:
     | { method: "password"; password: string }
-    | { method: ThirdPartyAuthMethod },
+    | { method: "thirdParty"; id: string },
 ): Promise<void> {
   await requireAuthProvider().reauthenticate(options);
 }
@@ -166,15 +185,14 @@ export async function linkPassword(
   refreshUserState();
 }
 
-export async function linkProvider(
-  method: ThirdPartyAuthMethod,
-): Promise<void> {
-  await requireAuthProvider().linkProvider(method);
+export async function linkThirdParty(id: string): Promise<void> {
+  await requireAuthProvider().linkThirdParty(id);
   refreshUserState();
 }
 
-export async function unlink(method: AuthMethod): Promise<void> {
-  await requireAuthProvider().unlink(method);
+/** Unlinks a third party by its id, or password auth with `"password"`. */
+export async function unlink(id: string): Promise<void> {
+  await requireAuthProvider().unlink(id);
   refreshUserState();
 }
 

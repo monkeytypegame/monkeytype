@@ -7,17 +7,7 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import { createErrorMessage } from "../utils/error";
-import {
-  getAuthMethodDisplay,
-  getPreferredAuthenticationMethod,
-} from "./methods";
-import {
-  AuthError,
-  AuthMethod,
-  AuthUser,
-  SignInOptions,
-  ThirdPartyAuthMethod,
-} from "./providers/types";
+import { AuthError, AuthUser, SignInOptions } from "./providers/types";
 import {
   cancelSignUp,
   createUser,
@@ -25,13 +15,15 @@ import {
   getAuthenticatedUser,
   isAuthAvailable,
   linkPassword,
-  linkProvider,
+  getAuthMethodDisplay,
+  getThirdParties,
+  linkThirdParty,
   reauthenticate as sessionReauthenticate,
   signIn as sessionSignIn,
   signOut as sessionSignOut,
   unlink,
 } from "./session";
-import { isAuthenticated } from "./state";
+import { isAuthenticated, isUsingAuthMethod } from "./state";
 
 export type AuthResult =
   | {
@@ -54,7 +46,8 @@ type ReauthFailed = {
 };
 
 type ReauthenticateOptions = {
-  excludeMethod?: AuthMethod;
+  /** an auth method id: a third party id, or `"password"` */
+  excludeMethod?: string;
   password?: string;
 };
 
@@ -88,11 +81,11 @@ export async function signIn(options: SignInOptions): Promise<AuthResult> {
   return { success: true };
 }
 
-export async function addAuthProvider(
+export async function addAuthMethod(
   options:
-    | { authMethod: ThirdPartyAuthMethod }
+    | { method: "thirdParty"; id: string }
     | {
-        authMethod: "password";
+        method: "password";
         email: string;
         password: string;
       },
@@ -101,18 +94,18 @@ export async function addAuthProvider(
     showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
     return;
   }
-  const authMethod = options.authMethod;
-
   const user = getAuthenticatedUser();
-  const providerName = getAuthMethodDisplay(authMethod);
+  const providerName = getAuthMethodDisplay(
+    options.method === "password" ? "password" : options.id,
+  );
 
   if (!user) return;
   showLoaderBar();
   try {
-    if (authMethod === "password") {
+    if (options.method === "password") {
       await addPasswordProvider(options);
     } else {
-      await linkProvider(authMethod);
+      await linkThirdParty(options.id);
     }
 
     showSuccessNotification(`${providerName} authentication added`);
@@ -148,8 +141,9 @@ async function addPasswordProvider(options: {
   }
 }
 
-export async function removeAuthProvider(
-  authMethod: AuthMethod,
+/** Removes an auth method: a third party by its id, or `"password"`. */
+export async function removeAuthMethod(
+  authMethod: string,
   options?: { password?: string },
 ): Promise<ReauthSuccess | ReauthFailed> {
   const reauth = await reauthenticate({
@@ -279,7 +273,7 @@ export async function reauthenticate(
         password: options.password,
       });
     } else {
-      await sessionReauthenticate({ method: authMethod });
+      await sessionReauthenticate({ method: "thirdParty", id: authMethod });
     }
 
     return {
@@ -309,4 +303,13 @@ export async function reauthenticate(
       };
     }
   }
+}
+
+/** The signed in user's most preferred auth method: password, then the provider's third parties in order. */
+function getPreferredAuthenticationMethod(
+  exclude?: string,
+): string | undefined {
+  return ["password", ...getThirdParties().map((it) => it.id)].find(
+    (it) => it !== exclude && isUsingAuthMethod(it),
+  );
 }

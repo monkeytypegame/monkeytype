@@ -2,17 +2,14 @@ import { z } from "zod";
 
 import Ape from "../../../ape";
 import { reauthenticate } from "../../../auth/actions";
-import {
-  getPasswordSchema,
-  isUsingPasswordAuthentication,
-} from "../../../auth/methods";
-import { isAuthenticated } from "../../../auth/state";
+import { isAuthenticated, isUsingPasswordAuth } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { resetPersonalBests } from "../../../queries/user";
 import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
 import FileStorage from "../../../utils/file-storage";
 import { reloadAfter } from "../../../utils/misc";
+import { getPasswordSchema } from "../../ui/form/utils";
 
 export function showDeleteAccountModal(): void {
   showReauthConfirmModal({
@@ -157,7 +154,7 @@ function showReauthConfirmModal(options: {
 
   showSimpleModal({
     title: options.title,
-    buttonText: isUsingPasswordAuthentication()
+    buttonText: isUsingPasswordAuth()
       ? options.buttonText
       : `reauthenticate to ${options.buttonText}`,
     schema: z.object({
@@ -168,7 +165,7 @@ function showReauthConfirmModal(options: {
       password: {
         placeholder: "password",
         type: "password",
-        hidden: !isUsingPasswordAuthentication(),
+        hidden: !isUsingPasswordAuth(),
       },
       confirm: {
         type: "checkbox",

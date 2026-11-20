@@ -1,9 +1,9 @@
 import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
-import { addAuthProvider } from "../../../auth/actions";
-import { getPasswordSchema } from "../../../auth/methods";
+import { addAuthMethod } from "../../../auth/actions";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getPasswordSchema } from "../../ui/form/utils";
 
 export function showAddPasswordAuthModal(): void {
   showSimpleModal({
@@ -49,7 +49,7 @@ export function showAddPasswordAuthModal(): void {
         };
       }
 
-      await addAuthProvider({ authMethod: "password", email, password });
+      await addAuthMethod({ method: "password", email, password });
 
       return {
         status: "success",

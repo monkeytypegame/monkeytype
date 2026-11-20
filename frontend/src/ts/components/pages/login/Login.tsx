@@ -1,8 +1,8 @@
 import { createForm } from "@tanstack/solid-form";
-import { JSXElement } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
 import { AuthResult, signIn } from "../../../auth/actions";
-import { getAuthMethodDisplay } from "../../../auth/methods";
+import { getThirdParties } from "../../../auth/session";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -72,34 +72,25 @@ export function Login(): JSXElement {
         class="p-0"
       />
       <div class="grid grid-cols-2 gap-4">
-        <Button
-          fa={{ icon: "fa-google", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signIn({
-                  method: "google",
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("google"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
-        <Button
-          fa={{ icon: "fa-github", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signIn({
-                  method: "github",
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("github"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
+        <For each={getThirdParties()}>
+          {(thirdParty) => (
+            <Button
+              fa={thirdParty.fa}
+              onClick={() =>
+                void trySignIn(
+                  async () =>
+                    signIn({
+                      method: "thirdParty",
+                      id: thirdParty.id,
+                      rememberMe: form.getFieldValue("rememberMe"),
+                    }),
+                  thirdParty.display,
+                )
+              }
+              disabled={!getLoginPageInputsEnabled()}
+            />
+          )}
+        </For>
       </div>
       <form
         class="grid w-full gap-2"

@@ -1,25 +1,24 @@
 import { z } from "zod";
 
-import type { AuthMethod } from "../../../auth/providers/types";
-
-import { removeAuthProvider } from "../../../auth/actions";
+import { removeAuthMethod } from "../../../auth/actions";
+import { getAuthMethodDisplay, getThirdParties } from "../../../auth/session";
 import {
-  getAuthMethodDisplay,
-  getPasswordSchema,
-  hasAdditionalAuthMethods,
-  isUsingPasswordAuthentication,
-} from "../../../auth/methods";
-import { isAuthenticated } from "../../../auth/state";
+  hasOtherAuthMethods,
+  isAuthenticated,
+  isUsingPasswordAuth,
+} from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getPasswordSchema } from "../../ui/form/utils";
 
 export function showRemoveAuthMethodModal(options: {
-  authMethod: AuthMethod;
+  /** a third party id, or `"password"` */
+  authMethod: string;
 }): void {
   if (!isAuthenticated()) return;
 
   //check there is at least one authentication remaining
-  const hasRemainingAuth = hasAdditionalAuthMethods(options.authMethod);
+  const hasRemainingAuth = hasOtherAuthMethods(options.authMethod);
 
   if (!hasRemainingAuth) {
     showNoticeNotification("No remaining authentication enabled");
@@ -41,18 +40,19 @@ export function showRemoveAuthMethodModal(options: {
       password: {
         placeholder: "Password",
         type: "password",
-        hidden:
-          !isUsingPasswordAuthentication() || options.authMethod === "password",
+        hidden: !isUsingPasswordAuth() || options.authMethod === "password",
       },
       checked: {
         type: "checkbox",
-        label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
+        label: `I understand I will lose access to my Monkeytype account if my ${getThirdParties()
+          .map((it) => it.display)
+          .join("/")} account is lost or disabled.`,
         hidden: options.authMethod !== "password",
       },
     },
 
     execFn: async ({ password }) => {
-      const result = await removeAuthProvider(options.authMethod, { password });
+      const result = await removeAuthMethod(options.authMethod, { password });
       return result;
     },
   });

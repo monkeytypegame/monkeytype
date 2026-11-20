@@ -1,13 +1,18 @@
-export type AuthMethod = "password" | "github" | "google";
-export type ThirdPartyAuthMethod = Exclude<AuthMethod, "password">;
+import type { FaObject } from "../../types/font-awesome";
+
+/** A third party the provider signs in with (eg. Google), as the UI shows it. */
+export type ThirdParty = { id: string; display: string; fa: FaObject };
 
 /** The signed in user as the auth provider sees it. */
 export type AuthUser = {
   uid: string;
   email: string | null;
   emailVerified: boolean;
-  /** auth methods linked to the account, with the email each one uses */
-  methods: { method: AuthMethod; email: string | null }[];
+  /**
+   * auth methods linked to the account, with the email each one uses: a third
+   * party id, or `"password"`
+   */
+  methods: { id: string; email: string | null }[];
 };
 
 /** Error codes the UI branches on; anything else is `unknown`. */
@@ -29,7 +34,7 @@ export class AuthError extends Error {
 
 export type SignInOptions = (
   | { method: "password"; email: string; password: string }
-  | { method: ThirdPartyAuthMethod }
+  | { method: "thirdParty"; id: string }
 ) & { rememberMe: boolean };
 
 export type SignInResult = { user: AuthUser; isNewUser: boolean };
@@ -46,6 +51,10 @@ export type SignInResult = { user: AuthUser; isNewUser: boolean };
  * them, with links from the backend's auth provider.
  */
 export type AuthProvider = {
+  /** Whether users can sign in with a password. */
+  readonly password: boolean;
+  /** The third parties users can sign in with, most preferred first. */
+  readonly thirdParties: readonly ThirdParty[];
   /**
    * Throws when the provider can't start; auth is then unavailable. Reports
    * every sign in and out. A provider that signs in by redirect reports the
@@ -83,7 +92,7 @@ export type AuthProvider = {
   reauthenticate(
     options:
       | { method: "password"; password: string }
-      | { method: ThirdPartyAuthMethod },
+      | { method: "thirdParty"; id: string },
   ): Promise<void>;
   /**
    * Adds password auth with this email, which becomes the account's email.
@@ -91,6 +100,7 @@ export type AuthProvider = {
    */
   linkPassword(email: string, password: string): Promise<void>;
   /** Links a third party (popup, or a redirect that never resolves). */
-  linkProvider(method: ThirdPartyAuthMethod): Promise<void>;
-  unlink(method: AuthMethod): Promise<void>;
+  linkThirdParty(id: string): Promise<void>;
+  /** Unlinks a third party by its id, or password auth with `"password"`. */
+  unlink(id: string): Promise<void>;
 };

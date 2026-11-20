@@ -4,7 +4,6 @@ import { JSXElement } from "solid-js";
 
 import Ape from "../../../ape";
 import { signUp } from "../../../auth/actions";
-import { getPasswordSchema } from "../../../auth/methods";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
@@ -21,10 +20,11 @@ import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
+  ValidationResult,
   allFieldsMandatory,
   fromSchema,
+  getPasswordSchema,
   handleResult,
-  ValidationResult,
 } from "../../ui/form/utils";
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;

@@ -38,32 +38,53 @@ import {
   getAnalytics as firebaseGetAnalytics,
 } from "firebase/analytics";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { typedKeys } from "@monkeytype/util/objects";
 import {
   AuthError,
   AuthErrorCode,
-  AuthMethod,
   AuthProvider,
   AuthUser,
-  ThirdPartyAuthMethod,
+  ThirdParty,
 } from "./types";
 
 let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
-const popupProviders: Record<ThirdPartyAuthMethod, FirebaseAuthProvider> = {
-  github: new GithubAuthProvider(),
-  google: new GoogleAuthProvider(),
-};
+const thirdParties: (ThirdParty & { firebase: FirebaseAuthProvider })[] = [
+  {
+    id: "google",
+    display: "Google",
+    fa: { variant: "brand", icon: "fa-google" },
+    firebase: new GoogleAuthProvider(),
+  },
+  {
+    id: "github",
+    display: "GitHub",
+    fa: { variant: "brand", icon: "fa-github" },
+    firebase: new GithubAuthProvider(),
+  },
+];
 
-const providerIds: Record<AuthMethod, string> = {
-  password: "password",
-  github: popupProviders.github.providerId,
-  google: popupProviders.google.providerId,
-};
+function popupProvider(id: string): FirebaseAuthProvider {
+  const thirdParty = thirdParties.find((it) => it.id === id);
+  if (thirdParty === undefined) throw new Error(`Unknown third party: ${id}`);
+  return thirdParty.firebase;
+}
+
+/** Our auth method id for a Firebase provider id. */
+function toMethodId(providerId: string): string | undefined {
+  if (providerId === "password") return "password";
+  return thirdParties.find((it) => it.firebase.providerId === providerId)?.id;
+}
 
 /** Firebase as the auth provider. */
 export const firebaseAuthProvider: AuthProvider = {
+  password: true,
+  thirdParties: thirdParties.map(({ id, display, fa }) => ({
+    id,
+    display,
+    fa,
+  })),
+
   async init(onUserChange) {
     try {
       const { firebaseConfig } =
@@ -111,7 +132,7 @@ export const firebaseAuthProvider: AuthProvider = {
             options.email,
             options.password,
           )
-        : firebaseSignInWithPopup(auth, popupProviders[options.method]),
+        : firebaseSignInWithPopup(auth, popupProvider(options.id)),
     );
     if (error !== null) {
       console.error(error);
@@ -155,7 +176,7 @@ export const firebaseAuthProvider: AuthProvider = {
       await wrapErrors(reauthenticateWithCredential(user, credential));
     } else {
       await wrapErrors(
-        reauthenticateWithPopup(user, popupProviders[options.method]),
+        reauthenticateWithPopup(user, popupProvider(options.id)),
       );
     }
   },
@@ -167,12 +188,14 @@ export const firebaseAuthProvider: AuthProvider = {
     await wrapErrors(updateEmail(user, email));
   },
 
-  async linkProvider(method) {
-    await wrapErrors(linkWithPopup(requireUser(), popupProviders[method]));
+  async linkThirdParty(id) {
+    await wrapErrors(linkWithPopup(requireUser(), popupProvider(id)));
   },
 
-  async unlink(method) {
-    await wrapErrors(unlink(requireUser(), providerIds[method]));
+  async unlink(id) {
+    const providerId =
+      id === "password" ? "password" : popupProvider(id).providerId;
+    await wrapErrors(unlink(requireUser(), providerId));
   },
 };
 
@@ -197,10 +220,8 @@ function toAuthUser(user: User): AuthUser {
     email: user.email,
     emailVerified: user.emailVerified,
     methods: user.providerData.flatMap((info) => {
-      const method = typedKeys(providerIds).find(
-        (it) => providerIds[it] === info.providerId,
-      );
-      return method === undefined ? [] : [{ method, email: info.email }];
+      const id = toMethodId(info.providerId);
+      return id === undefined ? [] : [{ id, email: info.email }];
     }),
   };
 }

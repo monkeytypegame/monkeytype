@@ -12,7 +12,7 @@ import {
   finishSignUp,
   getAuthenticatedUser,
   initAuth,
-  linkProvider,
+  linkThirdParty,
   isAuthAvailable,
   signIn,
 } from "../../src/ts/auth/session";
@@ -52,10 +52,10 @@ const provider = {
     providerReports(user);
     return { user, isNewUser: fake.isNewUser };
   }),
-  linkProvider: vi.fn(async (method) => {
+  linkThirdParty: vi.fn(async (id) => {
     fake.currentUser = {
       ...user,
-      methods: [...user.methods, { method, email: null }],
+      methods: [...user.methods, { id, email: null }],
     };
   }),
   createUser: vi.fn(async () => {
@@ -89,7 +89,7 @@ describe("auth session", () => {
   });
 
   it("signs in an existing user from a provider popup", async () => {
-    await signIn({ method: "github", rememberMe: false });
+    await signIn({ method: "thirdParty", id: "github", rememberMe: false });
 
     expect(getUserId()).toBe("uid");
     expect(showGoogleSignUpModal).not.toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe("auth session", () => {
   // #8046: signing in before the backend user exists makes backend calls fail
   it("a new user from a provider popup stays signed out until the sign up finishes", async () => {
     fake.isNewUser = true;
-    await signIn({ method: "google", rememberMe: false });
+    await signIn({ method: "thirdParty", id: "google", rememberMe: false });
 
     expect(showGoogleSignUpModal).toHaveBeenCalledWith(user);
     expect(getUserId()).toBeNull();
@@ -114,7 +114,7 @@ describe("auth session", () => {
       new Error("Popup closed by user"),
     );
     await expect(
-      signIn({ method: "google", rememberMe: false }),
+      signIn({ method: "thirdParty", id: "google", rememberMe: false }),
     ).rejects.toThrow("Popup closed by user");
 
     providerReports(user);
@@ -158,8 +158,8 @@ describe("auth session", () => {
     providerReports(user);
     expect(getAuthMethods()).toEqual([]);
 
-    await linkProvider("github");
-    expect(getAuthMethods()).toEqual([{ method: "github", email: null }]);
+    await linkThirdParty("github");
+    expect(getAuthMethods()).toEqual([{ id: "github", email: null }]);
 
     providerReports(null);
     expect(getAuthMethods()).toEqual([]);

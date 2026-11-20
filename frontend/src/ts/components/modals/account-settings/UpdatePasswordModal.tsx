@@ -2,17 +2,14 @@ import { z } from "zod";
 
 import Ape from "../../../ape";
 import { reauthenticate, signOut } from "../../../auth/actions";
-import {
-  getPasswordSchema,
-  isUsingPasswordAuthentication,
-} from "../../../auth/methods";
-import { isAuthenticated } from "../../../auth/state";
+import { isAuthenticated, isUsingPasswordAuth } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getPasswordSchema } from "../../ui/form/utils";
 
 export function showUpdatePasswordModal(): void {
   if (!isAuthenticated()) return;
-  if (!isUsingPasswordAuthentication()) {
+  if (!isUsingPasswordAuth()) {
     showNoticeNotification("Password authentication is not enabled");
     return;
   }

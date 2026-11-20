@@ -16,3 +16,22 @@ export const [isUserVerified, setUserVerified] = createSignal(false);
 export const [getAuthMethods, setAuthMethods] = createSignal<
   AuthUser["methods"]
 >([]);
+
+/** Whether the signed in user has this auth method (a third party id, or `"password"`). */
+export function isUsingAuthMethod(id: string): boolean {
+  return getAuthMethods().some((it) => it.id === id);
+}
+
+export function isUsingPasswordAuth(): boolean {
+  return isUsingAuthMethod("password");
+}
+
+/** The email the signed in user's auth method uses. */
+export function getAuthMethodEmail(id: string): string | undefined {
+  return getAuthMethods().find((it) => it.id === id)?.email ?? undefined;
+}
+
+/** Whether the signed in user could still sign in without this auth method. */
+export function hasOtherAuthMethods(id: string): boolean {
+  return getAuthMethods().some((it) => it.id !== id);
+}
