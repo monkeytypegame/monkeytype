@@ -52,10 +52,8 @@ export function showUpdatePasswordModal(): void {
 
       const reauth = await reauthenticate({ password: previousPass });
       if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
+        // reauthenticate already told the user
+        return { status: reauth.status, showNotification: false };
       }
 
       const response = await Ape.users.updatePassword({

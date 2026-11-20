@@ -53,8 +53,9 @@ export function showRemoveAuthMethodModal(options: {
     },
 
     execFn: async ({ password }) => {
+      // shows its own notifications
       const result = await removeAuthMethod(options.authMethod, { password });
-      return result;
+      return { status: result.status, showNotification: false };
     },
   });
 }

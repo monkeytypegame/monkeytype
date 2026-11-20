@@ -1,8 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../../src/ts/states/google-sign-up", () => ({
-  showGoogleSignUpModal: vi.fn(),
-}));
 vi.mock("../../src/ts/states/banners", () => ({ addBanner: vi.fn() }));
 
 import { AuthProvider, AuthUser } from "../../src/ts/auth/providers/types";
@@ -10,18 +7,18 @@ import {
   cancelSignUp,
   createProviderUser,
   finishSignUp,
-  getAuthenticatedUser,
+  getProviderUser,
   initAuth,
   linkMethod,
-  signIn,
+  signInToProvider,
 } from "../../src/ts/auth/system";
 import {
   getAuthMethods,
   getAuthState,
+  getPendingSignUpUser,
   getUserId,
   isAuthAvailable,
 } from "../../src/ts/auth/state";
-import { showGoogleSignUpModal } from "../../src/ts/states/google-sign-up";
 
 const user: AuthUser = {
   uid: "uid",
@@ -82,7 +79,7 @@ describe("auth system", () => {
     providerReports(user);
     expect(getUserId()).toBe("uid");
     expect(getAuthState()).toBe("signedIn");
-    expect(getAuthenticatedUser()).toBe(user);
+    expect(getProviderUser()).toBe(user);
 
     providerReports(null);
     expect(getUserId()).toBeNull();
@@ -90,24 +87,25 @@ describe("auth system", () => {
   });
 
   it("signs in an existing user from a provider popup", async () => {
-    await signIn({ method: "github", rememberMe: false });
+    await signInToProvider({ method: "github", rememberMe: false });
 
     expect(getUserId()).toBe("uid");
-    expect(showGoogleSignUpModal).not.toHaveBeenCalled();
+    expect(getPendingSignUpUser()).toBeUndefined();
   });
 
   // #8046: signing in before the backend user exists makes backend calls fail
   it("a new user from a provider popup stays signed out until the sign up finishes", async () => {
     fake.isNewUser = true;
-    await signIn({ method: "google", rememberMe: false });
+    await signInToProvider({ method: "google", rememberMe: false });
 
-    expect(showGoogleSignUpModal).toHaveBeenCalledWith(user);
+    expect(getPendingSignUpUser()).toBe(user);
     expect(getUserId()).toBeNull();
     expect(getAuthState()).toBe("signedOut");
 
     finishSignUp();
     expect(getUserId()).toBe("uid");
     expect(getAuthState()).toBe("signedIn");
+    expect(getPendingSignUpUser()).toBeUndefined();
   });
 
   it("a failed popup listens to user changes again", async () => {
@@ -115,7 +113,7 @@ describe("auth system", () => {
       new Error("Popup closed by user"),
     );
     await expect(
-      signIn({ method: "google", rememberMe: false }),
+      signInToProvider({ method: "google", rememberMe: false }),
     ).rejects.toThrow("Popup closed by user");
 
     providerReports(user);
@@ -126,7 +124,7 @@ describe("auth system", () => {
     fake.currentUser = user;
     fake.onUserChange?.(user, { isNewUser: true });
 
-    expect(showGoogleSignUpModal).toHaveBeenCalledWith(user);
+    expect(getPendingSignUpUser()).toBe(user);
     expect(getUserId()).toBeNull();
     // the provider repeating the user changes nothing until then
     providerReports(user);
@@ -159,6 +157,7 @@ describe("auth system", () => {
     await cancelSignUp();
 
     expect(provider.signOut).toHaveBeenCalled();
+    expect(getPendingSignUpUser()).toBeUndefined();
     expect(getUserId()).toBeNull();
     providerReports(user);
     expect(getUserId()).toBe("uid");
@@ -190,7 +189,7 @@ describe("auth provider failing to start", () => {
     await initAuth(failing);
 
     expect(isAuthAvailable()).toBe(false);
-    expect(getAuthenticatedUser()).toBeNull();
+    expect(getProviderUser()).toBeNull();
     expect(getAuthState()).toBe("signedOut");
   });
 

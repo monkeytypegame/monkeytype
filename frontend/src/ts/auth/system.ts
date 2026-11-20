@@ -6,10 +6,10 @@ import {
   setAuthMethods,
   setAuthState,
   setOfferedAuthMethods,
+  setPendingSignUpUser,
   setUserId,
   setUserVerified,
 } from "./state";
-import { showGoogleSignUpModal } from "../states/google-sign-up";
 import { isDevEnvironment } from "../utils/env";
 
 import {
@@ -23,8 +23,9 @@ import {
 let provider: AuthProvider | undefined;
 
 /**
- * Hold back the provider's user changes. Used during a sign up, which signs in
- * before the backend user exists.
+ * Hold back the provider's user changes: set while a sign in is deciding
+ * whether the user is new, and during a sign up, which signs in before the
+ * backend user exists. Cleared by `finishSignUp` and `cancelSignUp`.
  */
 let holdUserChanges = false;
 
@@ -45,19 +46,19 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
       if (holdUserChanges) return;
       if (user !== null && info?.isNewUser === true) {
         // a redirect sign up: signed in before the backend user exists
-        startProviderSignUp(user);
+        startThirdPartySignUp(user);
         return;
       }
       setUserState(user);
     });
   } catch (e) {
     setAuthAvailable(false);
-    console.error("Firebase failed to initialize", e);
+    console.error("Auth provider failed to initialize", e);
     setUserState(null);
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
-        text: "Dev Info: Firebase failed to initialize",
+        text: "Dev Info: Auth provider failed to initialize",
         icon: "fas fa-exclamation-triangle",
       });
     }
@@ -79,10 +80,10 @@ function getAuthProvider(required = false): AuthProvider | undefined {
 }
 
 /**
- *
- * @returns the current user if authenticated, else `null`
+ * The provider's signed in user. During a sign up it is signed in here but
+ * not yet in the app (`auth/state`).
  */
-export function getAuthenticatedUser(): AuthUser | null {
+export function getProviderUser(): AuthUser | null {
   return getAuthProvider()?.getUser() ?? null;
 }
 
@@ -90,16 +91,16 @@ export async function getIdToken(): Promise<string | null> {
   return (await getAuthProvider()?.getToken()) ?? null;
 }
 
-export async function signOut(): Promise<void> {
+export async function signOutOfProvider(): Promise<void> {
   console.log("auth signout");
   await getAuthProvider()?.signOut();
 }
 
 /**
- * Signs in with a password or a third party. A new (third party) user goes to
- * the sign-up modal, still signed out.
+ * Signs in with a password or a third party. A new (third party) user becomes
+ * the pending sign-up user, still signed out.
  */
-export async function signIn(options: SignInOptions): Promise<void> {
+export async function signInToProvider(options: SignInOptions): Promise<void> {
   const authProvider = getAuthProvider(true);
   holdUserChanges = true;
   let result: SignInResult;
@@ -110,17 +111,17 @@ export async function signIn(options: SignInOptions): Promise<void> {
     throw e;
   }
   if (result.isNewUser) {
-    startProviderSignUp(result.user);
+    startThirdPartySignUp(result.user);
   } else {
     holdUserChanges = false;
     setUserState(result.user);
   }
 }
 
-/** Holds the new user back while it picks a name in the sign-up modal. */
-function startProviderSignUp(user: AuthUser): void {
+/** Holds the new user back while it picks a name (the sign-up modal). */
+function startThirdPartySignUp(user: AuthUser): void {
   holdUserChanges = true;
-  showGoogleSignUpModal(user);
+  setPendingSignUpUser(user);
 }
 
 /** Stays signed out until `finishSignUp`. */
@@ -141,7 +142,10 @@ export async function createProviderUser(options: {
  */
 export function finishSignUp(): void {
   holdUserChanges = false;
-  setUserState(getAuthenticatedUser());
+  batch(() => {
+    setPendingSignUpUser(undefined);
+    setUserState(getProviderUser());
+  });
 }
 
 /**
@@ -151,6 +155,7 @@ export function finishSignUp(): void {
  */
 export async function cancelSignUp(): Promise<void> {
   holdUserChanges = false;
+  setPendingSignUpUser(undefined);
   await getAuthProvider()?.signOut();
 }
 
@@ -160,7 +165,7 @@ export async function deleteProviderUser(): Promise<void> {
 }
 
 /** Proves the user is present before a sensitive change. */
-export async function reauthenticate(
+export async function reauthenticateWithProvider(
   options: Parameters<AuthProvider["reauthenticate"]>[0],
 ): Promise<void> {
   await getAuthProvider(true).reauthenticate(options);
@@ -185,7 +190,7 @@ export async function unlinkMethod(method: string): Promise<void> {
 /** Rewrites the auth signals after the signed in user changed in place. */
 function refreshUserState(): void {
   if (holdUserChanges) return;
-  setUserState(getAuthenticatedUser());
+  setUserState(getProviderUser());
 }
 
 /**

@@ -176,10 +176,8 @@ function showReauthConfirmModal(options: {
     execFn: async ({ password }) => {
       const reauth = await reauthenticate({ password });
       if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
+        // reauthenticate already told the user
+        return { status: reauth.status, showNotification: false };
       }
 
       return options.action();

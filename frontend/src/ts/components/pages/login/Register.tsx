@@ -88,15 +88,8 @@ export function Register(): JSXElement {
         return;
       }
       try {
-        const data = await signUp(
-          value.username,
-          value.email,
-          value.password,
-          captchaToken,
-        );
-        if (!data.success) {
-          showErrorNotification(data.message);
-        }
+        // shows its own errors
+        await signUp(value.username, value.email, value.password, captchaToken);
       } finally {
         enableLoginPageInputs();
       }

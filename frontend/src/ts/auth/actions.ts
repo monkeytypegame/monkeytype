@@ -1,12 +1,7 @@
-import { tryCatch } from "@monkeytype/util/trycatch";
-
 import Ape from "../ape";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
-  getGoogleSignUpUser,
-  setGoogleSignUpUser,
-} from "../states/google-sign-up";
-import {
+  addNotificationWithLevel,
   showErrorNotification,
   showNoticeNotification,
   showSuccessNotification,
@@ -24,47 +19,45 @@ import {
   createProviderUser,
   deleteProviderUser,
   finishSignUp,
-  getAuthenticatedUser,
-  linkMethod,
-  reauthenticate as systemReauthenticate,
-  signIn as systemSignIn,
-  signOut as systemSignOut,
-  unlinkMethod,
+  getProviderUser,
   initAuth,
+  linkMethod,
+  reauthenticateWithProvider,
+  signInToProvider,
+  signOutOfProvider,
+  unlinkMethod,
 } from "./system";
 import {
   getAuthMethodDisplay,
   getOfferedAuthMethods,
+  getPendingSignUpUser,
   isAuthAvailable,
   isAuthenticated,
   isUsingAuthMethod,
 } from "./state";
 
-export type AuthResult =
-  | {
-      success: true;
-    }
-  | {
-      success: false;
-      message: string;
-    };
+/**
+ * What an auth action did. Every action shows its own notifications (success
+ * and failure), so callers only branch on the status, eg. to close a modal.
+ */
+export type AuthActionResult = { status: "success" | "notice" | "error" };
 
-type ReauthSuccess = {
-  status: "success";
-  message: string;
-  user: AuthUser;
-};
-
-type ReauthFailed = {
-  status: "error" | "notice";
-  message: string;
-};
+type ReauthResult =
+  | { status: "success"; user: AuthUser }
+  | { status: "notice" | "error"; message: string };
 
 type ReauthenticateOptions = {
   /** an auth method id: a third party id, or `"password"` */
   excludeMethod?: string;
   password?: string;
 };
+
+const unavailable = "Authentication uninitialized";
+
+function notifyUnavailable(): AuthActionResult {
+  showErrorNotification(unavailable, { durationMs: 3000 });
+  return { status: "error" };
+}
 
 /**
  * Starts auth with the provider boot picked; resolves once the first auth
@@ -74,74 +67,74 @@ export async function startAuth(provider: AuthProvider): Promise<void> {
   await initAuth(provider);
 }
 
-export { getAuthenticatedUser };
-
-export async function sendVerificationEmail(): Promise<void> {
-  if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
-    return;
-  }
+export async function sendVerificationEmail(): Promise<AuthActionResult> {
+  if (!isAuthAvailable()) return notifyUnavailable();
 
   showLoaderBar();
   const response = await Ape.users.verificationEmail();
+  hideLoaderBar();
   if (response.status !== 200) {
-    hideLoaderBar();
     showErrorNotification("Failed to request verification email", { response });
-  } else {
-    hideLoaderBar();
-    showSuccessNotification("Verification email sent");
+    return { status: "error" };
   }
+  showSuccessNotification("Verification email sent");
+  return { status: "success" };
 }
 
-export async function signIn(options: SignInOptions): Promise<AuthResult> {
+export async function signIn(
+  options: SignInOptions,
+): Promise<AuthActionResult> {
+  const failed = isPasswordMethod(options)
+    ? "Failed to sign in"
+    : `Failed to sign in with ${getAuthMethodDisplay(options.method)}`;
   if (!isAuthAvailable()) {
-    return { success: false, message: "Authentication uninitialized" };
+    showErrorNotification(`${failed}: ${unavailable}`);
+    return { status: "error" };
   }
 
-  const { error } = await tryCatch(systemSignIn(options));
-
-  if (error !== null) {
-    return { success: false, message: error.message };
+  try {
+    await signInToProvider(options);
+    return { status: "success" };
+  } catch (e) {
+    // provider sign in errors carry a message ready to show
+    showErrorNotification(`${failed}: ${(e as Error).message}`);
+    return { status: "error" };
   }
-  return { success: true };
 }
 
 export async function addAuthMethod(
   options:
     | { method: "password"; email: string; password: string }
     | { method: string },
-): Promise<void> {
-  if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
-    return;
-  }
-  const user = getAuthenticatedUser();
-  const providerName = getAuthMethodDisplay(options.method);
+): Promise<AuthActionResult> {
+  if (!isAuthAvailable()) return notifyUnavailable();
+  if (getProviderUser() === null) return { status: "error" };
 
-  if (!user) return;
+  const methodName = getAuthMethodDisplay(options.method);
   showLoaderBar();
   try {
     if (isPasswordMethod(options)) {
-      await addPasswordProvider(options);
+      await addPasswordMethod(options);
     } else {
       await linkMethod(options);
     }
-
-    showSuccessNotification(`${providerName} authentication added`);
+    showSuccessNotification(`${methodName} authentication added`);
+    return { status: "success" };
   } catch (error) {
-    showErrorNotification(`Failed to add ${providerName} authentication`, {
+    showErrorNotification(`Failed to add ${methodName} authentication`, {
       error,
     });
+    return { status: "error" };
   } finally {
     hideLoaderBar();
   }
 }
 
-async function addPasswordProvider(options: {
+async function addPasswordMethod(options: {
   email: string;
   password: string;
 }): Promise<void> {
-  const reauth = await reauthenticate({ password: options.password });
+  const reauth = await tryReauthenticate({ password: options.password });
   if (reauth.status !== "success") {
     throw new Error(reauth.message);
   }
@@ -154,7 +147,7 @@ async function addPasswordProvider(options: {
     body: {
       newEmail: options.email,
       // read after linking, which updates the account's email
-      previousEmail: getAuthenticatedUser()?.email as string,
+      previousEmail: getProviderUser()?.email as string,
     },
   });
   if (response.status !== 200) {
@@ -168,45 +161,37 @@ async function addPasswordProvider(options: {
 export async function removeAuthMethod(
   authMethod: string,
   options?: { password?: string },
-): Promise<ReauthSuccess | ReauthFailed> {
+): Promise<AuthActionResult> {
   const reauth = await reauthenticate({
     password: options?.password,
     excludeMethod: authMethod,
   });
-  if (reauth.status !== "success") {
-    return {
-      status: reauth.status,
-      message: reauth.message,
-    };
-  }
+  if (reauth.status !== "success") return reauth;
+
   try {
     await unlinkMethod(authMethod);
   } catch (e) {
-    const message = createErrorMessage(
-      e,
-      authMethod === "password"
-        ? "Failed to remove password authentication"
-        : `Failed to unlink ${getAuthMethodDisplay(authMethod)} account`,
+    showErrorNotification(
+      createErrorMessage(
+        e,
+        authMethod === "password"
+          ? "Failed to remove password authentication"
+          : `Failed to unlink ${getAuthMethodDisplay(authMethod)} account`,
+      ),
     );
-    return {
-      status: "error",
-      message,
-    };
+    return { status: "error" };
   }
-  return {
-    status: "success",
-    message: `${getAuthMethodDisplay(authMethod)} authentication removed`,
-    user: reauth.user,
-  };
+  showSuccessNotification(
+    `${getAuthMethodDisplay(authMethod)} authentication removed`,
+  );
+  return { status: "success" };
 }
 
-export function signOut(): void {
-  if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
-    return;
-  }
-  if (!isAuthenticated()) return;
-  void systemSignOut();
+export function signOut(): AuthActionResult {
+  if (!isAuthAvailable()) return notifyUnavailable();
+  if (!isAuthenticated()) return { status: "notice" };
+  void signOutOfProvider();
+  return { status: "success" };
 }
 
 export async function signUp(
@@ -214,9 +199,10 @@ export async function signUp(
   email: string,
   password: string,
   captchaToken: string,
-): Promise<AuthResult> {
+): Promise<AuthActionResult> {
   if (!isAuthAvailable()) {
-    return { success: false, message: "Authentication uninitialized" };
+    showErrorNotification(unavailable);
+    return { status: "error" };
   }
 
   try {
@@ -238,7 +224,7 @@ export async function signUp(
     finishSignUp();
 
     showSuccessNotification("Account created");
-    return { success: true };
+    return { status: "success" };
   } catch (e) {
     let message = createErrorMessage(e, "Failed to create account");
 
@@ -251,29 +237,29 @@ export async function signUp(
 
     showErrorNotification(message);
     void cancelSignUp();
-    return { success: false, message };
+    return { status: "error" };
   }
 }
 
 /**
- * Finishes a third party sign up: the new user (held back, see
- * `startProviderSignUp`) picked a name. Creates the backend user, or cancels
- * the sign up when that fails.
+ * Finishes a third party sign up: the pending sign-up user (signed in to the
+ * provider, signed out here) picked a name. Creates the backend user, or
+ * cancels the sign up when that fails.
  */
 export async function completeThirdPartySignUp(
   name: string,
   captcha: string,
-): Promise<void> {
-  const signedInUser = getGoogleSignUpUser();
+): Promise<AuthActionResult> {
+  const signedInUser = getPendingSignUpUser();
   if (!signedInUser) {
     showErrorNotification(
       "Missing user credential. Please close the popup and try again.",
     );
-    return;
+    return { status: "error" };
   }
   if (!captcha) {
     showNoticeNotification("Please complete the captcha");
-    return;
+    return { status: "notice" };
   }
 
   showLoaderBar();
@@ -289,24 +275,30 @@ export async function completeThirdPartySignUp(
     if (!signedInUser.emailVerified) await sendVerificationEmail();
     finishSignUp();
     showSuccessNotification("Account created");
-    setGoogleSignUpUser(undefined);
+    return { status: "success" };
   } catch (e) {
     console.log(e);
-    showErrorNotification("Failed to sign in with Google", { error: e });
+    const thirdParty = signedInUser.methods.find((it) => it.id !== "password");
+    showErrorNotification(
+      `Failed to sign in with ${thirdParty === undefined ? "a third party" : getAuthMethodDisplay(thirdParty.id)}`,
+      { error: e },
+    );
     await abortThirdPartySignUp();
+    return { status: "error" };
   } finally {
     hideLoaderBar();
   }
 }
 
 /** Cancels a third party sign up the user walked away from. */
-export async function cancelThirdPartySignUp(): Promise<void> {
+export async function cancelThirdPartySignUp(): Promise<AuthActionResult> {
   // finished, or a failed completion already aborted it
-  if (getGoogleSignUpUser() === undefined) return;
+  if (getPendingSignUpUser() === undefined) return { status: "success" };
   showNoticeNotification("Sign up process cancelled", {
     durationMs: 5000,
   });
   await abortThirdPartySignUp();
+  return { status: "notice" };
 }
 
 /**
@@ -321,13 +313,27 @@ async function abortThirdPartySignUp(): Promise<void> {
     });
   } finally {
     await cancelSignUp();
-    setGoogleSignUpUser(undefined);
   }
 }
 
+/**
+ * Proves the user is present with their most preferred auth method (a popup
+ * for a third party). Shows its own failure notification.
+ */
 export async function reauthenticate(
   options: ReauthenticateOptions,
-): Promise<ReauthSuccess | ReauthFailed> {
+): Promise<ReauthResult> {
+  const result = await tryReauthenticate(options);
+  if (result.status !== "success") {
+    addNotificationWithLevel(result.message, result.status);
+  }
+  return result;
+}
+
+/** `reauthenticate`, telling the caller what failed instead of the user. */
+async function tryReauthenticate(
+  options: ReauthenticateOptions,
+): Promise<ReauthResult> {
   if (!isAuthAvailable()) {
     return {
       status: "error",
@@ -335,7 +341,7 @@ export async function reauthenticate(
     };
   }
 
-  const user = getAuthenticatedUser();
+  const user = getProviderUser();
   if (user === null) {
     return {
       status: "error",
@@ -361,19 +367,15 @@ export async function reauthenticate(
           message: "Failed to reauthenticate using password: password missing.",
         };
       }
-      await systemReauthenticate({
+      await reauthenticateWithProvider({
         method: "password",
         password: options.password,
       });
     } else {
-      await systemReauthenticate({ method: authMethod });
+      await reauthenticateWithProvider({ method: authMethod });
     }
 
-    return {
-      status: "success",
-      message: "Reauthenticated",
-      user,
-    };
+    return { status: "success", user };
   } catch (e) {
     const code = e instanceof AuthError ? e.code : "unknown";
     if (code === "wrongPassword") {

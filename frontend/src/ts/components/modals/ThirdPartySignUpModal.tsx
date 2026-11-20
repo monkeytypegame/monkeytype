@@ -6,7 +6,9 @@ import {
   cancelThirdPartySignUp,
   completeThirdPartySignUp,
 } from "../../auth/actions";
-import { hideModal, ModalId } from "../../states/modals";
+import { getPendingSignUpUser } from "../../auth/state";
+import { createEffectOn } from "../../hooks/effects";
+import { hideModal, ModalId, showModal } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { remoteValidationForm } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
@@ -15,9 +17,14 @@ import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
 
-const modalId: ModalId = "GoogleSignup";
+const modalId: ModalId = "ThirdPartySignUp";
 
-export function GoogleSignupModal() {
+/** A new third party user picks a name; opens while a sign up is pending. */
+export function ThirdPartySignUpModal() {
+  createEffectOn(getPendingSignUpUser, (user) => {
+    if (user !== undefined) showModal(modalId);
+  });
+
   const form = createForm(() => ({
     defaultValues: {
       username: "",

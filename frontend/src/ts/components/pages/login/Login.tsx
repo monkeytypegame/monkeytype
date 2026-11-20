@@ -1,7 +1,7 @@
 import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement } from "solid-js";
 
-import { AuthResult, signIn } from "../../../auth/actions";
+import { AuthActionResult, signIn } from "../../../auth/actions";
 import { getThirdParties } from "../../../auth/state";
 import {
   disableLoginPageInputs,
@@ -9,10 +9,7 @@ import {
   getLoginPageInputsEnabled,
 } from "../../../states/login";
 import { showModal } from "../../../states/modals";
-import {
-  showErrorNotification,
-  showNoticeNotification,
-} from "../../../states/notifications";
+import { showNoticeNotification } from "../../../states/notifications";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
@@ -22,18 +19,13 @@ import { SubmitButton } from "../../ui/form/SubmitButton";
 import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
+  // the sign in action shows its own errors
   const trySignIn = async (
-    auth: () => Promise<AuthResult>,
-    label?: string,
+    auth: () => Promise<AuthActionResult>,
   ): Promise<void> => {
     disableLoginPageInputs();
     try {
-      const data = await auth();
-      if (!data.success) {
-        showErrorNotification(
-          `Failed to sign in${label !== undefined ? ` with ${label}` : ""}: ${data.message}`,
-        );
-      }
+      await auth();
     } finally {
       enableLoginPageInputs();
     }
@@ -77,13 +69,11 @@ export function Login(): JSXElement {
             <Button
               fa={thirdParty.fa}
               onClick={() =>
-                void trySignIn(
-                  async () =>
-                    signIn({
-                      method: thirdParty.id,
-                      rememberMe: form.getFieldValue("rememberMe"),
-                    }),
-                  thirdParty.display,
+                void trySignIn(async () =>
+                  signIn({
+                    method: thirdParty.id,
+                    rememberMe: form.getFieldValue("rememberMe"),
+                  }),
                 )
               }
               disabled={!getLoginPageInputsEnabled()}

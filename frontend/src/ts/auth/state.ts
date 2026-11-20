@@ -12,6 +12,15 @@ export const [getUserId, setUserId] = createSignal<string | null>(null);
 export const isAuthenticated = (): boolean => getUserId() !== null;
 export const [isUserVerified, setUserVerified] = createSignal(false);
 
+/**
+ * A new third party user picking a name: signed in to the auth provider, but
+ * signed out here until the sign up finishes (the backend user doesn't exist
+ * yet). The sign-up modal opens while it's set.
+ */
+export const [getPendingSignUpUser, setPendingSignUpUser] = createSignal<
+  AuthUser | undefined
+>(undefined);
+
 /** Whether auth works: false until the provider starts, and when it fails to. */
 export const [isAuthAvailable, setAuthAvailable] = createSignal(false);
 
