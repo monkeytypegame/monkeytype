@@ -1,29 +1,24 @@
 // Auth session helpers for the `__mt` debug handle: sign in with the
-// QUICK_LOGIN_* account and sign out again. Both resolve only once the user
-// query confirms the transition (a sign in loads the user, a sign out clears
-// it; see `queries/user.ts`).
-import type { UserData } from "../constants/user-data";
-import type { DeepReadonly } from "../utils/types";
+// QUICK_LOGIN_* account, sign out again, wait for the account data. They
+// resolve only once the app confirms the transition (a sign in loads the
+// account data and applies its config, a sign out clears the user; see
+// `session-data.ts`, `queries/user.ts`).
 import { quickLogin as devQuickLogin } from "./quick-login";
 
 /**
- * Polls the cached user every 20ms until `matches` holds, throwing after
- * `timeoutMs`. `undefined` confirms a sign out, an object confirms loaded
- * account data.
+ * Polls `check` every 20ms until it returns true, throwing after `timeoutMs`
+ * or when it throws.
  */
-async function waitForUser(
-  matches: (user: DeepReadonly<UserData> | undefined) => boolean,
+async function waitFor(
+  check: () => boolean,
   description: string,
   timeoutMs = 10_000,
 ): Promise<void> {
-  // lazy: the user query pulls in the api client, and the debug handle loads
-  // in jsdom tests
-  const { getUserData: getUser } = await import("../queries/user");
   const start = Date.now();
-  while (!matches(getUser())) {
+  while (!check()) {
     if (Date.now() - start > timeoutMs) {
       throw new Error(
-        `Timed out after ${timeoutMs / 1000}s waiting for the user to ${description}`,
+        `Timed out after ${timeoutMs / 1000}s waiting for ${description}`,
       );
     }
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -31,12 +26,33 @@ async function waitForUser(
 }
 
 /**
+ * Resolves once the signed in user's account data has loaded and its config
+ * is applied (at once when signed out); rejects when the load fails.
+ */
+export async function whenUserDataLoaded(): Promise<void> {
+  // lazy: session data pulls in the api client, and the debug handle loads
+  // in jsdom tests
+  const { getUserDataLoadState } = await import("../session-data");
+  await waitFor(() => {
+    const state = getUserDataLoadState();
+    if (state.status === "failed") {
+      throw new Error("The account data failed to load", {
+        cause: state.error,
+      });
+    }
+    return state.status !== "loading";
+  }, "the account data to load");
+}
+
+/**
  * Signs in with QUICK_LOGIN_EMAIL / QUICK_LOGIN_PASSWORD from the frontend
- * .env, resolving once the account data is loaded (user is set).
+ * .env, resolving once the account data is loaded and its config applied.
  */
 export async function quickLogin(): Promise<void> {
   await devQuickLogin();
-  await waitForUser((user) => user !== undefined, "be set (signed in)");
+  const { getUserId } = await import("../auth/state");
+  await waitFor(() => getUserId() !== null, "the user to sign in");
+  await whenUserDataLoaded();
 }
 
 /**
@@ -47,5 +63,6 @@ export async function signOut(): Promise<void> {
   // lazy: auth reads firebase on import, and the debug handle loads eagerly
   const { signOut } = await import("../auth/actions");
   signOut();
-  await waitForUser((user) => user === undefined, "be cleared (signed out)");
+  const { getUserData } = await import("../queries/user");
+  await waitFor(() => getUserData() === undefined, "the user to sign out");
 }

@@ -26,7 +26,8 @@
  *   Without it the words come from english.json (read from disk), random.
  *   `config` overrides the default config, eg. `{ mode: "time", time: 15 }`.
  * - Fake timers (setTimeout, setInterval, Date, performance and animation
- *   frames) for the whole spec file, from before anything loads. Animejs is
+ *   frames) for the whole spec file, from before anything loads (the
+ *   project's setup file, setup-test-page.ts, so import order can't matter). Animejs is
  *   real: the test timer and fades run on its rAF loop, so they move with the
  *   fake clock. `frame()` runs one
  *   animation frame, `advance(ms)` moves the clock (live stats tick, timed
@@ -41,15 +42,13 @@
  *   result build wait for `releaseResult()`, as a slow one.
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
- * - Mocked: firebase (auth is never initialised, so signed out and a finished
- *   test isn't saved), the theme controller (indexedDB), the chart and
- *   confetti (canvas). Stubbed in jsdom: matchMedia (nothing matches),
- *   scrolling. The engine's debug logs are muted.
+ * - Mocked (also in setup-test-page.ts): firebase (auth is never initialised,
+ *   so signed out and a finished test isn't saved), the theme controller
+ *   (indexedDB), the chart and confetti (canvas). Stubbed in jsdom: matchMedia
+ *   (nothing matches), scrolling. The engine's debug logs are muted.
  * - The page mounts in a router with only the test page, so it reads as the
  *   test page (typing starts a test only there) and the result's links work.
  */
-// static json (layouts, languages) read from disk
-import "./mock-static";
 import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 
 import { cleanup, render } from "@solidjs/testing-library";
@@ -85,76 +84,20 @@ import {
 import { getTestSettings } from "../../src/ts/test/engine/test-settings";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
 import { restartTest } from "../../src/ts/test/test-logic";
+import { resultBuild } from "./result-build";
 
 // tests check the rendered DOM itself, not the registry's refs, so they
 // query letters directly (spec Q33 exempts tests)
 const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
-// fake timers, then jsdom gaps: matchMedia (ad controller, on import; no
-// query matches) and scrolling (the test keeps itself in view)
+// a spec in another project (no setup-test-page, mock-dom's querySelector
+// returns a detached div)
 vi.hoisted(() => {
-  // mock-dom's querySelector returns a detached div
   if (document.querySelector("body") !== document.body) {
     throw new Error(
       "The test-page harness needs the real DOM: name the spec *.page-spec.tsx",
     );
   }
-  // before any import: animejs keeps the Date.now and requestAnimationFrame
-  // it finds on import. Kept for the whole spec file, so it never loses them
-  vi.useFakeTimers({
-    toFake: [
-      "setTimeout",
-      "clearTimeout",
-      "setInterval",
-      "clearInterval",
-      "Date",
-      "performance",
-      "requestAnimationFrame",
-      "cancelAnimationFrame",
-    ],
-  });
-  Element.prototype.scrollIntoView = () => undefined;
-  window.scrollTo = () => undefined;
-  // the engine logs every event and word at debug level
-  console.debug = () => undefined;
-  window.matchMedia = (query: string): MediaQueryList =>
-    ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: () => undefined,
-      removeEventListener: () => undefined,
-      dispatchEvent: () => false,
-    }) as unknown as MediaQueryList;
-});
-vi.mock("../../src/ts/auth/providers/firebase", () => ({}));
-// no canvas in jsdom; the result chart renders nothing
-vi.mock("../../src/ts/components/common/ChartJs", () => ({
-  ChartJs: () => null,
-}));
-// opens indexedDB on import
-vi.mock("../../src/ts/controllers/theme-controller", () => ({
-  randomizeTheme: vi.fn(),
-}));
-// draws on a canvas, which jsdom lacks
-vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
-// holdResult(): the engine's result build waits until releaseResult()
-const resultBuild = vi.hoisted(() => ({
-  held: false,
-  waiting: [] as (() => void)[],
-}));
-vi.mock("../../src/ts/test/engine/after-paint", async (importOriginal) => {
-  const { afterPaint } =
-    await importOriginal<
-      typeof import("../../src/ts/test/engine/after-paint")
-    >();
-  return {
-    afterPaint: (fn: () => void) =>
-      afterPaint(() => {
-        if (resultBuild.held) resultBuild.waiting.push(fn);
-        else fn();
-      }),
-  };
 });
 
 export type PagePhase = "ready" | "active" | "finished" | "restarting";
