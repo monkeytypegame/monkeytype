@@ -36,8 +36,8 @@ export const [getLoadedChallenge, setLoadedChallenge] =
 /** True while a restart fades the result out. */
 export const [isResultLeaving, setResultLeaving] = createSignal(false);
 /**
- * True from a restart's fade-out until the new test has faded in. Input waits
- * for it; other restart requests are dropped meanwhile.
+ * True from the start of a restart's fade-out to the end of the new test's
+ * fade-in. Input waits for it; other restart requests are dropped meanwhile.
  */
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
 
