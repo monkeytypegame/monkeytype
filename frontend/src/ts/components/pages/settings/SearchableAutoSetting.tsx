@@ -59,14 +59,12 @@ export function SearchableAutoSetting<T extends ConfigKey>(props: {
                 onChange: fromSchema(
                   ConfigSchema.shape[props.key] as z.ZodNumber,
                 ),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={ConfigSchema.shape[props.key]}
                     placeholder={
                       configMetadata[props.key].displayString ?? props.key

@@ -1,3 +1,4 @@
+import { getTestSettings } from "../test-settings";
 import {
   CompositionTestEvent,
   CompositionTestEventData,
@@ -16,36 +17,36 @@ import {
   TimerEvent,
   TimerEventData,
 } from "./types";
-import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
+import { getEventsForWord, getInputFromDom } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
-import { Keycode } from "../../constants/keys";
+import { Keycode } from "../../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestWords from "../test-words";
-import { Config } from "../../config/store";
-import * as CustomText from "../../test/custom-text";
-import { getMode2 } from "../../utils/misc";
+import { getMode2 } from "../../../utils/misc";
+import { getCurrentQuote } from "../../../states/test";
 import {
-  getKoreanStatus,
   getActiveWordIndex,
-  getCurrentQuote,
-  getBailedOut,
-  isResultCalculating,
-} from "../../states/test";
-import { isFunboxActiveWithProperty } from "../funbox/active";
+  getKoreanStatus,
+  getTestEnd,
+  scheduleLiveStatsFlush,
+} from "../state";
+import { getFunbox } from "@monkeytype/funbox";
 
 export function buildEventLog(): EventLog {
   const context = {
     targetWords: [...TestWords.words.get().map((w) => w.textWithCommit)],
-    mode: Config.mode,
-    mode2: getMode2(Config, getCurrentQuote()),
+    mode: getTestSettings().mode,
+    mode2: getMode2(getTestSettings(), getCurrentQuote()),
     hasKorean: getKoreanStatus(),
-    bailedOut: getBailedOut(),
-    ...(Config.mode === "custom" && {
-      customTextLimitMode: CustomText.getLimit().mode,
-      customTextLimitValue: CustomText.getLimit().value,
+    bailedOut: getTestEnd()?.type === "bailedOut",
+    ...(getTestSettings().mode === "custom" && {
+      customTextLimitMode: getTestSettings().customText.limit.mode,
+      customTextLimitValue: getTestSettings().customText.limit.value,
     }),
-    ...(Config.funbox.length !== 0 && {
-      isFunboxWithNospacePropertyActive: isFunboxActiveWithProperty("nospace"),
+    ...(getTestSettings().funbox.length !== 0 && {
+      isFunboxWithNospacePropertyActive: getFunbox(
+        getTestSettings().funbox,
+      ).some((fb) => fb.properties?.includes("nospace") ?? false),
     }),
   };
 
@@ -75,11 +76,20 @@ let pressedKeys: Map<
   }
 > = new Map();
 
+// set by finish() once held keys are released: later events are dropped
+let frozen = false;
+
+/** finish(): drops every event logged from now until the next reset. */
+export function freezeEvents(): void {
+  frozen = true;
+}
+
 export function logTestEvent(
   type: TestEventType,
   now: number,
   eventData: TestEventData,
 ): void {
+  if (frozen) return;
   invalidateCache();
 
   now = roundTo2(now);
@@ -95,11 +105,8 @@ export function logTestEvent(
 
   if (type === "keydown") {
     const data = eventData as KeydownEventData;
+    // input only logs tracked keys (input/helpers/test-event-code.ts)
     const code = data.code as Keycode | "NoCode";
-
-    if (!keysToTrack.has(code)) {
-      return;
-    }
 
     if (pressedKeys.has(code)) {
       pressedKeys.delete(code);
@@ -109,10 +116,6 @@ export function logTestEvent(
         testMs: 0,
         data: { ...data, code },
       });
-    }
-
-    if (isResultCalculating()) {
-      return;
     }
 
     let key: Keycode | "NoCode" | `NoCode${number}` = code;
@@ -137,20 +140,13 @@ export function logTestEvent(
 
     let key: Keycode | "NoCode" | `NoCode${number}` = code;
 
-    if (/^NoCode\d+$/.test(code)) {
-      // already indexed (e.g. from forceReleaseAllKeys)
-    } else {
-      if (!keysToTrack.has(code as Keycode | "NoCode")) {
+    // already indexed codes (NoCode1, e.g. from forceReleaseAllKeys) stay
+    if (code === "NoCode") {
+      key = `NoCode${noCodeIndex - 1}`;
+      if (!pressedKeys.has(key)) {
         return;
       }
-
-      if (code === "NoCode") {
-        key = `NoCode${noCodeIndex - 1}`;
-        if (!pressedKeys.has(key)) {
-          return;
-        }
-        noCodeIndex--;
-      }
+      noCodeIndex--;
     }
 
     if (!pressedKeys.has(key)) {
@@ -195,6 +191,7 @@ export function logTestEvent(
     throw new Error(`Unsupported event type: ${type}`);
   }
   console.debug(`Test events - logTestEvent - ${now}ms - ${type}`, eventData);
+  scheduleLiveStatsFlush();
 }
 
 function invalidateCache(): void {
@@ -367,7 +364,9 @@ export function resetTestEvents(): void {
   invalidateCache();
   pressedKeys = new Map();
   noCodeIndex = 0;
+  frozen = false;
   resetLiveCache();
+  scheduleLiveStatsFlush();
 }
 
 export function getPressedKeys(): Map<

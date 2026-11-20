@@ -1,11 +1,8 @@
 import { Config } from "@monkeytype/schemas/configs";
-import { Keycode } from "../../constants/keys";
-import {
-  DeleteInputType,
-  InsertInputType,
-} from "../../input/helpers/input-type";
+import { Keycode } from "../../../constants/keys";
+import { DeleteInputType, InsertInputType } from "../input-type";
 import { CustomTextLimitMode } from "@monkeytype/schemas/util";
-import { getMode2 } from "../../utils/misc";
+import { getMode2 } from "../../../utils/misc";
 
 export type TestEventType =
   | "keydown"

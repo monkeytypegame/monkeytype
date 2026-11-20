@@ -1050,7 +1050,7 @@ describe("app shell routing", () => {
 
     it.each([
       ["the test is restarting", "setRestarting"],
-      ["the result is calculating", "setResultCalculating"],
+      ["the result is pending", "setResultPending"],
     ] as const)("blocks navigation while %s", async (_, busy) => {
       const app = renderApp({ url: "/" });
       await app.settle();

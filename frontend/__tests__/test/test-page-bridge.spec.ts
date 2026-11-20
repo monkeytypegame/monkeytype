@@ -4,7 +4,7 @@ import { createEffect, createRoot } from "solid-js";
 import {
   isTestPageMounted,
   markTestPageMounted,
-} from "../../src/ts/test/test-page-state";
+} from "../../src/ts/test/test-page-bridge";
 
 describe("isTestPageMounted", () => {
   it("stays true when a remount happens before the old mount unbinds", () => {

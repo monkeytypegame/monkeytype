@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../../src/ts/test/test-stats", () => ({
+vi.mock("../../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
@@ -11,7 +11,7 @@ import {
   resetTestEvents,
   __testing,
   forceReleaseAllKeys,
-} from "../../../src/ts/test/events/data";
+} from "../../../../src/ts/test/engine/events/data";
 import type {
   InputEventData,
   KeydownEvent,
@@ -19,9 +19,9 @@ import type {
   KeyupEvent,
   KeyupEventData,
   TimerEventData,
-} from "../../../src/ts/test/events/types";
-import { Keycode } from "../../../src/ts/constants/keys";
-import { getEventsPerWord } from "../../../src/ts/test/events/helpers";
+} from "../../../../src/ts/test/engine/events/types";
+import { Keycode } from "../../../../src/ts/constants/keys";
+import { getEventsPerWord } from "../../../../src/ts/test/engine/events/helpers";
 
 function keyDown(code: Keycode | "NoCode" = "KeyA"): KeydownEventData {
   return { code };
@@ -120,12 +120,7 @@ describe("data.ts", () => {
     });
   });
 
-  describe("logTestEvent keydown filtering", () => {
-    it("ignores keys not in keysToTrack", () => {
-      logTestEvent("keydown", 1010, keyDown("Backspace"));
-      expect(getAllTestEvents()).toHaveLength(0);
-    });
-
+  describe("logTestEvent keydown pairing", () => {
     it("synthesizes missing keyup on duplicate keydown", () => {
       logTestEvent("keydown", 1010, keyDown());
       logTestEvent("keydown", 1020, keyDown());

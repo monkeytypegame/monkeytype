@@ -7,11 +7,8 @@ import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/auth";
 import { showModal } from "../../../states/modals";
-import {
-  isTestFinished,
-  isFocusMode,
-  isTestRestarting,
-} from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
+import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";

@@ -1,4 +1,5 @@
-import { isSlowTimer } from "../states/test";
+import { textInsertedEvent } from "../input/helpers/after-input";
+import { isSlowTimer } from "../test/engine/test-timer";
 import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
@@ -124,6 +125,7 @@ function updateParticle(particle: Particle): void {
 export function init(): void {
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
+  textInsertedEvent.subscribe((correct) => void addPower(correct));
 }
 
 function render(): void {
@@ -222,7 +224,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
     }
 
     // Sparks
-    // looked up each time - #caret is re-rendered if TestPage remounts
+    // looked up each time - #caret is re-rendered if Words remounts
     const caretEl = qs("#caret");
     const offset = caretEl?.native.getBoundingClientRect();
     const coords = [

@@ -1,9 +1,9 @@
-// Test page state: whether a test may start, and whether the page is mounted.
-// The mount tracking is temporary: it bridges imperative test code and the
-// Solid TestPage. Remove it once no imperative code needs to know.
+// Test page bridge: what imperative test code needs from the Solid TestPage:
+// whether the page is mounted. Temporary: it says when it goes.
 import { createSignal, untrack } from "solid-js";
 
-import { getRoutePage, isLeavingPage } from "../states/router";
+// Removed once test-logic stops asking (no roadmap row yet): its restart
+// guard, the funbox activation check, the config event subscriber (C4).
 
 // the current mount's signal - a remount can register before the old one aborts
 const [getMountSignal, setMountSignal] = createSignal<AbortSignal>();
@@ -19,13 +19,4 @@ export function markTestPageMounted(signal: AbortSignal): void {
 /** Whether the test page is mounted. Reactive. */
 export function isTestPageMounted(): boolean {
   return getMountSignal() !== undefined;
-}
-
-/**
- * Whether typing may start a test: the test page is shown, and no
- * navigation is leaving it (eg. typing while it fades out). A reload in
- * place (eg. signing in) doesn't stop it.
- */
-export function canStartTest(): boolean {
-  return getRoutePage() === "test" && !isLeavingPage();
 }

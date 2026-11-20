@@ -4,12 +4,12 @@ import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
-import { getInputHistory } from "../../test/events/stats";
-import { getLastEventLog, isTestFinished } from "../../states/test";
+import { getInputHistory } from "../../test/engine/events/stats";
+import { getResultData, isTestFinished } from "../../test/engine/state";
 import { showModal } from "../../states/modals";
 import {
   captureAndCopyToClipboard,
@@ -139,8 +139,8 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     fa: { icon: "fa-copy" },
     exec: (): void => {
-      const eventLog = getLastEventLog();
-      if (eventLog === null) {
+      const eventLog = getResultData()?.eventLog;
+      if (eventLog === undefined) {
         showErrorNotification("No event log found!");
         return;
       }

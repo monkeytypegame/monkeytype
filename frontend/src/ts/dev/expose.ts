@@ -8,14 +8,17 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { LETTER_SELECTOR } from "../states/word-elements";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
-import { getCurrentInput } from "../test/events/data";
+import { getCurrentInput } from "../test/engine/events/data";
 import { restartTest } from "../test/test-logic";
 import { quickLogin, signOut } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
+
+// app code reads letters through the Words instance's registry, which dev
+// tools can't reach: query the DOM instead (spec Q33 exempts dev/)
+const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // Modules hot-updated since the page loaded. Kept on window: it survives this
 // module's own hot update, and the listener registers once per page.
@@ -60,7 +63,7 @@ function wordsSnapshot(): ChildSnapshot[] {
  * right to left words). Within a few px is on.
  */
 function caretOffset(): { dx: number; dy: number } | undefined {
-  const caret = document.querySelector("#caret");
+  const caret = document.querySelector('[data-ui-element="caret"]');
   const letters = document.querySelectorAll(
     `#words .word.active ${LETTER_SELECTOR}`,
   );
@@ -251,8 +254,8 @@ const mt = {
   /** The config store object, not a function: `getConfig.fontSize`. */
   getConfig,
   /**
-   * Writes a config key. Doesn't restart the test (callers restart until T6b):
-   * use `runCommand` when the restart matters.
+   * Writes a config key. A test setting (flagged `changeRequiresRestart`)
+   * restarts the test on the test page.
    */
   setConfig,
   /** Opens a modal by `ModalId`. */

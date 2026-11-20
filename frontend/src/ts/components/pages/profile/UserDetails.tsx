@@ -15,10 +15,10 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
+import { getLastResult } from "../../../collections/results";
 import { UserData } from "../../../constants/user-data";
 import { getUserId, isAuthenticated } from "../../../states/auth";
 import { bp } from "../../../states/breakpoints";
-import { getLastResult } from "../../../states/last-result";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { setUserToReport } from "../../../states/user-report";

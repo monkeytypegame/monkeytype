@@ -3,13 +3,16 @@ import { createStore, produce } from "solid-js/store";
 import * as Sound from "../../../../controllers/sound-controller";
 import * as Arrays from "../../../../utils/arrays";
 import { Config } from "../../../../config/store";
-import { getLastEventLog } from "../../../../states/test";
+import { getResultData } from "../../../../test/engine/state";
 import {
   getEventsForWord,
   getInputFromDom,
-} from "../../../../test/events/helpers";
-import { getInputHistory, getWpmHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/helpers";
+import {
+  getInputHistory,
+  getWpmHistory,
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 
 type ReplayLetter = {
   char: string;
@@ -288,8 +291,8 @@ function loadOldReplay(): number {
 
 export function toggleReplayDisplay(): void {
   if (!replayState.open) {
-    const eventLog = getLastEventLog();
-    if (eventLog === null) return;
+    const eventLog = getResultData()?.eventLog;
+    if (eventLog === undefined) return;
     loaded = {
       words: getWordsList(eventLog),
       actions: deriveReplayActions(eventLog),

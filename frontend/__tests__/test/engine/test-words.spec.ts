@@ -5,18 +5,22 @@ const { isLanguageRightToLeft, isDirectionReversed } = vi.hoisted(() => ({
   isDirectionReversed: vi.fn(() => false),
 }));
 
-vi.mock("../../src/ts/states/test", () => ({
-  getActiveWordIndex: () => 0,
+vi.mock("../../../src/ts/states/test", () => ({
   isLanguageRightToLeft,
   isDirectionReversed,
 }));
 
-import { words } from "../../src/ts/test/test-words";
-import type { Direction } from "../../src/ts/utils/strings";
+import {
+  pushWord,
+  removeCommitCharFromLastWord,
+  resetWords,
+  words,
+} from "../../../src/ts/test/engine/test-words";
+import type { Direction } from "../../../src/ts/utils/strings";
 
 describe("test-words", () => {
   beforeEach(() => {
-    words.reset();
+    resetWords();
     isLanguageRightToLeft.mockReturnValue(false);
     isDirectionReversed.mockReturnValue(false);
   });
@@ -25,9 +29,9 @@ describe("test-words", () => {
     // separators are added by the generator as a trailing space/newline; push
     // splits that into the commit char while keeping the bare word as text
     it("splits the trailing separator into the commit char", () => {
-      words.push("the ", 0);
-      words.push("cat ", 0);
-      words.push("sat", 0);
+      pushWord("the ", 0);
+      pushWord("cat ", 0);
+      pushWord("sat", 0);
       expect(words.get().map((w) => w.text)).toEqual(["the", "cat", "sat"]);
       expect(words.get().map((w) => w.commit)).toEqual([" ", " ", ""]);
       expect(words.get().map((w) => w.textWithCommit)).toEqual([
@@ -38,15 +42,15 @@ describe("test-words", () => {
     });
 
     it("tracks length and section indexes", () => {
-      words.push("a ", 3);
-      words.push("b", 5);
+      pushWord("a ", 3);
+      pushWord("b", 5);
       expect(words.length).toBe(2);
       expect(words.get().map((w) => w.sectionIndex)).toEqual([3, 5]);
     });
   });
 
   describe("direction", () => {
-    const pushed = (word: string): Direction => words.push(word, 0).direction;
+    const pushed = (word: string): Direction => pushWord(word, 0).direction;
 
     it("comes from the word's own characters", () => {
       isLanguageRightToLeft.mockReturnValue(true);
@@ -70,47 +74,47 @@ describe("test-words", () => {
 
     it("is resolved again when a repeated test pushes the same word", () => {
       expect(pushed("hello ")).toBe("ltr");
-      words.reset();
+      resetWords();
       isDirectionReversed.mockReturnValue(true);
       expect(pushed("hello ")).toBe("rtl");
     });
 
     it("is kept by raw words", () => {
-      words.push("שלום ", 0);
+      pushWord("שלום ", 0);
       expect(words.get(0, true)?.direction).toBe("rtl");
     });
   });
 
   describe("removeCommitCharacterFromLastWord", () => {
     it("strips a trailing space from the last word", () => {
-      words.push("the ", 0);
-      words.push("end ", 0);
-      words.removeCommitCharacterFromLastWord();
+      pushWord("the ", 0);
+      pushWord("end ", 0);
+      removeCommitCharFromLastWord();
       expect(words.get().map((w) => w.textWithCommit)).toEqual(["the ", "end"]);
     });
 
     it("strips a trailing newline from the last word", () => {
-      words.push("line\n", 0);
-      words.removeCommitCharacterFromLastWord();
+      pushWord("line\n", 0);
+      removeCommitCharFromLastWord();
       expect(words.get().map((w) => w.textWithCommit)).toEqual(["line"]);
     });
 
     it("leaves a bare last word unchanged", () => {
-      words.push("the ", 0);
-      words.push("end", 0);
-      words.removeCommitCharacterFromLastWord();
+      pushWord("the ", 0);
+      pushWord("end", 0);
+      removeCommitCharFromLastWord();
       expect(words.get().map((w) => w.textWithCommit)).toEqual(["the ", "end"]);
     });
 
     it("does nothing on an empty list", () => {
-      expect(() => words.removeCommitCharacterFromLastWord()).not.toThrow();
+      expect(() => removeCommitCharFromLastWord()).not.toThrow();
       expect(words.get()).toEqual([]);
     });
 
     it("does not empty the last word when it's only a newline", () => {
-      words.push("word\n", 0);
-      words.push("\n", 0);
-      words.removeCommitCharacterFromLastWord();
+      pushWord("word\n", 0);
+      pushWord("\n", 0);
+      removeCommitCharFromLastWord();
       expect(words.get().map((w) => w.textWithCommit)).toEqual([
         "word\n",
         "\n",

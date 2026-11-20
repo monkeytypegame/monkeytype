@@ -9,7 +9,6 @@ import {
   getForcedUserDataLoadFail,
 } from "../../dev/fail-user-data-load";
 import { quickLogin } from "../../dev/quick-login";
-import { toggleCaretDebug } from "../../elements/caret";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { addXp } from "../../queries/user";
 import { hideModal, showModal } from "../../states/modals";
@@ -23,12 +22,13 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
-import { disableSlowTimerFail } from "../../test/test-timer";
+import { disableSlowTimerFail } from "../../test/engine/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { toggleCaretDebug } from "../pages/test/caret";
 import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
 const [mediaQueryDebugLevel, setMediaQueryDebugLevel] = createSignal(0);
