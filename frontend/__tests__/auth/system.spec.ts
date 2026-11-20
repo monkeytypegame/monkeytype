@@ -1,3 +1,4 @@
+import { createEffect, createRoot } from "solid-js";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../src/ts/states/banners", () => ({ addBanner: vi.fn() }));
@@ -13,11 +14,12 @@ import {
   signInToProvider,
 } from "../../src/ts/auth/system";
 import {
-  getAuthMethods,
+  getAuthUser,
   getAuthState,
   getPendingSignUpUser,
   getUserId,
   isAuthAvailable,
+  isUsingAuthMethod,
 } from "../../src/ts/auth/state";
 
 const user: AuthUser = {
@@ -162,15 +164,36 @@ describe("auth system", () => {
     providerReports(user);
     expect(getUserId()).toBe("uid");
   });
-  it("adding a method updates the auth methods signal", async () => {
+  it("a linked method updates the user but not its id", async () => {
     providerReports(user);
-    expect(getAuthMethods()).toEqual([]);
+    let idRuns = 0;
+    const dispose = createRoot((dispose) => {
+      createEffect(() => {
+        getUserId();
+        idRuns++;
+      });
+      return dispose;
+    });
+    const runsBefore = idRuns;
 
     await linkMethod({ method: "github" });
-    expect(getAuthMethods()).toEqual([{ id: "github", email: null }]);
+
+    expect(isUsingAuthMethod("github")).toBe(true);
+    expect(idRuns).toBe(runsBefore);
+    dispose();
+  });
+
+  it("adding a method updates the auth methods signal", async () => {
+    providerReports(user);
+    expect(getAuthUser()?.methods ?? []).toEqual([]);
+
+    await linkMethod({ method: "github" });
+    expect(getAuthUser()?.methods ?? []).toEqual([
+      { id: "github", email: null },
+    ]);
 
     providerReports(null);
-    expect(getAuthMethods()).toEqual([]);
+    expect(getAuthUser()?.methods ?? []).toEqual([]);
   });
 });
 

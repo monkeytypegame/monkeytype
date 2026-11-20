@@ -3,12 +3,10 @@ import { addBanner } from "../states/banners";
 import {
   isAuthAvailable,
   setAuthAvailable,
-  setAuthMethods,
   setAuthState,
-  setOfferedAuthMethods,
+  setAuthUser,
   setPendingSignUpUser,
-  setUserId,
-  setUserVerified,
+  setProviderAuthMethods,
 } from "./state";
 import { isDevEnvironment } from "../utils/env";
 
@@ -35,7 +33,7 @@ let holdUserChanges = false;
  */
 export async function initAuth(authProvider: AuthProvider): Promise<void> {
   provider = authProvider;
-  setOfferedAuthMethods(authProvider.methods);
+  setProviderAuthMethods(authProvider.methods);
   setAuthAvailable(true);
   try {
     // a provider nobody can sign in with is misconfigured
@@ -193,22 +191,10 @@ function refreshUserState(): void {
   setUserState(getProviderUser());
 }
 
-/**
- * The only writer of the auth signals (auth state, user id, verified, auth
- * methods).
- */
+/** The only writer of the auth signals (auth state, signed in user). */
 function setUserState(user: AuthUser | null): void {
   batch(() => {
-    if (user === null) {
-      setUserId(null);
-      setUserVerified(false);
-      setAuthMethods([]);
-      setAuthState("signedOut");
-    } else {
-      setUserId(user.uid);
-      setUserVerified(user.emailVerified);
-      setAuthMethods(user.methods);
-      setAuthState("signedIn");
-    }
+    setAuthUser(user);
+    setAuthState(user === null ? "signedOut" : "signedIn");
   });
 }

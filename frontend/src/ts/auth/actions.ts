@@ -29,7 +29,7 @@ import {
 } from "./system";
 import {
   getAuthMethodDisplay,
-  getOfferedAuthMethods,
+  getProviderAuthMethods,
   getPendingSignUpUser,
   isAuthAvailable,
   isAuthenticated,
@@ -404,7 +404,7 @@ async function tryReauthenticate(
 function getPreferredAuthenticationMethod(
   exclude?: string,
 ): string | undefined {
-  return getOfferedAuthMethods()
+  return getProviderAuthMethods()
     .map((it) => it.id)
     .find((it) => it !== exclude && isUsingAuthMethod(it));
 }

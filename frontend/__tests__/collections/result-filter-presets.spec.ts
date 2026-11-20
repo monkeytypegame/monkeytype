@@ -7,7 +7,7 @@ vi.mock("../../src/ts/ape/user", () => ({
 import { fetchUserFromApi } from "../../src/ts/ape/user";
 import "../../src/ts/collections/result-filter-presets";
 import { queryClient } from "../../src/ts/queries/index";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
 async function flush(): Promise<void> {
@@ -46,7 +46,7 @@ function hasDownloaded(): boolean {
  */
 describe("resultFilterPresets collection", () => {
   beforeEach(async () => {
-    setUserId(null);
+    setTestUserId(null);
     await flush();
     vi.mocked(fetchUserFromApi).mockClear();
   });
@@ -57,7 +57,7 @@ describe("resultFilterPresets collection", () => {
   });
 
   it("downloads after sign in", async () => {
-    setUserId("uid");
+    setTestUserId("uid");
     await waitFor(hasDownloaded, "the resultFilterPresets query to fetch");
     expect(fetchUserFromApi).toHaveBeenCalled();
   });
