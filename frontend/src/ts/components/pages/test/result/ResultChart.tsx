@@ -37,14 +37,14 @@ import {
   isResultShown,
   resultState,
 } from "../../../../states/result";
-import { CompletedResult, getLastEventLog } from "../../../../states/test";
+import { CompletedResult, getFrozenLog } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
   getTimerBoundaryLabels,
   getWordIndexesForSecond,
-} from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {
@@ -377,7 +377,7 @@ let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
 
 function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
   if (prevTooltipItem === ti) return "";
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return "";
 
   prevTooltipItem = ti;

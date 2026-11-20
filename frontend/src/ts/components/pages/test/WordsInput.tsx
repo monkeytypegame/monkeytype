@@ -2,11 +2,9 @@
 /* oxlint-disable react/no-unknown-property */
 import { JSXElement, onCleanup, onMount } from "solid-js";
 
-import { getConfig } from "../../../config/store";
-import {
-  isInputElementFocused,
-  registerInputElement,
-} from "../../../input/input-element";
+import { Config, getConfig } from "../../../config/store";
+import { ModifierKeys } from "../../../constants/modifier-keys";
+import { registerInputElement } from "../../../input/input-element";
 import {
   onCompositionEnd,
   onCompositionStart,
@@ -21,12 +19,18 @@ import {
 } from "../../../input/listeners/misc";
 import {
   isRealWordsInputShown,
+  isTestActive,
   isTestFinished,
+  isWordsInputFocused,
   setTestFocusState,
+  setWordsInputFocused,
+  triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
+import { focusWordsEvent } from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
+import { isDevEnvironment } from "../../../utils/env";
+import { isAnyPopupVisible } from "../../../utils/misc";
 
 /**
  * The hidden textarea the typing test reads input from (#wordsInput). Follows
@@ -39,6 +43,17 @@ export function WordsInput(): JSXElement {
   onMount(() => {
     if (inputRef === undefined) throw new Error("WordsInput ref not set");
     onCleanup(registerInputElement(inputRef));
+    onCleanup(() => setWordsInputFocused(false));
+
+    // autofocus the words when typing anywhere on the page
+    document.addEventListener("keydown", autofocusWords);
+    onCleanup(() => document.removeEventListener("keydown", autofocusWords));
+  });
+
+  focusWordsEvent.useListener(({ force }) => {
+    if (force) inputRef?.blur();
+    inputRef?.focus({ preventScroll: true });
+    if (isTestActive()) triggerScrollWindowToActiveWord();
   });
 
   const px = (value: number | undefined): string | undefined =>
@@ -83,19 +98,15 @@ export function WordsInput(): JSXElement {
             : `${wordsInputPosition().maxWidth}%`,
       }}
       on:focus={() => {
-        if (isInputElementFocused()) {
-          if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
-            setTestFocusState("focused");
-          }
-          Caret.show(true);
+        if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
+          setTestFocusState("focused");
         }
+        setWordsInputFocused(true);
         onFocus();
       }}
       on:blur={() => {
-        if (!isInputElementFocused()) {
-          setTestFocusState("unfocused");
-        }
-        Caret.hide();
+        setWordsInputFocused(false);
+        setTestFocusState("unfocused");
       }}
       on:compositionstart={onCompositionStart}
       on:compositionupdate={onCompositionUpdate}
@@ -111,4 +122,33 @@ export function WordsInput(): JSXElement {
       on:selectionchange={onSelectionChange}
     ></textarea>
   );
+}
+
+function autofocusWords(e: KeyboardEvent): void {
+  if (e.key === undefined) return;
+
+  if (isDevEnvironment()) {
+    if (
+      (document.activeElement as HTMLElement | undefined)?.dataset[
+        "uiElement"
+      ] === "signalDevtoolsInput"
+    ) {
+      return;
+    }
+  }
+
+  if (isTestFinished() || isWordsInputFocused()) return;
+  // checked last, isAnyPopupVisible is a bit expensive
+  if (
+    ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||
+    e.metaKey ||
+    e.ctrlKey ||
+    isAnyPopupVisible()
+  ) {
+    return;
+  }
+  focusWordsEvent.dispatch({ force: false });
+  if (Config.showOutOfFocusWarning) {
+    e.preventDefault();
+  }
 }

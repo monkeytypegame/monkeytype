@@ -1,22 +1,22 @@
 import { onDelete } from "../handlers/delete";
 import { onInsertText } from "../handlers/insert-text";
-import { isSupportedInputType } from "../helpers/input-type";
+import { isSupportedInputType } from "../../test/engine/input-type";
 import { getInputElement } from "../input-element";
 import {
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
 } from "../state";
-import * as TestUI from "../../test/test-ui";
+import { afterTestCompositionUpdate } from "../helpers/after-input";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import {
   isTestRestarting,
   getActiveWordIndex,
   isResultCalculating,
   getCompositionData,
 } from "../../states/test";
-import { getCurrentInput } from "../../test/events/data";
+import { getCurrentInput } from "../../test/engine/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
 export async function onBeforeInput(event: InputEvent): Promise<void> {
@@ -149,7 +149,7 @@ export async function onInput(event: InputEvent): Promise<void> {
     // in case the data is the same as the last one, just ignore it
     if (getLastInsertCompositionTextData() !== event.data) {
       setLastInsertCompositionTextData(event.data ?? "");
-      TestUI.afterTestCompositionUpdate();
+      afterTestCompositionUpdate();
     }
   } else {
     throw new Error(`Unhandled input type: ${inputType}`);

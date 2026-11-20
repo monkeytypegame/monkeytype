@@ -1,4 +1,4 @@
-import * as TestWords from "./test-words";
+import * as TestWords from "./engine/test-words";
 import { showNoticeNotification } from "../states/notifications";
 
 import { Config } from "../config/store";
@@ -11,9 +11,9 @@ import {
   getInputHistory,
   getMissedWords,
   getWordBurstHistory,
-} from "./events/stats";
+} from "./engine/events/stats";
 import { setCustomTextIndicator } from "../states/core";
-import { getLastEventLog } from "../states/test";
+import { getFrozenLog } from "../states/test";
 
 type Before = {
   mode: Mode | null;
@@ -33,7 +33,7 @@ export function init(
   missed: "off" | "words" | "biwords",
   slow: boolean,
 ): boolean {
-  const eventLog = getLastEventLog();
+  const eventLog = getFrozenLog();
   if (eventLog === null) return false;
   if (Config.mode === "zen") return false;
   let limit;

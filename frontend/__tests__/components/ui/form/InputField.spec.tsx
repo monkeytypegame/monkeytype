@@ -100,6 +100,28 @@ describe("InputField", () => {
     expect(onFocus).toHaveBeenCalled();
   });
 
+  it("calls form handleSubmit after handleBlur when submitOnBlur", async () => {
+    const field = makeField("name");
+    const handleSubmit = vi.fn(() => {
+      expect(field.handleBlur).toHaveBeenCalled();
+    });
+    field.form = { options: { defaultValues: {} }, handleSubmit } as any;
+    render(() => <InputField field={() => field} submitOnBlur />);
+
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(handleSubmit).toHaveBeenCalled();
+  });
+
+  it("does not call form handleSubmit on blur by default", async () => {
+    const field = makeField("name");
+    const handleSubmit = vi.fn();
+    field.form = { options: { defaultValues: {} }, handleSubmit } as any;
+    render(() => <InputField field={() => field} />);
+
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(handleSubmit).not.toHaveBeenCalled();
+  });
+
   it("renders disabled input", () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} disabled />);

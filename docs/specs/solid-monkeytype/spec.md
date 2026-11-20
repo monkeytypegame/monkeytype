@@ -8,7 +8,7 @@ Reference target for every remaining migration step. Each small conversion PR sh
 
 The frontend is most of the way through its move from vanilla imperative DOM code to SolidJS. The shell, routing, every page apart from the test page, all modals, the commandline UI, header, footer and notifications are already Solid. What's left is concentrated and deeply coupled:
 
-- The **typing test**: a handful of imperative "engines" that Solid components hand their elements to (words layout, caret, pace caret, break joining, focus mode, monkey power, funbox document effects, result word highlight, screenshot), all glued together by test-ui, a module that test-logic and the input handlers call directly.
+- The **typing test**: a handful of imperative "engines" that Solid components hand their elements to (words layout, caret, pace caret, break joining, focus mode, monkey power, funbox document effects, result word highlight, screenshot), all glued together by test-ui, a module that test-logic and the input handlers called directly (deleted in T5).
 - **Two copies of state** that must stay in sync by hand: a mutable config object next to the config store (and an event bus that fires *before* the store updates, so listeners see stale store values), and a mutable user snapshot that callers mutate and then "set" next to a reactive snapshot mirror.
 - **Global event buses** (config, auth, restart test, timer) standing in for state and direct calls.
 - Bridges that exist only for legacy callers: `__nonReactive` collection reads, a DOM-wrapper utility library, a "mount the page only once it is attached" workaround, `onDOMReady`.
@@ -185,11 +185,11 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 ### Typing test: render layer
 
 - The words render store, fed by the shared per-frame flush buffer, is the only input to Words, Word, WordLetter and TypoHints, including the typed input that layout and the caret position from.
-- **Words owns all layout**: after each flush it runs one layout pass: line jump, tape scroll, input positioning and caret updates. Joining-script dots (dots typed effect) are CSS only: letters stay inline, so nothing is measured and nothing writes into Word. The word-element registry becomes private to Words; only the overflow check is exported.
+- **Words owns all layout**: after each flush it runs one layout pass: line jump, tape scroll, input positioning and caret updates. Joining-script dots (dots typed effect) are CSS only: letters stay inline, so nothing is measured and nothing writes into Word. The word-element registry is private to Words: Words creates one per instance, its Word and line breaks register through a callback prop, and it also holds each word's letter elements: Word registers a handle (`el`, `getLetter(i)`, `getLetterCount()`) over the letters its WordLetter callback refs fill (TypoHints gets `getLetter(i)` from Word as a prop). The layout builds the carets with the registry, so they look words up by index. Caret debug marking is reactive on WordLetter: its classes follow a target signal the pace caret sets. Only the overflow check is exported, reading the mounted Words' registry.
 - **Words keeps the active line in view** as part of that layout pass: during a test, when the words wrapper is taller than the window, it scrolls the window to the active word (down only while typing, both ways when recentering after a re-layout or on request). The focus flow asks for a recenter through a request signal. Before the test, TestPage keeps the test block in view.
-- **Carets: boundary fixed, internals decided during the caret rewrite.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Whether a caret animates through fully reactive props, imperative calls on a private handle, or a mix is decided during that step, based on what gets the movement looking right. Tribe carets follow whatever is chosen.
-- **TestPage runs all fades**, driven by the engine's phase: words fade out on finish; when the fade-out completes, the result fades in if the result signal has a value, otherwise a spinner fades in and is swapped for the result when it arrives. Restart fades follow the restart flow above.
-- **test-ui is deleted.** Sound, keymap highlight and monkey-power triggers become effects on engine/input signals or direct calls from the input layer.
+- **Carets: Words renders and drives both.** Words is the only thing that drives the caret and pace caret; nothing outside Words calls them; the line-jump/tape-scroll handoff is internal to Words. Decided in T3, a mix: Words renders the caret elements with their style class, visibility (caret: words input focused, test not ending or finished, window not resizing; pace caret: has a target) and blinking (off in focus mode) reactively; movement (position, line-jump and tape-scroll margins) stays anime.js animations on a private imperative handle the words layout owns, so it looks as before. The pace caret's timing is a DOM-free module whose output is a target signal (word, letter, step end). Tribe carets follow the pace caret: Words renders one per player from the room store, each heading for a target (`stepEnd` = now + the room's update rate), and the layout's caret list (`allCarets`) carries their line-jump and tape-scroll handoff; nothing outside Words moves them.
+- **TestPage runs all fades**, driven by the engine's phase: words fade out on finish; when the fade-out completes, the result fades in if the result signal has a value, otherwise a spinner fades in and is swapped for the result when it arrives. Restart fades follow the restart flow above. Until the engine has a phase (T6), TestPage and TestResult register their fade in states (`registerFade`); test-logic calls it through `fadeTest` and awaits it.
+- **test-ui is deleted.** Sound, keymap highlight and live-stat updates are direct calls from the input layer; monkey power and the restart's UI side effects (sounds, ads, result highlight, random theme) listen to events in states (`textInsertedEvent`, `testRestartedEvent`).
 - **Focus mode**: a signal. The root layout binds focus state on the app, header, footer and banners; cursor hiding is CSS keyed off that state. One component owns the mouse-move exit listener.
 - **Funbox component** owns funbox document state (body funbox state, the funbox stylesheet link, CRT scanline), derived from active funboxes.
 - **Monkey power**: a component owning its canvas, positioned from the caret.
@@ -199,14 +199,14 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 
 ### Theming and styling
 
-- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (one value from the component's status type, eg. a letter's `LetterStatus`, a word's `WordStatus`) and `data-ui-variant` (one value, eg. a letter's `tab`/`newline`). Facts independent of the state get their own attribute, one per fact, never a space-separated list: `data-ui-active` on the active word; `data-ui-word-highlight` (the highlight mode, eg. `next-two-words`), `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script` and `data-ui-rtl` on words; `data-ui-corrected` and `data-ui-extra-corrected` on result letters. The result words containers are `wordsHistory` and `replayWords`; their words and letters share the `word`/`letter` names, and words share `WordStatus` (typed means committed, in the replay too). Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words wrapper, words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
-- **`<letter>` goes away**: letters render as `<span data-ui-element="letter" data-ui-state="…">` (inline by default, so no extra CSS). Any other made-up elements (`<hint>`) get the same treatment. The attributes come first (T1), on the old tags with their classes, so legacy selectors keep working; the tags become spans in CL3, the single announced break. Code finds letters by `LETTER_SELECTOR`, never the tag.
+- **Theme-facing API**: `data-ui-element` (identity), `data-ui-state` (one value from the component's status type, eg. a letter's `LetterStatus`, a word's `WordStatus`) and `data-ui-variant` (one value, eg. a letter's `tab`/`newline`). Facts independent of the state get their own attribute, one per fact, never a space-separated list: `data-ui-active` on the active word; `data-ui-word-highlight` (the highlight mode, eg. `next-two-words`), `data-ui-blind`, `data-ui-flipped`, `data-ui-colorful`, `data-ui-joining-script` and `data-ui-rtl` on words; `data-ui-corrected` and `data-ui-extra-corrected` on result letters; the caret and pace caret carry their caret style as `data-ui-variant`. The result words containers are `wordsHistory` and `replayWords`; their words and letters share the `word`/`letter` names, and words share `WordStatus` (typed means committed, in the replay too). Navigation already uses `data-ui-element`/`data-ui-variant`, and some themes already target it. Every themeable component gets them, including the test page: words wrapper, words, word, letter, caret, pace caret, typo hint, live stats, result parts. Ids and classes are internal and can change freely.
+- **`<letter>` goes away**: letters render as `<span data-ui-element="letter" data-ui-state="…">` (inline by default, so no extra CSS). Any other made-up elements (`<hint>`) get the same treatment. The attributes come first (T1), on the old tags with their classes, so legacy selectors keep working; the tags become spans in CL3, the single announced break. Code finds letters through refs (each Word's letter list, from T4b), never by tag or selector.
 - **Migration of themes**: each conversion PR adds the attributes and moves the bundled themes and funbox CSS over. Old ids/classes/`letter` selectors keep working until one announced removal step at the end, which is the single break for user custom CSS.
 - **Styling**: all component styling is Tailwind through the class-merge helper. SCSS remains only for keyframes and base styles that must target `data-ui-*` (eg. letter colours from theme variables, blind mode); the test, caret and letter SCSS is rewritten against `data-ui-*` and the SCSS files are deleted by the end.
 
 ### Leaf UI and utilities
 
-- No module outside a component queries the document for elements. Components use refs (callback ref pattern, act in `onMount`), per the coding standards.
+- No app code finds elements by selector: no `querySelector*`, `getElementsBy*` or `qs`/`qsa`, document-wide or scoped to an element. Components and their private helpers reach elements through refs (callback ref pattern, act in `onMount`), per the coding standards, and may measure and write on them imperatively (layout, animations, the overflow probe's temporary letters). Walking up from an element the code was handed (`event.target.closest(...)`) is allowed. `dev/` and tests are exempt: they verify the DOM.
 - The DOM-wrapper utility library (`qs`/`qsa`/element-with-utils), the ref-with-utils hook and `onDOMReady` are deleted at the end.
 - Server-provided HTML (notifications, simple modal, version history, quote-search highlight) keeps using `innerHTML`, sanitized, as the lint rule's allowlist.
 - The activity calendar is a Solid component over plain activity data. The sorted table utility is replaced by the DataTable component. Ad and analytics controllers keep their third-party script handling but find elements through component refs or state.
@@ -218,7 +218,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 - Input imports the engine and the render buffer, never components.
 - Components import states, the engine's signals/commands and hooks. A component never calls back into input.
 - Only components (and their private helper modules) touch the DOM.
-- Each rule becomes a lint rule (import restrictions per folder, plus a ban on document queries and `innerHTML` outside the allowlist) **in the PR that makes that layer clean**: the engine rule with the engine split, the input rule with test-ui's deletion, the DOM-query ban at the end.
+- Each rule becomes a lint rule (import restrictions per folder, plus a ban on element queries, scoped ones included, and `innerHTML` outside the allowlist) **in the PR that makes that layer clean**: the engine rule with the engine split, the input rule with test-ui's deletion, the DOM-query ban at the end.
 
 ### Tribe
 
@@ -275,6 +275,14 @@ From joining-script dots (T2): break joining is gone. With the dots typed effect
 - The shrink animation matches other scripts but shows the letter's standalone form (a `::before` copy from the letter's new `data-char` attribute); the text stays joined before and after.
 - The `broken-joining` and `needs-wrap` word classes are gone.
 
+From the caret boundary (T3):
+
+- The caret hides as soon as a test ends, in every mode (it used to hide at once only when the time ran out, otherwise after the fade out).
+- A window resize no longer shows the caret while the words input is out of focus.
+- The caret stops blinking on the frame typing applies focus mode, with the letters, instead of synchronously on input.
+- Caret debug (dev options) outlines the pace caret for as long as it's on.
+- Seam bug fixed: in tape mode, the caret sits on its letter in a word whose direction differs from the test's (it was up to ~105px off, ~194px in word tape). The tape scroll itself is unchanged: in letter tape such a word still moves by its typed letters' width.
+
 From user data (U1):
 
 - Resetting PBs updates the PBs shown straight away (the reactive copy used to keep the old ones).
@@ -292,7 +300,7 @@ From commandline metadata (C5): generated config commands use the settings label
 | # | Decision |
 |---|---|
 | Q1 | DOM-free test engine is part of the final state |
-| Q2 | Deferred: caret internals decided during the caret rewrite; only the boundary is fixed |
+| Q2 | Caret internals decided in T3: reactive style, visibility and blinking; movement on a private imperative handle (see Carets) |
 | Q3 | Single config store; mutable config and config bus deleted |
 | Q4 | No global event buses; `createEvent` only for local use |
 | Q5 | Superseded by Q22, then reinstated by Q30, then superseded by Q31: the user is a session query |
@@ -323,6 +331,7 @@ From commandline metadata (C5): generated config commands use the settings label
 | Q30 | (Superseded by Q31) The user is one Solid store in `states/user.ts`, not a collection: no sync source, the collection needed a mirror store anyway, TanStack optimistic transactions hide concurrent direct writes. Same API (`getUser()`, named writes, hand-rolled optimistic actions with field-level rollback) |
 | Q31 | (2026-11-12, #8568) The user is a TanStack Query, not a store: a session query (`createSessionQuery`, user-scoped key, cleared by the sign-out reset, never stale or refetched, `networkMode: "always"`) in `queries/user.ts`, which owns everything about the user. `getUserData()` reads the cache through a trigger (no store copy); `useUser()` for status; actions are TanStack mutations (`optimisticMutation`) with the same field-level rollback. Why: Query gives the load lifecycle (status, reset on sign out, dedup) that the store rebuilt by hand. Tags, presets and custom themes follow (Q32) |
 | Q32 | (2026-11-12) Tags, presets and custom themes become session queries, superseding U5's getters over collection mirrors: tags a list query beside the user, reading the user endpoint through `fetchUserFromApi` like the user query and filter presets (one shared request), presets and custom themes each a `createSessionQuery`; getters keep Q28's read shape. A session query is a record or a list; a list names its items' id, and mutations roll back by field or by id from that shape. Roadmap U5a–U5d; #8564 closed |
+| Q33 | (2026-11-11) Elements only through refs: no selector queries in app code, scoped ones included; imperative measuring and writes on refs stay; `closest()` from a handed element allowed; `dev/` and tests exempt. Letters get refs in T4b, `LETTER_SELECTOR` goes |
 
 EventLog (grilling, 2026-10-26):
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 const mockConfig = vi.hoisted(() => ({ funbox: "" }));
-vi.mock("../../../src/ts/config/store", () => ({
+vi.mock("../../../../src/ts/config/store", () => ({
   Config: mockConfig,
 }));
 
@@ -9,9 +9,9 @@ import {
   findInputValueMismatches,
   getInputFromDom,
   getTestEventCode,
-} from "../../../src/ts/test/events/helpers";
-import type { InputEvent } from "../../../src/ts/test/events/types";
-import type { InsertInputType } from "../../../src/ts/input/helpers/input-type";
+} from "../../../../src/ts/test/engine/events/helpers";
+import type { InputEvent } from "../../../../src/ts/test/engine/events/types";
+import type { InsertInputType } from "../../../../src/ts/test/engine/input-type";
 
 let nextMs = 0;
 let charIndex = 0;

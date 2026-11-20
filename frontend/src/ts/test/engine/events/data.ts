@@ -18,20 +18,20 @@ import {
 } from "./types";
 import { getEventsForWord, getInputFromDom, keysToTrack } from "./helpers";
 import { recordEventForCache, resetLiveCache } from "./live-cache";
-import { Keycode } from "../../constants/keys";
+import { Keycode } from "../../../constants/keys";
 import { isSafeNumber, mean, roundTo2 } from "@monkeytype/util/numbers";
 import * as TestWords from "../test-words";
-import { Config } from "../../config/store";
-import * as CustomText from "../../test/custom-text";
-import { getMode2 } from "../../utils/misc";
+import { Config } from "../../../config/store";
+import * as CustomText from "../../custom-text";
+import { getMode2 } from "../../../utils/misc";
 import {
   getKoreanStatus,
   getActiveWordIndex,
   getCurrentQuote,
   getBailedOut,
   isResultCalculating,
-} from "../../states/test";
-import { isFunboxActiveWithProperty } from "../funbox/active";
+} from "../../../states/test";
+import { isFunboxActiveWithProperty } from "../../funbox/active";
 
 export function buildEventLog(): EventLog {
   const context = {

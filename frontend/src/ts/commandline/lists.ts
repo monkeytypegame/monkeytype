@@ -35,7 +35,7 @@ import {
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
 import { fixSkillIssue } from "../components/layout/overlays/SkillIssueFix";
-import { getLastEventLog } from "../states/test";
+import { getFrozenLog } from "../states/test";
 
 const adsCommands = buildCommands("ads");
 
@@ -278,11 +278,11 @@ export const commands: CommandsSubgroup = {
       fa: { icon: "fa-cog" },
       visible: false,
       available: (): boolean => {
-        return getLastEventLog() !== null;
+        return getFrozenLog() !== null;
       },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(JSON.stringify(getLastEventLog()))
+          .writeText(JSON.stringify(getFrozenLog()))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

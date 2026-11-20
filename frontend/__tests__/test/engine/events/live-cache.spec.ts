@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../../src/ts/config/store", () => ({
+vi.mock("../../../../src/ts/config/store", () => ({
   Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
   getConfig: {},
 }));
 
-vi.mock("../../../src/ts/test/test-words", () => ({
+vi.mock("../../../../src/ts/test/engine/test-words", () => ({
   words: { get: () => [] },
 }));
 
-vi.mock("../../../src/ts/states/test", () => ({
+vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
   getActiveWordIndex: () => 0,
   isResultCalculating: () => false,
@@ -22,15 +22,15 @@ import {
   resetTestEvents,
   cleanupData,
   buildEventLog,
-} from "../../../src/ts/test/events/data";
+} from "../../../../src/ts/test/engine/events/data";
 import {
   getLiveCachedAccuracy,
   getLiveCachedMsSinceLastInputEvent,
-} from "../../../src/ts/test/events/live-cache";
+} from "../../../../src/ts/test/engine/events/live-cache";
 import {
   getAccuracy,
   getMsSinceLastInputEvent,
-} from "../../../src/ts/test/events/stats";
+} from "../../../../src/ts/test/engine/events/stats";
 
 type Step =
   | { type: "input"; ms: number; correct?: boolean }

@@ -1,6 +1,14 @@
 import { batch, createRoot } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
 vi.mock("../../src/ts/controllers/theme-controller", () => ({
@@ -15,25 +23,21 @@ vi.mock("../../src/ts/utils/json-data", async (importOriginal) => ({
   ...(await importOriginal()),
   getLayout: vi.fn(async () => new Promise(() => undefined)),
 }));
-// input source for test-ui's letter updates
+// input source for after-input's letter updates
 let currentInput = "";
-vi.mock("../../src/ts/test/events/data", async (importOriginal) => ({
+vi.mock("../../src/ts/test/engine/events/data", async (importOriginal) => ({
   ...(await importOriginal()),
   getCurrentInput: (): string => currentInput,
 }));
 
-const caretUpdatePosition = vi.hoisted(() => vi.fn());
-vi.mock("../../src/ts/test/caret", async (importOriginal) => ({
-  ...(await importOriginal()),
-  updatePosition: caretUpdatePosition,
-}));
-
+import { Caret } from "../../src/ts/components/pages/test/caret";
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
+import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
 import {
   increaseActiveWordIndex,
   resetActiveWordIndex,
@@ -47,8 +51,11 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import * as TestUI from "../../src/ts/test/test-ui";
-import * as TestWords from "../../src/ts/test/test-words";
+import * as TestWords from "../../src/ts/test/engine/test-words";
+import {
+  focusWordsEvent,
+  markTestPageMounted,
+} from "../../src/ts/test/test-page-bridge";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
 // jsdom has no layout: words get a fake one, 5 per line
@@ -56,6 +63,14 @@ const wordsPerLine = 5;
 const lineHeight = 30;
 
 let frames: Map<number, FrameRequestCallback>;
+// main caret moves: snapped (animate false) or animated
+let caretGoTo: MockInstance<Caret["goTo"]>;
+const caretMoves = (animate: boolean): number =>
+  caretGoTo.mock.contexts.filter(
+    (caret, i) =>
+      (caret as Caret).native.id === "caret" &&
+      (caretGoTo.mock.calls[i]?.[0].animate ?? false) === animate,
+  ).length;
 let nextFrameId: number;
 
 function runFrames(): void {
@@ -68,7 +83,7 @@ function runFrames(): void {
 
 const cleanups: (() => void)[] = [];
 
-/** Mounts WordsInput and Words (#words), bound to test-ui like TestPage does. */
+/** Mounts WordsInput and Words (#words), marking the test page mounted like TestPage does. */
 function mount(): {
   words: HTMLElement;
   input: HTMLTextAreaElement;
@@ -91,12 +106,7 @@ function mount(): {
     throw new Error("Words not mounted");
   }
   createRoot((dispose) => {
-    TestUI.init(
-      {
-        typingTest: new ElementWithUtils(typingTest),
-      },
-      controller.signal,
-    );
+    markTestPageMounted(controller.signal);
     cleanups.push(() => {
       controller.abort();
       dispose();
@@ -119,7 +129,7 @@ function childClasses(words: HTMLElement): string[] {
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
   increaseActiveWordIndex();
-  void TestUI.afterTestWordChange("forward");
+  afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -129,7 +139,7 @@ function activeWordIndex(words: HTMLElement): string | undefined {
   return words.querySelector<HTMLElement>(".word.active")?.dataset["wordindex"];
 }
 
-describe("test-ui words rendering", () => {
+describe("after-input words rendering", () => {
   beforeEach(() => {
     frames = new Map();
     nextFrameId = 1;
@@ -156,7 +166,9 @@ describe("test-ui words rendering", () => {
     });
     resetActiveWordIndex();
     currentInput = "";
-    caretUpdatePosition.mockClear();
+    caretGoTo = vi.spyOn(Caret.prototype, "goTo").mockImplementation(() => {
+      // jsdom has no layout to measure
+    });
     // jsdom has no default font size, the words input is sized in rem
     document.documentElement.style.fontSize = "16px";
   });
@@ -180,13 +192,13 @@ describe("test-ui words rendering", () => {
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
     increaseActiveWordIndex();
     const topBefore = input.style.top;
 
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     // nothing rendered or laid out synchronously
     expect(activeWordIndex(words)).toBe("4");
@@ -216,7 +228,7 @@ describe("test-ui words rendering", () => {
     // committed with a typo
     setWordInput(0, "wrod");
     increaseActiveWordIndex();
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
 
     const first = (): Element | null =>
       words.querySelector(".word[data-wordindex='0']");
@@ -235,12 +247,12 @@ describe("test-ui words rendering", () => {
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
     increaseActiveWordIndex();
     appendRenderedWord({ display: "" });
-    void TestUI.afterTestWordChange("forward");
+    afterTestWordChange("forward");
     runFrames();
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     resetActiveWordIndex();
-    void TestUI.afterTestWordChange("back");
+    afterTestWordChange("back");
     expect(words.querySelectorAll(".word")).toHaveLength(2);
 
     runFrames();
@@ -258,7 +270,7 @@ describe("test-ui words rendering", () => {
 
     for (let i = 0; i < 2; i++) {
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
     }
     runFrames();
 
@@ -275,17 +287,22 @@ describe("test-ui words rendering", () => {
       TestWords.words.reset();
       for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
       resetActiveWordIndex();
-      TestUI.onTestRestart("testPage");
+      // restartTest's render step
+      focusWordsEvent.dispatch({ force: true });
+      replaceWords(TestWords.words.get(), {
+        activeWordIndex: 0,
+        zen: false,
+      });
     }
 
     it("snaps the caret to the new words instead of animating", () => {
       mount();
-      caretUpdatePosition.mockClear();
+      caretGoTo.mockClear();
 
       startTest(10);
 
-      expect(caretUpdatePosition).toHaveBeenCalledWith(true);
-      expect(caretUpdatePosition).not.toHaveBeenCalledWith(false);
+      expect(caretMoves(false)).toBeGreaterThan(0);
+      expect(caretMoves(true)).toBe(0);
     });
 
     it.each([
@@ -303,10 +320,13 @@ describe("test-ui words rendering", () => {
         const completions: (() => void)[] = [];
         const cancel = vi.fn();
         vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
-          (params) => {
-            completions.push(() => {
-              params.onComplete?.({} as never, {} as never);
-            });
+          function (this: ElementWithUtils, params) {
+            // the line jump's, not the carets' following it
+            if (this.native.id === "words") {
+              completions.push(() => {
+                params.onComplete?.({} as never, {} as never);
+              });
+            }
             return { cancel } as never;
           },
         );
@@ -340,10 +360,13 @@ describe("test-ui words rendering", () => {
       });
       const completions: (() => void)[] = [];
       vi.spyOn(ElementWithUtils.prototype, "animate").mockImplementation(
-        (params) => {
-          completions.push(() => {
-            params.onComplete?.({} as never, {} as never);
-          });
+        function (this: ElementWithUtils, params) {
+          // the line jump's, not the carets' following it
+          if (this.native.id === "words") {
+            completions.push(() => {
+              params.onComplete?.({} as never, {} as never);
+            });
+          }
           return { cancel: vi.fn() } as never;
         },
       );
@@ -367,10 +390,9 @@ describe("test-ui words rendering", () => {
 
   describe("config changes", () => {
     // each full layout snaps the caret once
-    const layoutsAll = (): number =>
-      caretUpdatePosition.mock.calls.filter(([snap]) => snap === true).length;
+    const layoutsAll = (): number => caretMoves(false);
 
-    // Words only: with test-ui mounted, applyConfig's language event also
+    // Words only: with the test page mounted, applyConfig's language event also
     // restarts the test (async, outliving the test). That restart's layout of
     // the new words isn't the config effect's
     function mountWithWords(): void {
@@ -387,7 +409,7 @@ describe("test-ui words rendering", () => {
       replaceWords([{ display: "a" }, { display: "b" }, { display: "c" }], {
         activeWordIndex: 0,
       });
-      caretUpdatePosition.mockClear();
+      caretGoTo.mockClear();
     }
 
     it("lays out once per changed layout key set on its own", () => {
@@ -434,7 +456,7 @@ describe("test-ui words rendering", () => {
 
       // to the first word of the second line, same frame
       increaseActiveWordIndex();
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
     });
@@ -443,7 +465,7 @@ describe("test-ui words rendering", () => {
       mountTwoLetterWords(3);
       for (let i = 0; i < 3; i++) increaseActiveWordIndex();
       appendRenderedWord({ display: "ab" });
-      void TestUI.afterTestWordChange("forward");
+      afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(true);
     });
@@ -488,7 +510,7 @@ describe("test-ui words rendering", () => {
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
         increaseActiveWordIndex();
-        void TestUI.afterTestWordChange("forward");
+        afterTestWordChange("forward");
       }
       runFrames();
       await new Promise((resolve) => setTimeout(resolve, 0));

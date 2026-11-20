@@ -1,38 +1,79 @@
 import { CaretStyle } from "@monkeytype/schemas/configs";
-import { Config } from "../config/store";
-import { getTotalInlineMargin } from "../utils/misc";
-import type { Direction } from "../utils/strings";
 import { EasingParam, JSAnimation } from "animejs";
-import { ElementWithUtils } from "../utils/dom";
-import * as TestWords from "../test/test-words";
-import { getWordElement, LETTER_SELECTOR } from "../states/word-elements";
+import { createSignal } from "solid-js";
 
-let lockedMainCaretInTape = true;
-let caretDebug = false;
+import { Config } from "../../../config/store";
+import * as TestWords from "../../../test/engine/test-words";
+import { ElementWithUtils } from "../../../utils/dom";
+import { getTotalInlineMargin } from "../../../utils/misc";
+import type { Direction } from "../../../utils/strings";
+import type { MountedWord, WordRegistry } from "./word-registry";
+
+const lockedMainCaretInTape = true;
+const [isCaretDebug, setCaretDebug] = createSignal(false);
+const [caretDebugTarget, setCaretDebugTarget] = createSignal<
+  | {
+      /** the letter the pace caret targets */
+      letter: HTMLElement;
+      /** the visible letter it goes to instead, if the target has no width */
+      visibleLetter?: HTMLElement;
+    }
+  | undefined
+>();
+/**
+ * Dev options: outlines the pace caret and the letters, marking the ones it
+ * targets (set while caret debug is on).
+ */
+export { isCaretDebug, caretDebugTarget };
 
 export function toggleCaretDebug(): void {
-  caretDebug = !caretDebug;
-  if (!caretDebug) {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.remove("debugCaret");
-      l.classList.remove("debugCaretTarget");
-      l.classList.remove("debugCaretTarget2");
-    }
-  } else {
-    for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-      l.classList.add("debugCaret");
-    }
-  }
+  setCaretDebug((debug) => !debug);
 }
 
+/**
+ * How far letter tape moves the words for the active word's typed letters
+ * (the first `inputLength`): their widths, minus the last positive width if
+ * the next letter has none.
+ */
+export function getTapeLetterShift(
+  word: MountedWord,
+  inputLength: number,
+): number {
+  let shift = 0;
+  let lastPositiveLetterWidth = 0;
+  for (let i = 0; i < inputLength; i++) {
+    const letter = word.getLetter(i);
+    if (
+      (Config.blindMode || Config.hideExtraLetters) &&
+      letter?.getAttribute("data-ui-state") === "extra"
+    ) {
+      continue;
+    }
+    const letterOuterWidth = letter?.offsetWidth ?? 0;
+    shift += letterOuterWidth;
+    if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
+  }
+  // if current letter has zero width move the tape to previous positive width letter
+  if (word.getLetter(inputLength)?.offsetWidth === 0) {
+    shift -= lastPositiveLetterWidth;
+  }
+  return shift;
+}
+
+/**
+ * Imperative handle on a caret element (#caret, #paceCaret), private to the
+ * Words layout: positions it on a letter and keeps it in sync with line
+ * jumps and tape scrolls. Its style class, visibility and blinking are
+ * rendered by Words.
+ */
 export class Caret {
-  private id: string;
   private element: ElementWithUtils;
-  private wordsWrapperEl: ElementWithUtils;
-  private style: CaretStyle = "default";
+  private getWordsWrapper: () => HTMLElement;
+  private wordRegistry: WordRegistry;
+  private getStyle: () => CaretStyle;
   private readyToResetMarginTop: boolean = false;
   private readyToResetMarginLeft: boolean = false;
-  private isMainCaret: boolean = false;
+  private isMainCaret: boolean;
   private cumulativeTapeMarginCorrection: number = 0;
 
   private posAnimation: JSAnimation | null = null;
@@ -40,73 +81,58 @@ export class Caret {
   private marginLeftAnimation: JSAnimation | null = null;
 
   constructor(
-    element: ElementWithUtils,
-    style: CaretStyle,
-    refs: { wordsWrapper: ElementWithUtils },
+    element: HTMLElement,
+    options: {
+      /** the typist's caret, else the pace caret */
+      isMainCaret: boolean;
+      style: () => CaretStyle;
+      wordsWrapper: () => HTMLElement;
+      /** the elements of the words it goes to */
+      wordRegistry: WordRegistry;
+    },
   ) {
-    this.id = element.native.id;
-    this.element = element;
-    this.wordsWrapperEl = refs.wordsWrapper;
-    this.setStyle(style);
-    if (this.id === "caret") {
-      this.isMainCaret = true;
-    }
+    this.element = new ElementWithUtils(element);
+    this.wordRegistry = options.wordRegistry;
+    this.isMainCaret = options.isMainCaret;
+    this.getStyle = options.style;
+    this.getWordsWrapper = options.wordsWrapper;
   }
 
-  public setStyle(style: CaretStyle): void {
-    this.style = style;
-    this.resetWidth();
-    this.element.removeClass([
-      "off",
-      "default",
-      "underline",
-      "outline",
-      "block",
-      "carrot",
-      "banana",
-      "monkey",
-    ]);
-    this.element.addClass(style);
+  /** The element, eg. to check it's still the rendered one. */
+  public get native(): HTMLElement {
+    return this.element.native;
   }
 
-  public show(): void {
-    this.element.show();
-    this.element.setStyle({ display: "" });
+  private get style(): CaretStyle {
+    return this.getStyle();
   }
 
-  public hide(): void {
-    this.element.hide();
-  }
-
-  public isHidden(): boolean {
-    return this.element.hasClass("hidden");
-  }
-
-  public getWidth(): number {
+  private getWidth(): number {
     return this.element.getOffsetWidth();
   }
 
+  /** Drops the width a full width style set, after a style change. */
   public resetWidth(): void {
     this.element.setStyle({ width: "" });
   }
 
-  public getHeight(): number {
-    if (!this.isHidden()) {
+  private getHeight(): number {
+    if (!this.element.isHidden()) {
       return this.element.getOffsetHeight();
     }
 
-    let height = 0;
-    this.show();
-    height = this.element.getOffsetHeight();
-    this.hide();
+    // measured shown, hidden again right away (no paint in between)
+    this.element.show();
+    const height = this.element.getOffsetHeight();
+    this.element.hide();
     return height;
   }
 
-  public isFullWidth(): boolean {
+  private isFullWidth(): boolean {
     return ["block", "outline", "underline"].includes(this.style);
   }
 
-  public setPosition(options: {
+  private setPosition(options: {
     left: number;
     top: number;
     width?: number;
@@ -120,26 +146,6 @@ export class Caret {
       newStyle = { ...newStyle, width: `${options.width}px` };
     }
     this.element.setStyle(newStyle);
-  }
-
-  public startBlinking(): void {
-    if (Config.smoothCaret !== "off") {
-      this.element.setStyle({ animationName: "caretFlashSmooth" });
-    } else {
-      this.element.setStyle({ animationName: "caretFlashHard" });
-    }
-  }
-
-  public stopBlinking(): void {
-    this.element.setStyle({ animationName: "none", opacity: "1" });
-  }
-
-  public updateBlinkingAnimation(): void {
-    if (Config.smoothCaret === "off") {
-      this.element.setStyle({ animationName: "caretFlashHard" });
-    } else {
-      this.element.setStyle({ animationName: "caretFlashSmooth" });
-    }
   }
 
   public stopAllAnimations(): void {
@@ -238,7 +244,7 @@ export class Caret {
     });
   }
 
-  public animatePosition(options: {
+  private animatePosition(options: {
     left: number;
     top: number;
     duration?: number;
@@ -287,10 +293,10 @@ export class Caret {
     };
   }): void {
     if (this.style === "off") return;
-    const wordEl = getWordElement(options.wordIndex);
-    const word = wordEl === undefined ? null : new ElementWithUtils(wordEl);
     const testWord = TestWords.words.get(options.wordIndex);
     const wordLength = Array.from(testWord?.display ?? "").length;
+    // the typed letters, before clamping to the word's letters below
+    const inputLength = options.letterIndex;
 
     // caret can be either on the left side of the target letter or the right
     // we stick to the left side unless we are on the last letter or beyond
@@ -320,11 +326,14 @@ export class Caret {
       options.letterIndex = 0;
     }
 
-    if (word === null) return;
+    // not rendered (eg. removed by a line jump)
+    const word = this.wordRegistry.getWord(options.wordIndex);
+    if (word === undefined) return;
 
     const { left, top, width } = this.getTargetPositionAndWidth({
       word,
       letterIndex: options.letterIndex,
+      inputLength,
       side,
       testDirection: options.testDirection,
       wordDirection:
@@ -388,21 +397,25 @@ export class Caret {
   }
 
   private getTargetPositionAndWidth(options: {
-    word: ElementWithUtils;
+    word: MountedWord;
     letterIndex: number;
+    inputLength: number;
     side: "beforeLetter" | "afterLetter";
     testDirection: Direction;
     wordDirection: Direction;
   }): { left: number; top: number; width: number } {
-    const letters = options.word?.qsa(LETTER_SELECTOR);
+    const { word } = options;
+    const letterCount = word.getLetterCount();
+    const wordEl = new ElementWithUtils(word.el);
 
-    if (letters.length === 0) {
+    if (letterCount === 0) {
       throw new Error(
         "Caret getTargetPositionAndWidth: no letters found in word",
       );
     }
 
-    let letter = letters[options.letterIndex] ?? letters[letters.length - 1];
+    let letter =
+      word.getLetter(options.letterIndex) ?? word.getLetter(letterCount - 1);
 
     if (!letter) {
       throw new Error(
@@ -410,52 +423,65 @@ export class Caret {
       );
     }
 
-    if (caretDebug) {
-      if (this.id === "paceCaret") {
-        for (const l of document.querySelectorAll(`.word ${LETTER_SELECTOR}`)) {
-          l.classList.remove("debugCaretTarget");
-          l.classList.remove("debugCaretTarget2");
-          l.classList.add("debugCaret");
-        }
-        letter?.addClass("debugCaretTarget");
-        this.element.addClass("debug");
-      }
-    } else {
-      this.element.removeClass("debug");
-    }
+    const targetLetter = letter;
 
     //if the letter is not visible, use the closest visible letter
-    const isLetterVisible = letter.getOffsetWidth() > 0;
+    const isLetterVisible = letter.offsetWidth > 0;
     if (!isLetterVisible) {
       for (let i = options.letterIndex - 1; i >= 0; i--) {
-        const loopLetter = letters[i] as ElementWithUtils;
+        const loopLetter = word.getLetter(i) as HTMLElement;
 
         // find the closest visible letter before the current letter
-        if (loopLetter.getOffsetWidth() > 0) {
+        if (loopLetter.offsetWidth > 0) {
           letter = loopLetter;
           break;
         }
       }
-      if (caretDebug) {
-        letter.addClass("debugCaretTarget2");
-      }
     }
 
-    const spaceWidth = getTotalInlineMargin(options.word.native);
+    if (isCaretDebug() && !this.isMainCaret) {
+      setCaretDebugTarget({
+        letter: targetLetter,
+        ...(letter !== targetLetter && { visibleLetter: letter }),
+      });
+    }
+
+    const spaceWidth = getTotalInlineMargin(wordEl.native);
     let width = spaceWidth;
     if (this.isFullWidth() && options.side === "beforeLetter") {
-      width = letter.getOffsetWidth();
+      width = letter.offsetWidth;
     }
 
     let left = 0;
     let top = 0;
 
     // the tape is anchored by the test's direction, whatever the word's is
-    const wrapperWidth = this.wordsWrapperEl.getOffsetWidth();
+    const wrapperWidth = this.getWordsWrapper().offsetWidth;
     const tapeOffset =
       options.testDirection === "rtl"
         ? wrapperWidth * (1 - Config.tapeMargin / 100)
         : wrapperWidth * (Config.tapeMargin / 100);
+
+    const lockedInTape =
+      this.isMainCaret && lockedMainCaretInTape && Config.tapeMode !== "off";
+    // the tape anchors the word's start in the test's direction. A word
+    // running the other way starts at its other edge: the caret can't stay at
+    // the anchor, it goes to its letter in the word as laid out once the tape
+    // scroll lands (it's measured before the scroll)
+    let wordLeft = wordEl.getOffsetLeft();
+    let tapeAnchorsLetter = lockedInTape;
+    if (lockedInTape && options.wordDirection !== options.testDirection) {
+      tapeAnchorsLetter = false;
+      const wordWidth = wordEl.getOffsetWidth();
+      const shift =
+        Config.tapeMode === "letter"
+          ? getTapeLetterShift(word, options.inputLength)
+          : 0;
+      wordLeft =
+        options.testDirection === "rtl"
+          ? tapeOffset - wordWidth + shift
+          : tapeOffset - shift;
+    }
 
     // yes, this is all super verbose, but its easier to maintain and understand
     if (options.wordDirection === "rtl") {
@@ -464,38 +490,38 @@ export class Caret {
         if (this.isFullWidth()) {
           afterLetterCorrection += spaceWidth * -1;
         } else {
-          afterLetterCorrection += letter.getOffsetWidth() * -1;
+          afterLetterCorrection += letter.offsetWidth * -1;
         }
       }
-      if (Config.tapeMode === "off") {
+      if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
         if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
+          left += letter.offsetWidth;
         }
-        left += letter.getOffsetLeft();
-        left += options.word.getOffsetLeft();
+        left += letter.offsetLeft;
+        left += wordLeft;
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
         if (!this.isFullWidth()) {
-          left += letter.getOffsetWidth();
+          left += letter.offsetWidth;
         }
-        left += options.word.getOffsetWidth() * -1;
-        left += letter.getOffsetLeft();
+        left += wordEl.getOffsetWidth() * -1;
+        left += letter.offsetLeft;
         left += afterLetterCorrection;
-        if (this.isMainCaret && lockedMainCaretInTape) {
+        if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += options.word.getOffsetLeft();
-          left += options.word.getOffsetWidth();
+          left += wordEl.getOffsetLeft();
+          left += wordEl.getOffsetWidth();
         }
       } else if (Config.tapeMode === "letter") {
         if (this.isFullWidth()) {
           left += width * -1;
         }
-        if (this.isMainCaret && lockedMainCaretInTape) {
+        if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += letter.getOffsetLeft();
-          left += options.word.getOffsetLeft();
+          left += letter.offsetLeft;
+          left += wordEl.getOffsetLeft();
           left += afterLetterCorrection;
           left += width;
         }
@@ -503,41 +529,41 @@ export class Caret {
     } else {
       let afterLetterCorrection = 0;
       if (options.side === "afterLetter") {
-        afterLetterCorrection += letter.getOffsetWidth();
+        afterLetterCorrection += letter.offsetWidth;
       }
-      if (Config.tapeMode === "off") {
-        left += letter.getOffsetLeft();
-        left += options.word.getOffsetLeft();
+      if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
+        left += letter.offsetLeft;
+        left += wordLeft;
         left += afterLetterCorrection;
       } else if (Config.tapeMode === "word") {
-        left += letter.getOffsetLeft();
+        left += letter.offsetLeft;
         left += afterLetterCorrection;
-        if (this.isMainCaret && lockedMainCaretInTape) {
+        if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += options.word.getOffsetLeft();
+          left += wordEl.getOffsetLeft();
         }
       } else if (Config.tapeMode === "letter") {
-        if (this.isMainCaret && lockedMainCaretInTape) {
+        if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {
-          left += letter.getOffsetLeft();
-          left += options.word.getOffsetLeft();
+          left += letter.offsetLeft;
+          left += wordEl.getOffsetLeft();
           left += afterLetterCorrection;
         }
       }
     }
 
     //top position
-    top += letter.getOffsetTop();
-    top += options.word.getOffsetTop();
+    top += letter.offsetTop;
+    top += wordEl.getOffsetTop();
 
     if (this.style === "underline") {
       // if style is underline, add the height of the letter to the top
-      top += letter.getOffsetHeight();
+      top += letter.offsetHeight;
     } else {
       // else center vertically in the letter
-      top += (letter.getOffsetHeight() - this.getHeight()) / 2;
+      top += (letter.offsetHeight - this.getHeight()) / 2;
     }
 
     // also center horizontally

@@ -29,7 +29,7 @@ import type {
   InputEventNoMs,
   TestEventNoMs,
   TestEventType,
-} from "../../test/events/types";
+} from "../../test/engine/events/types";
 
 import {
   EVENT_TYPES,
@@ -65,13 +65,13 @@ import {
   type SyncKind,
 } from "../../states/event-log-viewer";
 import { hideModal } from "../../states/modals";
-import { getLastEventLog } from "../../states/test";
+import { getFrozenLog } from "../../states/test";
 import { getTheme } from "../../states/theme";
-import { getInputFromDom } from "../../test/events/helpers";
+import { getInputFromDom } from "../../test/engine/events/helpers";
 import {
   getKeypressDurations,
   getKeypressSpacing,
-} from "../../test/events/stats";
+} from "../../test/engine/events/stats";
 import {
   computeBellness,
   computeCrossStats,
@@ -79,8 +79,8 @@ import {
   probit,
   type QuantumFit,
   type Significant,
-} from "../../test/events/timing-stats";
-import { EVENT_LOG_VERSION } from "../../test/events/types";
+} from "../../test/engine/events/timing-stats";
+import { EVENT_LOG_VERSION } from "../../test/engine/events/types";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";
@@ -321,7 +321,7 @@ export function EventLogViewerModal(): JSXElement {
   const onShow = (): void => loadFrom(raw());
 
   const onLoadLatest = (): void => {
-    const log = getLastEventLog();
+    const log = getFrozenLog();
     if (log === null) {
       setError("No event log available - complete a test first");
       return;

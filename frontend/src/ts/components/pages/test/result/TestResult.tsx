@@ -17,9 +17,9 @@ import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
 import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import { resultState } from "../../../../states/result";
-import { getLastEventLog, getLastResult } from "../../../../states/test";
+import { getFrozenLog, getLastResult } from "../../../../states/test";
 import { restartTest, retrySavingResult } from "../../../../test/test-logic";
-import { setResultElement } from "../../../../test/test-ui";
+import { registerFade } from "../../../../test/test-page-bridge";
 import { cn } from "../../../../utils/cn";
 import {
   applyReducedMotion,
@@ -37,10 +37,18 @@ import { ResultReplay } from "./ResultReplay";
 import { ResultSecondaryStats } from "./ResultSecondaryStats";
 import { ResultWordsHistory } from "./ResultWordsHistory";
 
+// clicks on these keep their own focus
+const INTERACTIVE_SELECTOR =
+  'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
+
 export function TestResult(): JSXElement {
+  let prefocusRef: HTMLDivElement | undefined;
+
+  onMount(() => prefocusRef?.focus({ preventScroll: true }));
+
   const lastTest = createMemo(() => {
     const result = getLastResult();
-    const eventLog = getLastEventLog();
+    const eventLog = getFrozenLog();
     return result !== null && eventLog !== null ? { result, eventLog } : null;
   });
 
@@ -48,9 +56,6 @@ export function TestResult(): JSXElement {
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restartTest
-    setResultElement(el);
-    onCleanup(() => setResultElement(undefined));
 
     void el.promiseAnimate({
       opacity: [0, 1],
@@ -59,8 +64,28 @@ export function TestResult(): JSXElement {
     scrollToCenterOrTop(el.native);
   });
 
+  // restartTest fades it out
+  const unregisterFade = registerFade("result", async (direction, duration) => {
+    await resultEl()?.promiseAnimate({
+      opacity: direction === "in" ? [0, 1] : 0,
+      duration,
+    });
+  });
+  onCleanup(unregisterFade);
+
   return (
-    <div id="result" ref={resultRef} class={cn("content-grid full-width")}>
+    <div
+      id="result"
+      ref={resultRef}
+      class={cn("content-grid full-width")}
+      onClick={(e) => {
+        // a click on plain content drops focus to the body, and Tab would
+        // then skip the next test button: put focus back on the prefocus
+        if (!(e.target instanceof Element)) return;
+        if (e.target.closest(INTERACTIVE_SELECTOR) !== null) return;
+        prefocusRef?.focus({ preventScroll: true });
+      }}
+    >
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">
           <Fa icon="fa-check" />
@@ -99,6 +124,11 @@ export function TestResult(): JSXElement {
               <RetrySavingButton />
               <LoginPrompt />
             </Show>
+            <div
+              ref={(el) => (prefocusRef = el)}
+              class="focus:outline-none focus-visible:outline-none"
+              tabIndex="-1"
+            ></div>
             <ResultButtons glarses={getGlarsesMode()} />
 
             <Watermark />
@@ -114,7 +144,10 @@ function LoginPrompt(): JSXElement {
   return (
     <Show when={!isAuthenticated() && !getIsScreenshotting()}>
       <div class="mb-4 text-center text-sub">
-        <Link to="/login">Sign in</Link> to save your result
+        <Link to="/login" tabIndex={-1}>
+          Sign in
+        </Link>{" "}
+        to save your result
       </div>
     </Show>
   );

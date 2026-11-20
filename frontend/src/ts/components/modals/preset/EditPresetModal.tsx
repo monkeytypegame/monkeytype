@@ -149,7 +149,11 @@ export function EditPresetModal(): JSXElement {
             onChange: fromSchema(PresetNameSchema, { convert: normalizeName }),
           }}
           children={(field) => (
-            <InputField field={field} placeholder="preset name" />
+            <InputField
+              field={field}
+              placeholder="preset name"
+              autocomplete="off"
+            />
           )}
         />
         <form.Field name="updateConfig">

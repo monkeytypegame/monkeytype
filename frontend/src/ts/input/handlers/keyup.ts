@@ -1,6 +1,6 @@
 import { Config } from "../../config/store";
-import { logTestEvent } from "../../test/events/data";
-import { getTestEventCode } from "../../test/events/helpers";
+import { logTestEvent } from "../../test/engine/events/data";
+import { getTestEventCode } from "../../test/engine/events/helpers";
 
 export async function onKeyup(event: KeyboardEvent): Promise<void> {
   const now = performance.now();

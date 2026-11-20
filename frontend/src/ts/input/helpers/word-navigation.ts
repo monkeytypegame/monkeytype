@@ -1,5 +1,5 @@
 import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
+import { afterTestWordChange, beforeTestWordChange } from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
   decreaseActiveWordIndex,
@@ -7,7 +7,7 @@ import {
   increaseActiveWordIndex,
 } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
@@ -16,13 +16,13 @@ import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
-import { DeleteInputType } from "./input-type";
-import { getWordBurst } from "../../test/events/stats";
+import { DeleteInputType } from "../../test/engine/input-type";
+import { getWordBurst } from "../../test/engine/events/stats";
 import {
   buildEventLog,
   getCurrentInput,
   getInputForWord,
-} from "../../test/events/data";
+} from "../../test/engine/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -43,7 +43,7 @@ export async function goToNextWord({
     lastBurst: null,
   };
 
-  TestUI.beforeTestWordChange("forward");
+  beforeTestWordChange("forward");
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
     fb.functions.handleSpace({
@@ -85,7 +85,7 @@ export async function goToNextWord({
   }
 
   setInputElementValue("");
-  void TestUI.afterTestWordChange("forward", ret.lastBurst);
+  afterTestWordChange("forward", ret.lastBurst);
 
   return ret;
 }
@@ -96,7 +96,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back");
+  beforeTestWordChange("back");
 
   decreaseActiveWordIndex();
 
@@ -120,5 +120,5 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
       setInputElementValue(word);
     }
   }
-  void TestUI.afterTestWordChange("back");
+  afterTestWordChange("back");
 }

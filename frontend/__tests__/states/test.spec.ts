@@ -11,7 +11,7 @@ import {
   setFocusMode,
 } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
-import { markTestPageMounted } from "../../src/ts/test/test-page-state";
+import { markTestPageMounted } from "../../src/ts/test/test-page-bridge";
 
 describe("isLongTest", () => {
   it("picks up custom text changes when the test page mounts", () => {

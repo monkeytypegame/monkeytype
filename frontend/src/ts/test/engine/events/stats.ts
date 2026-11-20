@@ -1,6 +1,6 @@
-import { CharCounts, countChars, isSpace } from "../../utils/strings";
+import { CharCounts, countChars, isSpace } from "../../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
-import { calculateWpm } from "../../utils/numbers";
+import { calculateWpm } from "../../../utils/numbers";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
 import Hangul from "hangul-js";
@@ -445,7 +445,17 @@ function countCharsForWordIndex(
     targetWord = Hangul.disassemble(targetWord).join("");
   }
 
-  return countChars(simulatedInput, targetWord, lastWord && countPartial);
+  const lastInput = wordEvents.findLast((e) => e.type === "input");
+  const committed =
+    lastInput?.data.inputType === "insertText" &&
+    lastInput.data.commitsWord === true;
+
+  return countChars(
+    simulatedInput,
+    targetWord,
+    lastWord && countPartial,
+    committed,
+  );
 }
 
 function inferActiveWordIndex(

@@ -1,9 +1,9 @@
 import { Config } from "../../config/store";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue } from "../input-element";
 import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
-import { getInputForWord } from "../../test/events/data";
+import { getInputForWord } from "../../test/engine/events/data";
 import {
   isTestRestarting,
   getActiveWordIndex,

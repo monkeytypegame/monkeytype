@@ -1,8 +1,19 @@
-import { JSXElement, onCleanup, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  JSXElement,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
+import * as AdController from "../../../controllers/ad-controller";
+import * as SoundController from "../../../controllers/sound-controller";
+import * as ThemeController from "../../../controllers/theme-controller";
 import { getCustomTextIndicator } from "../../../states/core";
+import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
 import { isResultShown } from "../../../states/result";
@@ -19,18 +30,20 @@ import {
   resetIncompleteTests,
   setTestFocusState,
 } from "../../../states/test";
-import * as Caret from "../../../test/caret";
 import * as CustomText from "../../../test/custom-text";
-import * as PaceCaret from "../../../test/pace-caret";
 import {
   leaveTestPage,
   onRestartButtonClick,
   restartTest,
   restartIfNotStarted,
 } from "../../../test/test-logic";
-import * as TestUI from "../../../test/test-ui";
+import {
+  focusWordsEvent,
+  markTestPageMounted,
+  registerFade,
+  testRestartedEvent,
+} from "../../../test/test-page-bridge";
 import { cn } from "../../../utils/cn";
-import { ElementWithUtils } from "../../../utils/dom";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
@@ -47,6 +60,7 @@ import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
+import * as ResultWordHighlight from "./result/result-word-highlight";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
@@ -66,8 +80,6 @@ export function TestPage(): JSXElement {
 
   let typingTestRef: HTMLDivElement | undefined;
   let wordsWrapperRef: HTMLDivElement | undefined;
-  let caretRef: HTMLDivElement | undefined;
-  let paceCaretRef: HTMLDivElement | undefined;
 
   onMount(() => {
     // registered first so a throw below still cleans up
@@ -75,31 +87,11 @@ export function TestPage(): JSXElement {
     onCleanup(() => controller.abort());
     const { signal } = controller;
 
-    if (
-      typingTestRef === undefined ||
-      wordsWrapperRef === undefined ||
-      caretRef === undefined ||
-      paceCaretRef === undefined
-    ) {
+    if (typingTestRef === undefined) {
       throw new Error("TestPage refs not set");
     }
 
-    const wordsWrapper = new ElementWithUtils(wordsWrapperRef);
-    Caret.initElement(
-      { caret: new ElementWithUtils(caretRef), wordsWrapper },
-      signal,
-    );
-    PaceCaret.initElement(
-      { caret: new ElementWithUtils(paceCaretRef), wordsWrapper },
-      signal,
-    );
-
-    TestUI.init(
-      {
-        typingTest: new ElementWithUtils(typingTestRef),
-      },
-      signal,
-    );
+    markTestPageMounted(signal);
     listenForModifierKeys(signal);
     listenForMonkeyKeys(signal);
     // any previously rendered words are gone, start a fresh test
@@ -158,6 +150,51 @@ export function TestPage(): JSXElement {
     );
   });
 
+  const unregisterFade = registerFade(
+    "typingTest",
+    async (direction, duration) => {
+      if (typingTestRef === undefined) return;
+      // synchronous, so the shown test can't paint before the fade starts
+      if (direction === "in") typingTestRef.style.opacity = "0";
+      await Misc.promiseAnimate(typingTestRef, {
+        opacity: direction === "in" ? [0, 1] : 0,
+        duration,
+      });
+    },
+  );
+  onCleanup(unregisterFade);
+
+  // WordsInput takes the focus; during a test Words keeps the active line in
+  // view
+  focusWordsEvent.useListener(() => {
+    if (isTestActive()) return;
+    Misc.scrollToCenterOrTop(typingTestRef ?? null);
+  });
+
+  testRestartedEvent.useListener((source) => {
+    ResultWordHighlight.destroy();
+    if (source === "resultPage") {
+      if (Config.randomTheme !== "off") {
+        void ThemeController.randomizeTheme();
+      }
+      skipBreakdownEvent.dispatch();
+    }
+    AdController.destroyResult();
+    void SoundController.clearAllSounds();
+  });
+
+  createEffect(
+    on(
+      isTestFinished,
+      (finished) => {
+        if (finished && Config.playSoundOnClick === "16") {
+          void SoundController.playFartReverb();
+        }
+      },
+      { defer: true },
+    ),
+  );
+
   const isFullWidth = (): boolean =>
     getConfig.maxLineWidth === 0 || getConfig.tapeMode !== "off";
   const fontSize = (): string => `${getConfig.fontSize}rem`;
@@ -208,26 +245,12 @@ export function TestPage(): JSXElement {
             hidden: isWordsWrapperHidden(),
           })}
           translate="no"
-          onClick={() => {
-            TestUI.focusWords();
-          }}
+          onClick={() => focusWordsEvent.dispatch({ force: false })}
         >
           <WordsInput />
           <div class="contents">
             <OutOfFocusWarning />
           </div>
-          <div
-            id="paceCaret"
-            ref={(el) => (paceCaretRef = el)}
-            class="full-width default hidden"
-            style={{ "font-size": fontSize() }}
-          ></div>
-          <div
-            id="caret"
-            ref={(el) => (caretRef = el)}
-            class="full-width default"
-            style={{ "font-size": fontSize() }}
-          ></div>
           <Words wordsWrapperRef={() => wordsWrapperRef} />
         </div>
 

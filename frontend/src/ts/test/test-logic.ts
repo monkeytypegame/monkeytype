@@ -7,8 +7,7 @@ import {
 } from "../states/lazy-mode";
 import { isOnline, showOfflineBanner } from "../states/connection";
 import Ape from "../ape";
-import { batch } from "solid-js";
-import * as TestUI from "./test-ui";
+import { batch, untrack } from "solid-js";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
@@ -22,7 +21,7 @@ import * as CustomText from "./custom-text";
 import * as PractiseWords from "./practise-words";
 import * as Funbox from "./funbox/funbox";
 import * as PaceCaret from "./pace-caret";
-import * as TestTimer from "./test-timer";
+import * as TestTimer from "./engine/test-timer";
 import { saveLocalResult, SaveLocalResultData } from "../collections/results";
 import * as Replay from "../components/pages/test/result/replay";
 import { getActiveTags } from "../queries/tags";
@@ -46,7 +45,7 @@ import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
   setKoreanStatus,
-  setLastEventLog,
+  setFrozenLog,
   setIsTestRestarting,
   isTestRestarting,
   getCurrentQuote,
@@ -86,11 +85,21 @@ import {
   setCompositionData,
   highlightKeymapKey,
   setFocusMode,
+  setCurrentLiveStats,
+  setLayoutfluidTimerVisible,
+  setTestFocusState,
+  setWordsInputPosition,
 } from "../states/test";
-import * as TestWords from "./test-words";
+import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
-import { canStartTest } from "./test-page-state";
+import {
+  fadeTest,
+  focusWordsEvent,
+  isTestPageMounted,
+  testRestartedEvent,
+} from "./test-page-bridge";
 import { configEvent } from "../events/config";
+import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { getAuthenticatedUser } from "../firebase";
@@ -132,7 +141,7 @@ import {
   logEventsDataToTheConsoleTable,
   forceReleaseAllKeys,
   buildEventLog,
-} from "./events/data";
+} from "./engine/events/data";
 import {
   getKeypressDurations,
   getChars,
@@ -150,14 +159,18 @@ import {
   getInputHistory,
   getKeypressesPerSecond,
   getKeypressSpacing,
-} from "./events/stats";
-import { getLiveCachedAccuracy } from "./events/live-cache";
+} from "./engine/events/stats";
+import { getLiveCachedAccuracy } from "./engine/events/live-cache";
 import { calculateWpm } from "../utils/numbers";
 import { isDevEnvironment } from "../utils/env";
-import { EventLog } from "./events/types";
+import { EventLog } from "./engine/events/types";
 import { resetModifierState } from "../states/modifiers";
 import { nthElementFromArray } from "../utils/arrays";
-import { appendRenderedWord, resetWordsRender } from "../states/words-render";
+import {
+  appendRenderedWord,
+  replaceWords,
+  resetWordsRender,
+} from "../states/words-render";
 
 let failReason = "";
 
@@ -187,7 +200,14 @@ export function startTest(now: number): boolean {
     onFinish: () => void finish(),
     onFail: fail,
   });
-  TestUI.onTestStart();
+  setFocusMode(true);
+  setCurrentLiveStats({
+    wpm: 0,
+    acc: 100,
+    raw: 0,
+    burst: 0,
+    seconds: 0,
+  });
   return true;
 }
 
@@ -263,7 +283,7 @@ export async function restartTest(
   // guards
 
   // not on the test page - TestPage restarts on mount
-  if (!TestUI.isMounted()) return;
+  if (!untrack(isTestPageMounted)) return;
 
   const noQuit = isFunboxActive("no_quit");
   if (isTestActive() && noQuit) {
@@ -376,7 +396,11 @@ export async function restartTest(
 
   setIsTestRestarting(true);
 
-  await TestUI.fadeOutTest(source, noAnim);
+  await fadeTest(
+    source === "resultPage" ? "result" : "typingTest",
+    "out",
+    noAnim,
+  );
 
   setTestFinished(false);
   setInputElementValue("");
@@ -396,9 +420,35 @@ export async function restartTest(
     fb.functions.restart();
   }
 
-  TestUI.onTestRestart(source);
+  setResultShown(false);
+  setTypingTestHidden(false);
+  setWordsInputPosition((position) => ({ ...position, left: 0 }));
+  setFocusMode(false);
+  setCurrentLiveStats({
+    wpm: undefined,
+    acc: undefined,
+    raw: undefined,
+    burst: undefined,
+    seconds: undefined,
+  });
+  setLayoutfluidTimerVisible(false);
+  setTestInitFailed(false);
+  setTestInitError(null);
+  focusWordsEvent.dispatch({ force: true });
+  if (!isOnline()) {
+    showOfflineBanner();
+  }
+  testRestartedEvent.dispatch(source);
+  replaceWords(
+    Config.mode === "zen" ? [{ display: "" }] : TestWords.words.get(),
+    {
+      activeWordIndex: getActiveWordIndex(),
+      zen: Config.mode === "zen",
+    },
+  );
 
-  await TestUI.fadeInTest(noAnim);
+  // sets the typing test's opacity to 0 at once, before anything paints
+  await fadeTest("typingTest", "in", noAnim);
   setIsTestRestarting(false);
 }
 
@@ -437,7 +487,7 @@ async function init(): Promise<boolean> {
   }
 
   // the page may have unmounted while loading the language
-  if (TestUI.isMounted()) {
+  if (untrack(isTestPageMounted)) {
     await Funbox.activate();
   }
 
@@ -847,12 +897,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // fade out the test and show loading
   // because the css animation has a delay,
   // if the test calculation is fast the loading will not show
-  await TestUI.fadeOutTest("testPage", false);
+  await fadeTest("typingTest", "out", false);
   setTypingTestHidden(true);
   setResultLoading(true);
   await Misc.sleep(0); //allow ui update
 
-  TestUI.onTestFinish();
+  setTestFocusState("focused");
 
   if (isRepeated() && Config.mode === "quote") {
     setIsRepeated(false);
@@ -903,7 +953,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   batch(() => {
-    setLastEventLog(eventLog);
+    setFrozenLog(eventLog);
     setLastResult(structuredClone(completedEvent));
   });
 
@@ -1393,7 +1443,7 @@ export function restartIfNotStarted(): void {
 // ===============================
 
 configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (TestUI.isMounted()) {
+  if (untrack(isTestPageMounted)) {
     if (key === "language") {
       //automatically enable lazy mode for arabic
       if (

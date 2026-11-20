@@ -33,7 +33,7 @@ import {
   isRepeated,
   setCurrentQuote,
 } from "../states/test";
-import * as TestWords from "./test-words";
+import * as TestWords from "./engine/test-words";
 
 //pin implementation
 const random = Math.random;

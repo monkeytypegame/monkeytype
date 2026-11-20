@@ -16,8 +16,8 @@ import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
 import { isTestFinished, isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
-import { getWordBurstHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+import { getWordBurstHistory } from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 import {
   buildWordsHistory,
   copyMissedWordsList,

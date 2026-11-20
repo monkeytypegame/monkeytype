@@ -8,7 +8,7 @@ import {
 import { z } from "zod";
 import { getConfig } from "../config/store";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { EventLog } from "../test/events/types";
+import { EventLog } from "../test/engine/events/types";
 
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
@@ -19,7 +19,7 @@ import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import * as CustomText from "../test/custom-text";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { isTestPageMounted } from "../test/test-page-state";
+import { isTestPageMounted } from "../test/test-page-bridge";
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";
@@ -108,6 +108,10 @@ export type WordsInputPosition = {
 // bound to #wordsInput by WordsInput, follows the active word
 export const [wordsInputPosition, setWordsInputPosition] =
   createSignal<WordsInputPosition>({ centerY: 0, left: 0 });
+
+// whether #wordsInput has focus, set by WordsInput on focus/blur: false while
+// the window is out of focus. Words shows the caret while it's true
+export const [isWordsInputFocused, setWordsInputFocused] = createSignal(false);
 
 // Words scrolls the window to the active word on each request (during a test)
 export const [trackScrollWindowToActiveWord, triggerScrollWindowToActiveWord] =
@@ -397,6 +401,4 @@ export function getTestDirection(): Direction {
 
 export const [isTestRestarting, setIsTestRestarting] = createSignal(false);
 export const [getKoreanStatus, setKoreanStatus] = createSignal(false);
-export const [getLastEventLog, setLastEventLog] = createSignal<EventLog | null>(
-  null,
-);
+export const [getFrozenLog, setFrozenLog] = createSignal<EventLog | null>(null);

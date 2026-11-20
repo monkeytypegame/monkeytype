@@ -72,3 +72,12 @@ export function isLeavingPage(): boolean {
   if (state?.status !== "pending") return false;
   return state.location.pathname !== state.resolvedLocation?.pathname;
 }
+
+/**
+ * Whether typing may start a test: the test page is shown, and no
+ * navigation is leaving it (eg. typing while it fades out). A reload in
+ * place (eg. signing in) doesn't stop it.
+ */
+export function canStartTest(): boolean {
+  return getRoutePage() === "test" && !isLeavingPage();
+}
