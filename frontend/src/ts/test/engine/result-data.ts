@@ -39,7 +39,7 @@ import { getTestSettings } from "./test-settings";
  * failed: a fail check ended the test (min speed, stop on error…), not
  * invalid. The rest make the result invalid.
  */
-export type ResultCheck =
+export type ResultDataCheck =
   | "ok"
   | "inconsistentDuration"
   | "failed"
@@ -56,7 +56,7 @@ export type ResultData = {
   completedEvent: CompletedResult;
   /** a field is undefined or NaN: never saved */
   malformed: boolean;
-  check: ResultCheck;
+  check: ResultDataCheck;
   /** no keypresses in the last 5 seconds (never for a bail out) */
   afkDetected: boolean;
   end: TestEnd;
@@ -103,7 +103,7 @@ function checkResult(
   eventLog: EventLog,
   end: TestEnd,
   afkDetected: boolean,
-): ResultCheck {
+): ResultDataCheck {
   const settings = getTestSettings();
   const bailedOut = end.type === "bailedOut";
   const mode2Number = parseInt(ce.mode2);

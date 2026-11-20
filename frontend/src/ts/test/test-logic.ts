@@ -74,7 +74,7 @@ import {
   type TestEnd,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
-import type { ResultCheck, ResultData } from "./engine/result-data";
+import type { ResultDataCheck, ResultData } from "./engine/result-data";
 import {
   TEST_SETTINGS_KEYS,
   getTestSettings,
@@ -919,7 +919,10 @@ function onResult({
   }
 }
 
-const invalidMessages: Record<Exclude<ResultCheck, "ok" | "failed">, string> = {
+const invalidMessages: Record<
+  Exclude<ResultDataCheck, "ok" | "failed">,
+  string
+> = {
   inconsistentDuration: "inconsistent test duration",
   tooShort: "too short",
   afk: "AFK detected",
