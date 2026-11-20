@@ -49,7 +49,6 @@ import {
   setIsPaceRepeat,
   setIsRepeated,
   setLastSignedOutResult,
-  isResultScreen,
   isRestartAnimating,
   setTestInitError,
   setTestInitFailed,
@@ -71,6 +70,7 @@ import {
   setWordsInfo,
   type RestartOptions,
   type TestEnd,
+  isTestFinished,
 } from "./engine/state";
 import * as Engine from "./engine/commands";
 import type { ResultDataCheck, ResultData } from "./engine/result-data";
@@ -998,7 +998,7 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     localDataToSave.xp = data.xp;
-    if (isResultScreen()) {
+    if (isTestFinished()) {
       localDataToSave.xpBreakdown = data.xpBreakdown;
     }
   }

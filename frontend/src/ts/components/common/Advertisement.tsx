@@ -3,7 +3,8 @@ import { JSXElement, onCleanup, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
 import { getRoutePage } from "../../states/router";
-import { isFocusMode, isResultScreen } from "../../states/test";
+import { isFocusMode } from "../../states/test";
+import { isTestFinished } from "../../test/engine/state";
 import { cn } from "../../utils/cn";
 import { AdIcon } from "./AdIcon";
 
@@ -76,7 +77,7 @@ export function Advertisement(props: {
     cn(adSlotClass(size), {
       "opacity-0": isFocusMode(),
       // hidden while testing, shown again on the result
-      "hidden!": getRoutePage() === "test" && !isResultScreen(),
+      "hidden!": getRoutePage() === "test" && !isTestFinished(),
     });
 
   const horizontal = () => (

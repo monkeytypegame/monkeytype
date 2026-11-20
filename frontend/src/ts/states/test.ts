@@ -12,7 +12,6 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { LayoutObject } from "@monkeytype/schemas/layouts";
-import { isTestFinished } from "../test/engine/state";
 import { CompletedEvent, IncompleteTest } from "@monkeytype/schemas/results";
 import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
@@ -38,14 +37,6 @@ export const [getLoadedChallenge, setLoadedChallenge] =
  * fade-in. Input waits for it; other restart requests are dropped meanwhile.
  */
 export const [isRestartAnimating, setRestartAnimating] = createSignal(false);
-
-/**
- * From finish (the finish keystroke) until a restart. Whether the result is
- * rendered is TestPage's (it fades it in after the words).
- */
-export function isResultScreen(): boolean {
-  return isTestFinished();
-}
 
 // focus mode: everything but the test hidden while typing, until the mouse
 // moves (FocusModeExit). Not the same as testFocusState (out of focus).

@@ -7,8 +7,8 @@ import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import { isResultScreen, isFocusMode } from "../../../states/test";
-import { isTestRestarting } from "../../../test/engine/state";
+import { isFocusMode } from "../../../states/test";
+import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
@@ -35,7 +35,7 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          isFocusMode() || isResultScreen()
+          isFocusMode() || isTestFinished()
             ? "pointer-events-none opacity-0"
             : "",
         )}
@@ -81,7 +81,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={isFocusMode() || isResultScreen() || props.disabled}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }

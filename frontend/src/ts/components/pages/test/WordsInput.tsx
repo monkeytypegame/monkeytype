@@ -22,14 +22,17 @@ import {
 } from "../../../input/listeners/misc";
 import {
   isRealWordsInputShown,
-  isResultScreen,
   isWordsInputFocused,
   setTestFocusState,
   setWordsInputFocused,
   triggerScrollWindowToActiveWord,
   wordsInputPosition,
 } from "../../../states/test";
-import { getTestId, isTestActive } from "../../../test/engine/state";
+import {
+  getTestId,
+  isTestActive,
+  isTestFinished,
+} from "../../../test/engine/state";
 import { cn } from "../../../utils/cn";
 import { isDevEnvironment } from "../../../utils/env";
 import { isAnyPopupVisible } from "../../../utils/misc";
@@ -113,7 +116,7 @@ export function WordsInput(): JSXElement {
             : `${wordsInputPosition().maxWidth}%`,
       }}
       on:focus={() => {
-        if (!isResultScreen() && getConfig.showOutOfFocusWarning) {
+        if (!isTestFinished() && getConfig.showOutOfFocusWarning) {
           setTestFocusState("focused");
         }
         setWordsInputFocused(true);
@@ -152,7 +155,7 @@ function autofocusWords(e: KeyboardEvent): void {
     }
   }
 
-  if (isResultScreen() || isWordsInputFocused()) return;
+  if (isTestFinished() || isWordsInputFocused()) return;
   // checked last, isAnyPopupVisible is a bit expensive
   if (
     ["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(e.key) ||

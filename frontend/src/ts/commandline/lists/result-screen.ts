@@ -9,8 +9,7 @@ import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import { getInputHistory } from "../../test/engine/events/stats";
-import { isResultScreen } from "../../states/test";
-import { getResultData } from "../../test/engine/state";
+import { getResultData, isTestFinished } from "../../test/engine/state";
 import { showModal } from "../../states/modals";
 import {
   captureAndCopyToClipboard,
@@ -68,7 +67,7 @@ const commands: Command[] = [
     alias: "restart start begin type test typing",
     fa: { icon: "fa-chevron-right" },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
     exec: (): void => {
       void TestLogic.restartTest();
@@ -84,7 +83,7 @@ const commands: Command[] = [
       });
     },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
   {
@@ -93,7 +92,7 @@ const commands: Command[] = [
     fa: { icon: "fa-exclamation-triangle" },
     subgroup: practiceSubgroup,
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
   {
@@ -104,7 +103,7 @@ const commands: Command[] = [
       toggleResultWords();
     },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
   {
@@ -118,7 +117,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
   {
@@ -132,7 +131,7 @@ const commands: Command[] = [
       }, 500);
     },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
   {
@@ -166,7 +165,7 @@ const commands: Command[] = [
       );
     },
     available: (): boolean => {
-      return isResultScreen();
+      return isTestFinished();
     },
   },
 ];
