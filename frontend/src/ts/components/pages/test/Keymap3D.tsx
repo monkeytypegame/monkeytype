@@ -41,6 +41,9 @@ const KEYCAP_DIP = 0.18;
 const PLATE_HEIGHT = 0.5;
 // how hard the board responds to a 1px pointer drag, in degrees
 const ORBIT_SPEED = 0.25;
+// Long, near-orthographic projection: a short perspective distance stretches
+// the board's front rows (eg. the spacebar row) relative to its 2d layout
+export const PERSPECTIVE = 9600;
 
 /**
  * The 3d keymap: a board of keycap slabs on a base plate, tilted in 3d and
@@ -109,6 +112,12 @@ export function Keymap3D(props: {
   const boardTransform = () =>
     `rotateX(${pose().tilt}deg) rotateZ(${pose().rake}deg)`;
 
+  // how far the lowest key body (with its rotated corners) drops below the
+  // key column's bottom edge, in u: the plate rim must clear it
+  const plateBottomInset = createMemo(() =>
+    Math.max(0.75, maxKeyDropU(props.keyboardDef) + 0.15),
+  );
+
   return (
     <div class="relative">
       {/* soft shadow on the page below the board, ahead of the perspective
@@ -122,7 +131,7 @@ export function Keymap3D(props: {
       <div
         ref={(el) => (perspectiveEl = el)}
         class="relative cursor-grab touch-pan-y select-none active:cursor-grabbing"
-        style={{ perspective: "1200px" }}
+        style={{ perspective: `${PERSPECTIVE}px` }}
         data-keymap3d-root
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -135,7 +144,7 @@ export function Keymap3D(props: {
           data-keymap3d-board
         >
           <div class="relative transform-3d">
-            <Plate />
+            <Plate bottomInset={plateBottomInset()} />
             <div class="relative flex flex-col items-center transform-3d">
               <For each={props.keyboardDef}>
                 {(keys, rowNum) => (
@@ -169,10 +178,48 @@ export function Keymap3D(props: {
   );
 }
 
-/** The base plate the keys sit on, with a visible edge and rounded corners. */
-function Plate() {
+/**
+ * How far the lowest key drops below the key column's bottom edge, in u.
+ * Each row is 1u tall; a key at row i with offset y and height h ends at
+ * i + y + h, so its drop below the column bottom (n rows) is i + y + h - n.
+ * Rotated keys swing their corners further down.
+ */
+export function maxKeyDropU(keyboardDef: KeyboardDefinition): number {
+  const rows = keyboardDef.length;
+  let max = 0;
+  keyboardDef.forEach((keys, i) => {
+    for (const key of keys) {
+      const width = key.width ?? 1;
+      const height = key.height ?? 1;
+      const rad = ((key.rotation ?? 0) * Math.PI) / 180;
+      const rotExtra =
+        (width * Math.abs(Math.sin(rad)) +
+          height * (Math.abs(Math.cos(rad)) - 1)) /
+        2;
+      const drop = i + (key.y ?? 0) + height + rotExtra - rows;
+      if (drop > max) max = drop;
+    }
+  });
+  return max;
+}
+
+/**
+ * The base plate the keys sit on, with a visible edge and rounded corners.
+ * The bottom rim extends further than the other sides to clear keys that
+ * drop below the column bottom edge (eg. alice's bottom row).
+ */
+function Plate(props: { bottomInset: number }) {
   return (
-    <div class="absolute -inset-3 transform-3d" data-keymap3d-plate>
+    <div
+      class="absolute transform-3d"
+      data-keymap3d-plate
+      style={{
+        top: "-0.75rem",
+        right: "-0.75rem",
+        left: "-0.75rem",
+        bottom: `-${props.bottomInset}rem`,
+      }}
+    >
       <div
         class="absolute inset-0 rounded-2xl border border-sub/20 bg-sub-alt/30"
         style={{ transform: "translateZ(0px)" }}
