@@ -11,7 +11,12 @@ import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import {
+  getCurrentQuote,
+  isResultScreen,
+  isPaceRepeat,
+  setPaceCaretWpm,
+} from "../states/test";
 import { getActiveWordIndex, isTestActive } from "./engine/state";
 
 type Settings = {
@@ -115,7 +120,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive()) {
+  if (currentSettings === null || !isTestActive() || isResultScreen()) {
     return;
   }
 

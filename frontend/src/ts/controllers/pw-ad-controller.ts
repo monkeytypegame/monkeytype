@@ -6,7 +6,7 @@
 import { getAdSlotWrapper } from "../components/common/Advertisement";
 import { Config } from "../config/store";
 import { getRoutePage } from "../states/router";
-import { isTestFinished } from "../test/engine/state";
+import { isResultScreen } from "../states/test";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -206,7 +206,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (getRoutePage() === "test" && !isTestFinished()) {
+  if (getRoutePage() === "test" && !isResultScreen()) {
     ramp.destroyUnits("all");
     return;
   }

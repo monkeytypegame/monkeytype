@@ -72,14 +72,13 @@ import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { compose, deleteWord, typeText } from "../../src/ts/dev/typing-driver";
 import { setRouter } from "../../src/ts/router/instance";
-import { isRestartAnimating } from "../../src/ts/states/test";
+import { isResultScreen, isRestartAnimating } from "../../src/ts/states/test";
 import * as CustomText from "../../src/ts/test/custom-text";
 import {
   isResultPending,
   isTestActive,
   isTestRestarting,
   liveStats,
-  isTestFinished,
 } from "../../src/ts/test/engine/state";
 import { getTestSettings } from "../../src/ts/test/engine/test-settings";
 import { paceCaretTarget } from "../../src/ts/test/pace-caret";
@@ -338,7 +337,7 @@ export async function renderTestPage(
       },
     }),
     phase: () =>
-      isTestFinished()
+      isResultScreen()
         ? "finished"
         : isTestActive()
           ? "active"

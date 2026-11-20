@@ -9,6 +9,7 @@ import { focusInputElement } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
   getTestDirection,
+  isResultScreen,
   isTestRightToLeft,
   isWordsInputFocused,
   setOutOfFocusMaxHeight,
@@ -21,7 +22,6 @@ import {
   getActiveWordIndex,
   isTestActive,
   wordsHaveNewline,
-  isTestFinished,
 } from "../../../test/engine/state";
 import { isSlowTimer } from "../../../test/engine/test-timer";
 import {
@@ -561,7 +561,7 @@ export function createWordsLayout(options: {
   }
 
   function updateWordsWrapperHeight(force = false): void {
-    if (isTestFinished()) return;
+    if (isResultScreen()) return;
     if (!force && getTestSettings().mode !== "custom") return;
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) return;
@@ -632,7 +632,7 @@ export function createWordsLayout(options: {
   }
 
   async function scrollTape(noAnimation = false): Promise<void> {
-    if (isTestFinished()) return;
+    if (isResultScreen()) return;
 
     const generation = layoutGeneration;
     await centeringActiveLine;
@@ -988,7 +988,7 @@ export function createWordsLayout(options: {
     on(
       () => [getConfig.fontFamily, getConfig.fontSize, getFontPreview()],
       () => {
-        if (isTestFinished()) return;
+        if (isResultScreen()) return;
         invalidateTypoHintsLayout();
         // letter widths changed once the new font is applied (next frame) and
         // loaded (async)
@@ -996,7 +996,7 @@ export function createWordsLayout(options: {
         requestAnimationFrame(() => {
           void document.fonts.ready.then(() => {
             // words reset (restart, unmount) or the test ended meanwhile
-            if (generation !== layoutGeneration || isTestFinished()) return;
+            if (generation !== layoutGeneration || isResultScreen()) return;
             updateCaret(true);
           });
         });
@@ -1006,7 +1006,7 @@ export function createWordsLayout(options: {
   );
 
   const resized = debounce(250, async () => {
-    if (isTestFinished()) return;
+    if (isResultScreen()) return;
     const generation = layoutGeneration;
     if (Config.tapeMode !== "off") {
       await scrollTape();
@@ -1038,7 +1038,7 @@ export function createWordsLayout(options: {
   // while the input is focused, until the test ends. Hidden while resizing,
   // shown once the words are laid out
   const isCaretShown = (): boolean =>
-    isWordsInputFocused() && !isTestFinished() && !isResizing();
+    isWordsInputFocused() && !isResultScreen() && !isResizing();
   // shown again: it may have moved meanwhile
   createEffect(
     on(

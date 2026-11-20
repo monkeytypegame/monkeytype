@@ -14,7 +14,7 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isErrorBorderDisabled } from "../../../../states/test";
+import { isResultScreen, isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import { getWordBurstHistory } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
@@ -286,7 +286,12 @@ function Word(props: {
         )}
       </For>
       <Show
-        when={isHovered() && props.word.input !== "" && !getIsScreenshotting()}
+        when={
+          isHovered() &&
+          isResultScreen() &&
+          props.word.input !== "" &&
+          !getIsScreenshotting()
+        }
       >
         <div class="wordInputHighlight withSpeed">
           <div class="text">{props.word.input.replace(/[\t\n]/g, "_")}</div>
