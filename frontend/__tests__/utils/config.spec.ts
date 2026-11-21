@@ -58,6 +58,14 @@ describe("config.ts", () => {
           expected: { accountChart: defaultConfig.accountChart },
         },
         {
+          given: { fontSize: 100000, numbers: true },
+          expected: { fontSize: defaultConfig.fontSize, numbers: true },
+        },
+        {
+          given: { fontSize: "100000" },
+          expected: { fontSize: defaultConfig.fontSize },
+        },
+        {
           given: {
             favThemes: ["nord", "invalid", "serika_dark", "invalid2", "8008"],
           },
