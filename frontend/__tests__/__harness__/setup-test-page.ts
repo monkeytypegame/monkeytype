@@ -49,7 +49,7 @@ vi.mock("../../src/ts/components/common/ChartJs", () => ({
   ChartJs: () => null,
 }));
 // opens indexedDB on import
-vi.mock("../../src/ts/controllers/theme-controller", () => ({
+vi.mock("../../src/ts/theme", () => ({
   randomizeTheme: vi.fn(),
 }));
 // draws on a canvas, which jsdom lacks

@@ -1,6 +1,6 @@
 import { setConfig } from "../../config/setters";
 import { isAuthenticated } from "../../auth/state";
-import * as ThemeController from "../../controllers/theme-controller";
+import { previewTheme } from "../../theme";
 import { getCustomThemes } from "../../queries/custom-themes";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -37,7 +37,7 @@ export function update(): void {
       display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {
-        ThemeController.preview("custom", [...theme.colors]);
+        previewTheme("custom", [...theme.colors]);
       },
       exec: (): void => {
         setConfig("customTheme", true);

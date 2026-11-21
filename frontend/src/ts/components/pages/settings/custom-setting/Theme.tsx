@@ -12,10 +12,6 @@ import {
   ThemesList,
   ThemeWithName,
 } from "../../../../constants/themes";
-import {
-  convertCustomColorsToTheme,
-  convertThemeToCustomColors,
-} from "../../../../controllers/theme-controller";
 import { createEffectOn } from "../../../../hooks/effects";
 import {
   addCustomTheme,
@@ -30,10 +26,18 @@ import {
   showSuccessNotification,
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
-import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
+import {
+  getTheme,
+  setCustomThemeDraft,
+  updateCustomThemeDraftColor,
+} from "../../../../states/theme";
 import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
-import { hexToHSL } from "../../../../utils/colors";
+import {
+  convertCustomColorsToTheme,
+  convertThemeToCustomColors,
+  hexToHSL,
+} from "../../../../utils/colors";
 import {
   normalizeName,
   replaceUnderscoresWithSpaces,
@@ -113,7 +117,7 @@ export function Theme(): JSXElement {
               (t) => t.name === getConfig.theme,
             );
             if (presetTheme) {
-              setTheme({ ...presetTheme, name: "custom" });
+              setCustomThemeDraft(presetTheme);
             } else {
               showErrorNotification(
                 "Current preset theme not found. How is this possible?",
@@ -235,12 +239,8 @@ export function Theme(): JSXElement {
   createEffectOn(
     () => getConfig.customTheme,
     (custom) => {
-      if (custom) {
-        const colorsObj = convertCustomColorsToTheme(
-          getConfig.customThemeColors,
-        );
-        setTheme({ ...colorsObj, name: "custom" });
-      }
+      // the editor opens on the saved colors
+      if (custom) setCustomThemeDraft(null);
     },
   );
 
@@ -526,7 +526,7 @@ function Picker(props: { color: ColorName }): JSXElement {
     const color = target.value;
     const key = props.color;
 
-    updateThemeColor(key, color);
+    updateCustomThemeDraftColor(key, color);
   });
 
   return (
@@ -558,7 +558,7 @@ function Picker(props: { color: ColorName }): JSXElement {
             e.currentTarget.value = getTheme()[props.color];
             return;
           }
-          updateThemeColor(props.color, value);
+          updateCustomThemeDraftColor(props.color, value);
         }}
       />
       <div class="grid">

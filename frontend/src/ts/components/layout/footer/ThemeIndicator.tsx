@@ -5,8 +5,8 @@ import { setConfig } from "../../../config/setters";
 import { Config } from "../../../config/store";
 import { getCustomThemes } from "../../../queries/custom-themes";
 import { showCommandline } from "../../../states/commandline";
-import { getThemeIndicator } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
+import { getThemeIndicator } from "../../../theme";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {

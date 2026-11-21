@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Config, setConfigStore } from "../../../src/ts/config/store";
 import commands from "../../../src/ts/commandline/lists/themes";
-import * as ThemeController from "../../../src/ts/controllers/theme-controller";
+import { randomizeTheme } from "../../../src/ts/theme";
 import { __testing } from "../../../src/ts/config/testing";
 import { getRandomTheme, getTheme } from "../../../src/ts/states/theme";
 
@@ -19,9 +19,9 @@ describe("themes commandline list config effects", () => {
     expect(firstTheme()).toBe("8008");
   });
 
-  it("drops the random theme when the configured theme is re-picked", async () => {
+  it("drops the random theme when the configured theme is re-picked", () => {
     __testing.replaceConfig({ theme: "serika_dark", randomTheme: "on" });
-    await ThemeController.randomizeTheme();
+    randomizeTheme();
     expect(getRandomTheme()).not.toBeNull();
 
     commands[0]?.subgroup?.list
