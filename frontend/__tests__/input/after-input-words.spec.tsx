@@ -15,8 +15,8 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
   randomizeTheme: vi.fn(),
 }));
 // uses matchMedia on import, which jsdom lacks
-vi.mock("../../src/ts/controllers/ad-controller", () => ({
-  destroyResult: vi.fn(),
+vi.mock("../../src/ts/integrations/ads", () => ({
+  destroyResultAds: vi.fn(),
 }));
 // funbox functions pull in test state, which fetches keyboard layouts on load
 vi.mock("../../src/ts/utils/json-data", async (importOriginal) => ({
@@ -31,6 +31,7 @@ vi.mock("../../src/ts/test/engine/events/data", async (importOriginal) => ({
 }));
 
 import { Caret } from "../../src/ts/components/pages/test/caret";
+import { focusWordsEvent } from "../../src/ts/components/pages/test/focus-words";
 import { Words } from "../../src/ts/components/pages/test/Words";
 import { wouldActiveWordOverflow } from "../../src/ts/components/pages/test/words-layout";
 import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
@@ -38,10 +39,6 @@ import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
 import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
-import {
-  increaseActiveWordIndex,
-  resetActiveWordIndex,
-} from "../../src/ts/states/test";
 import {
   appendRenderedWord,
   isWordRendered,
@@ -51,11 +48,14 @@ import {
   setWordInput,
   wordsRenderState,
 } from "../../src/ts/states/words-render";
-import * as TestWords from "../../src/ts/test/engine/test-words";
+import * as CustomText from "../../src/ts/test/custom-text";
 import {
-  focusWordsEvent,
-  markTestPageMounted,
-} from "../../src/ts/test/test-page-bridge";
+  incrementActiveWordIndex,
+  resetActiveWordIndex,
+} from "../../src/ts/test/engine/state";
+import { takeTestSettings } from "../../src/ts/test/engine/test-settings";
+import * as TestWords from "../../src/ts/test/engine/test-words";
+import { markTestPageMounted } from "../../src/ts/test/test-page-bridge";
 import { ElementWithUtils } from "../../src/ts/utils/dom";
 
 // jsdom has no layout: words get a fake one, 5 per line
@@ -128,7 +128,7 @@ function childClasses(words: HTMLElement): string[] {
 
 /** Goes to the next word and runs the words frame and its layout. */
 async function goForward(): Promise<void> {
-  increaseActiveWordIndex();
+  incrementActiveWordIndex();
   afterTestWordChange("forward");
   runFrames();
   // layout (line jump, tape scroll) continues asynchronously
@@ -164,6 +164,8 @@ describe("after-input words rendering", () => {
       showAllLines: true,
       fontSize: 1,
     });
+    // as a restart takes them before generating the words
+    takeTestSettings(CustomText.getData());
     resetActiveWordIndex();
     currentInput = "";
     caretGoTo = vi.spyOn(Caret.prototype, "goTo").mockImplementation(() => {
@@ -176,7 +178,7 @@ describe("after-input words rendering", () => {
   afterEach(() => {
     for (const cleanup of cleanups.splice(0)) cleanup();
     resetWordsRender();
-    TestWords.words.reset();
+    TestWords.resetWords();
     resetActiveWordIndex();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -191,11 +193,11 @@ describe("after-input words rendering", () => {
     runFrames();
     // to the last word of the first line
     for (let i = 0; i < 4; i++) {
-      increaseActiveWordIndex();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
     }
     runFrames();
-    increaseActiveWordIndex();
+    incrementActiveWordIndex();
     const topBefore = input.style.top;
 
     afterTestWordChange("forward");
@@ -227,7 +229,7 @@ describe("after-input words rendering", () => {
 
     // committed with a typo
     setWordInput(0, "wrod");
-    increaseActiveWordIndex();
+    incrementActiveWordIndex();
     afterTestWordChange("forward");
 
     const first = (): Element | null =>
@@ -245,7 +247,7 @@ describe("after-input words rendering", () => {
     configTesting.replaceConfig({ mode: "zen", showAllLines: true });
     const { words } = mount();
     replaceWords([{ display: "" }], { activeWordIndex: 0, zen: true });
-    increaseActiveWordIndex();
+    incrementActiveWordIndex();
     appendRenderedWord({ display: "" });
     afterTestWordChange("forward");
     runFrames();
@@ -269,7 +271,7 @@ describe("after-input words rendering", () => {
     );
 
     for (let i = 0; i < 2; i++) {
-      increaseActiveWordIndex();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
     }
     runFrames();
@@ -284,8 +286,8 @@ describe("after-input words rendering", () => {
     });
 
     function startTest(count: number): void {
-      TestWords.words.reset();
-      for (let i = 0; i < count; i++) TestWords.words.push("word", 0);
+      TestWords.resetWords();
+      for (let i = 0; i < count; i++) TestWords.pushWord("word", 0);
       resetActiveWordIndex();
       // restartTest's render step
       focusWordsEvent.dispatch({ force: true });
@@ -455,7 +457,7 @@ describe("after-input words rendering", () => {
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
 
       // to the first word of the second line, same frame
-      increaseActiveWordIndex();
+      incrementActiveWordIndex();
       afterTestWordChange("forward");
 
       expect(wouldActiveWordOverflow("ab", "c")).toBe(false);
@@ -463,7 +465,7 @@ describe("after-input words rendering", () => {
 
     it("blocks the extra letter while the active word isn't rendered yet", () => {
       mountTwoLetterWords(3);
-      for (let i = 0; i < 3; i++) increaseActiveWordIndex();
+      for (let i = 0; i < 3; i++) incrementActiveWordIndex();
       appendRenderedWord({ display: "ab" });
       afterTestWordChange("forward");
 
@@ -509,7 +511,7 @@ describe("after-input words rendering", () => {
       await goForward();
       // first line to third line in a single frame
       for (let i = 0; i < 9; i++) {
-        increaseActiveWordIndex();
+        incrementActiveWordIndex();
         afterTestWordChange("forward");
       }
       runFrames();

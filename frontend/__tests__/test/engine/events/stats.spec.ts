@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../../src/ts/test/test-stats", () => ({
+vi.mock("../../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
@@ -15,41 +15,58 @@ vi.mock("../../../../src/ts/test/engine/test-words", () => {
   type CommitChar = " " | "\n" | "";
   type Word = { text: string; textWithCommit: string; commit: CommitChar };
   const list: Word[] = [];
+  const words = {
+    list,
+    get(): Word[] {
+      return [...list];
+    },
+    push(word: string) {
+      let commit: CommitChar = "";
+      if (word.endsWith(" ")) {
+        commit = " ";
+        word = word.slice(0, -1);
+      } else if (word.endsWith("\n")) {
+        commit = "\n";
+        word = word.slice(0, -1);
+      }
+      list.push({ text: word, textWithCommit: word + commit, commit });
+    },
+    reset() {
+      list.length = 0;
+    },
+  };
   return {
-    words: {
-      list,
-      get(): Word[] {
-        return [...list];
-      },
-      push(word: string) {
-        let commit: CommitChar = "";
-        if (word.endsWith(" ")) {
-          commit = " ";
-          word = word.slice(0, -1);
-        } else if (word.endsWith("\n")) {
-          commit = "\n";
-          word = word.slice(0, -1);
-        }
-        list.push({ text: word, textWithCommit: word + commit, commit });
-      },
-      reset() {
-        list.length = 0;
-      },
+    words,
+    pushWord(word: string) {
+      words.push(word);
+    },
+    resetWords() {
+      list.length = 0;
     },
   };
 });
 
 const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
-vi.mock("../../../../src/ts/test/custom-text", () => ({
-  getLimit: () => customTextLimit,
-}));
+// the mocked config doubles as the test settings
+vi.mock("../../../../src/ts/test/engine/test-settings", async () => {
+  const { Config } = await import("../../../../src/ts/config/store");
+  return {
+    getTestSettings: () => ({
+      ...Config,
+      customText: { limit: customTextLimit },
+    }),
+  };
+});
 
 vi.mock("../../../../src/ts/states/test", () => ({
   getCurrentQuote: () => null,
+}));
+
+vi.mock("../../../../src/ts/test/engine/state", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
-  isResultCalculating: () => false,
-  getBailedOut: () => false,
+  getTestEnd: () => null,
   getKoreanStatus: () => false,
+  scheduleLiveStatsFlush: () => undefined,
 }));
 
 import {
@@ -95,7 +112,7 @@ import type {
 } from "../../../../src/ts/test/engine/events/types";
 import { Config } from "../../../../src/ts/config/store";
 import { Keycode } from "../../../../src/ts/constants/keys";
-import { words as TestWords } from "../../../../src/ts/test/engine/test-words";
+import * as TestWords from "../../../../src/ts/test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../../../src/ts/test/funbox/list";
 
 // mirror the generator: each word carries a trailing space separator unless it
@@ -107,7 +124,7 @@ function pushWords(...words: string[]): void {
     const isLast = i === words.length - 1;
     const withSeparator =
       isLast || nospace || word.endsWith("\n") ? word : `${word} `;
-    TestWords.push(withSeparator, i);
+    TestWords.pushWord(withSeparator, i);
   });
 }
 
@@ -202,7 +219,7 @@ describe("stats.ts", () => {
     (Config as { words: number }).words = 25;
     (Config as { time: number }).time = 0;
     mockState.activeWordIndex = 0;
-    TestWords.reset();
+    TestWords.resetWords();
     inputPerWord.clear();
   });
 

@@ -28,11 +28,11 @@ describe("caret", () => {
   it("hides as soon as the test finishes", async () => {
     const page = await renderTestPage({ words: ["the", "fox"] });
 
-    // the last word ends the test (any mode, eg. time up): hidden before the
-    // fade out ends
+    // the last word ends the test (any mode, eg. time up): hidden while the
+    // words fade out
     await page.type("the fox", { flush: false });
 
-    expect(page.phase()).not.toBe("finished");
+    expect(page.phase()).toBe("finished");
     expect(page.caret().shown).toBe(false);
   });
 
@@ -42,7 +42,7 @@ describe("caret", () => {
     await page.type("a");
     await page.advance(1000);
 
-    expect(page.phase()).not.toBe("finished");
+    expect(page.phase()).toBe("finished");
     expect(page.caret().shown).toBe(false);
   });
 });

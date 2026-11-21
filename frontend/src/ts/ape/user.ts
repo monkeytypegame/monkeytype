@@ -2,7 +2,7 @@ import { createRoot } from "solid-js";
 import { GetUserResponse } from "@monkeytype/contracts/users";
 import Ape from ".";
 import { createEffectOn } from "../hooks/effects";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 
 type CacheType = GetUserResponse["data"];

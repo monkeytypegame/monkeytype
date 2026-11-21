@@ -7,12 +7,13 @@ import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
+import { isRestartAnimating } from "../../states/test";
 import {
   isTestRestarting,
-  isResultCalculating,
+  isTestFinished,
   wordsHaveNewline,
-  isSlowTimer,
-} from "../../states/test";
+} from "../../test/engine/state";
+import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { getCurrentInput } from "../../test/engine/events/data";
@@ -24,7 +25,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (isTestRestarting()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     return true;
   }
 
@@ -32,7 +33,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (isResultCalculating()) {
+  if (isTestFinished()) {
     return true;
   }
 

@@ -4,27 +4,23 @@ import { getInputElementValue } from "../input-element";
 import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
 import { getInputForWord } from "../../test/engine/events/data";
+import { isRestartAnimating } from "../../states/test";
 import {
-  isTestRestarting,
   getActiveWordIndex,
-  isResultCalculating,
+  isTestRestarting,
   isTestActive,
-} from "../../states/test";
+} from "../../test/engine/state";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!isTestActive()) {
     event.preventDefault();
     return;
   }
-  if (isTestRestarting()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     event.preventDefault();
     return;
   }
   if (isAwaitingNextWord()) {
-    event.preventDefault();
-    return;
-  }
-  if (isResultCalculating()) {
     event.preventDefault();
     return;
   }

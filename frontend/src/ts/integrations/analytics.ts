@@ -8,7 +8,7 @@ import { createErrorMessage } from "../utils/error";
 
 let analytics: AnalyticsType;
 
-export async function log(
+export async function logAnalyticsEvent(
   eventName: string,
   params?: Record<string, string>,
 ): Promise<void> {

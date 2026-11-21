@@ -16,6 +16,7 @@
     "./**/*.spec.ts",
     "./**/*.spec.tsx",
     "./**/*.jsdom-spec.ts",
-    "./setup-tests.ts"
+    "./**/*.page-spec.tsx",
+    "./global-setup.ts"
   ]
 }

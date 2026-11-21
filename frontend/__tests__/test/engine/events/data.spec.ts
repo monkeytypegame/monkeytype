@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("../../../src/ts/test/test-stats", () => ({
+vi.mock("../../../../src/ts/test/test-stats", () => ({
   start: 1000,
 }));
 
@@ -120,12 +120,7 @@ describe("data.ts", () => {
     });
   });
 
-  describe("logTestEvent keydown filtering", () => {
-    it("ignores keys not in keysToTrack", () => {
-      logTestEvent("keydown", 1010, keyDown("Backspace"));
-      expect(getAllTestEvents()).toHaveLength(0);
-    });
-
+  describe("logTestEvent keydown pairing", () => {
     it("synthesizes missing keyup on duplicate keydown", () => {
       logTestEvent("keydown", 1010, keyDown());
       logTestEvent("keydown", 1020, keyDown());

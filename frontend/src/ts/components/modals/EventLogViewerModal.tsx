@@ -65,7 +65,6 @@ import {
   type SyncKind,
 } from "../../states/event-log-viewer";
 import { hideModal } from "../../states/modals";
-import { getFrozenLog } from "../../states/test";
 import { getTheme } from "../../states/theme";
 import { getInputFromDom } from "../../test/engine/events/helpers";
 import {
@@ -81,6 +80,7 @@ import {
   type Significant,
 } from "../../test/engine/events/timing-stats";
 import { EVENT_LOG_VERSION } from "../../test/engine/events/types";
+import { getResultData } from "../../test/engine/state";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";
@@ -321,8 +321,8 @@ export function EventLogViewerModal(): JSXElement {
   const onShow = (): void => loadFrom(raw());
 
   const onLoadLatest = (): void => {
-    const log = getFrozenLog();
-    if (log === null) {
+    const log = getResultData()?.eventLog;
+    if (log === undefined) {
       setError("No event log available - complete a test first");
       return;
     }

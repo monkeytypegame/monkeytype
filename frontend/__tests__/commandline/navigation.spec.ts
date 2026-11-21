@@ -11,10 +11,7 @@ import type { Command } from "../../src/ts/commandline/types";
 import { getRouter, setRouter } from "../../src/ts/router/instance";
 
 const { isAuthenticated } = vi.hoisted(() => ({ isAuthenticated: vi.fn() }));
-vi.mock("../../src/ts/states/core", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("../../src/ts/states/core")>()),
-  isAuthenticated,
-}));
+vi.mock("../../src/ts/auth/state", () => ({ isAuthenticated }));
 
 // stands in for the app's route tree, which needs auth and page data to load
 function createTestRouter(): ReturnType<typeof createRouter> {

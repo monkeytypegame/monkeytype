@@ -7,6 +7,7 @@ import {
   Show,
 } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { queryClient } from "../../../queries";
 import {
   getLeaderboardQueryOptions,
@@ -14,7 +15,6 @@ import {
 } from "../../../queries/leaderboards";
 import { getServerConfigurationQueryOptions } from "../../../queries/server-configuration";
 import { getUserData, updateLbMemory } from "../../../queries/user";
-import { isAuthenticated } from "../../../states/core";
 import { pageSize, Selection } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import { scrollToTop } from "../../../utils/misc";

@@ -2,10 +2,10 @@ import { Config } from "../../config/store";
 import { afterTestWordChange, beforeTestWordChange } from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
-  decreaseActiveWordIndex,
   getActiveWordIndex,
-  increaseActiveWordIndex,
-} from "../../states/test";
+  incrementActiveWordIndex,
+  decrementActiveWordIndex,
+} from "../../test/engine/state";
 import * as TestLogic from "../../test/test-logic";
 import * as TestWords from "../../test/engine/test-words";
 import {
@@ -17,9 +17,8 @@ import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
 import { DeleteInputType } from "../../test/engine/input-type";
-import { getWordBurst } from "../../test/engine/events/stats";
+import { measureWordBurst } from "../../test/engine/commands";
 import {
-  buildEventLog,
   getCurrentInput,
   getInputForWord,
 } from "../../test/engine/events/data";
@@ -52,18 +51,15 @@ export async function goToNextWord({
     });
   }
 
-  if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
-    const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
-    ret.lastBurst = burst;
-  }
+  ret.lastBurst = measureWordBurst(now);
 
   PaceCaret.handleSpace(
     correctInsert,
     TestWords.words.getCurrent()?.textWithCommit ?? "",
   );
 
-  const nextWord = TestWords.words.get(getActiveWordIndex() + 1)?.text;
-  if (nextWord !== undefined) Funbox.toggleScript(nextWord);
+  const nextWordText = TestWords.words.get(getActiveWordIndex() + 1)?.text;
+  if (nextWordText !== undefined) Funbox.toggleScript(nextWordText);
 
   const lastWord = getActiveWordIndex() >= TestWords.words.length - 1;
   if (lastWord) {
@@ -81,11 +77,11 @@ export async function goToNextWord({
     Config.mode === "zen"
   ) {
     ret.increasedWordIndex = true;
-    increaseActiveWordIndex();
+    incrementActiveWordIndex();
   }
 
   setInputElementValue("");
-  afterTestWordChange("forward", ret.lastBurst);
+  afterTestWordChange("forward");
 
   return ret;
 }
@@ -98,7 +94,7 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
 
   beforeTestWordChange("back");
 
-  decreaseActiveWordIndex();
+  decrementActiveWordIndex();
 
   const word = TestWords.words.get(getActiveWordIndex())?.text;
   if (word !== undefined) Funbox.toggleScript(word);

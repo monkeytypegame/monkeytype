@@ -7,7 +7,7 @@ import {
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import {
   setApeKeysDenied,
   setLastGeneratedApeKey,

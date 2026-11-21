@@ -1,3 +1,4 @@
+import { getTestSettings } from "../../../test/engine/test-settings";
 import type { JSAnimation } from "animejs";
 
 import { Accessor, createEffect, createSignal, on, onCleanup } from "solid-js";
@@ -7,12 +8,7 @@ import { Config, getConfig } from "../../../config/store";
 import { focusInputElement } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
-  getActiveWordIndex,
   getTestDirection,
-  isResultCalculating,
-  isSlowTimer,
-  isTestActive,
-  isTestFinished,
   isTestRightToLeft,
   isWordsInputFocused,
   setOutOfFocusMaxHeight,
@@ -20,8 +16,14 @@ import {
   setWordsInputPosition,
   setWordsWrapperHidden,
   trackScrollWindowToActiveWord,
-  wordsHaveNewline,
 } from "../../../states/test";
+import {
+  getActiveWordIndex,
+  isTestActive,
+  wordsHaveNewline,
+  isTestFinished,
+} from "../../../test/engine/state";
+import { isSlowTimer } from "../../../test/engine/test-timer";
 import {
   firstMountedIndex,
   getPendingWordInput,
@@ -33,7 +35,6 @@ import {
   type WordsFlush,
   wordsRenderState,
 } from "../../../states/words-render";
-import * as CustomText from "../../../test/custom-text";
 import { paceCaretTarget } from "../../../test/pace-caret";
 import { ElementWithUtils } from "../../../utils/dom";
 import { convertRemToPixels } from "../../../utils/numbers";
@@ -115,9 +116,11 @@ function getActiveItemIndex(items: LayoutItem[]): number {
 
 function isTimedTest(): boolean {
   return (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-    (Config.mode === "custom" && CustomText.getLimitValue() === 0)
+    getTestSettings().mode === "time" ||
+    (getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.mode === "time") ||
+    (getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.value === 0)
   );
 }
 
@@ -351,7 +354,7 @@ export function createWordsLayout(options: {
       wordIndex,
       letterIndex: typed.length,
       testDirection,
-      ...(Config.mode === "zen" && {
+      ...(getTestSettings().mode === "zen" && {
         zenWordDirection: Strings.getWordDirection(
           Strings.splitIntoCharacters(typed).at(-1),
           testDirection,
@@ -370,7 +373,7 @@ export function createWordsLayout(options: {
     pace.stopAllAnimations();
     pace.clearMargins();
     // zen words have no letters to go to
-    if (Config.mode === "zen") return;
+    if (getTestSettings().mode === "zen") return;
     pace.goTo({
       wordIndex: 0,
       letterIndex: 0,
@@ -525,7 +528,7 @@ export function createWordsLayout(options: {
     // this check only needs to happen in zen mode
     // unless slow timer is on, then it needs to happen
     // because the word jump check is disabled
-    if (Config.mode !== "zen" && !isSlowTimer()) return;
+    if (getTestSettings().mode !== "zen" && !isSlowTimer()) return;
     if (Config.showAllLines) return;
     const wordAtIndex = getWordElement(wordIndex);
     if (wordAtIndex === null) return;
@@ -559,7 +562,7 @@ export function createWordsLayout(options: {
 
   function updateWordsWrapperHeight(force = false): void {
     if (isTestFinished()) return;
-    if (!force && Config.mode !== "custom") return;
+    if (!force && getTestSettings().mode !== "custom") return;
     const activeWordEl = getActiveWordElement();
     if (!activeWordEl) return;
 
@@ -576,7 +579,7 @@ export function createWordsLayout(options: {
     if (showAllLines) {
       //allow the wrapper to grow and shink with the words
       wordsWrapperEl().setStyle({ height: "" });
-    } else if (Config.mode === "zen") {
+    } else if (getTestSettings().mode === "zen") {
       //zen mode, showAllLines off
       wordsWrapperEl().setStyle({ height: `${wordHeight * 2}px` });
     } else {
@@ -1035,10 +1038,7 @@ export function createWordsLayout(options: {
   // while the input is focused, until the test ends. Hidden while resizing,
   // shown once the words are laid out
   const isCaretShown = (): boolean =>
-    isWordsInputFocused() &&
-    !isResultCalculating() &&
-    !isTestFinished() &&
-    !isResizing();
+    isWordsInputFocused() && !isTestFinished() && !isResizing();
   // shown again: it may have moved meanwhile
   createEffect(
     on(

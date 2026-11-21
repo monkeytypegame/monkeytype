@@ -1,19 +1,34 @@
 /* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-import { Config } from "../config/store";
-import * as EG from "./eg-ad-controller";
-import * as PW from "./pw-ad-controller";
-import { adSlotMediaQueries } from "../components/common/Advertisement";
-import { isTestActive } from "../states/test";
+import { Config } from "../../config/store";
+import {
+  initEgAds,
+  refreshVisibleEgAds,
+  reinstateEgAds,
+  renderEgResultAds,
+} from "./eg";
+import {
+  destroyAllPwAds,
+  initPwAds,
+  refreshVisiblePwAds,
+  reinstatePwAds,
+  renderPwResultAds,
+} from "./pw";
+import { adSlotMediaQueries } from "../../components/common/Advertisement";
+import { isTestActive } from "../../test/engine/state";
+import { isDevEnvironment } from "../../utils/env";
 import {
   getAdBlock,
   getCookieBlocker,
   setAdBlock,
   setCookieBlocker,
-} from "../states/ads";
+} from "../../states/ads";
 // import { createEffect } from "solid-js";
 
 let initialised = false;
+
+// dev: the slots show as empty placeholders, no third party ad scripts load
+const noAdScripts = isDevEnvironment();
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
 const choice: "eg" | "pw" = "pw";
@@ -29,11 +44,11 @@ const choice: "eg" | "pw" = "pw";
 //   console.log("AB choice forced: " + choice);
 // }
 
-function init(): void {
+function initAds(): void {
   if (choice === "eg") {
-    EG.init();
+    initEgAds();
   } else {
-    PW.init();
+    initPwAds();
   }
 
   setInterval(() => {
@@ -41,9 +56,9 @@ function init(): void {
       return;
     }
     if (choice === "eg") {
-      void EG.refreshVisible();
+      void refreshVisibleEgAds();
     } else {
-      void PW.refreshVisible();
+      void refreshVisiblePwAds();
     }
   }, 60000);
 
@@ -52,9 +67,9 @@ function init(): void {
 
 async function _refreshVisible(): Promise<void> {
   if (choice === "eg") {
-    await EG.refreshVisible();
+    await refreshVisibleEgAds();
   } else {
-    await PW.refreshVisible();
+    await refreshVisiblePwAds();
   }
 }
 
@@ -102,10 +117,10 @@ export async function checkCookieblocker(): Promise<void> {
   });
 }
 
-export async function reinstate(): Promise<boolean> {
-  if (Config.ads === "off") return false;
+export async function reinstateAds(): Promise<boolean> {
+  if (Config.ads === "off" || noAdScripts) return false;
   if (!initialised) {
-    init();
+    initAds();
     return true;
   }
   await checkAdblock();
@@ -113,16 +128,16 @@ export async function reinstate(): Promise<boolean> {
   if (getAdBlock() || getCookieBlocker()) return false;
 
   if (choice === "eg") {
-    return EG.reinstate();
+    return reinstateEgAds();
   } else {
-    return PW.reinstate();
+    return reinstatePwAds();
   }
 }
 
-export async function renderResult(): Promise<void> {
-  if (Config.ads === "off") return;
+export async function renderResultAds(): Promise<void> {
+  if (Config.ads === "off" || noAdScripts) return;
   if (!initialised) {
-    init();
+    initAds();
   }
   await checkAdblock();
   await checkCookieblocker();
@@ -131,13 +146,14 @@ export async function renderResult(): Promise<void> {
   if (getAdBlock() || getCookieBlocker()) return;
 
   if (choice === "eg") {
-    EG.renderResult(window.innerWidth > 900);
+    renderEgResultAds(window.innerWidth > 900);
   } else {
-    void PW.renderResult();
+    void renderPwResultAds();
   }
 }
 
 export function showConsentPopup(): void {
+  if (noAdScripts) return;
   if (choice === "eg") {
     //@ts-expect-error 3rd party ad code, doesnt have types
     // oxlint-disable-next-line no-unsafe-call
@@ -151,9 +167,9 @@ export function showConsentPopup(): void {
   }
 }
 
-export function destroyResult(): void {
+export function destroyResultAds(): void {
   if (choice === "pw") {
-    PW.destroyAll();
+    destroyAllPwAds();
   }
   // $("#ad-result-wrapper").empty();
   // $("#ad-result-small-wrapper").empty();
@@ -162,7 +178,7 @@ export function destroyResult(): void {
 // a slot shown or hidden at a breakpoint: PW only fills the visible slots
 const onSlotBreakpoint = debounce(500, () => {
   if (Config.ads === "off" || !initialised) return;
-  void PW.reinstate();
+  void reinstatePwAds();
 });
 for (const query of adSlotMediaQueries) {
   window.matchMedia(query).addEventListener("change", onSlotBreakpoint);

@@ -111,7 +111,10 @@ export const projects: UserWorkspaceConfig[] = [
       environment: "jsdom",
       globalSetup: "__tests__/global-setup.ts",
       // no mock-dom: the test page's modules query the real DOM
-      setupFiles: ["__tests__/__harness__/setup-jsx.ts"],
+      setupFiles: [
+        "__tests__/__harness__/setup-jsx.ts",
+        "__tests__/__harness__/setup-test-page.ts",
+      ],
       globals: true,
     },
     plugins,

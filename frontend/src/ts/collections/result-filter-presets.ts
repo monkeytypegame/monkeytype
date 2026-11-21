@@ -16,7 +16,7 @@ import {
 } from "../utils/strings";
 import { tempId, keepForever } from "./utils/misc";
 import { fetchUserFromApi } from "../ape/user";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 
 const queryKeys = {
   root: () => [...baseKey("resultFilterPresets", { isUserSpecific: true })],

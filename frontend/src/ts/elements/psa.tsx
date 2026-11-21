@@ -7,9 +7,9 @@ import { createRoot } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../ape";
+import { getAuthState } from "../auth/state";
 import { createEffectOn } from "../hooks/effects";
 import { addBanner } from "../states/banners";
-import { getAuthState } from "../states/core";
 import { addPsa } from "../states/psas";
 import { secondsToString } from "../utils/date-and-time";
 import { isDevEnvironment } from "../utils/env";

@@ -10,12 +10,12 @@ import {
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
-import { configMetadata } from "./metadata";
+import { changeRequiresRestart, configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { isTestActive } from "../states/test";
+import { isTestActive } from "../test/engine/state";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
@@ -40,7 +40,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   const previousValue = Config[key];
 
   if (
-    metadata.changeRequiresRestart &&
+    changeRequiresRestart(key, Config) &&
     isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {

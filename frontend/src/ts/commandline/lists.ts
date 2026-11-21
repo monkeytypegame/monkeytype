@@ -27,7 +27,7 @@ import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigKey } from "../config/metadata";
 import { isAuthAvailable, signOut } from "../firebase";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,
@@ -35,7 +35,7 @@ import {
 } from "../components/layout/overlays/FpsCounter";
 import { applyConfigFromJson } from "../config/lifecycle";
 import { fixSkillIssue } from "../components/layout/overlays/SkillIssueFix";
-import { getFrozenLog } from "../states/test";
+import { getResultData } from "../test/engine/state";
 
 const adsCommands = buildCommands("ads");
 
@@ -278,11 +278,11 @@ export const commands: CommandsSubgroup = {
       fa: { icon: "fa-cog" },
       visible: false,
       available: (): boolean => {
-        return getFrozenLog() !== null;
+        return getResultData() !== null;
       },
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(JSON.stringify(getFrozenLog()))
+          .writeText(JSON.stringify(getResultData()?.eventLog))
           .then(() => {
             showSuccessNotification("Copied to clipboard");
           })

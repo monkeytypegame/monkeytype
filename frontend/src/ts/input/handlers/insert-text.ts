@@ -28,12 +28,8 @@ import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
 import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
-import {
-  getActiveWordIndex,
-  isTestActive,
-  isComposing,
-  flashKeymapKey,
-} from "../../states/test";
+import { isComposing, flashKeymapKey } from "../../states/test";
+import { getActiveWordIndex, isTestActive } from "../../test/engine/state";
 import { DeleteInputType } from "../../test/engine/input-type";
 import { isWordRendered } from "../../states/words-render";
 
@@ -372,7 +368,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         allWordsGenerated: areAllWordsGenerated(),
       })
     ) {
-      void TestLogic.finish();
+      TestLogic.finish();
     }
   }
 }

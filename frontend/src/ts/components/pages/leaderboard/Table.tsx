@@ -7,9 +7,10 @@ import { format as dateFormat } from "date-fns/format";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
+import { getUserId } from "../../../auth/state";
 import { hasConnection } from "../../../collections/connections";
 import { bp, BreakpointKey } from "../../../states/breakpoints";
-import { getFormatting, getUserId } from "../../../states/core";
+import { getFormatting } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";

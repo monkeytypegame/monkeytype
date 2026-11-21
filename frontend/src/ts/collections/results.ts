@@ -27,13 +27,12 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo, createRoot } from "solid-js";
+import { Accessor, createMemo, createRoot, createSignal } from "solid-js";
 import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
-import { getLastResult, setLastResult } from "../states/last-result";
+import { isAuthenticated } from "../auth/state";
 import {
   areTagsLoaded,
   getActiveTags,
@@ -87,6 +86,13 @@ export type NormalizedLocalResult<M extends Mode> = Omit<
   timeTyping: number;
   dayTimestamp: number;
 };
+
+// set from the first results fetch and on each save
+const [getLastResult, setLastResult] = createSignal<
+  NormalizedLocalResult<Mode> | undefined
+>(undefined);
+/** The user's latest saved result. */
+export { getLastResult };
 
 export type ResultsQueryState = {
   difficulty: NormalizedLocalResult<Mode>["difficulty"][];
@@ -797,9 +803,27 @@ createRoot(() =>
 function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];
 }
+
 /**
- * Used for non reactive access. Do not use in Solid components.
+ * Seconds typed in results since `since` (a timestamp): incomplete tests
+ * included, afk time excluded.
  */
-export const __nonReactive = {
-  getResults,
-};
+export async function getSecondsTypedSinceOnce(since: number): Promise<number> {
+  if (!isAuthenticated()) return 0;
+  const results = await queryOnce((q) =>
+    q
+      .from({ r: resultsCollection })
+      .where(({ r }) => gte(r.timestamp, since))
+      .select(({ r }) => ({
+        testDuration: sum(r.testDuration),
+        incompleteTestSeconds: sum(r.incompleteTestSeconds),
+        afkDuration: sum(r.afkDuration),
+      })),
+  );
+  // no results today: no row
+  const totals = results[0];
+  if (totals === undefined) return 0;
+  return (
+    totals.testDuration + totals.incompleteTestSeconds - totals.afkDuration
+  );
+}

@@ -2,9 +2,9 @@
 // Dev-only helpers live on `window.__mt` (dev/expose.ts).
 import { Config } from "./config/store";
 import { getUserData } from "./queries/user";
-import * as Sentry from "./sentry";
+import { toggleSentryDebug } from "./integrations/sentry";
 import { toggleSmoothedBurst } from "./states/result";
-import { getFrozenLog } from "./states/test";
+import { getResultData } from "./test/engine/state";
 import { buildEventLog } from "./test/engine/events/data";
 import * as TestTimer from "./test/engine/test-timer";
 import { qs, qsa, qsr } from "./utils/dom";
@@ -20,10 +20,10 @@ Object.assign(window, {
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst,
   toggleDebugLogs: Logger.toggleDebugLogs,
-  toggleSentryDebug: Sentry.toggleDebug,
+  toggleSentryDebug,
   qs,
   qsa,
   qsr,
-  lastEventLog: () => getFrozenLog(),
+  lastEventLog: () => getResultData()?.eventLog ?? null,
   currentEventLog: buildEventLog,
 });

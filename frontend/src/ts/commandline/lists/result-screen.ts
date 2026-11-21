@@ -9,7 +9,7 @@ import { Config } from "../../config/store";
 import * as PractiseWords from "../../test/practise-words";
 import { Command, CommandsSubgroup } from "../types";
 import { getInputHistory } from "../../test/engine/events/stats";
-import { getFrozenLog, isTestFinished } from "../../states/test";
+import { getResultData, isTestFinished } from "../../test/engine/state";
 import { showModal } from "../../states/modals";
 import {
   captureAndCopyToClipboard,
@@ -139,8 +139,8 @@ const commands: Command[] = [
     display: "Copy words to clipboard",
     fa: { icon: "fa-copy" },
     exec: (): void => {
-      const eventLog = getFrozenLog();
-      if (eventLog === null) {
+      const eventLog = getResultData()?.eventLog;
+      if (eventLog === undefined) {
         showErrorNotification("No event log found!");
         return;
       }

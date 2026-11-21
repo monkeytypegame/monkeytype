@@ -11,9 +11,8 @@ import {
   getPaceCaretWpm,
   isPaceRepeat,
   isRepeated,
-  wordsHaveNewline,
-  wordsHaveTab,
 } from "../../../../states/test";
+import { wordsHaveNewline, wordsHaveTab } from "../../../../test/engine/state";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
 import {
