@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import * as PresetController from "../../src/ts/controllers/preset-controller";
+import { applyPreset } from "../../src/ts/config/presets";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as UserState from "../../src/ts/queries/user";
 import { setConfig } from "../../src/ts/config/setters";
@@ -12,7 +12,7 @@ import * as TestLogic from "../../src/ts/test/test-logic";
 import * as Tags from "../../src/ts/queries/tags";
 import * as Presets from "../../src/ts/queries/presets";
 
-describe("PresetController", () => {
+describe("applyPreset", () => {
   describe("apply", () => {
     vi.mock("../../src/ts/test/test-logic", () => ({
       restartTest: vi.fn(),
@@ -59,7 +59,7 @@ describe("PresetController", () => {
       const preset = givenPreset({ config: { punctuation: true } });
 
       //WHEN
-      await PresetController.apply(preset._id);
+      await applyPreset(preset._id);
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith(preset.config);
@@ -78,7 +78,7 @@ describe("PresetController", () => {
       });
 
       //WHEN
-      await PresetController.apply(preset._id);
+      await applyPreset(preset._id);
 
       //THEN
       expect(tagsSetMock).toHaveBeenCalledExactlyOnceWith(["tagOne", "tagTwo"]);
@@ -89,7 +89,7 @@ describe("PresetController", () => {
       getPresetMock.mockReturnValue(undefined);
 
       //WHEN
-      await PresetController.apply("unknown");
+      await applyPreset("unknown");
       //THEN
       expect(notificationAddMock).not.toHaveBeenCalled();
       expect(configApplyMock).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe("PresetController", () => {
       const oldConfig = structuredClone(Config);
 
       //WHEN
-      await PresetController.apply(preset._id);
+      await applyPreset(preset._id);
 
       //THEN
       expect(configApplyMock).toHaveBeenCalledWith({
@@ -129,7 +129,7 @@ describe("PresetController", () => {
       });
 
       //WHEN
-      await PresetController.apply(preset._id);
+      await applyPreset(preset._id);
 
       //THEN
       expect(tagsSetMock).toHaveBeenCalledExactlyOnceWith(["tagOne", "tagTwo"]);

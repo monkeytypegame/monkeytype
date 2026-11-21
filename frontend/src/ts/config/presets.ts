@@ -8,7 +8,7 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { type PartialConfig } from "@monkeytype/schemas/configs";
 import { getPreset, type Preset } from "../queries/presets";
 
-export async function apply(_id: string): Promise<void> {
+export async function applyPreset(_id: string): Promise<void> {
   const userData = getUserData();
   if (!userData) return;
 

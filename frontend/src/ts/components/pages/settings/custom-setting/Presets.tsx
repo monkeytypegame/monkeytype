@@ -1,6 +1,6 @@
 import { For, JSXElement } from "solid-js";
 
-import { apply } from "../../../../controllers/preset-controller";
+import { applyPreset } from "../../../../config/presets";
 import { deletePreset, getPresets } from "../../../../queries/presets";
 import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
@@ -25,7 +25,7 @@ export function Presets(): JSXElement {
                 <Button
                   text={preset.name}
                   onClick={() => {
-                    void apply(preset._id);
+                    void applyPreset(preset._id);
                   }}
                 />
                 <Button

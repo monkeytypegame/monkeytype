@@ -1,4 +1,4 @@
-import * as PresetController from "../../controllers/preset-controller";
+import { applyPreset } from "../../config/presets";
 import { isAuthenticated } from "../../auth/state";
 import { Command, CommandsSubgroup } from "../types";
 import { getPresets } from "../../queries/presets";
@@ -34,7 +34,7 @@ function update(): void {
       id: `applyPreset${preset._id}`,
       display: preset.name,
       exec: async (): Promise<void> => {
-        await PresetController.apply(preset._id);
+        await applyPreset(preset._id);
       },
     });
   });
