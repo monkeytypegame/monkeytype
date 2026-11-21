@@ -3,7 +3,7 @@ import { Config, setConfigStore } from "../../../src/ts/config/store";
 import commands from "../../../src/ts/commandline/lists/themes";
 import { randomizeTheme } from "../../../src/ts/theme";
 import { __testing } from "../../../src/ts/config/testing";
-import { getRandomTheme, getTheme } from "../../../src/ts/states/theme";
+import { getRandomTheme, getTheme } from "../../../src/ts/theme/state";
 
 describe("themes commandline list config effects", () => {
   const firstTheme = (): string | undefined =>

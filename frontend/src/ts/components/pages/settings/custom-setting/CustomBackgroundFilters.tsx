@@ -3,7 +3,7 @@ import { JSXElement } from "solid-js";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import { setCustomBackgroundFilterPreview } from "../../../../states/theme";
+import { setCustomBackgroundFilterPreview } from "../../../../theme/state";
 import { Slider } from "../../../common/Slider";
 import { SearchableSetting } from "../SearchableSetting";
 

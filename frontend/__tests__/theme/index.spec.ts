@@ -15,7 +15,7 @@ import {
   getTheme,
   setCustomThemeDraft,
   updateCustomThemeDraftColor,
-} from "../../src/ts/states/theme";
+} from "../../src/ts/theme/state";
 import { themes } from "../../src/ts/constants/themes";
 
 const { replaceConfig } = __testing;

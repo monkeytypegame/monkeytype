@@ -9,7 +9,7 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { isCustomBackgroundLoaded } from "../../../states/theme";
+import { isCustomBackgroundLoaded } from "../../../theme/state";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";

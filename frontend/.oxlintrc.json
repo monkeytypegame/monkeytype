@@ -55,7 +55,7 @@
                   "**/theme",
                   "**/theme/**",
                   // the theme state is data
-                  "!**/states/theme",
+                  "!**/theme/state",
                   // integrations, except Sentry: the engine may report errors
                   "**/integrations/ads",
                   "**/integrations/ads/**",

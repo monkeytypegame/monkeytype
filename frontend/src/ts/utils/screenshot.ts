@@ -1,4 +1,4 @@
-import { getTheme } from "../states/theme";
+import { getTheme } from "../theme/state";
 import {
   showErrorNotification,
   showNoticeNotification,

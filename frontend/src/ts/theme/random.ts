@@ -6,11 +6,7 @@ import { getCustomTheme, getCustomThemes } from "../queries/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
-import {
-  prefersDarkScheme,
-  setRandomTheme,
-  ThemeIdentifier,
-} from "../states/theme";
+import { prefersDarkScheme, setRandomTheme, ThemeIdentifier } from "./state";
 
 let randomThemeIndex = 0;
 let themesList: (ThemeName | string)[] = [];

@@ -1,6 +1,6 @@
 import { debounce } from "throttle-debounce";
 import { CustomThemeColors } from "@monkeytype/schemas/configs";
-import { setThemePreview, ThemeChoice, ThemeIdentifier } from "../states/theme";
+import { setThemePreview, ThemeChoice, ThemeIdentifier } from "./state";
 
 let pending: ThemeChoice | null = null;
 

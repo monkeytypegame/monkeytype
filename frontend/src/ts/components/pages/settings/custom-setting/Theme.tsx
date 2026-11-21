@@ -30,7 +30,7 @@ import {
   getTheme,
   setCustomThemeDraft,
   updateCustomThemeDraftColor,
-} from "../../../../states/theme";
+} from "../../../../theme/state";
 import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
 import {

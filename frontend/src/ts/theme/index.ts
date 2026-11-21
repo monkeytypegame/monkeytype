@@ -7,7 +7,7 @@ import {
   getConfiguredThemeName,
   setCustomThemeDraft,
   setRandomTheme,
-} from "../states/theme";
+} from "./state";
 import { clearThemePreview } from "./preview";
 import { updateThemeList } from "./random";
 

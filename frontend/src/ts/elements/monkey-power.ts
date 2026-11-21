@@ -4,7 +4,7 @@ import { Config } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs, qsr } from "../utils/dom";
-import { getTheme } from "../states/theme";
+import { getTheme } from "../theme/state";
 
 const html = qsr("html");
 const body = qsr("body");

@@ -2,7 +2,7 @@ import { createMemo, createRoot } from "solid-js";
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { getConfig } from "../config/store";
 import { getCustomThemes } from "../queries/custom-themes";
-import { getRandomTheme, getThemePreview } from "../states/theme";
+import { getRandomTheme, getThemePreview } from "./state";
 import { areSortedArraysEqual } from "../utils/arrays";
 
 export type ThemeIndicator = {

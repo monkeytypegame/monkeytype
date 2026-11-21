@@ -7,7 +7,7 @@ import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { showNoticeNotification } from "../../states/notifications";
-import { getTheme, getThemeColorsCss } from "../../states/theme";
+import { getTheme, getThemeColorsCss } from "../../theme/state";
 import { isColorDark } from "../../utils/colors";
 import { FavIcon } from "./FavIcon";
 

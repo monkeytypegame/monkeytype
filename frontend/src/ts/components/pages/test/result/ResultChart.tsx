@@ -33,7 +33,6 @@ import { getLocalPB } from "../../../../queries/user";
 import { showSuccessNotification } from "../../../../states/notifications";
 import { getSmoothedBurst, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
-import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
   getTimerBoundaryLabels,
@@ -42,6 +41,7 @@ import {
 import { EventLog } from "../../../../test/engine/events/types";
 import { getResultData } from "../../../../test/engine/state";
 import { get as getFunboxes } from "../../../../test/funbox/list";
+import { getTheme } from "../../../../theme/state";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {
   lastElementFromArray,
