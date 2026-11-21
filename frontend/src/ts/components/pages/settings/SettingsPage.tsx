@@ -1,14 +1,10 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
+import { playTimeWarning, previewClick, previewError } from "../../../audio";
 import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { getConfig } from "../../../config/store";
-import {
-  playTimeWarning,
-  previewClick,
-  previewError,
-} from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";

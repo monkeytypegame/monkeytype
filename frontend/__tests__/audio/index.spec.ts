@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { Config, setConfigStore } from "../../src/ts/config/store";
-import "../../src/ts/controllers/sound-controller";
+import "../../src/ts/audio";
 
 const { volumeMock, howlMock } = vi.hoisted(() => ({
   volumeMock: vi.fn(),
@@ -28,7 +28,7 @@ async function flush(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve));
 }
 
-describe("sound controller config effects", () => {
+describe("audio config effects", () => {
   beforeEach(() => {
     volumeMock.mockClear();
     howlMock.mockClear();

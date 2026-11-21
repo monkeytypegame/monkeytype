@@ -1,5 +1,11 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import * as SoundController from "../controllers/sound-controller";
+import {
+  playClick,
+  playError,
+  playTimeWarning,
+  previewClick,
+  previewError,
+} from "../audio";
 import * as TestLogic from "../test/test-logic";
 import { getRoutePage } from "../states/router";
 import { setFontPreview } from "../states/font";
@@ -75,7 +81,7 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
   soundVolume: {
     subgroup: {
       afterExec: () => {
-        void SoundController.playClick();
+        void playClick();
       },
     },
   },
@@ -85,10 +91,10 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
         if (value === "off") {
           return;
         }
-        void SoundController.previewClick(value);
+        void previewClick(value);
       },
       afterExec: () => {
-        void SoundController.playClick();
+        void playClick();
       },
     },
   },
@@ -98,10 +104,10 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
         if (value === "off") {
           return;
         }
-        void SoundController.previewError(value);
+        void previewError(value);
       },
       afterExec: () => {
-        void SoundController.playError();
+        void playError();
       },
     },
   },
@@ -109,12 +115,12 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
     subgroup: {
       afterExec: (value) => {
         if (value !== "off") {
-          void SoundController.playTimeWarning();
+          void playTimeWarning();
         }
       },
       hover: (value) => {
         if (value !== "off") {
-          void SoundController.playTimeWarning();
+          void playTimeWarning();
         }
       },
     },

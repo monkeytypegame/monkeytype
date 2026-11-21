@@ -2,7 +2,7 @@
 // highlight, focus mode and sounds. Buffered, rendered in the next words frame.
 import { Config } from "../../config/store";
 import { createEvent } from "../../hooks/createEvent";
-import * as SoundController from "../../controllers/sound-controller";
+import { playClick, playError } from "../../audio";
 import {
   getCompositionData,
   highlightKeymapKey,
@@ -45,12 +45,12 @@ function afterAnyTestInput(
       Config.playSoundOnError === "off" ||
       Config.blindMode
     ) {
-      void SoundController.playClick();
+      void playClick();
     } else {
-      void SoundController.playError();
+      void playError();
     }
   } else if (type === "delete") {
-    void SoundController.playClick();
+    void playClick();
   }
 
   highlightNextKey();

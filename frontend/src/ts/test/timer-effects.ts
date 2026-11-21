@@ -3,7 +3,7 @@ import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import * as SoundController from "../controllers/sound-controller";
+import { playTimeWarning } from "../audio";
 import {
   highlightKeymapKey,
   setLayoutfluidTimerText,
@@ -28,14 +28,14 @@ function getMaxTime(): number | undefined {
   return undefined;
 }
 
-function playTimeWarning(testTime: number): void {
+function timeWarning(testTime: number): void {
   if (Config.playTimeWarning === "off") return;
   const maxTime = getMaxTime();
   if (
     maxTime !== undefined &&
     testTime === maxTime - parseInt(Config.playTimeWarning, 10)
   ) {
-    void SoundController.playTimeWarning();
+    void playTimeWarning();
   }
 }
 
@@ -89,7 +89,7 @@ createRoot(() => {
       (tick) => {
         // 0: the timer (re)started, no tick yet
         if (tick === 0) return;
-        playTimeWarning(tick);
+        timeWarning(tick);
         layoutfluid(tick);
       },
       { defer: true },

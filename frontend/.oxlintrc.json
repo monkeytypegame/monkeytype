@@ -50,6 +50,8 @@
                   "**/elements/**",
                   "**/input/**",
                   "**/controllers/**",
+                  "**/audio",
+                  "**/audio/**",
                   // integrations, except Sentry: the engine may report errors
                   "**/integrations/ads",
                   "**/integrations/ads/**",

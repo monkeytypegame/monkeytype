@@ -10,8 +10,8 @@ import {
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
+import { clearAllSounds, playFartReverb } from "../../../audio";
 import { Config, getConfig } from "../../../config/store";
-import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
@@ -334,7 +334,7 @@ export function TestPage(): JSXElement {
         skipBreakdownEvent.dispatch();
       }
       destroyResultAds();
-      void SoundController.clearAllSounds();
+      void clearAllSounds();
       MonkeyPower.reset();
     }
     // fade hides the test synchronously, before the new words paint
@@ -394,7 +394,7 @@ export function TestPage(): JSXElement {
       isTestFinished,
       (finished) => {
         if (finished && Config.playSoundOnClick === "16") {
-          void SoundController.playFartReverb();
+          void playFartReverb();
         }
       },
       { defer: true },
