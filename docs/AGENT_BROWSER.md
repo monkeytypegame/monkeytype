@@ -1,5 +1,23 @@
 # Browser testing (agents)
 
+## Tools
+
+The rest of this doc names **playwright-mcp** tools. The same concepts apply to other harnesses — eg. pi-chrome's `chrome_*` tools:
+
+| Concept | playwright-mcp | pi-chrome |
+| --- | --- | --- |
+| Run JS in the page | `javascript_tool` (45s budget) | `chrome_evaluate` (5s budget) |
+| Read the console | `read_console_messages` | `chrome_list_console_messages` |
+| Resize the window | `resize_window` | `chrome_cdp` → `Emulation.setDeviceMetricsOverride` |
+| Screenshot / recording | screenshots, `gif_creator` | `chrome_screenshot` (no gif) |
+
+pi-chrome specifics the gotchas below don't assume:
+
+- `chrome_evaluate`'s 5s budget kills long measurement loops: fire-and-forget (write results onto a `window.__…` global, return immediately) and poll with a separate call.
+- Console capture starts only after instrumentation is installed (any snapshot/evaluate call) and a page load drops it: snapshot once after a load if you need the full log.
+
+Everything else here (dev server, `__mt`, gotchas) is tool-agnostic.
+
 ## Dev server
 
 Assume the frontend dev server is already running at `http://localhost:3000`. Never start it (a second instance grabs port 3001) and never probe it (`lsof`, `ps`, `curl` — sandboxed curl can't reach localhost anyway).
