@@ -11,7 +11,7 @@ export type UserBadge = {
   customStyle?: JSX.CSSProperties;
 };
 
-export const badges: Record<number, UserBadge> = {
+const badges: Record<number, UserBadge> = {
   "-1": {
     id: -1,
     name: "none",
@@ -190,55 +190,6 @@ export const badges: Record<number, UserBadge> = {
   },
 };
 
-export function getHTMLById(
-  id: number,
-  noText = false,
-  noBalloon = false,
-  showUnknown = false,
-): string {
-  const badge = badges[id];
-
-  if (!badge && !showUnknown) {
-    return "";
-  }
-
-  let style = "";
-  if (badge?.background !== undefined) {
-    style += `background: ${badge.background};`;
-  }
-  if (badge?.color !== undefined) {
-    style += `color: ${badge.color};`;
-  }
-  if (badge?.customStyle !== undefined) {
-    style += Object.entries(badge.customStyle)
-      .map(([key, value]) => `${key}: ${value};`)
-      .join(";");
-  }
-
-  const badgeName = badge?.name ?? "Badge Name Missing";
-  const badgeDescription = badge?.description ?? "Badge Description Missing";
-
-  const balloonText = (noText ? badgeName + ": " : "") + badgeDescription;
-
-  let balloon = "";
-  if (!noBalloon) {
-    balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
-  }
-
-  let icon = "";
-  if (badge?.icon !== undefined) {
-    icon = `<i class="fas ${noText ? "fa-fw" : ""} ${badge.icon}"></i>`;
-  } else {
-    icon = `<i class="fas fa-question"></i>`;
-  }
-
-  const text = `<div class="text">${badgeName}</div>`;
-
-  return `<div class="badge" ${balloon} style="${style}">${icon}${
-    noText ? "" : text
-  }</div>`;
-}
-
-export function getById(id: number): UserBadge | undefined {
+export function getBadge(id: number): UserBadge | undefined {
   return badges[id];
 }

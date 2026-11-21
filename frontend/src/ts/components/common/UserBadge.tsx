@@ -1,9 +1,6 @@
 import { JSXElement, Show } from "solid-js";
 
-import {
-  badges,
-  UserBadge as UserBadgeType,
-} from "../../controllers/badge-controller";
+import { getBadge, UserBadge as UserBadgeType } from "../../constants/badges";
 import { BreakpointKey } from "../../states/breakpoints";
 import { cn } from "../../utils/cn";
 import { Balloon, BalloonProps } from "./Balloon";
@@ -18,7 +15,7 @@ export function UserBadge(props: {
   hideDescription?: boolean;
 }): JSXElement {
   const badge = (): UserBadgeType | undefined =>
-    props.id !== undefined ? badges[props.id] : undefined;
+    props.id !== undefined ? getBadge(props.id) : undefined;
 
   const hideClasses: Record<BreakpointKey, string> = {
     xxs: "hidden xs:inline",
