@@ -18,7 +18,7 @@ export const adSlotMediaQueries = [
 
 const adSlotWrappers = new Map<string, HTMLElement>();
 
-/** Callback ref for an ad slot's wrapper, so the ad controllers can find it */
+/** Callback ref for an ad slot's wrapper, so the ads integration can find it */
 export function adSlotRef(id: string): (el: HTMLElement) => void {
   return (el) => {
     adSlotWrappers.set(id, el);

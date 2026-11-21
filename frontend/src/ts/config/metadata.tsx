@@ -1953,7 +1953,7 @@ const configMetadataEntries = {
     changeRequiresRestart: false,
     description: `You can disable or enable ads at any time. "Result" will show one ad on the result page, "on" will add floating vertical banners, and "sellout" will add multiple ads on every page.`,
     group: "ads",
-    // dev: the slots show as placeholders, the ad controller loads no ad
+    // dev: the slots show as placeholders, the ads integration loads no ad
     // scripts
     afterSet: ({ nosave }) => {
       if (!nosave && !isDevEnvironment()) {

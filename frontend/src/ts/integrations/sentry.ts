@@ -110,7 +110,7 @@ export async function activateSentry(): Promise<void> {
   });
 }
 
-export async function setUser(uid: string, name: string): Promise<void> {
+export async function setSentryUser(uid: string, name: string): Promise<void> {
   if (!activated) return;
   const Sentry = await getSentry();
   Sentry.setUser({
@@ -119,19 +119,19 @@ export async function setUser(uid: string, name: string): Promise<void> {
   });
 }
 
-export async function clearUser(): Promise<void> {
+export async function clearSentryUser(): Promise<void> {
   if (!activated) return;
   const Sentry = await getSentry();
   Sentry.setUser(null);
 }
 
-export async function captureException(error: Error): Promise<void> {
+export async function captureSentryException(error: Error): Promise<void> {
   if (!activated) return;
   const Sentry = await getSentry();
   Sentry.captureException(error);
 }
 
-export function toggleDebug(): void {
+export function toggleSentryDebug(): void {
   debug = !debug;
   console.debug("Sentry debug mode:", debug);
 }

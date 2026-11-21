@@ -3,9 +3,9 @@
 // oxlint-disable ban-ts-comment
 //@ts-nocheck too many errors from 3rd party ad code
 
-import { getAdSlotWrapper } from "../components/common/Advertisement";
-import { Config } from "../config/store";
-import { isTestPageHidingAds } from "../states/ads";
+import { getAdSlotWrapper } from "../../components/common/Advertisement";
+import { Config } from "../../config/store";
+import { isTestPageHidingAds } from "../../states/ads";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -121,7 +121,7 @@ const selloutUnits = [
 
 let rampReady = false;
 
-export function init(): void {
+export function initPwAds(): void {
   // Set Values with your PubID and Website ID
   const pubId = "1024888";
   const websiteId = "74058";
@@ -133,7 +133,7 @@ export function init(): void {
     onReady: (): void => {
       rampReady = true;
 
-      reinstate();
+      reinstatePwAds();
     },
   };
 
@@ -203,7 +203,7 @@ function getUnits(): unknown {
 //            }
 //        )
 
-export async function reinstate(): boolean {
+export async function reinstatePwAds(): boolean {
   if (!rampReady) return;
   if (isTestPageHidingAds()) {
     ramp.destroyUnits("all");
@@ -214,18 +214,18 @@ export async function reinstate(): boolean {
   await ramp.displayUnits();
 }
 
-export async function refreshVisible(): Promise<void> {
+export async function refreshVisiblePwAds(): Promise<void> {
   // if (!rampReady) return;
   // if (getUnits().length === 0) return;
   // ramp.triggerRefresh();
 }
 
-export function destroyAll(): void {
+export function destroyAllPwAds(): void {
   if (!rampReady) return;
   ramp.destroyUnits("all");
 }
 
-export async function renderResult(): Promise<void> {
+export async function renderPwResultAds(): Promise<void> {
   if (!rampReady) return;
   // if (
   //   ramp.getUnits().includes("leaderboard_atf") ||
@@ -233,7 +233,7 @@ export async function renderResult(): Promise<void> {
   // ) {
   //   ramp.triggerRefresh();
   // } else {
-  // reinstate();
+  // reinstatePwAds();
   const units = getUnits();
   await ramp.addUnits(units);
   await ramp.displayUnits();

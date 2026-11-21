@@ -50,7 +50,6 @@ Every track can start now. These are the only steps that wait on another track:
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
 | **C4** delete `Config` + `configEvent` | T8d, L2 | Pace caret, tts and practise words are the last subscribers (L2 removed funbox's, T8d test-logic's) |
-| **L13** integrations folder | U8d, T8c | Firebase analytics is its own module from U8d; the test-start analytics effect exists from T8c |
 | **U6** delete `__nonReactive` | T6a, T6c | Its last callers (test-logic, result PB, today tracker) are rewritten in T6c; T6a did the layout emulator and keydown |
 | **EP3** per-word facts | T1 | Builds on the new letter/word rendering |
 | **L3** monkey power | T3 | Needs the caret boundary for the caret position |
@@ -60,7 +59,7 @@ Every track can start now. These are the only steps that wait on another track:
 | **CL3** remove legacy theme selectors | T1, L11, L12 | Bundled themes must be moved over first |
 | **TR1** tribe | CL | Lands after everything else |
 
-Fully independent from start to finish: H, U1–U5d, U7, U8a–U8d, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10.
+Fully independent from start to finish: H, U1–U5d, U7, U8a–U8d, C1–C3, C5, EP1, EP2, EP4, L1, L2, L4–L10, L13.
 
 ## Track H: housekeeping (now, minutes)
 
@@ -100,7 +99,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | T8 | split | **Dissolve test-logic**, in four steps (spec, "test-logic dissolves"). Can run beside T7 | T6 | The glue module between engine and UI |
 | [ ] | T8a | S · commit | Move the modules the engine needs into `test/engine/`: words generator, custom text, practise words, funbox functions, pace-caret timing (and tts if funbox needs it). The engine lint's "modules around it" group shrinks to what's left outside; no special cases. Move only, no logic change | T6 | |
 | [ ] | T8b | L · PR | **Restart and generation into the engine**: the restart request and its request-time steps (no_quit refusal, quick-restart block, incomplete test, repeat detection, practise-words revert) with their notifications, the `changeRequiresRestart` flag effect, `prepareRestart`/`init`/`addWord`; callers call the engine's restart command | T8a | |
-| [ ] | T8c | L · PR | **Finish and result into the engine**: `startTest`, `fail`'s notifications, the rest of `onResult` (incomplete tests, long custom text progress, today's seconds, tag PBs, notifications) and the full save (API request, local result, xp, crown, daily rank: `Engine.save` takes no `run`). UI parts (confetti, replay, result display state, crown shown) become TestResult/TestPage effects; test-start analytics an effect in the analytics controller | T8b | |
+| [ ] | T8c | L · PR | **Finish and result into the engine**: `startTest`, `fail`'s notifications, the rest of `onResult` (incomplete tests, long custom text progress, today's seconds, tag PBs, notifications) and the full save (API request, local result, xp, crown, daily rank: `Engine.save` takes no `run`). UI parts (confetti, replay, result display state, crown shown) become TestResult/TestPage effects; test-start analytics an effect in the analytics integration (`integrations/analytics.ts`) | T8b | |
 | [ ] | T8d | M · PR | **Leftovers, then delete `test-logic.ts`**: the router calls `Engine.stop()` on leaving and WordsInput blurs itself on `isLeavingPage()`; restart/repeat handlers move into their button components; `test-page-bridge.ts` becomes final UI state in `states/test` (`isTestPageMounted`, owned by TestPage); the config subscriber splits: arabic lazy mode a config-area effect (deviation: on any page, not only the test page), keymap "next" highlight to Keymap, zipf check to its funbox definition | T8c | test-logic; C4's test-logic subscriber |
 
 ## Track C: config (parallel with T)
@@ -132,7 +131,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | U8a | M · PR | Frontend auth provider interface: `auth-provider.ts` defines `AuthProvider` (init with a user-change callback, current user, token, sign in with password or a provider popup, create user, display name, verification email, delete, sign out, reauth, link/unlink, update email) and an own `AuthUser` (uid, email, verified, linked auth methods with their emails) and `AuthError` (codes the UI branches on); it holds the provider-neutral session logic: the only writer of the auth signal, init failure → auth unavailable, the sign-up hold (#8046), the Google sign-up modal hand-off, the auth promise. `firebase.ts` becomes the Firebase implementation and the only `firebase/auth` importer; `auth.tsx`, the Google sign-up modal and state, the API token, test-logic and the other callers talk to `auth-provider.ts` | U3a | No behaviour change. Firebase analytics stays exported from `firebase.ts` until U8d |
 | [ ] | U8b | S · PR | No-auth provider: boot picks a provider (env flag, or Firebase failing to load falls back to no-auth); the UI hides auth methods the provider doesn't offer (`methods`); self-hosting runs without a Firebase config | U8a | Formalises today's Firebase-failed-to-initialize path. Decide first: does a provider declare verification email / password reset support, or must every provider have them |
 | [ ] | U8c | M · PR | Backend auth admin interface: token verification (`middlewares/auth.ts`, `utils/auth.ts`; the token cache stays outside it), user lookup, create (dev), update email/password, delete, revoke tokens, password-reset and verification links, own error codes in place of `FirebaseError`; `firebase-admin` becomes one implementation and its only importer | U8a | Decide first: whether a real non-Firebase backend is built here, or only the interface |
-| [ ] | U8d | S · commit | Firebase analytics leaves the auth adapter: its own module initialises (or reuses) the Firebase app; the analytics controller imports it, not `firebase.ts` | U8a | Analytics isn't auth; after this `firebase.ts` exports only the auth provider |
+| [ ] | U8d | S · commit | Firebase analytics leaves the auth adapter: its own module in `integrations/` initialises (or reuses) the Firebase app; the analytics integration imports it, not `firebase.ts` | U8a | Analytics isn't auth; after this `firebase.ts` exports only the auth provider |
 
 ## Track EP: engine prep (small, parallel)
 
@@ -159,7 +158,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | L10 | S · commit | Commandline "fixSkillIssue" `innerHTML` hack → component or remove | none |
 | [ ] | L11 | L · PR per area | SCSS → Tailwind outside the test; add `data-ui-element` to other themeable components as they're touched, moving bundled themes over | none (test-activity styles: U2) |
 | [ ] | L12 | L · PR | Test/caret SCSS rewritten against `data-ui-*` (Tailwind or a small base-styles layer); bundled themes (grape, aurora, rgb, fire, trance, phantom, chaos_theory) and `crt.css` move off `#caret`/`#paceCaret` to `data-ui-element` | T1, T3 |
-| [ ] | L13 | M · PR | **Integrations folder**: `integrations/` holds the third-party SDK wrappers (analytics, ads, Sentry, captcha, Firebase analytics); `controllers/` keeps only feature controllers | U8d, T8c |
+| [ ] | L13 | S · commit | **Integrations folder**: `integrations/` holds the third-party SDK wrappers, without "controller" in their names: `ads/` (`index.ts`, providers `eg.ts` and `pw.ts`), `analytics.ts`, `sentry.ts`, all imported by name (`reinstateAds`, `logAnalyticsEvent`, `setSentryUser`…), no star imports; `controllers/` keeps only feature controllers; the engine lint bans `integrations/` like `controllers/`, except Sentry (the engine may report errors). Captcha stays a component (`Captcha.tsx`); Firebase analytics joins in U8d | none |
 
 ## Track CL: final cleanup
 

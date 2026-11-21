@@ -13,7 +13,7 @@ import { loadCustomThemes } from "./queries/custom-themes";
 import { loadPresets } from "./queries/presets";
 import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
-import * as Sentry from "./sentry";
+import { clearSentryUser, setSentryUser } from "./integrations/sentry";
 import { getUserId } from "./auth/state";
 import { UserDataLoadError } from "./utils/user-data-load-error";
 
@@ -66,7 +66,7 @@ async function getDataAndInit(): Promise<void> {
     RemoteConfig.fetchFromServer(),
   ]);
 
-  void Sentry.setUser(userData.uid, userData.name);
+  void setSentryUser(userData.uid, userData.name);
 
   await RemoteConfig.applyFromServer(remoteConfig);
 }
@@ -107,6 +107,6 @@ createRoot(() =>
     }
     // signing out resets the user-scoped queries (queries/index.ts)
     setLastLoad(undefined);
-    void Sentry.clearUser();
+    void clearSentryUser();
   }),
 );

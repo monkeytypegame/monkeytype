@@ -3,7 +3,7 @@
 // Importing it creates the router - tests use createAppRouter instead
 
 import { createEffect, createRoot, on } from "solid-js";
-import * as AdController from "../controllers/ad-controller";
+import { reinstateAds } from "../integrations/ads";
 import { signOut } from "../auth";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
 import { isAuthAvailable } from "../firebase";
@@ -59,9 +59,7 @@ router.subscribe("onResolved", () => {
 // ads follow the page on screen: the old one has faded out (see
 // isTestPageHidingAds)
 createRoot(() =>
-  createEffect(
-    on(getVisiblePage, () => void AdController.reinstate(), { defer: true }),
-  ),
+  createEffect(on(getVisiblePage, () => void reinstateAds(), { defer: true })),
 );
 
 function updatePageTitle(page: PageName): void {

@@ -50,6 +50,10 @@
                   "**/elements/**",
                   "**/input/**",
                   "**/controllers/**",
+                  // integrations, except Sentry: the engine may report errors
+                  "**/integrations/ads",
+                  "**/integrations/ads/**",
+                  "**/integrations/analytics",
                   "**/pages/**",
                   "**/anim"
                 ],
