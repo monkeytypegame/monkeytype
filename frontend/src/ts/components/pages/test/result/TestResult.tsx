@@ -180,7 +180,7 @@ function Watermark(): JSXElement {
 }
 
 /**
- * Ad slots are filled by the ad controllers, so the markup must stay static.
+ * Ad slots are filled by the ads integration, so the markup must stay static.
  */
 function ResultAds(): JSXElement {
   return (

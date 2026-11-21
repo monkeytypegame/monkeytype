@@ -11,11 +11,11 @@ import {
 import { debounce } from "throttle-debounce";
 
 import { Config, getConfig } from "../../../config/store";
-import * as AdController from "../../../controllers/ad-controller";
 import * as SoundController from "../../../controllers/sound-controller";
 import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
+import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
 import { getCustomTextIndicator } from "../../../states/core";
 import { getGlarsesMode } from "../../../states/glarses-mode";
@@ -257,7 +257,7 @@ export function TestPage(): JSXElement {
     showDisplay("result");
     // the test's input lets go of the focus
     blurInputElement();
-    void AdController.renderResult();
+    void renderResultAds();
     // the result is shown: free the test words DOM
     resetWordsRender();
   };
@@ -333,7 +333,7 @@ export function TestPage(): JSXElement {
         }
         skipBreakdownEvent.dispatch();
       }
-      AdController.destroyResult();
+      destroyResultAds();
       void SoundController.clearAllSounds();
       MonkeyPower.reset();
     }

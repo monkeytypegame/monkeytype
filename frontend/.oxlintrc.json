@@ -59,7 +59,7 @@
     },
     {
       // TODO(U8d): analytics leaves the Firebase auth provider
-      "files": ["src/ts/controllers/analytics-controller.ts"],
+      "files": ["src/ts/integrations/analytics.ts"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -139,6 +139,10 @@
                   "**/elements/**",
                   "**/input/**",
                   "**/controllers/**",
+                  // integrations, except Sentry: the engine may report errors
+                  "**/integrations/ads",
+                  "**/integrations/ads/**",
+                  "**/integrations/analytics",
                   "**/pages/**",
                   "**/anim"
                 ],

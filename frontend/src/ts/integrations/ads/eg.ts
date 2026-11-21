@@ -1,5 +1,5 @@
 /* oxlint-disable no-unsafe-member-access */
-export function init(): void {
+export function initEgAds(): void {
   document.head.insertAdjacentHTML(
     "beforeend",
     `<script>
@@ -18,7 +18,7 @@ export function init(): void {
   );
 }
 
-export function renderResult(widerThanBreakpoint: boolean): void {
+export function renderEgResultAds(widerThanBreakpoint: boolean): void {
   if (widerThanBreakpoint) {
     //@ts-expect-error 3rd party ad code
     // oxlint-disable-next-line no-unsafe-call
@@ -40,7 +40,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
   }
 }
 
-export function reinstate(): boolean {
+export function reinstateEgAds(): boolean {
   try {
     //@ts-expect-error 3rd party ad code
     // oxlint-disable-next-line no-unsafe-call
@@ -52,7 +52,7 @@ export function reinstate(): boolean {
   }
 }
 
-export async function refreshVisible(): Promise<void> {
+export async function refreshVisibleEgAds(): Promise<void> {
   // const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   // const visibleAdDivs = [];
   // for (let i = 0; i < adDivs.length; i++) {

@@ -88,7 +88,7 @@ import { isTestPageMounted } from "./test-page-bridge";
 import { configEvent } from "../events/config";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
-import * as AnalyticsController from "../controllers/analytics-controller";
+import { logAnalyticsEvent } from "../integrations/analytics";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import {
@@ -103,7 +103,7 @@ import { getFunbox } from "@monkeytype/funbox";
 import type { NormalizedLocalResult } from "../collections/results";
 import { WordGenError } from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import * as Sentry from "../sentry";
+import { captureSentryException } from "../integrations/sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { canQuickRestart } from "../utils/quick-restart";
 import { ResultDetails, setResultState, setCrownType } from "../states/result";
@@ -128,9 +128,9 @@ export function startTest(now: number): boolean {
   if (!canStartTest()) return false;
 
   if (isAuthenticated()) {
-    void AnalyticsController.log("testStarted");
+    void logAnalyticsEvent("testStarted");
   } else {
-    void AnalyticsController.log("testStartedNoLogin");
+    void logAnalyticsEvent("testStartedNoLogin");
   }
 
   Engine.start();
@@ -409,7 +409,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
   testReinitCount++;
   if (testReinitCount > 3) {
     if (lastInitError) {
-      void Sentry.captureException(lastInitError);
+      void captureSentryException(lastInitError);
       setTestInitError(`${lastInitError.name}: ${lastInitError.message}`);
     }
     setTestInitFailed(true);
@@ -842,7 +842,7 @@ function onResult({
   if (uid !== null) {
     // logged in
     if (dontSave) {
-      void AnalyticsController.log("testCompletedInvalid");
+      void logAnalyticsEvent("testCompletedInvalid");
     } else {
       resetIncompleteTests();
 
@@ -856,14 +856,14 @@ function onResult({
       Engine.save(async (isRetrying) => {
         const outcome = await saveResult(completedEvent, isRetrying);
         if (outcome.saved && !isRetrying) {
-          void AnalyticsController.log("testCompleted");
+          void logAnalyticsEvent("testCompleted");
         }
         return outcome;
       });
     }
   } else {
     // logged out
-    void AnalyticsController.log("testCompletedNoLogin");
+    void logAnalyticsEvent("testCompletedNoLogin");
     if (!dontSave) {
       // if its valid save it for later
       setLastSignedOutResult(completedEvent);

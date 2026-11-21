@@ -12,7 +12,7 @@ export function isTestPageHidingAds(): boolean {
   return getVisiblePage() === "test" && !isTestFadedOut();
 }
 
-// undefined until the ad controller checks
+// undefined until the ads integration checks
 export const [getAdBlock, setAdBlock] = createSignal<boolean | undefined>();
 export const [getCookieBlocker, setCookieBlocker] = createSignal<
   boolean | undefined
