@@ -10,7 +10,7 @@ import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
 import { showNoticeNotification } from "../states/notifications";
-import { setRandomTheme } from "../states/theme";
+import { setRandomTheme } from "../theme/state";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
 import { areUnsortedArraysEqual } from "../utils/arrays";

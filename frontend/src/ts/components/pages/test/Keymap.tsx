@@ -12,8 +12,8 @@ import {
   keymapLayoutObject,
   setKeymapFlashState,
 } from "../../../states/test";
-import { getTheme } from "../../../states/theme";
 import { wordsHaveNumbers } from "../../../test/engine/state";
+import { getTheme } from "../../../theme/state";
 import { cn } from "../../../utils/cn";
 import { isMacLike } from "../../../utils/misc";
 import { Anime } from "../../common/anime";

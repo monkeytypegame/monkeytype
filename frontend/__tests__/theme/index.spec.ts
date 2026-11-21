@@ -1,0 +1,248 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { Config as ConfigType } from "@monkeytype/schemas/configs";
+import {
+  clearThemePreview,
+  getThemeIndicator,
+  previewTheme,
+  randomizeTheme,
+} from "../../src/ts/theme";
+import { Config, setConfigStore } from "../../src/ts/config/store";
+import { setConfig } from "../../src/ts/config/setters";
+import { applyConfig } from "../../src/ts/config/lifecycle";
+import { __testing } from "../../src/ts/config/testing";
+import {
+  getRandomTheme,
+  getTheme,
+  setCustomThemeDraft,
+  updateCustomThemeDraftColor,
+} from "../../src/ts/theme/state";
+import { themes } from "../../src/ts/constants/themes";
+
+const { replaceConfig } = __testing;
+
+function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
+  Config[key] = value;
+  setConfigStore(key, value);
+}
+
+function cachedCss(): string | null {
+  return localStorage.getItem("firstPaintThemeCss");
+}
+
+describe("theme", () => {
+  beforeEach(() => {
+    replaceConfig({ theme: "serika_dark" });
+    clearThemePreview();
+    setCustomThemeDraft(null);
+  });
+
+  it("applies the theme", () => {
+    set("theme", "8008");
+    expect(getTheme().name).toBe("8008");
+  });
+
+  it("applies the custom theme and its colors", () => {
+    set("customTheme", true);
+    expect(getTheme().name).toBe("custom");
+
+    const colors = [
+      ...Config.customThemeColors,
+    ] as ConfigType["customThemeColors"];
+    colors[0] = "#123456";
+    set("customThemeColors", colors);
+    expect(getTheme().bg).toBe("#123456");
+  });
+
+  it("applies the light theme on auto switch", () => {
+    set("themeLight", "nord_light");
+    set("autoSwitchTheme", true);
+    expect(getTheme().name).toBe("nord_light");
+
+    set("autoSwitchTheme", false);
+    expect(getTheme().name).toBe("serika_dark");
+  });
+
+  it("caches the configured theme for the first paint", () => {
+    set("theme", "8008");
+    expect(cachedCss()).toContain(themes["8008"].bg);
+  });
+
+  it("keeps the random theme over a custom theme", () => {
+    set("customTheme", true);
+    set("randomTheme", "on");
+
+    randomizeTheme();
+
+    expect(getRandomTheme()).not.toBeNull();
+    expect(getTheme().name).toBe(getRandomTheme()?.name);
+    expect(Config.customTheme).toBe(false);
+  });
+
+  describe("while a random theme is active", () => {
+    beforeEach(() => {
+      replaceConfig({ theme: "serika_dark", randomTheme: "on" });
+      randomizeTheme();
+      expect(getRandomTheme()).not.toBeNull();
+    });
+
+    it("picks a new one each time", () => {
+      const before = getRandomTheme();
+      randomizeTheme();
+      expect(getRandomTheme()).not.toBe(before);
+      expect(getTheme().name).toBe(getRandomTheme()?.name);
+    });
+
+    it("doesn't cache it for the first paint", () => {
+      localStorage.removeItem("firstPaintThemeCss");
+      randomizeTheme();
+      expect(cachedCss()).toBeNull();
+    });
+
+    it.each([
+      ["re-picking the theme", () => setConfig("theme", "serika_dark")],
+      ["re-picking preset", () => setConfig("customTheme", false)],
+      ["turning random off", () => setConfig("randomTheme", "off")],
+    ])("drops it on %s", (_, write) => {
+      write();
+      expect(getRandomTheme()).toBeNull();
+      expect(getTheme().name).toBe("serika_dark");
+    });
+
+    it("drops it on a new theme", () => {
+      setConfig("theme", "8008");
+      expect(getRandomTheme()).toBeNull();
+      expect(getTheme().name).toBe("8008");
+    });
+
+    it("drops it on picking custom", () => {
+      setConfig("customTheme", true);
+      expect(getRandomTheme()).toBeNull();
+      expect(getTheme().name).toBe("custom");
+    });
+
+    it("drops it on a whole-config apply with the same theme", async () => {
+      await applyConfig({ theme: "serika_dark", randomTheme: "on" });
+      expect(getRandomTheme()).toBeNull();
+      expect(getTheme().name).toBe("serika_dark");
+    });
+
+    it("keeps it when switching random mode", () => {
+      const before = getRandomTheme();
+      setConfig("randomTheme", "fav");
+      expect(getRandomTheme()).toBe(before);
+    });
+
+    it("falls back to the auto switch theme when turned off", () => {
+      replaceConfig({
+        theme: "serika_dark",
+        randomTheme: "on",
+        autoSwitchTheme: true,
+        themeLight: "nord_light",
+        themeDark: "nord_light",
+      });
+      randomizeTheme();
+      expect(getRandomTheme()).not.toBeNull();
+
+      setConfig("randomTheme", "off");
+      expect(getTheme().name).toBe("nord_light");
+    });
+  });
+
+  describe("preview", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("shows after the debounce, over a random theme", () => {
+      replaceConfig({ theme: "serika_dark", randomTheme: "on" });
+      randomizeTheme();
+
+      previewTheme("8008");
+      expect(getTheme().name).not.toBe("8008");
+      vi.advanceTimersByTime(250);
+      expect(getTheme().name).toBe("8008");
+      expect(getThemeIndicator().text).toBe("8008");
+
+      clearThemePreview();
+      expect(getTheme().name).toBe(getRandomTheme()?.name);
+    });
+
+    it("previews custom colors", () => {
+      const colors = [
+        ...Config.customThemeColors,
+      ] as ConfigType["customThemeColors"];
+      colors[0] = "#abcdef";
+      previewTheme("custom", colors);
+      vi.advanceTimersByTime(250);
+      expect(getTheme().bg).toBe("#abcdef");
+    });
+
+    it("is dropped by a pending clear", () => {
+      previewTheme("8008");
+      clearThemePreview();
+      vi.advanceTimersByTime(250);
+      expect(getTheme().name).toBe("serika_dark");
+    });
+
+    it("isn't cached for the first paint", () => {
+      localStorage.removeItem("firstPaintThemeCss");
+      previewTheme("8008");
+      vi.advanceTimersByTime(250);
+      expect(cachedCss()).toBeNull();
+    });
+  });
+
+  describe("custom theme draft", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      set("customTheme", true);
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("shows the unsaved colors", () => {
+      updateCustomThemeDraftColor("bg", "#111111");
+      expect(getTheme().bg).toBe("#111111");
+      expect(getTheme().name).toBe("custom");
+    });
+
+    it("applies only while the custom theme is on", () => {
+      updateCustomThemeDraftColor("bg", "#111111");
+      set("customTheme", false);
+      expect(getTheme().bg).toBe(themes.serika_dark.bg);
+    });
+
+    it("survives a cleared preview", () => {
+      updateCustomThemeDraftColor("bg", "#111111");
+      previewTheme("8008");
+      vi.advanceTimersByTime(250);
+      expect(getTheme().name).toBe("8008");
+
+      clearThemePreview();
+      expect(getTheme().bg).toBe("#111111");
+    });
+
+    it("is dropped when the custom colors are saved", () => {
+      updateCustomThemeDraftColor("bg", "#111111");
+      const colors = [
+        ...Config.customThemeColors,
+      ] as ConfigType["customThemeColors"];
+      colors[1] = "#222222";
+      set("customThemeColors", colors);
+      expect(getTheme().bg).toBe(colors[0]);
+      expect(getTheme().main).toBe("#222222");
+    });
+  });
+
+  it("updates the indicator on favorite changes", () => {
+    set("favThemes", ["serika_dark"]);
+    expect(getThemeIndicator()).toEqual({
+      text: "serika dark",
+      isFavorite: true,
+    });
+  });
+});

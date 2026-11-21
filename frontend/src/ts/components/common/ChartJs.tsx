@@ -35,7 +35,7 @@ import { getConfig } from "../../config/store";
 import { Theme } from "../../constants/themes";
 import { createEffectOn } from "../../hooks/effects";
 import { useRefWithUtils } from "../../hooks/useRefWithUtils";
-import { getTheme } from "../../states/theme";
+import { getTheme } from "../../theme/state";
 import { cn } from "../../utils/cn";
 
 Chart.register(

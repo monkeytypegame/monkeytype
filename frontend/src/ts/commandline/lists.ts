@@ -16,7 +16,7 @@ import LoadChallengeCommands from "./lists/load-challenge";
 
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
-import { randomizeTheme } from "../controllers/theme-controller";
+import { randomizeTheme } from "../theme";
 import { showModal } from "../states/modals";
 import {
   showErrorNotification,
@@ -189,7 +189,7 @@ export const commands: CommandsSubgroup = {
       id: "randomizeTheme",
       display: "Next random theme",
       fa: { icon: "fa-random" },
-      exec: async (): Promise<void> => randomizeTheme(),
+      exec: (): void => randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },

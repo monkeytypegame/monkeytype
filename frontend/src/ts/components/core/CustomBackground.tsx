@@ -7,7 +7,7 @@ import {
   getCustomBackgroundFilterPreview,
   isCustomBackgroundLoaded,
   setCustomBackgroundLoaded,
-} from "../../states/theme";
+} from "../../theme/state";
 import { cn } from "../../utils/cn";
 import fileStorage from "../../utils/file-storage";
 

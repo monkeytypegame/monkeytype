@@ -2,7 +2,7 @@ import { createRoot } from "solid-js";
 import { Config, getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
-import * as ThemeController from "../../controllers/theme-controller";
+import { previewTheme } from "../../theme";
 import { Command, CommandsSubgroup } from "../types";
 import { ThemesList, ThemeWithName } from "../../constants/themes";
 import { not } from "@monkeytype/util/predicates";
@@ -30,8 +30,7 @@ const createThemeCommand = (theme: ThemeWithName): Command => {
       isFavorite: isFavorite(theme),
     },
     hover: (): void => {
-      // previewTheme(theme.name);
-      ThemeController.preview(theme.name);
+      previewTheme(theme.name);
     },
     exec: (): void => {
       setConfig("theme", theme.name);

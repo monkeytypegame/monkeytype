@@ -12,7 +12,6 @@ import { debounce } from "throttle-debounce";
 
 import { clearAllSounds, playFartReverb } from "../../../audio";
 import { Config, getConfig } from "../../../config/store";
-import * as ThemeController from "../../../controllers/theme-controller";
 import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
 import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
@@ -60,6 +59,7 @@ import {
   closeResultWords,
   toggleResultWords,
 } from "../../../test/words-history";
+import { randomizeTheme } from "../../../theme";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
@@ -329,7 +329,7 @@ export function TestPage(): JSXElement {
       ResultWordHighlight.destroy();
       if (source === "resultPage") {
         if (Config.randomTheme !== "off") {
-          void ThemeController.randomizeTheme();
+          randomizeTheme();
         }
         skipBreakdownEvent.dispatch();
       }

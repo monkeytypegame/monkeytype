@@ -10,18 +10,6 @@ export const [getVersion, setVersion] = createSignal<{
   isNew: false,
 });
 
-export const [getThemeIndicator, setThemeIndicator] = createSignal<{
-  /**
-   * human readable display name, this is not the ThemeName.
-   * e.g. the display is `serika dark` for the ThemeName `serika_dark`
-   */
-  text: string;
-  isFavorite: boolean;
-}>({
-  text: "serika dark",
-  isFavorite: false,
-});
-
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 // #app stays hidden until the config and auth are loaded (see boot.ts)
 export const [isAppReady, setAppReady] = createSignal(false);
