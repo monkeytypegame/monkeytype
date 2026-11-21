@@ -22,7 +22,7 @@ import {
 import { getDefaultUserData, UserData } from "../../src/ts/constants/user-data";
 import type { NormalizedLocalResult } from "../../src/ts/collections/results";
 import { queryClient } from "../../src/ts/queries";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 import { getXpBarData } from "../../src/ts/states/header";
 import { UserDataLoadError } from "../../src/ts/utils/user-data-load-error";
 
@@ -102,11 +102,11 @@ describe("getUserData", () => {
 });
 
 describe("loadUserData", () => {
-  afterEach(() => setUserId(null));
+  afterEach(() => setTestUserId(null));
 
   it("downloads the user into the store", async () => {
     __testing.setUser(undefined);
-    setUserId("uid2");
+    setTestUserId("uid2");
     vi.spyOn(Ape.users, "get").mockResolvedValue(
       ok({
         uid: "uid2",
@@ -141,7 +141,7 @@ describe("loadUserData", () => {
   });
 
   it("leaves no user when the download fails", async () => {
-    setUserId("uid3");
+    setTestUserId("uid3");
     vi.spyOn(Ape.users, "get").mockResolvedValue({
       status: 429,
       body: { message: "slow down" },

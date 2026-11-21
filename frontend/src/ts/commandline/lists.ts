@@ -26,8 +26,8 @@ import {
 import { Command, CommandlineListKey, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
 import { CommandlineConfigKey } from "../config/metadata";
-import { isAuthAvailable, signOut } from "../firebase";
-import { isAuthenticated } from "../auth/state";
+import { signOut } from "../auth/actions";
+import { isAuthAvailable, isAuthenticated } from "../auth/state";
 import { ConfigKey } from "@monkeytype/schemas/configs";
 import {
   hideFpsCounter,
@@ -331,7 +331,7 @@ export const commands: CommandsSubgroup = {
       display: "Sign out",
       fa: { icon: "fa-sign-out-alt" },
       exec: (): void => {
-        void signOut();
+        signOut();
       },
       available: () => {
         return isAuthAvailable() && isAuthenticated();

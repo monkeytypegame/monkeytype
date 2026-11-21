@@ -38,12 +38,7 @@ window.matchMedia = (query: string): MediaQueryList =>
 // the engine logs every event and word at debug level
 console.debug = () => undefined;
 
-vi.mock("../../src/ts/firebase", () => ({
-  app: undefined,
-  Auth: undefined,
-  getAuthenticatedUser: () => null,
-  isAuthAvailable: () => false,
-}));
+vi.mock("../../src/ts/auth/providers/firebase", () => ({}));
 // no canvas in jsdom; the result chart renders nothing
 vi.mock("../../src/ts/components/common/ChartJs", () => ({
   ChartJs: () => null,

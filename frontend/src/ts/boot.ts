@@ -4,7 +4,8 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 import * as Cookies from "./cookies";
 import * as MerchBanner from "./elements/merch-banner";
 import * as Psa from "./elements/psa";
-import { authPromise, initFirebase } from "./firebase";
+import { startAuth } from "./auth/actions";
+import { firebaseAuthProvider } from "./auth/providers/firebase";
 import { initConnection } from "./states/connection";
 import { setAppReady, setVersion } from "./states/core";
 import { showModal } from "./states/modals";
@@ -12,7 +13,7 @@ import { isDevEnvironment } from "./utils/env";
 import { fetchLatestVersion } from "./utils/version";
 
 /** App startup work that doesn't touch the DOM: starts the config load and
- * Firebase, then waits for both before the app is ready. Call once, right after
+ * auth, then waits for both before the app is ready. Call once, right after
  * render. */
 export async function boot(): Promise<void> {
   // before awaiting: PSAs show on the first auth state change
@@ -26,18 +27,18 @@ export async function boot(): Promise<void> {
     setVersion(data);
   });
 
+  const authStarted = startAuth(firebaseAuthProvider);
   const accepted = Cookies.getAcceptedCookies();
   if (accepted === null) {
     showModal("Cookies");
   }
-  void initFirebase().then(() => {
-    if (accepted !== null) {
-      Cookies.activateWhatsAccepted();
-    }
-  });
 
   await configLoaded;
-  await authPromise;
+  await authStarted;
+
+  if (accepted !== null) {
+    Cookies.activateWhatsAccepted();
+  }
 
   MerchBanner.showIfNotClosedBefore();
 

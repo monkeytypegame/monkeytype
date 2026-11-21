@@ -1,5 +1,8 @@
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { ZodSchema } from "zod";
+import { NewPasswordSchema, PasswordSchema } from "@monkeytype/schemas/users";
+import { z, ZodSchema, ZodString } from "zod";
+
+import { isDevEnvironment } from "../../../utils/env";
 
 export type ValidationResult = { type: "error" | "warning"; message: string };
 export function fromSchema<T>(
@@ -56,4 +59,19 @@ export function fieldMandatory<T>(message?: string): ValidatorCallback<T> {
       ? undefined
       : (message ?? "mandatory");
   };
+}
+
+/**
+ * Returns the Zod schema for password validation.
+ *
+ * Set `isNew: true` for registration/creation flows (strict rules).
+ * Omit it for re-authentication flows (lenient: just non-empty).
+ *
+ * @param options - Set `isNew: true` for password creation/registration.
+ * @returns A Zod string schema.
+ */
+export function getPasswordSchema(options?: { isNew: boolean }): ZodString {
+  if (!options?.isNew) return PasswordSchema;
+  if (isDevEnvironment()) return z.string().min(6);
+  return NewPasswordSchema;
 }

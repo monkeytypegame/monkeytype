@@ -37,14 +37,14 @@ import {
   getUserDataLoadState,
   reloadUserData,
 } from "../../src/ts/session-data";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 
-// stands in for firebase.ts, the auth signals' writer
+// stands in for auth/system.ts, the auth signals' writer
 function signIn(uid = "uid"): void {
-  setUserId(uid);
+  setTestUserId(uid);
 }
 function signOut(): void {
-  setUserId(null);
+  setTestUserId(null);
 }
 
 async function settle(): Promise<void> {
