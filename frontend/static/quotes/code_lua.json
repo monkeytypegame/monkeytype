@@ -80,9 +80,9 @@
       "id": 12
     },
     {
-      "text": "local Tablify = require(\"tablify/tablify\")\nlocal Commands = \n{\n\t[\"NORMAL\"] = function(Input)\nif #Input % 2 == 1 then\n\treturn \" > Failed, wrong number of arguments\\n\"\nend\ntable.remove(Input, 1)\nlocal File = io.open(Input[1], \"r\")\nlocal Data = File:read(\"*all\")\nFile:close()\nfor i = 2, #Input, 2 do\n\tData = Data:gsub(Input[i], Input[i+1])\nend\nlocal OutputFile = io.open(\"output.txt\", \"w\")\nOutputFile:write(Data)\nOutputFile:close()\nreturn \" > Complete\\n\"\nend}\nrepeat\n\tio.write(\" < \")\nlocal Input = Tablify.Execute(\"NORMAL\", io.read(\"*line\"), \" \")\nInput[1] = Input[1]:upper()\nif Commands[Input[1]] then\n\tlocal Result = Commands[Input[1]](Input)\nio.write(Result)\nend\nuntil Input[1] == \"EXIT\"",
+      "text": "local Tablify = require(\"tablify/tablify\")\nlocal Commands = \n{\n\t[\"NORMAL\"] = function(Input)\n\t\tif #Input % 2 == 1 then\n\t\t\treturn \" > Failed, wrong number of arguments\n\"\n\t\tend\n\t\ttable.remove(Input, 1)\n\t\tlocal File = io.open(Input[1], \"r\")\n\t\tlocal Data = File:read(\"*all\")\n\t\tFile:close()\n\t\tfor i = 2, #Input, 2 do\n\t\t\tData = Data:gsub(Input[i], Input[i+1])\n\t\tend\n\t\tlocal OutputFile = io.open(\"output.txt\", \"w\")\n\t\tOutputFile:write(Data)\n\t\tOutputFile:close()\n\t\treturn \" > Complete\n\"\n\tend\n}\nrepeat\n\tio.write(\" < \")\n\tlocal Input = Tablify.Execute(\"NORMAL\", io.read(\"*line\"), \" \")\n\tInput[1] = Input[1]:upper()\n\tif Commands[Input[1]] then\n\t\tlocal Result = Commands[Input[1]](Input)\n\t\tio.write(Result)\n\tend\nuntil Input[1] == \"EXIT\"",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 1",
-      "length": 686,
+      "length": 695,
       "id": 13
     },
     {
