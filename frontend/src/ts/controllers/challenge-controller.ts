@@ -16,11 +16,8 @@ import { ChallengeName } from "@monkeytype/schemas/challenges";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
-import {
-  isTestRestarting,
-  getLoadedChallenge,
-  setLoadedChallenge,
-} from "../states/test";
+import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
+import { isTestRestarting } from "../test/engine/state";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 
 let challengeLoading = false;

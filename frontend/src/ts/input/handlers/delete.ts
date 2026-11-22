@@ -1,12 +1,12 @@
-import * as TestUI from "../../test/test-ui";
-import * as TestWords from "../../test/test-words";
+import { afterTestDelete } from "../helpers/after-input";
+import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
-import { DeleteInputType } from "../helpers/input-type";
-import { getCurrentInput, logTestEvent } from "../../test/events/data";
-import { getActiveWordIndex } from "../../states/test";
+import { DeleteInputType } from "../../test/engine/input-type";
+import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
+import { getActiveWordIndex } from "../../test/engine/state";
 import { setWordInput } from "../../states/words-render";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {
@@ -50,7 +50,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
       inputValue: postNavInputValue,
     });
 
-    TestUI.afterTestDelete();
+    afterTestDelete();
     return;
   }
 
@@ -84,5 +84,5 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     });
   }
 
-  TestUI.afterTestDelete();
+  afterTestDelete();
 }

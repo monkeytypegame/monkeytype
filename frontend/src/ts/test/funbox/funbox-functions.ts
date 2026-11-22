@@ -13,14 +13,13 @@ import {
   showErrorNotification,
 } from "../../states/notifications";
 import * as DDR from "../../utils/ddr";
-import * as TestWords from "../test-words";
+import * as TestWords from "../engine/test-words";
 import { getPoem } from "../poetry";
 import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 import {
-  getActiveWordIndex,
   setReadAheadDisabled,
   setWordsHidden,
   setWordsWrapperHidden,
@@ -29,6 +28,7 @@ import {
   setMemoryTimerDuration,
   highlightKeymapKey,
 } from "../../states/test";
+import { getActiveWordIndex } from "../engine/state";
 import { WordGenError } from "../../utils/word-gen-error";
 import { FunboxName, KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { Language, LanguageObject } from "@monkeytype/schemas/languages";

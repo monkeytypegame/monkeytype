@@ -12,7 +12,7 @@ import "./event-handlers/global";
 // starts the user data load on sign in, before auth can report one
 import "./session-data";
 import "./console-globals";
-import "./controllers/ad-controller";
+import "./integrations/ads";
 import "./test/tts";
 import { render } from "solid-js/web";
 import { App } from "./components/core/App";

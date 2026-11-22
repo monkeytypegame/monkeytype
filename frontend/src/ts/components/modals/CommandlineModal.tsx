@@ -17,10 +17,9 @@ import {
   CommandWithValidation,
 } from "../../commandline/types";
 import { Config } from "../../config/store";
-import * as AnalyticsController from "../../controllers/analytics-controller";
 import * as ThemeController from "../../controllers/theme-controller";
 import { createInputEventHandler } from "../../elements/input-validation";
-import { isInputElementFocused } from "../../input/input-element";
+import { logAnalyticsEvent } from "../../integrations/analytics";
 import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
@@ -36,7 +35,11 @@ import {
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { getRoutePage } from "../../states/router";
-import { setFocusMode, setTestFocusState } from "../../states/test";
+import {
+  isWordsInputFocused,
+  setFocusMode,
+  setTestFocusState,
+} from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -205,7 +208,7 @@ export function CommandlineModal(): JSXElement {
 
   const addCommandlineBackground = (): void => {
     setNoBackground(false);
-    if (!isInputElementFocused()) {
+    if (!isWordsInputFocused()) {
       setTestFocusState("unfocused");
     }
   };
@@ -451,7 +454,7 @@ export function CommandlineModal(): JSXElement {
       command.exec?.({ input: inputValue() });
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     hide();
   };
 
@@ -485,7 +488,7 @@ export function CommandlineModal(): JSXElement {
       return;
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     if (command.opensModal === true) return;
 
     if (isModalOpen(MODAL_ID)) {

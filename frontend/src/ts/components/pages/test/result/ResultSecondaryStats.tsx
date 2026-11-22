@@ -10,6 +10,7 @@ import {
   Suspense,
 } from "solid-js";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
@@ -17,7 +18,7 @@ import QuotesController, {
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getTags } from "../../../../queries/tags";
 import { setQuoteFavorite, getUserData } from "../../../../queries/user";
-import { getFormatting, isAuthenticated } from "../../../../states/core";
+import { getFormatting } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { addNotificationWithLevel } from "../../../../states/notifications";
@@ -29,6 +30,7 @@ import {
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
+import { getTimeTodayString } from "../../../../test/today-tracker";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -146,7 +148,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
           </div>
           <div class={timeNoteClass} data-ui-element="resultStatSubValue">
-            {resultState.timeToday}
+            {getTimeTodayString()}
           </div>
         </Balloon>
       </div>

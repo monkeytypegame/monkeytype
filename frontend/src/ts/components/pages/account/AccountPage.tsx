@@ -3,13 +3,13 @@ import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../../collections/results";
 
+import { isAuthenticated } from "../../../auth/state";
 import {
   createResultsQueryState,
   getResultsQueryOnce,
   useResultsLiveQuery,
 } from "../../../collections/results";
 import { createTrigger } from "../../../hooks/createTrigger";
-import { isAuthenticated } from "../../../states/core";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
 import { downloadResultsCSV } from "../../../utils/misc";

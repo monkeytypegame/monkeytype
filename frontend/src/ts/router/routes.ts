@@ -342,7 +342,7 @@ const account = createRoute({
         );
       }
       await waitForResultsReady();
-      TodayTracker.addAllFromToday();
+      await TodayTracker.addAllFromToday();
     });
   },
 });

@@ -1,12 +1,21 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
-import * as SoundController from "../controllers/sound-controller";
+import {
+  playClick,
+  playError,
+  playTimeWarning,
+  previewClick,
+  previewError,
+} from "../audio";
 import * as TestLogic from "../test/test-logic";
 import { getRoutePage } from "../states/router";
 import { setFontPreview } from "../states/font";
 
 // side effects of config commands, kept out of config metadata because the
 // modules they call import the config setters (a circular import otherwise).
-// the test restarts go away once the engine restarts on `changeRequiresRestart`
+// the test restarts: a change already restarts through the test settings
+// effect (test-logic); these also restart when the value is unchanged, as
+// picking the current option always did. When the value changed, the
+// effect's restart is already running and this request is dropped.
 
 export type CommandlineConfigActions<K extends keyof ConfigSchemas.Config> = {
   subgroup?: {
@@ -72,7 +81,7 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
   soundVolume: {
     subgroup: {
       afterExec: () => {
-        void SoundController.playClick();
+        void playClick();
       },
     },
   },
@@ -82,10 +91,10 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
         if (value === "off") {
           return;
         }
-        void SoundController.previewClick(value);
+        void previewClick(value);
       },
       afterExec: () => {
-        void SoundController.playClick();
+        void playClick();
       },
     },
   },
@@ -95,10 +104,10 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
         if (value === "off") {
           return;
         }
-        void SoundController.previewError(value);
+        void previewError(value);
       },
       afterExec: () => {
-        void SoundController.playError();
+        void playError();
       },
     },
   },
@@ -106,12 +115,12 @@ export const commandlineConfigActions: CommandlineConfigActionsObject = {
     subgroup: {
       afterExec: (value) => {
         if (value !== "off") {
-          void SoundController.playTimeWarning();
+          void playTimeWarning();
         }
       },
       hover: (value) => {
         if (value !== "off") {
-          void SoundController.playTimeWarning();
+          void playTimeWarning();
         }
       },
     },

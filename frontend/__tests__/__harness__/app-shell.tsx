@@ -87,8 +87,8 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
+import type { AuthState } from "../../src/ts/auth/state";
 import type { UserDataLoadState } from "../../src/ts/session-data";
-import type { AuthState } from "../../src/ts/states/core";
 
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
@@ -106,13 +106,12 @@ import {
 import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
+import { canStartTest } from "../../src/ts/states/router";
 import {
   isTestActive,
-  setIsTestRestarting,
-  setResultCalculating,
-  setTestActive,
-} from "../../src/ts/states/test";
-import { canStartTest } from "../../src/ts/test/test-page-state";
+  setResultData,
+  setTestPhase,
+} from "../../src/ts/test/engine/state";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
@@ -308,9 +307,9 @@ vi.mock("../../src/ts/components/pages/test/TestPage", stubPage("TestPage"));
 // Leaving the test page just ends the test here: tests start a test (app.test),
 // then check whether it is still running
 vi.mock("../../src/ts/test/test-logic", async () => {
-  const { setTestActive } = await import("../../src/ts/states/test");
+  const { setTestPhase } = await import("../../src/ts/test/engine/state");
   return {
-    leaveTestPage: () => setTestActive(false),
+    leaveTestPage: () => setTestPhase("idle"),
     // the debug handle exposes it
     restartTest: () => undefined,
   };
@@ -552,20 +551,25 @@ export type TestControls = {
   type: () => void;
   isRunning: () => boolean;
   setRestarting: (restarting: boolean) => void;
-  setResultCalculating: (calculating: boolean) => void;
+  /** Finished, the result not built yet. */
+  setResultPending: (pending: boolean) => void;
   /** Activates the no quit funbox. */
   enableNoQuit: () => void;
 };
 
 const testControls: TestControls = {
-  start: () => setTestActive(true),
+  start: () => setTestPhase("active"),
   // like the test's startTest
   type: () => {
-    if (canStartTest()) setTestActive(true);
+    if (canStartTest()) setTestPhase("active");
   },
   isRunning: () => isTestActive(),
-  setRestarting: (restarting) => setIsTestRestarting(restarting),
-  setResultCalculating: (calculating) => setResultCalculating(calculating),
+  setRestarting: (restarting) =>
+    setTestPhase(restarting ? "restarting" : "idle"),
+  setResultPending: (pending) => {
+    setResultData(null);
+    setTestPhase(pending ? "finished" : "idle");
+  },
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
 
@@ -760,9 +764,7 @@ export function cleanupApp(): void {
   setRouter(undefined);
   setPreloading(true);
   resetLoadingBar();
-  setTestActive(false);
-  setIsTestRestarting(false);
-  setResultCalculating(false);
+  setTestPhase("idle");
   configTesting.replaceConfig({});
   userTesting.setUser(undefined);
   for (const name of ["results", "friends"] as const) {

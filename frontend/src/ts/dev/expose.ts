@@ -8,14 +8,17 @@ import { setPreloading } from "../router/create-router";
 import { getRouter } from "../router/instance";
 import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
-import { LETTER_SELECTOR } from "../states/word-elements";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
-import { getCurrentInput } from "../test/events/data";
+import { getCurrentInput } from "../test/engine/events/data";
 import { restartTest } from "../test/test-logic";
-import { quickLogin, signOut } from "./auth";
+import { quickLogin, signOut, whenUserDataLoaded } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
+
+// app code reads letters through the Words instance's registry, which dev
+// tools can't reach: query the DOM instead (spec Q33 exempts dev/)
+const LETTER_SELECTOR = '[data-ui-element="letter"]';
 
 // Modules hot-updated since the page loaded. Kept on window: it survives this
 // module's own hot update, and the listener registers once per page.
@@ -60,7 +63,7 @@ function wordsSnapshot(): ChildSnapshot[] {
  * right to left words). Within a few px is on.
  */
 function caretOffset(): { dx: number; dy: number } | undefined {
-  const caret = document.querySelector("#caret");
+  const caret = document.querySelector('[data-ui-element="caret"]');
   const letters = document.querySelectorAll(
     `#words .word.active ${LETTER_SELECTOR}`,
   );
@@ -234,10 +237,13 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
  */
 const mt = {
   /**
-   * Client-side route change: `navigate({ to, params, search })`, or
-   * `navigate({ href: "/settings?x=1" })` for a raw path.
+   * Client-side route change: `navigate("/settings?x=1")` for a raw path, or
+   * `navigate({ to, params, search })`.
    */
-  navigate,
+  navigate: async (
+    options: string | Parameters<typeof navigate>[0],
+  ): Promise<void> =>
+    navigate(typeof options === "string" ? { href: options } : options),
   /** Page name of the last resolved route ("loading" before the first or after a failed load). */
   getRoutePage,
   /** Whether a navigation is in progress (the loading page may cover the page). */
@@ -251,8 +257,8 @@ const mt = {
   /** The config store object, not a function: `getConfig.fontSize`. */
   getConfig,
   /**
-   * Writes a config key. Doesn't restart the test (callers restart until T6b):
-   * use `runCommand` when the restart matters.
+   * Writes a config key. A test setting (flagged `changeRequiresRestart`)
+   * restarts the test on the test page.
    */
   setConfig,
   /** Opens a modal by `ModalId`. */
@@ -290,6 +296,12 @@ const mt = {
    * tags, results, sync.
    */
   quickLogin,
+  /**
+   * Resolves once the signed in user's account data has loaded and its config
+   * is applied (at once when signed out). On a signed in page load, await it
+   * before `setConfig`: the account's config replaces earlier changes.
+   */
+  whenUserDataLoaded,
   /**
    * Signs out the current session; resolves once the app clears it, rejects
    * after 10s. No-op without a session.

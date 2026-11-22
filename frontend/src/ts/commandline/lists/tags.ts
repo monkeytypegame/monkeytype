@@ -6,7 +6,7 @@ import {
 } from "../../queries/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../auth/state";
 import { Command, CommandsSubgroup } from "../types";
 import { showAddTagModal } from "../../components/modals/AddTagModal";
 
