@@ -24,10 +24,6 @@ function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
   setConfigStore(key, value);
 }
 
-function cachedCss(): string | null {
-  return localStorage.getItem("firstPaintThemeCss");
-}
-
 describe("theme", () => {
   beforeEach(() => {
     replaceConfig({ theme: "serika_dark" });
@@ -61,11 +57,6 @@ describe("theme", () => {
     expect(getTheme().name).toBe("serika_dark");
   });
 
-  it("caches the configured theme for the first paint", () => {
-    set("theme", "8008");
-    expect(cachedCss()).toContain(themes["8008"].bg);
-  });
-
   it("keeps the random theme over a custom theme", () => {
     set("customTheme", true);
     set("randomTheme", "on");
@@ -89,12 +80,6 @@ describe("theme", () => {
       randomizeTheme();
       expect(getRandomTheme()).not.toBe(before);
       expect(getTheme().name).toBe(getRandomTheme()?.name);
-    });
-
-    it("doesn't cache it for the first paint", () => {
-      localStorage.removeItem("firstPaintThemeCss");
-      randomizeTheme();
-      expect(cachedCss()).toBeNull();
     });
 
     it.each([
@@ -183,13 +168,6 @@ describe("theme", () => {
       clearThemePreview();
       vi.advanceTimersByTime(250);
       expect(getTheme().name).toBe("serika_dark");
-    });
-
-    it("isn't cached for the first paint", () => {
-      localStorage.removeItem("firstPaintThemeCss");
-      previewTheme("8008");
-      vi.advanceTimersByTime(250);
-      expect(cachedCss()).toBeNull();
     });
   });
 

@@ -103,32 +103,6 @@ export const getConfiguredTheme = theme.getConfiguredTheme;
 /** The theme on screen: preview, then random, then draft, then configured. */
 export const getTheme = theme.getTheme;
 
-/** The `:root` color variables for `theme`. */
-export function getThemeColorsCss(theme: Theme): string {
-  return `
-:root {
-    --bg-color: ${theme.bg};
-    --main-color: ${theme.main};
-    --caret-color: ${theme.caret};
-    --sub-color: ${theme.sub};
-    --sub-alt-color: ${theme.subAlt};
-    --text-color: ${theme.text};
-    --error-color: ${theme.error};
-    --error-extra-color: ${theme.errorExtra};
-    --colorful-error-color: ${theme.colorfulError};
-    --colorful-error-extra-color: ${theme.colorfulErrorExtra};
-}`;
-}
-
-/**
- * Stores the configured theme's colors for the inline script in index.html,
- * which applies them before the first paint to avoid an initial flash of the
- * default theme. Not for previews.
- */
-export function cacheThemeColors(theme: Theme): void {
-  localStorage.setItem("firstPaintThemeCss", getThemeColorsCss(theme));
-}
-
 /** Edits one color of the custom theme editor's draft. */
 export function updateCustomThemeDraftColor(
   key: ColorName,

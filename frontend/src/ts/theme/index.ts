@@ -2,9 +2,7 @@ import { createRoot } from "solid-js";
 import { getConfig } from "../config/store";
 import { createEffectOn } from "../hooks/effects";
 import {
-  cacheThemeColors,
   clearThemePreview,
-  getConfiguredTheme,
   getConfiguredThemeName,
   setCustomThemeDraft,
   setRandomTheme,
@@ -26,10 +24,6 @@ createRoot(() => {
     },
     { defer: true },
   );
-
-  createEffectOn(getConfiguredTheme, (theme) => cacheThemeColors(theme), {
-    defer: true,
-  });
 
   createEffectOn(
     () => getConfig.randomTheme,
