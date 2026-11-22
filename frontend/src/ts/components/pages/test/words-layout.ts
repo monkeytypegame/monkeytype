@@ -66,14 +66,19 @@ let mountedRegistry: WordRegistry | undefined;
 
 /**
  * Typed input of word `index` as rendered (the last flush), with its IME
- * composition. The caret and the tape follow what's on screen.
+ * composition. The caret and the tape follow what's on screen, minus a letter
+ * blocked by stop on letter.
  */
 function getRenderedInput(index: number): {
   input: string;
   composition: string;
 } {
   const word = wordsRenderState.words[index];
-  return { input: word?.input ?? "", composition: word?.composition ?? "" };
+  if (word === undefined) return { input: "", composition: "" };
+  return {
+    input: word.input.slice(0, word.acceptedLength),
+    composition: word.composition,
+  };
 }
 
 /**

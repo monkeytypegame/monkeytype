@@ -21,8 +21,13 @@ import * as TestWords from "../../test/engine/test-words";
 /** Dispatched after each typed character, with whether it was correct. */
 export const textInsertedEvent = createEvent<boolean>();
 
-function updateWordLetters(input: string): void {
-  setWordInput(getActiveWordIndex(), input, getCompositionData());
+function updateWordLetters(input: string, acceptedLength?: number): void {
+  setWordInput(
+    getActiveWordIndex(),
+    input,
+    getCompositionData(),
+    acceptedLength,
+  );
 }
 
 function highlightNextKey(): void {
@@ -70,7 +75,11 @@ export function afterTestTextInput(
     input = input.replace(/ $/, "");
   }
 
-  updateWordLetters(input);
+  // stop on letter: the override shows the blocked letter, the caret stays
+  updateWordLetters(
+    input,
+    inputOverride === undefined ? undefined : getCurrentInput().length,
+  );
 
   afterAnyTestInput("textInput", correct);
 }
