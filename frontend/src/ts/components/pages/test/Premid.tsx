@@ -1,5 +1,6 @@
 import { getConfig } from "../../../config/store";
-import { currentLiveStats, getCurrentQuote } from "../../../states/test";
+import { getCurrentQuote } from "../../../states/test";
+import { liveStats } from "../../../test/engine/state";
 import { getMode2 } from "../../../utils/misc";
 import { getLanguageDisplayString } from "../../../utils/strings";
 
@@ -17,7 +18,7 @@ export function Premid() {
     )}${funbox}`;
   };
 
-  const secondsLeft = () => getConfig.time - (currentLiveStats.seconds ?? 0);
+  const secondsLeft = () => getConfig.time - (liveStats.seconds ?? 0);
 
   return (
     <>

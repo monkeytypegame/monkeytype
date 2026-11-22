@@ -10,8 +10,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import englishLanguage from "../../../static/languages/english.json";
 import qwertyLayout from "../../../static/layouts/qwerty.json";
 
-vi.mock("../../../src/ts/events/test", () => ({
-  restartTestEvent: { dispatch: vi.fn() },
+vi.mock("../../../src/ts/test/test-logic", () => ({
+  restartTest: vi.fn(),
 }));
 
 // The test state module fetches the input/keymap layout on module load and

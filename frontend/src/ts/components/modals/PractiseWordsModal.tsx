@@ -20,7 +20,7 @@ export function PractiseWordsModal(): JSXElement {
     if (!canStart()) return;
     PractiseWords.init(missed(), slow());
     hideModalAndClearChain("PractiseWords");
-    void TestLogic.restart({
+    void TestLogic.restartTest({
       practiseMissed: true,
     });
   };

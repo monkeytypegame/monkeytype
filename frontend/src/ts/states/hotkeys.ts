@@ -1,9 +1,10 @@
 import { QuickRestart } from "@monkeytype/schemas/configs";
 import { Hotkey } from "@tanstack/solid-hotkeys";
-import { createEffect } from "solid-js";
+import { createEffect, createRoot } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getConfig } from "../config/store";
-import { wordsHaveNewline, wordsHaveTab, isLongTest } from "./test";
+import { isLongTest } from "../test/engine/test-settings";
+import { wordsHaveNewline, wordsHaveTab } from "../test/engine/state";
 import { getRoutePage } from "./router";
 import { NoKey } from "../input/hotkeys/utils";
 
@@ -21,9 +22,11 @@ type Hotkeys = {
 
 export const [hotkeys, setHotkeys] = createStore<Hotkeys>(updateHotkeys());
 
-createEffect(() => {
-  setHotkeys(updateHotkeys());
-});
+createRoot(() =>
+  createEffect(() => {
+    setHotkeys(updateHotkeys());
+  }),
+);
 
 function updateHotkeys(): Hotkeys {
   const isOnTestPage = getRoutePage() === "test";

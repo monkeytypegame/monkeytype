@@ -6,7 +6,7 @@ import { ChallengeName } from "@monkeytype/schemas/challenges";
 import { z } from "zod";
 
 import * as ChallengeController from "../../controllers/challenge-controller";
-import { restart as restartTest } from "../../test/test-logic";
+import { restartTest } from "../../test/test-logic";
 import { defineSearchAction } from "../action";
 
 export const challengeAction = defineSearchAction({

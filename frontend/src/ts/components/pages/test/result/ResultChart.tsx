@@ -19,31 +19,28 @@ import {
   JSXElement,
   Show,
   untrack,
+  createRoot,
 } from "solid-js";
 import { z } from "zod";
 
-import { useTagsLiveQuery } from "../../../../collections/tags";
+import { isAuthenticated } from "../../../../auth/state";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
-import * as DB from "../../../../db";
-import { createEffectOn } from "../../../../hooks/effects";
 import { useLocalStorage } from "../../../../hooks/useLocalStorage";
-import { isAuthenticated } from "../../../../states/core";
+import { getTag } from "../../../../queries/tags";
+import { getLocalPB } from "../../../../queries/user";
 import { showSuccessNotification } from "../../../../states/notifications";
-import {
-  getSmoothedBurst,
-  isResultShown,
-  resultState,
-} from "../../../../states/result";
-import { CompletedResult, getLastEventLog } from "../../../../states/test";
+import { getSmoothedBurst, resultState } from "../../../../states/result";
+import { CompletedResult } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
 import {
   getRawHistory,
   getTimerBoundaryLabels,
   getWordIndexesForSecond,
-} from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
+import { getResultData } from "../../../../test/engine/state";
 import { get as getFunboxes } from "../../../../test/funbox/list";
 import { FaSolidIcon } from "../../../../types/font-awesome";
 import {
@@ -166,7 +163,7 @@ function pbLine(
 }
 
 function getLocalPbWpm(result: CompletedResult): number {
-  const localPb = DB.getLocalPB(
+  const localPb = getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation,
@@ -342,7 +339,7 @@ type ChartDataVisibility = {
   tagPbLine: boolean;
 };
 
-const [getChartDataVisibility, setChartDataVisibility] =
+const [getChartDataVisibility, setChartDataVisibility] = createRoot(() =>
   useLocalStorage<ChartDataVisibility>({
     key: "resultChartDataVisibility",
     schema: z
@@ -361,7 +358,8 @@ const [getChartDataVisibility, setChartDataVisibility] =
       pbLine: true,
       tagPbLine: true,
     },
-  });
+  }),
+);
 
 const [isFakeChartData, setFakeChartData] = createSignal(false);
 
@@ -375,8 +373,8 @@ let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
 
 function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
   if (prevTooltipItem === ti) return "";
-  const eventLog = getLastEventLog();
-  if (eventLog === null) return "";
+  const eventLog = getResultData()?.eventLog;
+  if (eventLog === undefined) return "";
 
   prevTooltipItem = ti;
   try {
@@ -549,47 +547,26 @@ function buildChartConfig(
   };
 }
 
-const emptyChartData: ChartData = {
-  labels: [],
-  wpm: [],
-  raw: [],
-  burst: [],
-  err: [],
-};
-
 export function ResultChart(props: {
   result: CompletedResult;
   eventLog: EventLog;
 }): JSXElement {
-  const tags = useTagsLiveQuery();
-  let chart: Chart<"line" | "scatter", number[]> | undefined;
-
   // read once per result - saveResult() overwrites the local pb with this result
   const localPbWpm = createMemo(() => {
     const result = props.result;
     return untrack(() => getLocalPbWpm(result));
   });
 
-  const chartConfig = createMemo((prev: ChartConfig | undefined) => {
+  const chartConfig = createMemo(() => {
     const unit = getTypingSpeedUnit(getConfig.typingSpeedUnit);
     const theme = getTheme();
     const vis = getChartDataVisibility();
 
-    // only build while visible - the result outlives the result screen, and
-    // showResult() shows it after the details and tags are set, so this runs once per result
-    // (plus once more if tags load after the result shows)
-    if (!isResultShown()) {
-      return (
-        prev ?? buildChartConfig(emptyChartData, vis, [], 0, 0, unit, theme)
-      );
-    }
-
     const result = props.result;
     const fontFamily = getConfig.fontFamily.replace(/_/g, " ");
-    // state, not tags(): reading tags() suspends until the collection is ready.
-    // draw the chart now, tag pb lines show up once their tag has loaded
+    // tag pb lines show up once their tag has loaded
     const tagPbs = resultState.tags.flatMap((tag) => {
-      const name = tags.state.get(tag.id)?.name;
+      const name = getTag(tag.id)?.name;
       return tag.chartPb !== undefined && name !== undefined
         ? [{ name, pb: tag.chartPb }]
         : [];
@@ -620,15 +597,6 @@ export function ResultChart(props: {
 
     return buildChartConfig(data, vis, annotations, min, max, unit, theme);
   });
-
-  // the canvas has no size while the result is hidden
-  createEffectOn(
-    isResultShown,
-    (shown) => {
-      if (shown) chart?.resize();
-    },
-    { defer: true },
-  );
 
   return (
     <div class={cn("group/chart relative h-50 w-full")}>
@@ -712,7 +680,6 @@ export function ResultChart(props: {
           type="line"
           data={chartConfig().data}
           options={chartConfig().options}
-          onChartInit={(c) => (chart = c)}
         />
       </div>
     </div>

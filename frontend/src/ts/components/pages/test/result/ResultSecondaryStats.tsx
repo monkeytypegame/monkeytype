@@ -10,15 +10,15 @@ import {
   Suspense,
 } from "solid-js";
 
-import Ape from "../../../../ape";
-import { useTagsLiveQuery } from "../../../../collections/tags";
+import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
 import QuotesController, {
   Quote,
 } from "../../../../controllers/quotes-controller";
-import * as DB from "../../../../db";
 import { createTrigger } from "../../../../hooks/createTrigger";
-import { getFormatting, isAuthenticated } from "../../../../states/core";
+import { getTags } from "../../../../queries/tags";
+import { setQuoteFavorite, getUserData } from "../../../../queries/user";
+import { getFormatting } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { addNotificationWithLevel } from "../../../../states/notifications";
@@ -29,8 +29,8 @@ import {
 } from "../../../../states/quote-rate";
 import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
-import { getSnapshot } from "../../../../states/snapshot";
 import { CompletedResult } from "../../../../states/test";
+import { getTimeTodayString } from "../../../../test/today-tracker";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -148,7 +148,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
             {afkPercent() > 0 ? `${afkPercent()}% afk` : ""}
           </div>
           <div class={timeNoteClass} data-ui-element="resultStatSubValue">
-            {resultState.timeToday}
+            {getTimeTodayString()}
           </div>
         </Balloon>
       </div>
@@ -210,9 +210,8 @@ function Lines(props: { lines: string[] }): JSXElement {
 }
 
 function Tags(): JSXElement {
-  const userTags = useTagsLiveQuery();
   const tagNames = createMemo(
-    () => new Map((userTags() ?? []).map((t) => [t._id, t.name])),
+    () => new Map(getTags().map((t) => [t._id, t.name])),
   );
 
   const openEditModal = (): void => {
@@ -282,7 +281,7 @@ function QuoteSource(props: { quote: Quote }): JSXElement {
 }
 
 function QuoteButtons(props: { quote: Quote }): JSXElement {
-  // favorites live in the non-reactive DB snapshot, refreshed after each toggle
+  // favorites live in the cached user, refreshed after each toggle
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();
@@ -298,7 +297,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
 
   const isRated = (): boolean =>
     isSafeNumber(
-      getSnapshot()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
+      getUserData()?.quoteRatings?.[props.quote.language]?.[props.quote.id],
     );
 
   const rating = (): string => {
@@ -307,33 +306,23 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   };
 
   const toggleFavorite = async (): Promise<void> => {
-    const dbSnapshot = DB.getSnapshot();
-    if (!dbSnapshot) return;
-    const language = props.quote.language;
-    const quoteId = props.quote.id.toString();
+    if (getUserData() === undefined) return;
     const remove = isFavorite();
 
     showLoaderBar();
-    const response = remove
-      ? await Ape.users.removeQuoteFromFavorites({
-          body: { language, quoteId },
-        })
-      : await Ape.users.addQuoteToFavorites({ body: { language, quoteId } });
+    const { error } = await setQuoteFavorite({
+      language: props.quote.language,
+      quoteId: props.quote.id.toString(),
+      favorite: !remove,
+    });
     hideLoaderBar();
-
-    addNotificationWithLevel(
-      response.body.message,
-      response.status === 200 ? "success" : "error",
-    );
-    if (response.status !== 200) return;
-
-    if (remove) {
-      const list = dbSnapshot.favoriteQuotes?.[language];
-      list?.splice(list.indexOf(quoteId), 1);
+    if (error !== null) {
+      addNotificationWithLevel(error.message, "error");
     } else {
-      dbSnapshot.favoriteQuotes ??= {};
-      dbSnapshot.favoriteQuotes[language] ??= [];
-      dbSnapshot.favoriteQuotes[language]?.push(quoteId);
+      addNotificationWithLevel(
+        remove ? "Quote removed from favorites" : "Quote added to favorites",
+        "success",
+      );
     }
     refreshFavorites();
   };

@@ -15,7 +15,7 @@ const subgroup: CommandsSubgroup = {
       exec: async (): Promise<void> => {
         await navigate({ to: "/" });
         await ChallengeController.setup(challenge.name);
-        void TestLogic.restart({
+        void TestLogic.restartTest({
           nosave: true,
         });
       },
@@ -26,7 +26,7 @@ const commands: Command[] = [
   {
     id: "loadChallenge",
     display: "Load challenge...",
-    icon: "fa-award",
+    fa: { icon: "fa-award" },
     subgroup,
   },
 ];

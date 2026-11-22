@@ -2,6 +2,7 @@ import { batch } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createFrameBuffer } from "../utils/frame-buffer";
+import type { Direction } from "../utils/strings";
 
 /**
  * Display state of the test words (#words). A view cache: the event log stays
@@ -9,7 +10,8 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  *
  * Writers (input path) only touch a plain buffer. One shared animation frame
  * applies the buffer to the reactive store inside a batch, then runs the
- * registered layout hook against the updated DOM.
+ * onWordsFlushed hook against the updated DOM. replaceWords (restart, not the
+ * input path) renders and runs the hook right away.
  *
  * Exceptions, applied immediately: the first rendered word/line break indices
  * are only raised by layout code (line jump, tape scroll), so it can measure
@@ -17,9 +19,14 @@ import { createFrameBuffer } from "../utils/frame-buffer";
  * path (font, resize, layout).
  */
 
+/** What rendering needs from a test word. */
+export type WordToRender = { display: string; direction?: Direction };
+
 export type RenderedWord = {
   index: number;
   text: string;
+  /** undefined in zen: its letters come from the input and can mix directions */
+  direction: Direction | undefined;
   input: string;
   /** in-progress IME composition, active word only */
   composition: string;
@@ -49,22 +56,9 @@ type WordsRenderState = {
    * mode change doesn't re-render the current words before the restart
    */
   rendersLettersFromInput: boolean;
-  /**
-   * fully right-to-left words get the wordRtl class (bidi override). Off when
-   * direction is checked per letter or reversed. Fixed per test at reset
-   */
-  marksRtlWords: boolean;
 };
 
-const [store, setStore] = createStore<WordsRenderState>({
-  words: [],
-  firstRenderedWordIndex: 0,
-  firstRenderedLineBreakIndex: 0,
-  keepsLineBreaks: false,
-  renderedActiveWordIndex: 0,
-  rendersLettersFromInput: false,
-  marksRtlWords: false,
-});
+const [store, setStore] = createStore<WordsRenderState>(emptyState());
 
 /** Read-only reactive view for the Words component. */
 export const wordsRenderState: Readonly<WordsRenderState> = store;
@@ -84,10 +78,21 @@ export function invalidateTypoHintsLayout(): void {
 
 type Buffer = {
   truncateTo: number | undefined;
-  appended: string[];
+  appended: WordToRender[];
   inputs: Map<number, { input: string; composition: string }>;
   activeWordIndex: number | undefined;
+  /** last write wins */
+  wordChange: "forward" | "back" | undefined;
   typed: Map<number, boolean>;
+};
+
+/** What a flush changed, for the layout. */
+export type WordsFlush = {
+  /** the words were replaced: lay them out from scratch */
+  newWords: boolean;
+  wordChange: "forward" | "back" | undefined;
+  /** words whose input changed */
+  updatedWords: number[];
 };
 
 const buffer = createFrameBuffer<Buffer>(
@@ -96,20 +101,39 @@ const buffer = createFrameBuffer<Buffer>(
     appended: [],
     inputs: new Map(),
     activeWordIndex: undefined,
+    wordChange: undefined,
     typed: new Map(),
   }),
   applyBuffer,
 );
-let layoutHook: (() => void) | undefined;
+let flushedHook: ((flushed: WordsFlush) => void) | undefined;
 
-/** Runs after every flush, once the DOM reflects the store. */
-export function setLayoutHook(hook: (() => void) | undefined): void {
-  layoutHook = hook;
+/**
+ * Runs `hook` after every flush and replaceWords, once the DOM reflects the
+ * store. Returns the unregister.
+ */
+export function onWordsFlushed(
+  hook: (flushed: WordsFlush) => void,
+): () => void {
+  flushedHook = hook;
+  return () => {
+    // a remount may have registered a new hook already
+    if (flushedHook === hook) flushedHook = undefined;
+  };
 }
 
-/** Applies the buffer now, then runs the layout hook. */
-export function flushWordsRender(): void {
-  buffer.flush();
+function createRenderedWord(index: number, word: WordToRender): RenderedWord {
+  const text = word.display;
+  return {
+    index,
+    text,
+    direction: word.direction,
+    input: "",
+    composition: "",
+    isTyped: false,
+    // zen: from the input
+    endsLine: !store.rendersLettersFromInput && text.includes("\n"),
+  };
 }
 
 function applyBuffer(b: Buffer): void {
@@ -122,19 +146,10 @@ function applyBuffer(b: Buffer): void {
         if (b.truncateTo !== undefined && b.truncateTo < words.length) {
           words.length = b.truncateTo;
         }
-        for (const text of b.appended) {
-          // zen: from the input
-          const wordEndsLine =
-            !store.rendersLettersFromInput && text.includes("\n");
-          endsLine ||= wordEndsLine;
-          words.push({
-            index: words.length,
-            text,
-            input: "",
-            composition: "",
-            isTyped: false,
-            endsLine: wordEndsLine,
-          });
+        for (const appended of b.appended) {
+          const word = createRenderedWord(words.length, appended);
+          endsLine ||= word.endsLine;
+          words.push(word);
         }
       }),
     );
@@ -165,7 +180,11 @@ function applyBuffer(b: Buffer): void {
   });
 
   // 4. imperative layout against the updated DOM
-  layoutHook?.();
+  flushedHook?.({
+    newWords: false,
+    wordChange: b.wordChange,
+    updatedWords: [...b.inputs.keys()],
+  });
 }
 
 /** Input written for a word that hasn't been flushed yet. */
@@ -173,8 +192,8 @@ export function getPendingWordInput(index: number): string | undefined {
   return buffer.peek().inputs.get(index)?.input;
 }
 
-export function appendRenderedWord(text: string): void {
-  buffer.write((b) => b.appended.push(text));
+export function appendRenderedWord(word: WordToRender): void {
+  buffer.write((b) => b.appended.push(word));
 }
 
 export function setWordInput(
@@ -185,8 +204,14 @@ export function setWordInput(
   buffer.write((b) => b.inputs.set(index, { input, composition }));
 }
 
-export function setActiveWord(index: number): void {
-  buffer.write((b) => (b.activeWordIndex = index));
+export function setActiveWord(
+  index: number,
+  change?: "forward" | "back",
+): void {
+  buffer.write((b) => {
+    b.activeWordIndex = index;
+    if (change !== undefined) b.wordChange = change;
+  });
 }
 
 export function setWordTyped(index: number, isTyped: boolean): void {
@@ -252,18 +277,48 @@ export function truncateWords(length: number): void {
   });
 }
 
-/** Cancels a pending flush, clears the buffer and empties the store. */
-export function resetWordsRender(
-  options: { zen?: boolean; marksRtlWords?: boolean } = {},
-): void {
-  buffer.clear();
-  setStore({
+function emptyState(options: { zen?: boolean } = {}): WordsRenderState {
+  return {
     words: [],
     firstRenderedWordIndex: 0,
     firstRenderedLineBreakIndex: 0,
     keepsLineBreaks: false,
     renderedActiveWordIndex: 0,
     rendersLettersFromInput: options.zen ?? false,
-    marksRtlWords: options.marksRtlWords ?? false,
+  };
+}
+
+/**
+ * Replaces the words (restart). Not for the input path: cancels a pending
+ * flush, renders now and runs the onWordsFlushed hook, so the new words can be
+ * measured right after. Call it outside a batch or effect: Solid holds the DOM
+ * updates until those end, and the hook would measure the old words.
+ */
+export function replaceWords(
+  words: WordToRender[],
+  options: {
+    activeWordIndex: number;
+    /** letters come from the input */
+    zen?: boolean;
+  },
+): void {
+  buffer.clear();
+  batch(() => {
+    setStore(emptyState(options));
+    const rendered = words.map((word, index) =>
+      createRenderedWord(index, word),
+    );
+    setStore({
+      words: rendered,
+      keepsLineBreaks: rendered.some((word) => word.endsLine),
+      renderedActiveWordIndex: options.activeWordIndex,
+    });
   });
+  flushedHook?.({ newWords: true, wordChange: undefined, updatedWords: [] });
+}
+
+/** Frees the words (result shown): cancels a pending flush, empties the store. */
+export function resetWordsRender(): void {
+  buffer.clear();
+  setStore(emptyState());
 }

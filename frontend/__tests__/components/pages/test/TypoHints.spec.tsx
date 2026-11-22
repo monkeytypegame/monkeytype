@@ -2,10 +2,10 @@ import "../../../__harness__/mock-static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setConfigStore } from "../../../../src/ts/config/store";
-import { getDefaultConfig } from "../../../../src/ts/constants/default-config";
 import {
   appendRenderedWord,
   invalidateTypoHintsLayout,
+  replaceWords,
   resetWordsRender,
   setActiveWord,
   setWordInput,
@@ -44,14 +44,18 @@ function fakeLayout(): void {
 
 function renderWord(text: string): HTMLElement {
   const container = renderWords();
-  appendRenderedWord(text);
+  appendRenderedWord({ display: text });
   setActiveWord(0);
   flush();
   return container;
 }
 
 function hintsOf(container: HTMLElement): HTMLElement[] {
-  return [...container.querySelectorAll<HTMLElement>(".word > .hints > hint")];
+  return [
+    ...container.querySelectorAll<HTMLElement>(
+      '.word > .hints > [data-ui-element="typoHint"]',
+    ),
+  ];
 }
 
 beforeEach(() => {
@@ -70,8 +74,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  const defaults = getDefaultConfig();
-  setConfigStore("indicateTypos", defaults.indicateTypos);
   resetWordsRender();
   frames.clear();
   vi.restoreAllMocks();
@@ -152,7 +154,7 @@ describe("TypoHints", () => {
 
   it("shows no hints in zen", () => {
     setConfigStore("indicateTypos", "below");
-    resetWordsRender({ zen: true });
+    replaceWords([], { activeWordIndex: 0, zen: true });
     const container = renderWord("");
     setWordInput(0, "abc");
     flush();

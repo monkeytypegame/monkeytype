@@ -14,10 +14,11 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isTestFinished, isErrorBorderDisabled } from "../../../../states/test";
+import { isErrorBorderDisabled } from "../../../../states/test";
 import { getTheme } from "../../../../states/theme";
-import { getWordBurstHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+import { getWordBurstHistory } from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
+import { isTestFinished } from "../../../../test/engine/state";
 import {
   buildWordsHistory,
   copyMissedWordsList,
@@ -34,7 +35,13 @@ import { AnimeShow } from "../../../common/anime";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
 import * as ResultWordHighlight from "./result-word-highlight";
-import { letterClass, wordClass, wordsClass } from "./result-words";
+import {
+  letterAttributes,
+  letterClass,
+  wordAttributes,
+  wordClass,
+  wordsClass,
+} from "./result-words";
 
 type Heatmap = {
   steps: { val: number; colorId: number }[];
@@ -181,7 +188,7 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
             )}
           </Show>
         </div>
-        <div class={wordsClass()}>
+        <div class={wordsClass()} data-ui-element="wordsHistory">
           <For each={words()}>
             {(word) => <Word word={word} heatmap={heatmap()} />}
           </For>
@@ -260,6 +267,7 @@ function Word(props: {
         error: props.word.error,
       })}
       style={{ color: color() }}
+      {...wordAttributes(props.word)}
       // read by result-word-highlight
       data-input={props.word.input}
       onMouseEnter={() => setHovered(true)}
@@ -269,6 +277,7 @@ function Word(props: {
         {(letter) => (
           <Dynamic
             component="letter"
+            {...letterAttributes(letter)}
             class={cn(letterClass(letter), {
               "text-inherit": heatmapInherit(),
             })}

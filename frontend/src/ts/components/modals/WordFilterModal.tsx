@@ -226,14 +226,14 @@ export function WordFilterModal(props: {
     },
   }));
 
-  const isExactMatch = form.useStore((s) => s.values.exactMatch);
+  const isExactMatch = form.useSelector((s) => s.values.exactMatch);
 
   const [languageWords] = createResource(language, async (lang) => {
     const { data } = await tryCatch(JSONData.getLanguage(lang as Language));
     return data?.words ?? null;
   });
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   // debounce the preview so it doesn't refilter the whole word list on every keystroke
   const debouncedValues = createDebouncedSignal(formValues, 250);
@@ -321,14 +321,18 @@ export function WordFilterModal(props: {
               <LabeledField label="regex">
                 <form.Field name="regex">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>
 
               <LabeledField label="include">
                 <form.Field name="include">
-                  {(field) => <InputField field={field} />}
+                  {(field) => <InputField field={field} autocomplete="off" />}
                 </form.Field>
                 <form.Field
                   name="exactMatch"
@@ -354,7 +358,11 @@ export function WordFilterModal(props: {
               <LabeledField label="exclude">
                 <form.Field name="exclude">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>

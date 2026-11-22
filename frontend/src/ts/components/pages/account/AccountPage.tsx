@@ -1,16 +1,17 @@
 import { Mode } from "@monkeytype/schemas/shared";
 import { createMemo, createSignal, JSXElement, Show } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../../collections/results";
+
+import { isAuthenticated } from "../../../auth/state";
 import {
   createResultsQueryState,
   getResultsQueryOnce,
   useResultsLiveQuery,
 } from "../../../collections/results";
-import { SnapshotResult } from "../../../constants/default-snapshot";
-import { isAuthenticated } from "../../../states/core";
+import { createTrigger } from "../../../hooks/createTrigger";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
-import { qs } from "../../../utils/dom";
 import { downloadResultsCSV } from "../../../utils/misc";
 import { Advertisement } from "../../common/Advertisement";
 import AsyncContent from "../../common/AsyncContent";
@@ -26,7 +27,7 @@ export function AccountPage(): JSXElement {
   const [limit, setLimit] = createSignal(10);
 
   const [sorting, setSorting] = createSignal<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>({
     field: "timestamp",
@@ -42,6 +43,8 @@ export function AccountPage(): JSXElement {
   const [selectedResultId, setSelectedResultId] = createSignal<null | string>(
     null,
   );
+  const [scrollToSelectedResult, requestScrollToSelectedResult] =
+    createTrigger();
   const [isExporting, setIsExporting] = createSignal(false);
 
   const resultsQuery = useResultsLiveQuery({
@@ -77,14 +80,7 @@ export function AccountPage(): JSXElement {
                 setLimit(newLimit);
               }
               setSelectedResultId(_id);
-
-              requestAnimationFrame(() => {
-                qs(
-                  `#resultList tbody tr:nth-child(${index + 1})`,
-                )?.scrollIntoView({
-                  block: "center",
-                });
-              });
+              requestScrollToSelectedResult();
             }}
           />
           <TestStats queryState={queryState} />
@@ -121,6 +117,7 @@ export function AccountPage(): JSXElement {
                   data={resultsQueryData().slice(0, limit())}
                   onSortingChange={(val) => setSorting(val)}
                   selectedRowId={selectedResultId}
+                  scrollToSelectedRow={scrollToSelectedResult}
                 />
                 <Button
                   text="load more"

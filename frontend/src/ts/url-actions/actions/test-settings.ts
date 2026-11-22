@@ -25,7 +25,7 @@ import { Config } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
 import { setSelectedQuoteId } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
-import { restart as restartTest } from "../../test/test-logic";
+import { restartTest } from "../../test/test-logic";
 import * as Misc from "../../utils/misc";
 import { buildUrlActionLink, defineSearchAction } from "../action";
 

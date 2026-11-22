@@ -6,14 +6,10 @@ vi.mock("../../src/ts/controllers/theme-controller", () => ({
 }));
 
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import {
-  registerWordElement,
-  unregisterWordElement,
-} from "../../src/ts/states/word-elements";
-import {
-  createWordsLayout,
-  WordsLayout,
-} from "../../src/ts/components/pages/test/words-layout";
+import { createWordRegistry } from "../../src/ts/components/pages/test/word-registry";
+import { replaceWords } from "../../src/ts/states/words-render";
+import { createWordsLayout } from "../../src/ts/components/pages/test/words-layout";
+import { createRoot } from "solid-js";
 
 // jsdom has no layout: words get a fake one, 5 per line
 const wordsPerLine = 5;
@@ -51,39 +47,45 @@ function fakeLayout(): void {
   });
 }
 
-/** Renders #wordsWrapper > #words with `count` words, and their layout. */
-function renderWords(count: number): {
-  wordsWrapper: HTMLElement;
-  layout: WordsLayout;
-} {
+/** Renders #wordsWrapper > #words with `count` words, and lays them out. */
+function renderWords(count: number): HTMLElement {
   const wordsWrapper = document.createElement("div");
   const words = document.createElement("div");
+  const registry = createWordRegistry();
   for (let i = 0; i < count; i++) {
     words.insertAdjacentHTML(
       "beforeend",
-      `<div class="word" data-wordindex="${i}"><letter>a</letter></div>`,
+      `<div class="word" data-wordindex="${i}"><letter data-ui-element="letter">a</letter></div>`,
     );
-    registerWordElement(i, words.lastElementChild as HTMLElement);
+    const word = words.lastElementChild as HTMLElement;
+    const letter = word.firstElementChild as HTMLElement;
+    registry.registerWord(i, {
+      el: word,
+      getLetter: (index) => (index === 0 ? letter : undefined),
+      getLetterCount: () => 1,
+    });
   }
   wordsWrapper.append(words);
   document.body.append(wordsWrapper);
 
-  const layout = createWordsLayout({
-    words: () => words,
-    wordsWrapper: () => wordsWrapper,
-    onActiveWordLaidOut: () => undefined,
+  const dispose = createRoot((dispose) => {
+    createWordsLayout({
+      registry,
+      words: () => words,
+      wordsWrapper: () => wordsWrapper,
+      caret: () => undefined,
+      paceCaret: () => undefined,
+    });
+    return dispose;
   });
+  // new words: laid out from scratch. The store stays empty, the fake words
+  // are registered above
+  replaceWords([], { activeWordIndex: 0 });
   cleanups.push(() => {
-    layout.reset();
-    for (const el of words.children) {
-      unregisterWordElement(
-        Number((el as HTMLElement).dataset["wordindex"]),
-        el as HTMLElement,
-      );
-    }
+    dispose();
     wordsWrapper.remove();
   });
-  return { wordsWrapper, layout };
+  return wordsWrapper;
 }
 
 const cleanups: Array<() => void> = [];
@@ -102,9 +104,7 @@ describe("words wrapper height", () => {
   it("shows three lines in a timed test", () => {
     configTesting.replaceConfig({ mode: "time", tapeMode: "off" });
     // 10 lines of words
-    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine * 10);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -115,9 +115,7 @@ describe("words wrapper height", () => {
       tapeMode: "off",
       showAllLines: true,
     });
-    const { wordsWrapper, layout } = renderWords(wordsPerLine * 10);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine * 10);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });
@@ -125,9 +123,7 @@ describe("words wrapper height", () => {
   it("keeps three lines' height when the words fill fewer lines", () => {
     configTesting.replaceConfig({ mode: "words", tapeMode: "off" });
     // one line of words
-    const { wordsWrapper, layout } = renderWords(wordsPerLine);
-
-    layout.relayout();
+    const wordsWrapper = renderWords(wordsPerLine);
 
     expect(wordsWrapper.style.height).toBe(`${lineHeight * 3}px`);
   });

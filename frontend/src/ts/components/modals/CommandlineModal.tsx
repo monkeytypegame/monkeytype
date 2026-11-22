@@ -17,10 +17,9 @@ import {
   CommandWithValidation,
 } from "../../commandline/types";
 import { Config } from "../../config/store";
-import * as AnalyticsController from "../../controllers/analytics-controller";
 import * as ThemeController from "../../controllers/theme-controller";
 import { createInputEventHandler } from "../../elements/input-validation";
-import { isInputElementFocused } from "../../input/input-element";
+import { logAnalyticsEvent } from "../../integrations/analytics";
 import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
@@ -36,8 +35,11 @@ import {
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { getRoutePage } from "../../states/router";
-import { setTestFocusState } from "../../states/test";
-import * as Focus from "../../test/focus";
+import {
+  isWordsInputFocused,
+  setFocusMode,
+  setTestFocusState,
+} from "../../states/test";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -57,11 +59,6 @@ const MODAL_ID = "Commandline";
 const MAX_RENDERED_COMMANDS = 1000;
 
 type CommandlineMode = "search" | "input";
-
-/** `Command.icon` and `Command.iconType` are plain strings, so they need widening to the `Fa` props union. */
-function faProps(icon: string, variant?: "regular" | "solid"): FaObject {
-  return { icon, variant } as FaObject;
-}
 
 function isCommandActive(
   command: Command,
@@ -117,9 +114,6 @@ function CommandIcon(props: {
       props.command.configValue !== undefined) ||
       props.command.active !== undefined);
 
-  const icon = (): string => props.command.icon ?? "";
-  const isTextIcon = (): boolean => icon() !== "" && !icon().startsWith("fa-");
-
   return (
     <Show
       when={!useConfigIcon()}
@@ -130,28 +124,11 @@ function CommandIcon(props: {
         />
       }
     >
-      <Show
-        when={isTextIcon()}
-        fallback={
-          <Fa
-            {...faProps(
-              icon() === "" ? "fa-chevron-right" : icon(),
-              props.command.iconType,
-            )}
-            fixedWidth
-            class={cn("mr-2", props.colorClass)}
-          />
-        }
-      >
-        <div
-          class={cn(
-            "mr-2 inline-block w-[1.25em] text-center font-black tracking-[-0.1rem]",
-            props.colorClass,
-          )}
-        >
-          {icon()}
-        </div>
-      </Show>
+      <Fa
+        {...(props.command.fa ?? { icon: "fa-chevron-right" })}
+        fixedWidth
+        class={cn("mr-2", props.colorClass)}
+      />
     </Show>
   );
 }
@@ -196,7 +173,7 @@ export function CommandlineModal(): JSXElement {
   const [inputPlaceholder, setInputPlaceholder] = createSignal<string | null>(
     null,
   );
-  const [inputIcon, setInputIcon] = createSignal<string | null>(null);
+  const [inputIcon, setInputIcon] = createSignal<FaObject | null>(null);
   const [warning, setWarning] = createSignal<string | null>(null);
   const [isChecking, setIsChecking] = createSignal(false);
   const [hiddenCount, setHiddenCount] = createSignal(0);
@@ -231,7 +208,7 @@ export function CommandlineModal(): JSXElement {
 
   const addCommandlineBackground = (): void => {
     setNoBackground(false);
-    if (!isInputElementFocused()) {
+    if (!isWordsInputFocused()) {
       setTestFocusState("unfocused");
     }
   };
@@ -393,7 +370,7 @@ export function CommandlineModal(): JSXElement {
     setMode("input");
     setInputCommand(command);
     setInputPlaceholder(command.display);
-    setInputIcon(command.icon ?? "fa-chevron-right");
+    setInputIcon(command.fa ?? { icon: "fa-chevron-right" });
     validation = undefined;
     createValidationHandler(command);
     applyInputValue(command.defaultValue?.() ?? "", true);
@@ -477,7 +454,7 @@ export function CommandlineModal(): JSXElement {
       command.exec?.({ input: inputValue() });
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     hide();
   };
 
@@ -511,7 +488,7 @@ export function CommandlineModal(): JSXElement {
       return;
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     if (command.opensModal === true) return;
 
     if (isModalOpen(MODAL_ID)) {
@@ -665,7 +642,7 @@ export function CommandlineModal(): JSXElement {
       setUsingSingleList(Config.singleListCommandLine === "on");
     }
 
-    Focus.set(false);
+    setFocusMode(false);
     CommandlineLists.setStackToDefault();
     applyInputValue("");
     await refresh();
@@ -779,11 +756,9 @@ export function CommandlineModal(): JSXElement {
             when={isChecking()}
             fallback={
               <Fa
-                {...faProps(
-                  mode() === "input"
-                    ? (inputIcon() ?? "fa-chevron-right")
-                    : "fa-search",
-                )}
+                {...(mode() === "input"
+                  ? (inputIcon() ?? { icon: "fa-chevron-right" })
+                  : { icon: "fa-search" })}
                 fixedWidth
                 class="col-[1/2] row-[1/2] mx-4 mt-px text-sub"
               />
@@ -799,6 +774,7 @@ export function CommandlineModal(): JSXElement {
           <input
             ref={(el) => (inputEl = el)}
             type="text"
+            autocomplete="off"
             class="w-full rounded-(--roundness) border-none bg-bg py-4 pr-4 pl-0 text-base text-text outline-none focus-visible:shadow-none"
             placeholder={placeholder()}
             onInput={handleInput}

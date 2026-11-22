@@ -63,7 +63,11 @@ function toSingleLetterHints(hints: TypoHint[]): MergedTypoHint[] {
  * passes within the same frame: single-letter hints first, measured against
  * the word's letters, then merged where they would overlap.
  */
-export function TypoHints(props: { word: RenderedWord }): JSXElement {
+export function TypoHints(props: {
+  word: RenderedWord;
+  /** the word's rendered letter `index` */
+  getLetter: (index: number) => HTMLElement | undefined;
+}): JSXElement {
   const hints = createMemo(
     () =>
       wordsRenderState.rendersLettersFromInput
@@ -106,13 +110,9 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
       const container = containerRef;
       const singleHints = key.hints;
       if (container === undefined || singleHints.length === 0) return;
-      const letters =
-        container.parentElement?.querySelectorAll<HTMLElement>(
-          ":scope > letter",
-        );
       const hintElements = container.children;
       const boxes = singleHints.map((hint, i): TypoHintBox => {
-        const letter = letters?.[hint.letterIndex];
+        const letter = props.getLetter(hint.letterIndex);
         const hintElement = hintElements[i] as HTMLElement | undefined;
         return {
           letterLeft: letter?.offsetLeft ?? 0,
@@ -133,6 +133,7 @@ export function TypoHints(props: { word: RenderedWord }): JSXElement {
       <Index each={displayedHints()}>
         {(hint) => (
           <hint
+            data-ui-element="typoHint"
             class="absolute bottom-[-1.1em] grid -translate-x-1/2 animate-(--correct-letter-animation) justify-center p-px text-center text-[0.75em] leading-[initial] text-(--correct-letter-color) opacity-50 text-shadow-none [.blind_&]:hidden"
             style={{ left: `${hint().left}px` }}
           >

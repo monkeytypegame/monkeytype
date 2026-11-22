@@ -4,29 +4,21 @@ import { render } from "@solidjs/testing-library";
 import { Suspense } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// tags() suspends until the tags load (never, here), tags.state fills in when they do
+// the tags load after the result shows
 const tagNames = vi.hoisted(() => ({
   set: undefined as ((id: string, name: string) => void) | undefined,
 }));
-vi.mock("../../../../../src/ts/collections/tags", async () => {
-  const { createResource } = await import("solid-js");
+vi.mock("../../../../../src/ts/queries/tags", async () => {
+  const { createRoot } = await import("solid-js");
   const { createStore } = await import("solid-js/store");
-  return {
-    useTagsLiveQuery: () => {
-      const [names, setNames] = createStore<Record<string, { name: string }>>(
-        {},
-      );
-      tagNames.set = (id, name) => setNames(id, { name });
-      const [pending] = createResource(
-        async () => new Promise<never>(() => undefined),
-      );
-      return Object.assign(() => pending(), {
-        state: { get: (id: string) => names[id] },
-      });
-    },
-  };
+  const [names, setNames] = createRoot(() =>
+    createStore<Record<string, { name: string }>>({}),
+  );
+  tagNames.set = (id, name) => setNames(id, { name });
+  return { getTag: (id: string) => names[id] };
 });
-vi.mock("../../../../../src/ts/db", () => ({
+vi.mock("../../../../../src/ts/queries/user", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   getLocalPB: () => undefined,
 }));
 // no canvas in jsdom - show the pb line labels instead
@@ -47,21 +39,16 @@ vi.mock("../../../../../src/ts/components/common/ChartJs", () => ({
 }));
 
 import { ResultChart } from "../../../../../src/ts/components/pages/test/result/ResultChart";
-import {
-  setResultShown,
-  setResultState,
-} from "../../../../../src/ts/states/result";
+import { setResultState } from "../../../../../src/ts/states/result";
 import { CompletedResult } from "../../../../../src/ts/states/test";
 
 describe("ResultChart", () => {
   afterEach(() => {
-    setResultShown(false);
     setResultState("tags", []);
   });
 
   it("draws the chart before tags load, adds tag pb lines when they arrive", () => {
     setResultState("tags", [{ id: "tag1", isPb: false, chartPb: 100 }]);
-    setResultShown(true);
 
     const { queryByTestId, getByTestId, queryByText } = render(() => (
       <Suspense fallback={<div>suspended</div>}>

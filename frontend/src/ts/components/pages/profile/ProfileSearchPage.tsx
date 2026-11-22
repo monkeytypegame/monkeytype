@@ -63,7 +63,7 @@ export function ProfileSearchPage(): JSXElement {
                 onChangeAsyncDebounceMs: 1000,
                 onChangeAsync: async (field) => {
                   try {
-                    const result = await queryClient.fetchQuery(
+                    const result = await queryClient.query(
                       getUserProfile(field.value),
                     );
                     return result !== null ? undefined : "Unknown user";

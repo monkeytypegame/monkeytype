@@ -1,15 +1,11 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
+import { playTimeWarning, previewClick, previewError } from "../../../audio";
+import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { getConfig } from "../../../config/store";
-import {
-  playTimeWarning,
-  previewClick,
-  previewError,
-} from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
@@ -50,7 +46,7 @@ import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
   return (
-    <div class="grid gap-8">
+    <div class="grid content-start gap-8">
       {/* while filtering, only the matching settings stay visible; everything
             else is hidden with css so nothing unmounts while typing */}
       <QuickNav class={cn(isSettingsSearchActive() && "hidden")} />

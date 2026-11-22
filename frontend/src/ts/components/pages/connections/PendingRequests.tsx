@@ -14,16 +14,20 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { User } from "../../common/User";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../ui/table/DataTable";
 
 export function PendingRequests() {
   const columns = createMemo(() => getColumns());
   const pendingQuery = usePendingConnectionsQuery();
   return (
-    <div>
-      <AsyncContent collections={{ pendingQuery }}>
-        {({ pendingQueryData }) => (
-          <Show when={pendingQueryData().length > 0}>
+    <AsyncContent collections={{ pendingQuery }}>
+      {({ pendingQueryData }) => (
+        <Show when={pendingQueryData().length > 0}>
+          <div>
             <H2
               text="Incoming Requests"
               fa={{ icon: "fa-user-plus", fixedWidth: true }}
@@ -33,15 +37,16 @@ export function PendingRequests() {
               columns={columns()}
               data={pendingQueryData()}
             />
-          </Show>
-        )}
-      </AsyncContent>
-    </div>
+          </div>
+        </Show>
+      )}
+    </AsyncContent>
   );
 }
 
 function getColumns(): DataTableColumnDef<Connection>[] {
-  const defineColumn = createColumnHelper<Connection>().accessor;
+  const defineColumn = createColumnHelper<DataTableFeatures, Connection>()
+    .accessor;
   const cols = [
     defineColumn("initiatorName", {
       enableSorting: true,
@@ -51,7 +56,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
           user={{ name: info.getValue(), uid: info.row.original.initiatorUid }}
           showAvatar={false}
           linkToProfile
-          class="w-min **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
+          class="w-min [&_[data-ui-element=button]]:[--themable-button-text:var(--text-color)]"
         />
       ),
     }),

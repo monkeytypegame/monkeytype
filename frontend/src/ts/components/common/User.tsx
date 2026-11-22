@@ -6,7 +6,7 @@ import {
   getMatchingFlags,
   SupportsFlags,
   UserFlagOptions,
-} from "../../controllers/user-flag-controller";
+} from "../../constants/user-flags";
 import { BreakpointKey } from "../../states/breakpoints";
 import { cn } from "../../utils/cn";
 import { Anime } from "./anime";

@@ -1,6 +1,6 @@
 // The route tree: every page with its guards and loaders
 
-import type { QueryClient } from "@tanstack/solid-query";
+import { noop, type QueryClient } from "@tanstack/solid-query";
 import {
   createRootRouteWithContext,
   createRoute,
@@ -14,6 +14,7 @@ import {
   waitForConnectionsReady,
 } from "../collections/connections";
 import { isResultsReady, waitForResultsReady } from "../collections/results";
+import { UserDataLoadError } from "../utils/user-data-load-error";
 import { PageSwitcher } from "../components/core/PageSwitcher";
 import { AboutPage } from "../components/pages/AboutPage";
 import { AccountSettingsPage } from "../components/pages/account-settings/AccountSettingsPage";
@@ -45,7 +46,7 @@ import {
   toSelection,
 } from "../states/leaderboard-selection";
 import { SettingsSearchSchema } from "../states/settings-highlight";
-import { getSnapshot } from "../states/snapshot";
+import { getUserData } from "../queries/user";
 import * as TodayTracker from "../test/today-tracker";
 import type { RouterAuth } from "./create-router-auth";
 import {
@@ -98,6 +99,19 @@ const userDataStep: LoadingStep = {
   ],
 };
 
+/** Firebase signed in fine, our server failed: say so, not "login failed". */
+function userDataHint(error: unknown): string {
+  if (error instanceof UserDataLoadError && error.responseCode === 429) {
+    return "You're signed in, but our server got too many requests.\nWait a minute before retrying (refreshing to restart a test causes this - use tab instead).";
+  }
+  // the server (or the network to it) failed: the loads throw UserDataLoadError for any non-200
+  if (error instanceof UserDataLoadError) {
+    return "You're signed in, but your account data couldn't be loaded from our server.";
+  }
+  // a bug in our code, eg. applying the account's config
+  return "You're signed in, but something went wrong loading your account data.";
+}
+
 /** Router context: guards and loaders read these instead of module globals. */
 export type RouterContext = {
   auth: RouterAuth;
@@ -127,7 +141,17 @@ async function waitForUserData(
   planLoadingBar((userData === undefined ? 0 : 1) + routeSteps);
   if (userData === undefined) return;
 
-  await runLoadingStep(userDataStep, async () => userData);
+  await runLoadingStep(
+    {
+      ...userDataStep,
+      // a failed load (eg. rate limited) needn't block the site
+      fallback: { text: "Continue signed out", run: auth.signOut },
+      hint: userDataHint,
+      // a warning, not a cross: the sign in itself worked
+      errorIcon: "fa-exclamation-triangle",
+    },
+    async () => userData,
+  );
 }
 
 /** The parts of a loader's context running its route's loading step needs. */
@@ -240,12 +264,17 @@ const leaderboards = createRoute({
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient, auth }, deps }) => {
     const selection = toSelection(deps);
-    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
-    void queryClient.prefetchQuery(
-      getLeaderboardQueryOptions({ ...selection, page: (deps.page ?? 1) - 1 }),
-    );
+    void queryClient.query(getServerConfigurationQueryOptions()).catch(noop);
+    void queryClient
+      .query(
+        getLeaderboardQueryOptions({
+          ...selection,
+          page: (deps.page ?? 1) - 1,
+        }),
+      )
+      .catch(noop);
     if (auth.isSignedIn()) {
-      void queryClient.prefetchQuery(getRankQueryOptions(selection));
+      void queryClient.query(getRankQueryOptions(selection)).catch(noop);
     }
   },
 });
@@ -257,10 +286,10 @@ const about = createRoute({
   component: createRouterPage(AboutPage),
   // background data: start the fetches, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
-    void queryClient.prefetchQuery(getContributorsQueryOptions());
-    void queryClient.prefetchQuery(getSupportersQueryOptions());
-    void queryClient.prefetchQuery(getTypingStatsQueryOptions());
-    void queryClient.prefetchQuery(getSpeedHistogramQueryOptions());
+    void queryClient.query(getContributorsQueryOptions()).catch(noop);
+    void queryClient.query(getSupportersQueryOptions()).catch(noop);
+    void queryClient.query(getTypingStatsQueryOptions()).catch(noop);
+    void queryClient.query(getSpeedHistogramQueryOptions()).catch(noop);
   },
 });
 
@@ -280,7 +309,7 @@ const login = createRoute({
   beforeLoad: ({ context }) => signedOutOnly(context.auth),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient } }) => {
-    void queryClient.prefetchQuery(getServerConfigurationQueryOptions());
+    void queryClient.query(getServerConfigurationQueryOptions()).catch(noop);
   },
 });
 
@@ -307,13 +336,13 @@ const account = createRoute({
       return;
     }
     await runRouteLoadingStep(loader, async () => {
-      if (getSnapshot() === null || getSnapshot() === undefined) {
+      if (getUserData() === undefined) {
         throw new Error(
           "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",
         );
       }
       await waitForResultsReady();
-      TodayTracker.addAllFromToday();
+      await TodayTracker.addAllFromToday();
     });
   },
 });
@@ -341,7 +370,7 @@ const profile = createRoute({
   component: createRouterPage(ProfilePage),
   // background data: start the fetch, the page shows its section loaders
   loader: ({ context: { queryClient }, params }) => {
-    void queryClient.prefetchQuery(getUserProfile(params.uidOrName));
+    void queryClient.query(getUserProfile(params.uidOrName)).catch(noop);
   },
 });
 
@@ -368,9 +397,10 @@ const friends = createRoute({
   loader: async (loader) => {
     await runRouteLoadingStep(loader, async () => {
       await Promise.all([
-        loader.context.queryClient.ensureQueryData(
-          getServerConfigurationQueryOptions(),
-        ),
+        loader.context.queryClient.query({
+          ...getServerConfigurationQueryOptions(),
+          staleTime: "static",
+        }),
         waitForConnectionsReady(),
       ]);
     });

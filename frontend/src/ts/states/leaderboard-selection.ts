@@ -1,12 +1,12 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, Setter } from "solid-js";
+import { Accessor, Setter, createRoot } from "solid-js";
 import { z } from "zod";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { SearchFlagSchema } from "../router/search-params";
-import { getSnapshot } from "./snapshot";
+import { getUserData } from "../queries/user";
 
 export const pageSize = 50;
 
@@ -52,7 +52,7 @@ export type LeaderboardSearch = z.infer<typeof LeaderboardSearchSchema>;
 
 // the last shown selection, used when opening the leaderboards without one.
 // the leaderboards page sets it (useLeaderboardSearch)
-const [getLastSelection, setLastSelection] = lsSelection();
+const [getLastSelection, setLastSelection] = createRoot(() => lsSelection());
 export { setLastSelection };
 
 /** The search params showing `selection` on the 0-based `page`. */
@@ -86,7 +86,7 @@ export function toSelection(search: LeaderboardSearch): Selection {
   if (search.type === undefined) return getLastSelection();
   const friendsOnly =
     (search.friendsOnly ?? false) &&
-    getSnapshot() !== undefined &&
+    getUserData() !== undefined &&
     getServerConfiguration()?.connections.enabled !== false;
 
   if (search.type === "weekly") {

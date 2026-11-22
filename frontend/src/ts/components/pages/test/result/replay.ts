@@ -1,15 +1,18 @@
 import { createStore, produce } from "solid-js/store";
 
-import * as Sound from "../../../../controllers/sound-controller";
+import { playClick, playError } from "../../../../audio";
 import * as Arrays from "../../../../utils/arrays";
 import { Config } from "../../../../config/store";
-import { getLastEventLog } from "../../../../states/test";
+import { getResultData } from "../../../../test/engine/state";
 import {
   getEventsForWord,
   getInputFromDom,
-} from "../../../../test/events/helpers";
-import { getInputHistory, getWpmHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+} from "../../../../test/engine/events/helpers";
+import {
+  getInputHistory,
+  getWpmHistory,
+} from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 
 type ReplayLetter = {
   char: string;
@@ -19,6 +22,8 @@ type ReplayLetter = {
 
 type ReplayWord = {
   letters: ReplayLetter[];
+  // committed with space or newline
+  typed: boolean;
   error: boolean;
 };
 
@@ -151,7 +156,9 @@ function initializeReplayPrompt(): void {
   setReplayState(
     "words",
     loaded.words.slice(0, wordCount + 1).map((word) => ({
+      typed: false,
       error: false,
+      // oxlint-disable-next-line no-misused-spread -- split into code points on purpose
       letters: [...word].map((char) => ({ char, state: "", extra: false })),
     })),
   );
@@ -177,12 +184,12 @@ export function pauseReplay(): void {
 function playSound(error = false): void {
   if (error) {
     if (Config.playSoundOnError !== "off") {
-      void Sound.playError();
+      void playError();
     } else {
-      void Sound.playClick();
+      void playClick();
     }
   } else {
-    void Sound.playClick();
+    void playClick();
   }
 }
 
@@ -229,11 +236,15 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     });
   } else if (item.action === "submitCorrectWord") {
     if (!nosound) playSound();
+    updateReplayWord(wordPos, (word) => {
+      word.typed = true;
+    });
     wordPos++;
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
     if (!nosound) playSound(true);
     updateReplayWord(wordPos, (word) => {
+      word.typed = true;
       word.error = true;
     });
     wordPos++;
@@ -246,6 +257,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = letters.length;
     while (curPos > 0 && letters[curPos - 1]?.state === "") curPos--;
     updateReplayWord(wordPos, (word) => {
+      word.typed = false;
       word.error = false;
     });
   }
@@ -279,8 +291,8 @@ function loadOldReplay(): number {
 
 export function toggleReplayDisplay(): void {
   if (!replayState.open) {
-    const eventLog = getLastEventLog();
-    if (eventLog === null) return;
+    const eventLog = getResultData()?.eventLog;
+    if (eventLog === undefined) return;
     loaded = {
       words: getWordsList(eventLog),
       actions: deriveReplayActions(eventLog),

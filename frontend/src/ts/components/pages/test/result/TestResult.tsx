@@ -1,32 +1,21 @@
 import { Link } from "@tanstack/solid-router";
 import { format } from "date-fns/format";
-import {
-  createMemo,
-  JSXElement,
-  Match,
-  onCleanup,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
+import { JSXElement, Match, onMount, Show, Switch } from "solid-js";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
 import { useRefWithUtils } from "../../../../hooks/useRefWithUtils";
+import { getUserData } from "../../../../queries/user";
 import { getAdBlock, getCookieBlocker } from "../../../../states/ads";
-import { getIsScreenshotting, isAuthenticated } from "../../../../states/core";
+import { getIsScreenshotting } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
-import { resultState } from "../../../../states/result";
-import { getSnapshot } from "../../../../states/snapshot";
-import { getLastEventLog, getLastResult } from "../../../../states/test";
-import { restart, retrySavingResult } from "../../../../test/test-logic";
-import { setResultElement } from "../../../../test/test-ui";
+import * as Engine from "../../../../test/engine/commands";
+import { getResultData, getSaveStatus } from "../../../../test/engine/state";
+import { restartTest } from "../../../../test/test-logic";
 import { cn } from "../../../../utils/cn";
-import {
-  applyReducedMotion,
-  scrollToCenterOrTop,
-} from "../../../../utils/misc";
+import { scrollToCenterOrTop } from "../../../../utils/misc";
 import { AdIcon } from "../../../common/AdIcon";
-import { adSlotClass } from "../../../common/Advertisement";
+import { adSlotClass, adSlotRef } from "../../../common/Advertisement";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { UserFlags } from "../../../common/UserFlags";
@@ -37,37 +26,48 @@ import { ResultReplay } from "./ResultReplay";
 import { ResultSecondaryStats } from "./ResultSecondaryStats";
 import { ResultWordsHistory } from "./ResultWordsHistory";
 
-export function TestResult(): JSXElement {
-  const lastTest = createMemo(() => {
-    const result = getLastResult();
-    const eventLog = getLastEventLog();
-    return result !== null && eventLog !== null ? { result, eventLog } : null;
-  });
+// clicks on these keep their own focus
+const INTERACTIVE_SELECTOR =
+  'a, button, input, select, textarea, label, [contenteditable], [tabindex]:not([tabindex="-1"])';
+
+export function TestResult(props: {
+  /** the result element: TestPage fades it in, and out on restart */
+  ref?: (el: HTMLDivElement) => void;
+}): JSXElement {
+  let prefocusRef: HTMLDivElement | undefined;
+
+  onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
   const [resultRef, resultEl] = useRefWithUtils<HTMLDivElement>();
   onMount(() => {
     const el = resultEl();
     if (el === undefined) return;
-    // test-ui fades it out on restart
-    setResultElement(el);
-    onCleanup(() => setResultElement(undefined));
-
-    void el.promiseAnimate({
-      opacity: [0, 1],
-      duration: applyReducedMotion(125),
-    });
     scrollToCenterOrTop(el.native);
   });
 
   return (
-    <div id="result" ref={resultRef} class={cn("content-grid full-width")}>
+    <div
+      id="result"
+      ref={(el) => {
+        resultRef(el);
+        props.ref?.(el);
+      }}
+      class={cn("content-grid full-width")}
+      onClick={(e) => {
+        // a click on plain content drops focus to the body, and Tab would
+        // then skip the next test button: put focus back on the prefocus
+        if (!(e.target instanceof Element)) return;
+        if (e.target.closest(INTERACTIVE_SELECTOR) !== null) return;
+        prefocusRef?.focus({ preventScroll: true });
+      }}
+    >
       <Show when={getGlarsesMode()}>
         <div class="col-span-full pb-8 text-center text-[2rem]">
           <Fa icon="fa-check" />
         </div>
       </Show>
       <Show
-        when={lastTest()}
+        when={getResultData()}
         fallback={
           <>
             <div class="mx-auto">Missing last test result data.</div>
@@ -75,7 +75,7 @@ export function TestResult(): JSXElement {
               class="mx-auto mt-4 w-max px-4 py-2"
               text="Restart"
               fa={{ icon: "fa-chevron-right" }}
-              onClick={() => void restart()}
+              onClick={() => void restartTest()}
             />
           </>
         }
@@ -85,20 +85,25 @@ export function TestResult(): JSXElement {
             <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
                 <ResultChart
-                  result={test().result}
+                  result={test().completedEvent}
                   eventLog={test().eventLog}
                 />
               </div>
-              <ResultSecondaryStats result={test().result} />
+              <ResultSecondaryStats result={test().completedEvent} />
               <ResultWordsHistory eventLog={test().eventLog} />
               <ResultReplay />
               <RetrySavingButton />
               <LoginPrompt />
             </Show>
+            <div
+              ref={(el) => (prefocusRef = el)}
+              class="focus:outline-none focus-visible:outline-none"
+              tabIndex="-1"
+            ></div>
             <ResultButtons glarses={getGlarsesMode()} />
 
             <Watermark />
@@ -114,7 +119,10 @@ function LoginPrompt(): JSXElement {
   return (
     <Show when={!isAuthenticated() && !getIsScreenshotting()}>
       <div class="mb-4 text-center text-sub">
-        <Link to="/login">Sign in</Link> to save your result
+        <Link to="/login" tabIndex={-1}>
+          Sign in
+        </Link>{" "}
+        to save your result
       </div>
     </Show>
   );
@@ -122,13 +130,18 @@ function LoginPrompt(): JSXElement {
 
 function RetrySavingButton(): JSXElement {
   return (
-    <Show when={resultState.canRetrySaving}>
+    <Show
+      when={(() => {
+        const status = getSaveStatus();
+        return status.state === "failed" && status.canRetry;
+      })()}
+    >
       <div class="grid w-full justify-center">
         <Button
           type="button"
           class="mb-4 justify-self-center bg-error px-8 py-4 text-bg"
           id="retrySavingResultButton"
-          onClick={() => void retrySavingResult()}
+          onClick={() => Engine.retrySave()}
           text="Retry saving result"
           fa={{ icon: "fa-redo" }}
         />
@@ -145,12 +158,12 @@ function Watermark(): JSXElement {
         const date = format(new Date(), "dd MMM yyyy HH:mm");
         return (
           <div class="col-span-full flex flex-wrap justify-end gap-x-[1em] text-[1.25rem] text-sub [&_.fas]:ml-[0.33em]">
-            <Show when={getSnapshot()}>
-              {(snapshot) => (
+            <Show when={getUserData()}>
+              {(user) => (
                 <>
                   <span>
-                    {snapshot().name}
-                    <UserFlags {...snapshot()} iconsOnly />
+                    {user().name}
+                    <UserFlags {...user()} iconsOnly />
                   </span>
                   <span>|</span>
                 </>
@@ -167,7 +180,7 @@ function Watermark(): JSXElement {
 }
 
 /**
- * Ad slots are filled by the ad controllers, so the markup must stay static.
+ * Ad slots are filled by the ads integration, so the markup must stay static.
  */
 function ResultAds(): JSXElement {
   return (
@@ -178,6 +191,7 @@ function ResultAds(): JSXElement {
     >
       <div
         id="ad-result-wrapper"
+        ref={adSlotRef("ad-result-wrapper")}
         class={cn(adSlotClass("h"), "full-width mx-auto")}
       >
         <div class="grid grid-cols-[auto_1fr] items-center justify-center gap-4 justify-self-center">
@@ -209,6 +223,7 @@ function ResultAds(): JSXElement {
       </div>
       <div
         id="ad-result-small-wrapper"
+        ref={adSlotRef("ad-result-small-wrapper")}
         class={cn(adSlotClass("hs"), "mx-auto")}
       >
         <AdIcon small />

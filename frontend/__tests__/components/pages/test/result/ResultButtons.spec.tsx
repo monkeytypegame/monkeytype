@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { restartMock } = vi.hoisted(() => ({ restartMock: vi.fn() }));
 vi.mock("../../../../../src/ts/test/test-logic", () => ({
-  restart: restartMock,
+  restartTest: restartMock,
   repeatTest: vi.fn(),
 }));
 vi.mock("../../../../../src/ts/states/router", () => ({
@@ -15,47 +15,51 @@ vi.mock("../../../../../src/ts/states/router", () => ({
 
 import { ResultButtons } from "../../../../../src/ts/components/pages/test/result/ResultButtons";
 import { setConfigStore } from "../../../../../src/ts/config/store";
-import { restartTestEvent } from "../../../../../src/ts/events/test";
+import { __testing as configTesting } from "../../../../../src/ts/config/testing";
 import "../../../../../src/ts/input/hotkeys";
-import {
-  setIsLongTest,
-  setWordsHaveNewline,
-  setWordsHaveTab,
-} from "../../../../../src/ts/states/test";
+import * as CustomText from "../../../../../src/ts/test/custom-text";
+import { setWordsInfo } from "../../../../../src/ts/test/engine/state";
+import { takeTestSettings } from "../../../../../src/ts/test/engine/test-settings";
+
+/** The current test's length: a long one can't be quick restarted. */
+function setLongTest(long: boolean): void {
+  configTesting.replaceConfig({
+    ...configTesting.getConfig(),
+    mode: "words",
+    words: long ? 1000 : 50,
+  });
+  takeTestSettings(CustomText.getData());
+}
+
+function setWordsHave(has: { tab?: boolean; newline?: boolean }): void {
+  setWordsInfo({
+    hasTab: has.tab ?? false,
+    hasNewline: has.newline ?? false,
+    hasNumbers: false,
+    hasKorean: false,
+  });
+}
 
 describe("ResultButtons", () => {
-  it("when result page is mounted, resultButtonsPrefocusTarget receives focus", () => {
-    const { container } = render(() => <ResultButtons glarses={false} />);
-
-    // the prefocus target has no id - it's the unfocusable-by-tab div first in the component
-    const prefocusTarget = container.firstElementChild as HTMLElement;
-    expect(prefocusTarget.tabIndex).toBe(-1);
-    expect(document.activeElement).toBe(prefocusTarget);
-  });
-
   describe("tab with quick restart off", () => {
-    const restartEventListener = vi.fn();
-    let unsubscribe: () => void;
-
     beforeEach(() => {
       setConfigStore("quickRestart", "off");
       restartMock.mockClear();
-      restartEventListener.mockClear();
-      unsubscribe = restartTestEvent.subscribe(restartEventListener);
     });
 
     afterEach(() => {
-      unsubscribe();
-      setIsLongTest(false);
-      setWordsHaveTab(false);
-      setWordsHaveNewline(false);
+      setLongTest(false);
+      setWordsHave({});
     });
 
     it.each([
       { name: "short test", setup: () => undefined },
-      { name: "long test", setup: () => setIsLongTest(true) },
-      { name: "words have tab", setup: () => setWordsHaveTab(true) },
-      { name: "words have newline", setup: () => setWordsHaveNewline(true) },
+      { name: "long test", setup: () => setLongTest(true) },
+      { name: "words have tab", setup: () => setWordsHave({ tab: true }) },
+      {
+        name: "words have newline",
+        setup: () => setWordsHave({ newline: true }),
+      },
     ])("focuses the next test button ($name)", async ({ setup }) => {
       setup();
       const { container } = render(() => <ResultButtons glarses={false} />);
@@ -65,8 +69,22 @@ describe("ResultButtons", () => {
       expect(document.activeElement).toBe(
         container.querySelector('[data-ui-element="restartTestButton"]'),
       );
-      expect(restartEventListener).not.toHaveBeenCalled();
       expect(restartMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("tab with quick restart on tab", () => {
+    beforeEach(() => {
+      setConfigStore("quickRestart", "tab");
+      restartMock.mockClear();
+    });
+
+    it("restarts the test", async () => {
+      render(() => <ResultButtons glarses={false} />);
+
+      await userEvent.tab();
+
+      expect(restartMock).toHaveBeenCalledWith({ isQuickRestart: true });
     });
   });
 });

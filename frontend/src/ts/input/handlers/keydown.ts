@@ -17,11 +17,16 @@ import {
 } from "../state";
 import { getActiveFunboxesWithFunction } from "../../test/funbox/list";
 import { Keycode } from "../../constants/keys";
-import { __nonReactive, setBailedOut, wordsHaveTab } from "../../states/test";
+import { loadKeymapLayout } from "../../states/test";
+import { wordsHaveTab } from "../../test/engine/state";
 
 import { getCustomTextIndicator } from "../../states/core";
-import { logTestEvent } from "../../test/events/data";
-import { getTestEventCode } from "../../test/events/helpers";
+import {
+  getCurrentInput,
+  getInputForWord,
+  logTestEvent,
+} from "../../test/engine/events/data";
+import { getTestEventCode, keysToTrack } from "../helpers/test-event-code";
 
 export async function handleTab(e: KeyboardEvent, now: number): Promise<void> {
   if (wordsHaveTab() && !e.shiftKey) {
@@ -37,7 +42,7 @@ export async function handleEnter(
 ): Promise<void> {
   if (e.shiftKey) {
     if (Config.mode === "zen") {
-      void TestLogic.finish();
+      TestLogic.finish();
       return;
     } else if (
       !canQuickRestart(
@@ -63,8 +68,7 @@ export async function handleEnter(
         e.preventDefault();
         return;
       } else {
-        setBailedOut(true);
-        void TestLogic.finish();
+        TestLogic.finish({ type: "bailedOut" });
         return;
       }
     }
@@ -76,9 +80,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
     Config.oppositeShiftMode === "keymap" &&
     Config.keymapLayout !== "overrideSync"
   ) {
-    let keymapLayout = await __nonReactive
-      .getKeymapLayout()
-      .catch(() => undefined);
+    let keymapLayout = await loadKeymapLayout().catch(() => undefined);
     if (keymapLayout === undefined) {
       showErrorNotification("Failed to load keymap layout");
 
@@ -101,7 +103,10 @@ async function handleFunboxes(
   now: number,
 ): Promise<boolean> {
   for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
-    void fb.functions.handleKeydown(event);
+    void fb.functions.handleKeydown(event, {
+      current: getCurrentInput,
+      forWord: getInputForWord,
+    });
   }
 
   for (const fb of getActiveFunboxesWithFunction("getEmulatedChar")) {
@@ -122,13 +127,16 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
 
   const now = performance.now();
 
-  logTestEvent("keydown", now, {
-    code: getTestEventCode(event),
-    ctrl: event.ctrlKey ? true : undefined,
-    shift: event.shiftKey ? true : undefined,
-    alt: event.altKey ? true : undefined,
-    meta: event.metaKey ? true : undefined,
-  });
+  const code = getTestEventCode(event);
+  if (keysToTrack.has(code)) {
+    logTestEvent("keydown", now, {
+      code,
+      ctrl: event.ctrlKey ? true : undefined,
+      shift: event.shiftKey ? true : undefined,
+      alt: event.altKey ? true : undefined,
+      meta: event.metaKey ? true : undefined,
+    });
+  }
 
   // allow arrows in arrows funbox
   const arrowsActive = Config.funbox.includes("arrows");

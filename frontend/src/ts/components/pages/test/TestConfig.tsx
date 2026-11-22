@@ -1,12 +1,11 @@
 import { ComponentProps, createSignal, For, JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { restartTestEvent } from "../../../events/test";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import {
   showErrorNotification,
@@ -18,6 +17,9 @@ import {
   isTestRestarting,
 } from "../../../states/test";
 import * as CustomText from "../../../test/custom-text";
+import { isFocusMode } from "../../../states/test";
+import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
+import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
@@ -49,7 +51,9 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || isTestFinished() ? "pointer-events-none opacity-0" : "",
+          isFocusMode() || isTestFinished()
+            ? "pointer-events-none opacity-0"
+            : "",
         )}
         data-ui-element="testConfig"
       >
@@ -93,7 +97,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={getFocus() || isTestFinished() || props.disabled}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }
@@ -120,7 +124,7 @@ function PuncAndNum(): JSXElement {
               disabled={getConfig.mode === "zen" || getConfig.mode === "quote"}
               onClick={() => {
                 setConfig(configKey, !getConfig[configKey]);
-                restartTestEvent.dispatch();
+                void restartTest();
               }}
             />
           )}
@@ -202,7 +206,7 @@ function Mode(): JSXElement {
             active={getConfig.mode === modeOption}
             onClick={() => {
               setConfig("mode", modeOption);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -330,7 +334,7 @@ function Mode2Time(props: ComponentProps<"div">): JSXElement {
             active={getConfig.time === time}
             onClick={() => {
               setConfig("time", time);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -360,7 +364,7 @@ function Mode2Words(props: ComponentProps<"div">): JSXElement {
             active={getConfig.words === count}
             onClick={() => {
               setConfig("words", count);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -395,7 +399,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
         active={areUnsortedArraysEqual(getConfig.quoteLength, [0, 1, 2, 3])}
         onClick={() => {
           setQuoteLengthAll();
-          restartTestEvent.dispatch();
+          void restartTest();
         }}
       />
       <For each={quoteLengths}>
@@ -405,7 +409,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
             active={areUnsortedArraysEqual(getConfig.quoteLength, [length])}
             onClick={() => {
               setConfig("quoteLength", [length]);
-              restartTestEvent.dispatch();
+              void restartTest();
             }}
           />
         )}
@@ -418,7 +422,7 @@ function Mode2Quote(props: ComponentProps<"div">): JSXElement {
           active={areUnsortedArraysEqual(getConfig.quoteLength, [-3])}
           onClick={() => {
             setConfig("quoteLength", [-3]);
-            restartTestEvent.dispatch();
+            void restartTest();
           }}
         />
       </Show>
