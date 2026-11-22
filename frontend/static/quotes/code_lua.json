@@ -98,16 +98,10 @@
       "id": 15
     },
     {
-      "text": "io.write(' > ')\nlocal input = io.read('*line')\ninputUpper = input:upper()\ninputLower = input:lower()\nlocal output = ''\nlocal map = {[0] = inputUpper, [1] = inputLower}\nfor i = 1, input:len() do\n\toutput = output..map[i%2]:sub(i,i)\nend\nio.write(output, '\n')",
+      "text": "io.write(\" > \")\nlocal input = io.read(\"*line\")\ninputUpper = input:upper()\ninputLower = input:lower()\nlocal output = \"\"\nlocal map = {[0] = inputUpper, [1] = inputLower}\nfor i = 1, input:len() do\n\toutput = output..map[i%2]:sub(i,i)\nend\nio.write(output, \"\n\")",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 4",
       "length": 267,
       "id": 16
-    },
-    {
-      "text": "",
-      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 5",
-      "length": 267,
-      "id": 17
     },
 	
   ]
