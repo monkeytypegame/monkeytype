@@ -3,16 +3,16 @@ import { getConfig } from "../config/store";
 import { createEffectOn } from "../hooks/effects";
 import {
   cacheThemeColors,
+  clearThemePreview,
   getConfiguredTheme,
   getConfiguredThemeName,
   setCustomThemeDraft,
   setRandomTheme,
 } from "./state";
-import { clearThemePreview } from "./preview";
 import { updateThemeList } from "./random";
 
 export { getThemeIndicator } from "./indicator";
-export { clearThemePreview, previewTheme } from "./preview";
+export { clearThemePreview, previewTheme } from "./state";
 export { randomizeTheme } from "./random";
 
 // a root so the effects are owned, they live as long as the page

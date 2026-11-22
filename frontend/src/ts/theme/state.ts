@@ -1,4 +1,5 @@
 import { createMemo, createRoot, createSignal } from "solid-js";
+import { debounce } from "throttle-debounce";
 import { ColorName, Theme, themes } from "../constants/themes";
 import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
 import { getConfig } from "../config/store";
@@ -18,8 +19,30 @@ export const [getRandomTheme, setRandomTheme] =
   createSignal<ThemeChoice | null>(null);
 
 // shown over everything while set: hovering a theme in the commandline
-export const [getThemePreview, setThemePreview] =
-  createSignal<ThemeChoice | null>(null);
+const [getThemePreview, setThemePreview] = createSignal<ThemeChoice | null>(
+  null,
+);
+export { getThemePreview };
+
+let pendingPreview: ThemeChoice | null = null;
+
+const debouncedPreview = debounce<() => void>(250, () => {
+  if (pendingPreview !== null) setThemePreview(pendingPreview);
+});
+
+/** Shows `theme` over the current one, after a short debounce. */
+export function previewTheme(
+  theme: ThemeIdentifier,
+  customColors?: CustomThemeColors,
+): void {
+  pendingPreview = { name: theme, colors: customColors };
+  debouncedPreview();
+}
+
+export function clearThemePreview(): void {
+  pendingPreview = null;
+  setThemePreview(null);
+}
 
 // the custom theme editor's unsaved colors, shown while the configured theme
 // is custom
