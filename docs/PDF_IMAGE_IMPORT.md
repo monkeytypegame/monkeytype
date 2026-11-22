@@ -34,10 +34,10 @@ Upload → file kind → extract → clean → custom text → typing test
 
 ### Code
 
-| | Lines | Files |
-|---|---|---|
-| Feature (extraction, cleaning, modal, vendor plugin, tests) | +1686 / −20 | 14 |
-| Direct `upload` button (beside `custom` mode) | +70 / −1 | 1 |
+|                                                             | Lines       | Files |
+| ----------------------------------------------------------- | ----------- | ----- |
+| Feature (extraction, cleaning, modal, vendor plugin, tests) | +1686 / −20 | 14    |
+| Direct `upload` button (beside `custom` mode)               | +70 / −1    | 1     |
 
 New deps: `pdfjs-dist`, `tesseract.js` (runtime), `@tesseract.js-data/eng` (dev).
 
@@ -46,13 +46,13 @@ New deps: `pdfjs-dist`, `tesseract.js` (runtime), `@tesseract.js-data/eng` (dev)
 All assets are **lazy-loaded** — a normal typing test downloads none of them.
 A user who never imports a file pays zero.
 
-| Asset | Size | Fetched |
-|---|---|---|
-| pdf.js main + worker | 783 KB + 1.4 MB | first PDF |
-| pdf.js cmaps + fonts | 1.6 MB + 800 KB | PDFs needing them |
-| Tesseract worker | 109 KB | first OCR |
-| Tesseract WASM core | ~2.7 MB | first OCR |
-| English OCR language data | 2.8 MB | first OCR |
+| Asset                     | Size            | Fetched           |
+| ------------------------- | --------------- | ----------------- |
+| pdf.js main + worker      | 783 KB + 1.4 MB | first PDF         |
+| pdf.js cmaps + fonts      | 1.6 MB + 800 KB | PDFs needing them |
+| Tesseract worker          | 109 KB          | first OCR         |
+| Tesseract WASM core       | ~2.7 MB         | first OCR         |
+| English OCR language data | 2.8 MB          | first OCR         |
 
 First OCR pulls ~5.6 MB once, then cached for a year (`/vendor/**`
 `Cache-Control: max-age=31536000, immutable`).

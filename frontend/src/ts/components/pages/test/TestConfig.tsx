@@ -11,13 +11,8 @@ import {
   showErrorNotification,
   showNoticeNotification,
 } from "../../../states/notifications";
-import {
-  isTestFinished,
-  getFocus,
-  isTestRestarting,
-} from "../../../states/test";
-import * as CustomText from "../../../test/custom-text";
 import { isFocusMode } from "../../../states/test";
+import * as CustomText from "../../../test/custom-text";
 import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
@@ -175,7 +170,7 @@ function Mode(): JSXElement {
       CustomText.setLimitMode("word");
       CustomText.setLimitValue(words.length);
       setConfig("mode", "custom");
-      restartTestEvent.dispatch();
+      void restartTest();
     } catch (e) {
       if (e instanceof TextExtractionError) {
         showErrorNotification(e.message, { durationMs: 5000 });

@@ -97,13 +97,13 @@ export function vendorAssets(): Plugin {
     name: "vendor-assets",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
         return `export const vendorAssets = ${JSON.stringify(assets)};`;
       }
-      return;
+      return undefined;
     },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
