@@ -1,13 +1,13 @@
 import { createEffect, createSignal, JSXElement, on, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
-import { showNoticeNotification } from "../../states/notifications";
-import { setErrorBorderDisabled } from "../../states/test";
 import {
   getCustomBackgroundFilterPreview,
   isCustomBackgroundLoaded,
   setCustomBackgroundLoaded,
-} from "../../theme/state";
+} from "../../states/custom-background";
+import { showNoticeNotification } from "../../states/notifications";
+import { setErrorBorderDisabled } from "../../states/test";
 import { cn } from "../../utils/cn";
 import fileStorage from "../../utils/file-storage";
 
