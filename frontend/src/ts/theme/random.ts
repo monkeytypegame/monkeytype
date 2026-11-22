@@ -3,10 +3,9 @@ import { isColorDark, isColorLight } from "../utils/colors";
 import { Config } from "../config/store";
 import { setConfig } from "../config/setters";
 import { getCustomTheme, getCustomThemes } from "../queries/custom-themes";
-import { showNoticeNotification } from "../states/notifications";
-import { CustomThemeColors, ThemeName } from "@monkeytype/schemas/configs";
+import { ThemeName } from "@monkeytype/schemas/configs";
 import { themes, ThemesList } from "../constants/themes";
-import { prefersDarkScheme, setRandomTheme, ThemeIdentifier } from "./state";
+import { prefersDarkScheme, setRandomTheme } from "./state";
 
 let randomThemeIndex = 0;
 let themesList: (ThemeName | string)[] = [];
@@ -44,38 +43,35 @@ export function randomizeTheme(): void {
     });
   }
 
+  if (Config.randomTheme === "custom") {
+    const theme = getCustomTheme(nextFromList());
+    setRandomTheme({
+      name: "custom",
+      colors: theme === undefined ? undefined : [...theme.colors],
+    });
+    return;
+  }
+
   let filter = (_: string): boolean => true;
   if (Config.randomTheme === "auto") {
     filter = prefersDarkScheme() ? isColorDark : isColorLight;
   }
 
-  let randomTheme: ThemeIdentifier;
-  let nextTheme = null;
+  let randomTheme: ThemeName;
   do {
-    randomTheme = themesList[randomThemeIndex] as ThemeIdentifier;
-    nextTheme = themes[themesList[randomThemeIndex] as ThemeName];
-    randomThemeIndex++;
-    if (randomThemeIndex >= themesList.length) {
-      Arrays.shuffle(themesList);
-      randomThemeIndex = 0;
-    }
-  } while (!filter(nextTheme.bg));
+    randomTheme = nextFromList() as ThemeName;
+  } while (!filter(themes[randomTheme].bg));
 
-  let colorsOverride: CustomThemeColors | undefined;
+  setRandomTheme({ name: randomTheme });
+}
 
-  if (Config.randomTheme === "custom") {
-    const theme = getCustomTheme(randomTheme);
-    colorsOverride = theme === undefined ? undefined : [...theme.colors];
-    randomTheme = "custom";
-  }
-
-  setRandomTheme({ name: randomTheme, colors: colorsOverride });
-
+/** The next entry of the shuffled list, reshuffling at its end. */
+function nextFromList(): string {
+  const next = themesList[randomThemeIndex] as string;
+  randomThemeIndex++;
   if (randomThemeIndex >= themesList.length) {
-    let name = randomTheme.replace(/_/g, " ");
-    if (Config.randomTheme === "custom") {
-      name = (getCustomTheme(randomTheme)?.name ?? "custom").replace(/_/g, " ");
-    }
-    showNoticeNotification(name);
+    Arrays.shuffle(themesList);
+    randomThemeIndex = 0;
   }
+  return next;
 }

@@ -17,6 +17,14 @@ import {
 } from "../../src/ts/theme/state";
 import { themes } from "../../src/ts/constants/themes";
 
+const { customThemes } = vi.hoisted(() => ({
+  customThemes: [] as { _id: string; name: string; colors: string[] }[],
+}));
+vi.mock("../../src/ts/queries/custom-themes", () => ({
+  getCustomThemes: () => customThemes,
+  getCustomTheme: (id: string) => customThemes.find((ct) => ct._id === id),
+}));
+
 const { replaceConfig } = __testing;
 
 function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
@@ -66,6 +74,24 @@ describe("theme", () => {
     expect(getRandomTheme()).not.toBeNull();
     expect(getTheme().name).toBe(getRandomTheme()?.name);
     expect(Config.customTheme).toBe(false);
+  });
+
+  it("picks a random custom theme", () => {
+    const colors = [...Config.customThemeColors];
+    colors[0] = "#0a0b0c";
+    customThemes.splice(0, customThemes.length, {
+      _id: "id1",
+      name: "mine",
+      colors,
+    });
+    // setConfig blocks "custom" while signed out
+    set("randomTheme", "custom");
+
+    randomizeTheme();
+
+    expect(getTheme().name).toBe("custom");
+    expect(getTheme().bg).toBe("#0a0b0c");
+    customThemes.length = 0;
   });
 
   describe("while a random theme is active", () => {
