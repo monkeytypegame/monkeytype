@@ -11,7 +11,6 @@ import {
 } from "./state";
 import { updateThemeList } from "./random";
 
-export { getThemeIndicator } from "./indicator";
 export { clearThemePreview, previewTheme } from "./state";
 export { randomizeTheme } from "./random";
 

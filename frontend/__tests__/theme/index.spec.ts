@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import {
   clearThemePreview,
-  getThemeIndicator,
   previewTheme,
   randomizeTheme,
 } from "../../src/ts/theme";
@@ -164,7 +163,6 @@ describe("theme", () => {
       expect(getTheme().name).not.toBe("8008");
       vi.advanceTimersByTime(250);
       expect(getTheme().name).toBe("8008");
-      expect(getThemeIndicator().text).toBe("8008");
 
       clearThemePreview();
       expect(getTheme().name).toBe(getRandomTheme()?.name);
@@ -235,14 +233,6 @@ describe("theme", () => {
       set("customThemeColors", colors);
       expect(getTheme().bg).toBe(colors[0]);
       expect(getTheme().main).toBe("#222222");
-    });
-  });
-
-  it("updates the indicator on favorite changes", () => {
-    set("favThemes", ["serika_dark"]);
-    expect(getThemeIndicator()).toEqual({
-      text: "serika dark",
-      isFavorite: true,
     });
   });
 });
