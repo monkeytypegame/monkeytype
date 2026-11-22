@@ -1,7 +1,7 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
 import { Config } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { getRandomTheme } from "../../states/theme";
+import { getRandomTheme } from "../../theme/state";
 import { Command } from "../types";
 
 const getCurrentTheme = (): ThemeName =>

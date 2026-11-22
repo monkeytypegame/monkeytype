@@ -6,7 +6,7 @@ import { Theme } from "../../../src/ts/components/core/Theme";
 import { ThemeWithName } from "../../../src/ts/constants/themes";
 import * as Loader from "../../../src/ts/states/loader-bar";
 import * as Notifications from "../../../src/ts/states/notifications";
-import * as ThemeSignal from "../../../src/ts/states/theme";
+import * as ThemeSignal from "../../../src/ts/theme/state";
 
 vi.mock("../../../src/ts/constants/themes", () => ({
   themes: {
@@ -22,6 +22,12 @@ vi.mock("./FavIcon", () => ({
 describe("Theme component", () => {
   const [themeSignal, setThemeSignal] = createSignal<ThemeWithName>({} as any);
   const themeSignalMock = vi.spyOn(ThemeSignal, "getTheme");
+  const [configuredTheme, setConfiguredTheme] = createSignal<ThemeWithName>(
+    {} as any,
+  );
+  vi.spyOn(ThemeSignal, "getConfiguredTheme").mockImplementation(() =>
+    configuredTheme(),
+  );
   const loaderShowMock = vi.spyOn(Loader, "showLoaderBar");
   const loaderHideMock = vi.spyOn(Loader, "hideLoaderBar");
   const notificationAddMock = vi.spyOn(Notifications, "showNoticeNotification");
@@ -46,6 +52,8 @@ describe("Theme component", () => {
       colorfulError: "#f55",
       colorfulErrorExtra: "#c55",
     });
+    setConfiguredTheme({ name: "light", bg: "#111" } as any);
+    localStorage.removeItem("firstPaintThemeCss");
   });
 
   it("injects CSS variables based on theme", () => {
@@ -122,6 +130,25 @@ describe("Theme component", () => {
     setThemeSignal((prev) => ({ ...prev, bg: "#fff" }));
     expect(document.body).not.toHaveClass("darkMode");
   });
+
+  it("caches the configured theme for the first paint", () => {
+    renderComponent();
+    expect(cachedCss()).toContain("--bg-color: #111;");
+
+    setConfiguredTheme((prev) => ({ ...prev, bg: "#222" }));
+    expect(cachedCss()).toContain("--bg-color: #222;");
+  });
+
+  it("doesn't cache the theme on screen (random, preview)", () => {
+    renderComponent();
+    setThemeSignal((prev) => ({ ...prev, bg: "#333" }));
+    vi.runAllTimers();
+    expect(cachedCss()).not.toContain("#333");
+  });
+
+  function cachedCss(): string | null {
+    return localStorage.getItem("firstPaintThemeCss");
+  }
 
   function renderComponent(): {
     style: HTMLStyleElement;

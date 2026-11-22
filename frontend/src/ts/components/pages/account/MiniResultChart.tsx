@@ -5,7 +5,7 @@ import { createMemo, JSXElement } from "solid-js";
 import { getSingleResultQueryOptions } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
 import { isModalOpen } from "../../../states/modals";
-import { getTheme } from "../../../states/theme";
+import { getTheme } from "../../../theme/state";
 import { get as getTypingSpeedUnit } from "../../../utils/typing-speed-units";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import AsyncContent from "../../common/AsyncContent";

@@ -17,7 +17,6 @@ import {
   CommandWithValidation,
 } from "../../commandline/types";
 import { Config } from "../../config/store";
-import * as ThemeController from "../../controllers/theme-controller";
 import { createInputEventHandler } from "../../elements/input-validation";
 import { logAnalyticsEvent } from "../../integrations/analytics";
 import {
@@ -40,6 +39,7 @@ import {
   setFocusMode,
   setTestFocusState,
 } from "../../states/test";
+import { clearThemePreview } from "../../theme";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
 import { areUnsortedArraysEqual } from "../../utils/arrays";
@@ -390,7 +390,7 @@ export function CommandlineModal(): JSXElement {
 
   const clearPreviewsAndLock = (): void => {
     setFontPreview(null);
-    void ThemeController.clearPreview();
+    clearThemePreview();
     isAnimating = true;
   };
 
@@ -693,7 +693,7 @@ export function CommandlineModal(): JSXElement {
     ) {
       removeCommandlineBackground();
     } else {
-      void ThemeController.clearPreview();
+      clearThemePreview();
       addCommandlineBackground();
     }
 

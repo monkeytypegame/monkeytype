@@ -11,7 +11,7 @@ import {
 } from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
-vi.mock("../../src/ts/controllers/theme-controller", () => ({
+vi.mock("../../src/ts/theme", () => ({
   randomizeTheme: vi.fn(),
 }));
 // uses matchMedia on import, which jsdom lacks

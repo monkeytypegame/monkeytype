@@ -1,15 +1,42 @@
-import { JSXElement, Show } from "solid-js";
+import { ThemeName } from "@monkeytype/schemas/configs";
+import { createMemo, JSXElement, Show } from "solid-js";
 
 import { isAuthenticated } from "../../../auth/state";
 import { setConfig } from "../../../config/setters";
-import { Config } from "../../../config/store";
+import { Config, getConfig } from "../../../config/store";
 import { getCustomThemes } from "../../../queries/custom-themes";
 import { showCommandline } from "../../../states/commandline";
-import { getThemeIndicator } from "../../../states/core";
 import { showNoticeNotification } from "../../../states/notifications";
+import { getRandomTheme, getThemePreview } from "../../../theme/state";
+import { areSortedArraysEqual } from "../../../utils/arrays";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {
+  const indicator = createMemo(() => {
+    const preview = getThemePreview()?.name;
+    const random = getRandomTheme()?.name;
+
+    let text: string = random ?? getConfig.theme;
+
+    if (getConfig.customTheme && preview === undefined) {
+      // Match current custom theme by colors since Config does not store custom theme IDs
+      const matchedTheme = getCustomThemes().find((ct) =>
+        areSortedArraysEqual(ct.colors, getConfig.customThemeColors),
+      );
+      text = matchedTheme ? `${matchedTheme.name} (custom)` : "custom";
+    }
+
+    if (preview !== undefined) text = preview;
+
+    const current = preview ?? random ?? getConfig.theme;
+    const isFavorite =
+      !getConfig.customTheme &&
+      getConfig.favThemes.includes(current as ThemeName);
+
+    // display name: `serika dark` for the ThemeName `serika_dark`
+    return { text: text.replace(/_/g, " "), isFavorite };
+  });
+
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
       if (Config.customTheme) {
@@ -36,14 +63,14 @@ export function ThemeIndicator(): JSXElement {
       onClick={handleClick}
     >
       <div class="relative">
-        <Show when={getThemeIndicator().isFavorite}>
+        <Show when={indicator().isFavorite}>
           <div class="absolute top-[-0.5em] right-[-0.5em] flex rounded-full bg-bg p-[0.25em]">
             <Fa icon="fa-star" size={0.5} />
           </div>
         </Show>
         <Fa icon="fa-palette" fixedWidth />
       </div>
-      <div class="text">{getThemeIndicator().text}</div>
+      <div class="text">{indicator().text}</div>
     </button>
   );
 }

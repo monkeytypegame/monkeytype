@@ -7,7 +7,7 @@ import {
   ResultsQueryState,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
-import { getTheme } from "../../../states/theme";
+import { getTheme } from "../../../theme/state";
 import { secondsToString } from "../../../utils/date-and-time";
 import { Formatting } from "../../../utils/format";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";

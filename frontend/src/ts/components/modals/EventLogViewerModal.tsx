@@ -65,7 +65,6 @@ import {
   type SyncKind,
 } from "../../states/event-log-viewer";
 import { hideModal } from "../../states/modals";
-import { getTheme } from "../../states/theme";
 import { getInputFromDom } from "../../test/engine/events/helpers";
 import {
   getKeypressDurations,
@@ -81,6 +80,7 @@ import {
 } from "../../test/engine/events/timing-stats";
 import { EVENT_LOG_VERSION } from "../../test/engine/events/types";
 import { getResultData } from "../../test/engine/state";
+import { getTheme } from "../../theme/state";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";
