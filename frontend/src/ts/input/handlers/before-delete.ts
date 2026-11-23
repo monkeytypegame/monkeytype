@@ -1,30 +1,26 @@
 import { Config } from "../../config/store";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue } from "../input-element";
-import * as TestUI from "../../test/test-ui";
+import { isWordRendered } from "../../states/words-render";
 import { isAwaitingNextWord } from "../state";
-import { getInputForWord } from "../../test/events/data";
+import { getInputForWord } from "../../test/engine/events/data";
+import { isRestartAnimating } from "../../states/test";
 import {
-  isTestRestarting,
   getActiveWordIndex,
-  isResultCalculating,
+  isTestRestarting,
   isTestActive,
-} from "../../states/test";
+} from "../../test/engine/state";
 
 export function onBeforeDelete(event: InputEvent): void {
   if (!isTestActive()) {
     event.preventDefault();
     return;
   }
-  if (isTestRestarting()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     event.preventDefault();
     return;
   }
   if (isAwaitingNextWord()) {
-    event.preventDefault();
-    return;
-  }
-  if (isResultCalculating()) {
     event.preventDefault();
     return;
   }
@@ -39,8 +35,8 @@ export function onBeforeDelete(event: InputEvent): void {
       return;
     }
 
-    // this is nested because we only wanna check the dom if needed
-    if (!TestUI.isWordRendered(getActiveWordIndex() - 1)) {
+    // previous word scrolled off (line jump / tape), can't go back to it
+    if (!isWordRendered(getActiveWordIndex() - 1)) {
       event.preventDefault();
       return;
     }

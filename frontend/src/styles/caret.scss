@@ -1,4 +1,4 @@
-#caret {
+[data-ui-element="caret"] {
   height: 1.2em;
   background: var(--caret-color);
   animation: caretFlashSmooth 1s infinite;
@@ -8,7 +8,7 @@
   transform-origin: top left;
 }
 
-#paceCaret {
+[data-ui-element="paceCaret"] {
   height: 1.2em;
   background: var(--sub-color);
   opacity: 0.5;
@@ -18,8 +18,8 @@
   transform-origin: top left;
 }
 
-#caret,
-#paceCaret {
+[data-ui-element="caret"],
+[data-ui-element="paceCaret"] {
   &.debug {
     outline: 1px solid white;
     &.hidden {
@@ -28,15 +28,15 @@
     }
   }
 
-  &.off {
+  &[data-ui-variant="off"] {
     width: 0;
   }
 
-  &.default {
+  &[data-ui-variant="default"] {
     width: 0.1em;
   }
 
-  &.carrot {
+  &[data-ui-variant="carrot"] {
     background-color: transparent;
     background-image: url("/images/caret/carrot.png");
     background-size: contain;
@@ -45,7 +45,7 @@
     width: 0.25em;
   }
 
-  &.banana {
+  &[data-ui-variant="banana"] {
     background-color: transparent;
     background-image: url("/images/caret/banana.png");
     background-size: contain;
@@ -54,7 +54,7 @@
     width: 1em;
   }
 
-  &.monkey {
+  &[data-ui-variant="monkey"] {
     background-color: transparent;
     background-image: url("/images/caret/monkey.png");
     background-size: contain;
@@ -63,14 +63,16 @@
     width: 1em;
   }
 
-  &.block {
+  &[data-ui-variant="block"] {
     width: 0.5em;
     z-index: -1;
     border-radius: 0.05em;
   }
 
-  &.outline {
-    @extend #caret, .block;
+  // a block outline, not blinking
+  &[data-ui-variant="outline"] {
+    width: 0.5em;
+    z-index: -1;
     animation-name: none;
     background: transparent;
     border: 0.05em solid var(--caret-color);
@@ -78,7 +80,7 @@
     outline-style: none !important; // override tailwind class of the same name
   }
 
-  &.underline {
+  &[data-ui-variant="underline"] {
     height: 0.1em;
     width: 0.5em;
   }

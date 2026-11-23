@@ -1,5 +1,7 @@
+import { Link } from "@tanstack/solid-router";
 import { JSXElement } from "solid-js";
 
+import { hideModal } from "../../states/modals";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 
@@ -16,7 +18,16 @@ export function ContactModal(): JSXElement {
         <br />
         Please <span class="text-error">do not send</span> requests to delete
         account, update email, update name or clear personal bests - you can do
-        that in the <a href="/account-settings">account settings</a> page.
+        that in the{" "}
+        <Link
+          to="/account-settings"
+          onClick={() => {
+            hideModal("Contact");
+          }}
+        >
+          account settings
+        </Link>{" "}
+        page.
       </div>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <Button

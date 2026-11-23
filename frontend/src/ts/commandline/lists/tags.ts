@@ -1,11 +1,12 @@
 import {
-  clearActiveTags,
+  getTags,
+  isTagActive,
+  setActiveTags,
   toggleTagActive,
-  __nonReactive,
-} from "../../collections/tags";
+} from "../../queries/tags";
 import { Config } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../auth/state";
 import { Command, CommandsSubgroup } from "../types";
 import { showAddTagModal } from "../../components/modals/AddTagModal";
 
@@ -21,7 +22,7 @@ const commands: Command[] = [
   {
     id: "changeTags",
     display: "Tags...",
-    icon: "fa-tag",
+    fa: { icon: "fa-tag" },
     subgroup,
     available: (): boolean => {
       return isAuthenticated();
@@ -30,17 +31,17 @@ const commands: Command[] = [
 ];
 
 function update(): void {
-  const tags = __nonReactive.getTags();
+  const tags = getTags();
   subgroup.list = [];
 
   if (tags.length > 0) {
     subgroup.list.push({
       id: "clearTags",
       display: `Clear tags`,
-      icon: "fa-times",
+      fa: { icon: "fa-times" },
       sticky: true,
       exec: async (): Promise<void> => {
-        await clearActiveTags();
+        setActiveTags([]);
         if (
           Config.paceCaret === "average" ||
           Config.paceCaret === "tagPb" ||
@@ -57,10 +58,10 @@ function update(): void {
         display: tag.name,
         sticky: true,
         active: () => {
-          return __nonReactive.getTag(tag._id)?.active ?? false;
+          return isTagActive(tag._id);
         },
         exec: async (): Promise<void> => {
-          await toggleTagActive({ tagId: tag._id });
+          toggleTagActive(tag._id);
 
           if (
             Config.paceCaret === "average" ||
@@ -76,7 +77,7 @@ function update(): void {
   subgroup.list.push({
     id: "createTag",
     display: "Create tag",
-    icon: "fa-plus",
+    fa: { icon: "fa-plus" },
     shouldFocusTestUI: false,
     opensModal: true,
     exec: (): void => {

@@ -123,6 +123,7 @@ function QuoteApproveItem(props: {
             placeholder="Source"
             field={field}
             disabled={disabled()}
+            autocomplete="off"
           />
         )}
       />

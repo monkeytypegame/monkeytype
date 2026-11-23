@@ -6,22 +6,22 @@ import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
+  getFunboxUnsupportedReason,
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
-import { configMetadata } from "./metadata";
+import { changeRequiresRestart, configMetadata } from "./metadata";
 import { Config, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { isTestActive } from "../states/test";
+import { isTestActive } from "../test/engine/state";
 
 export function setConfig<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   options?: {
     nosave?: boolean;
-    partOfFullConfigChange?: boolean;
   },
 ): boolean {
   const metadata = configMetadata[key];
@@ -40,7 +40,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   const previousValue = Config[key];
 
   if (
-    metadata.changeRequiresRestart &&
+    changeRequiresRestart(key, Config) &&
     isTestActive() &&
     Config.funbox.includes("no_quit")
   ) {
@@ -122,6 +122,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   }
 
   Config[key] = value;
+  setConfigStore(key, value);
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
   // @ts-expect-error i can't figure this out
@@ -131,10 +132,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     nosave: options?.nosave ?? false,
     previousValue: previousValue,
   });
-
-  if (!options?.partOfFullConfigChange) {
-    setConfigStore(key, value);
-  }
 
   if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
@@ -161,6 +158,14 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
         important: true,
       },
     );
+    return false;
+  }
+
+  const unsupportedReason = Config.funbox.includes(funbox)
+    ? undefined
+    : getFunboxUnsupportedReason(funbox);
+  if (unsupportedReason !== undefined) {
+    showNoticeNotification(unsupportedReason, { durationMs: 5000 });
     return false;
   }
 
@@ -194,6 +199,7 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   }
 
   Config.funbox = newConfig;
+  setConfigStore("funbox", newConfig);
   saveToLocalStorage("funbox", nosave);
   configEvent.dispatch({
     key: "funbox",
@@ -201,8 +207,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     nosave,
     previousValue,
   });
-
-  setConfigStore("funbox", newConfig);
 
   return true;
 }

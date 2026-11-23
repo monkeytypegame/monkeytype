@@ -17,6 +17,8 @@ export type AnimePresenceAPI = {
   exit?: AnimationParams;
   playExitAnimation: () => Promise<void>;
   cancelExitAnimation: () => void;
+  /** Plays the enter animation again, for an element that exited and is back. */
+  playEnterAnimation: () => void;
 };
 
 export type PresenceContextState = {
@@ -240,6 +242,9 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
   }
 
   // Single mode: handle single child switching (original behavior)
+  // elements that played their exit animation, in case they come back
+  const exitedElements = new WeakSet<HTMLElement>();
+
   // Track currently exiting element and its done callback
   let currentlyExiting: {
     element: HTMLElement;
@@ -278,14 +283,16 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
                     { once: true },
                   );
                   void api.playExitAnimation().then(() => {
-                    exitRegistry.delete(htmlEl);
+                    // kept registered: the same element can come back (eg.
+                    // a Suspense showing its content again after a refetch)
+                    exitedElements.add(htmlEl);
                   });
                 } else {
                   done();
                 }
               });
             },
-            onEnter(_: Element, done: () => void) {
+            onEnter(el: Element, done: () => void) {
               batch(() => {
                 // If exitBeforeEnter is false and there's an element exiting,
                 // cancel the exit animation and complete the transition immediately
@@ -300,6 +307,12 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
 
                 setMount(true);
               });
+              // an element that exited and is back (its enter animation
+              // already ran on mount) is still at its exit state
+              const htmlEl = el as HTMLElement;
+              if (exitedElements.delete(htmlEl)) {
+                exitRegistry.get(htmlEl)?.playEnterAnimation();
+              }
               done();
             },
           },

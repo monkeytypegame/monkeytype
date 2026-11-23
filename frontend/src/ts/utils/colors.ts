@@ -2,6 +2,9 @@
  * Utility functions for color conversions and operations.
  */
 
+import { CustomThemeColors } from "@monkeytype/schemas/configs";
+import { Theme } from "../constants/themes";
+
 /**
  * Blends two hexadecimal colors with a given opacity.
  * @param color1 The first hexadecimal color value (supports alpha channel).
@@ -310,4 +313,36 @@ export function convertStringToHex(color: string): string {
     return rgbToHex(r, g, b);
   }
   throw new Error(`Invalid color format: ${color}`);
+}
+
+export function convertCustomColorsToTheme(
+  colors: Readonly<CustomThemeColors>,
+): Theme {
+  return {
+    bg: colors[0],
+    main: colors[1],
+    caret: colors[2],
+    sub: colors[3],
+    subAlt: colors[4],
+    text: colors[5],
+    error: colors[6],
+    errorExtra: colors[7],
+    colorfulError: colors[8],
+    colorfulErrorExtra: colors[9],
+  };
+}
+
+export function convertThemeToCustomColors(theme: Theme): CustomThemeColors {
+  return [
+    theme.bg,
+    theme.main,
+    theme.caret,
+    theme.sub,
+    theme.subAlt,
+    theme.text,
+    theme.error,
+    theme.errorExtra,
+    theme.colorfulError,
+    theme.colorfulErrorExtra,
+  ];
 }

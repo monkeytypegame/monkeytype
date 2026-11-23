@@ -3,7 +3,7 @@ import { Language } from "@monkeytype/schemas/languages";
 import { Mode } from "@monkeytype/schemas/shared";
 import { Accessor, For, JSXElement, Show } from "solid-js";
 
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../auth/state";
 import { Selection } from "../../../states/leaderboard-selection";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { Button } from "../../common/Button";

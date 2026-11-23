@@ -1,12 +1,9 @@
 import { JSXElement } from "solid-js";
 
+import { playClick, previewClick } from "../../../../audio";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import {
-  playClick,
-  previewClick,
-} from "../../../../controllers/sound-controller";
 import { Slider } from "../../../common/Slider";
 import { SearchableSetting } from "../SearchableSetting";
 

@@ -14,6 +14,7 @@ import { FpsCounter } from "./FpsCounter";
 import { LoaderBar } from "./LoaderBar";
 import { MediaQueryDebugger } from "./MediaQueryDebugger";
 import { Notifications } from "./Notifications";
+import { SkillIssueFix } from "./SkillIssueFix";
 
 export function Overlays(): JSXElement {
   return (
@@ -40,6 +41,7 @@ export function Overlays(): JSXElement {
       <MediaQueryDebugger />
       <LoaderBar />
       <FpsCounter />
+      <SkillIssueFix />
       <Show when={isDevEnvironment()}>
         <DevButtons />
       </Show>

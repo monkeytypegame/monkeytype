@@ -3,6 +3,6 @@
   src: url("/webfonts/GallaudetRegular.woff2") format("woff2");
 }
 
-#wordsWrapper {
+[data-ui-element="wordsWrapper"] {
   font-family: Gallaudet !important;
 }

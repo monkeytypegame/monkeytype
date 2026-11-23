@@ -21,12 +21,12 @@ export function layoutKeyToKeycode(
   const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
   const row = rows[rowIndex];
   if (row === undefined) {
-    return;
+    return undefined;
   }
 
   const keyIndex = row.findIndex((k) => k.includes(key));
   if (keyIndex === -1) {
-    return;
+    return undefined;
   }
 
   let keycode = qwertyKeycodeKeymap[rowIndex]?.[keyIndex];
@@ -97,12 +97,14 @@ export function mirrorLayoutKeys(layout: LayoutObject): LayoutObject {
  * @returns layout Layout object from our JSON data (e.g., layouts["qwerty"])
  */
 export function upsideDownLayout(layout: LayoutObject): LayoutObject {
-  const space = [" "];
   const empty: string[] = [];
-  const newRow1 = new Array<string[]>(13).fill(empty);
+  // digits 3-8 become the space bar
+  const newRow1 = Array.from({ length: 13 }, (_, i) =>
+    i >= 3 && i < 9 ? [" "] : [],
+  );
   const isIso = layout.type === "iso";
   const upside_down_keys: LayoutObject["keys"] = {
-    row1: newRow1.fill(space, 3, 9),
+    row1: newRow1,
     row2: [...[...layout.keys.row4].reverse(), empty, empty, empty].slice(
       0,
       isIso ? 12 : 13,

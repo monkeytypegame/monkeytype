@@ -100,6 +100,28 @@ describe("InputField", () => {
     expect(onFocus).toHaveBeenCalled();
   });
 
+  it("calls form handleSubmit after handleBlur when submitOnBlur", async () => {
+    const field = makeField("name");
+    const handleSubmit = vi.fn(() => {
+      expect(field.handleBlur).toHaveBeenCalled();
+    });
+    field.form = { options: { defaultValues: {} }, handleSubmit } as any;
+    render(() => <InputField field={() => field} submitOnBlur />);
+
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(handleSubmit).toHaveBeenCalled();
+  });
+
+  it("does not call form handleSubmit on blur by default", async () => {
+    const field = makeField("name");
+    const handleSubmit = vi.fn();
+    field.form = { options: { defaultValues: {} }, handleSubmit } as any;
+    render(() => <InputField field={() => field} />);
+
+    fireEvent.blur(screen.getByRole("textbox"));
+    expect(handleSubmit).not.toHaveBeenCalled();
+  });
+
   it("renders disabled input", () => {
     const field = makeField("name");
     render(() => <InputField field={() => field} disabled />);
@@ -173,6 +195,82 @@ describe("InputField", () => {
     // Set to 6
     fireEvent.input(input, { target: { value: "6" } });
     expect(field.handleChange).toHaveBeenCalledWith(6);
+  });
+
+  it("renders password toggle button when type is password", () => {
+    const field = makeField("password");
+    render(() => <InputField field={() => field} type="password" />);
+
+    expect(screen.getByRole("button")).toBeInTheDocument();
+  });
+
+  it("password field starts with type=password (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(container.querySelector("input")).toHaveAttribute(
+      "type",
+      "password",
+    );
+  });
+
+  it("toggling password button switches input type to text", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const input = container.querySelector("input");
+    expect(input).toHaveAttribute("type", "password");
+
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
+  });
+
+  it("toggling password button a second time switches back to password", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    const input = container.querySelector("input");
+
+    // First toggle: show
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "text");
+
+    // Second toggle: hide
+    fireEvent.click(screen.getByRole("button"));
+    expect(input).toHaveAttribute("type", "password");
+  });
+
+  it("does not render password toggle when type is not password", () => {
+    const field = makeField("name");
+    render(() => <InputField field={() => field} type="text" />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("shows eye icon when password is hidden (masked)", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    expect(container.querySelector(".fa-eye")).toBeInTheDocument();
+  });
+
+  it("shows eye-slash icon when password is visible", () => {
+    const field = makeField("password");
+    const { container } = render(() => (
+      <InputField field={() => field} type="password" />
+    ));
+
+    fireEvent.click(screen.getByRole("button"));
+
+    expect(container.querySelector(".fa-eye-slash")).toBeInTheDocument();
   });
 
   it("keeps empty string for string values", async () => {

@@ -1,12 +1,13 @@
-import * as TestUI from "../../test/test-ui";
-import * as TestWords from "../../test/test-words";
+import { afterTestDelete } from "../helpers/after-input";
+import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
 import { Config } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
-import { DeleteInputType } from "../helpers/input-type";
-import { getCurrentInput, logTestEvent } from "../../test/events/data";
-import { getActiveWordIndex } from "../../states/test";
+import { DeleteInputType } from "../../test/engine/input-type";
+import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
+import { getActiveWordIndex } from "../../test/engine/state";
+import { setWordInput } from "../../states/words-render";
 
 export function onDelete(inputType: DeleteInputType, now: number): void {
   const { realInputValue } = getInputElementValue();
@@ -49,7 +50,7 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
       inputValue: postNavInputValue,
     });
 
-    TestUI.afterTestDelete();
+    afterTestDelete();
     return;
   }
 
@@ -58,6 +59,11 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     // if the input is NOT empty, that means the ctrl backspace deleted more than just the fake space (THANKS FIREFOX)
     // which means we need to force update the current word element when we move back
     goToPreviousWord(inputType);
+
+    // the word we left is untyped now, even if it had leftover input.
+    // must run after goToPreviousWord: it renders the word with its stale
+    // input, and the last write wins
+    setWordInput(activeWordIndexBeforeDelete, "", "");
 
     // Record the resulting state of the destination word
     const postNavInputValue = getInputElementValue().inputValue;
@@ -78,5 +84,5 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
     });
   }
 
-  TestUI.afterTestDelete();
+  afterTestDelete();
 }

@@ -1,19 +1,18 @@
 import { createMemo } from "solid-js";
 
-import { useActiveTagsLiveQuery } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
+import { getActiveTags } from "../../../../queries/tags";
 import { showCommandline } from "../../../../states/commandline";
 import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
 import {
-  getFocus,
+  isFocusMode,
   getLoadedChallenge,
   getPaceCaretWpm,
   isPaceRepeat,
   isRepeated,
-  wordsHaveNewline,
-  wordsHaveTab,
 } from "../../../../states/test";
+import { wordsHaveNewline, wordsHaveTab } from "../../../../test/engine/state";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
 import {
@@ -31,7 +30,7 @@ export function TestModesNotice() {
       class={cn(
         "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
         {
-          "opacity-0": getFocus(),
+          "opacity-0": isFocusMode(),
         },
       )}
     >
@@ -378,14 +377,12 @@ function OppositeShift() {
 }
 
 function Tags() {
-  const tags = useActiveTagsLiveQuery();
-
   return (
     <Notice
-      when={tags().length > 0}
-      icon={tags().length === 1 ? "fa-tag" : "fa-tags"}
+      when={getActiveTags().length > 0}
+      icon={getActiveTags().length === 1 ? "fa-tag" : "fa-tags"}
       openCommandline="tags"
-      text={tags()
+      text={getActiveTags()
         .map((tag) => tag.name)
         .join(", ")}
     />

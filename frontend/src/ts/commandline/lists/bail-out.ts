@@ -1,7 +1,6 @@
 import { Config } from "../../config/store";
 import { getCustomTextIndicator } from "../../states/core";
 import * as CustomText from "../../test/custom-text";
-import { setBailedOut } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -38,8 +37,7 @@ const subgroup: CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        setBailedOut(true);
-        void TestLogic.finish();
+        TestLogic.finish({ type: "bailedOut" });
       },
       available: (): boolean => {
         return canBailOut();
@@ -52,7 +50,7 @@ const commands: Command[] = [
   {
     id: "bailOut",
     display: "Bail out...",
-    icon: "fa-running",
+    fa: { icon: "fa-running" },
     subgroup,
     visible: false,
     available: (): boolean => {
