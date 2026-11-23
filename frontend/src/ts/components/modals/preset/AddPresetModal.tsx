@@ -25,7 +25,7 @@ import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,
   getCheckboxes,
-  getConfigChanges,
+  buildPresetConfig,
 } from "./preset-modal-utils";
 
 export function AddPresetModal(): JSXElement {
@@ -75,7 +75,7 @@ export function AddPresetModal(): JSXElement {
         return;
       }
 
-      const configChanges = getConfigChanges(presetType(), checkboxes);
+      const configChanges = buildPresetConfig(presetType(), checkboxes);
       const activeSettingGroups = getActiveSettingGroups(checkboxes);
 
       hideModal("AddPresetModal");
