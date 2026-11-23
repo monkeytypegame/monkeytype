@@ -12,12 +12,13 @@ import {
 
 import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
-import QuotesController, {
-  Quote,
-} from "../../../../controllers/quotes-controller";
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getTags } from "../../../../queries/tags";
-import { setQuoteFavorite, getUserData } from "../../../../queries/user";
+import {
+  isQuoteFavorite,
+  setQuoteFavorite,
+  getUserData,
+} from "../../../../queries/user";
 import { getFormatting } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
@@ -31,6 +32,7 @@ import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
 import { getTimeTodayString } from "../../../../test/today-tracker";
+import { Quote } from "../../../../types/quotes";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import { getLanguageDisplayString } from "../../../../utils/strings";
@@ -285,7 +287,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();
-    return QuotesController.isQuoteFavorite(props.quote);
+    return isQuoteFavorite(props.quote);
   };
   // fills quoteStats() in states/quote-rate, which the rate modal also updates
   // keyed on the details too, since restart clears stats and a repeated quote is the same object.

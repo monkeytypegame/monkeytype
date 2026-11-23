@@ -5,6 +5,8 @@ import Ape from "../../src/ts/ape";
 import {
   __testing,
   addBadge,
+  getFavoriteQuoteIds,
+  isQuoteFavorite,
   addXp,
   getUserData,
   loadUserData,
@@ -431,5 +433,35 @@ describe("optimistic actions", () => {
       { id: 1, selected: false },
       { id: 2, selected: true },
     ]);
+  });
+});
+
+describe("favourite quotes", () => {
+  beforeEach(() => {
+    __testing.setUser(
+      user({
+        favoriteQuotes: {
+          english: ["1", "2"],
+          english_1k: ["3"],
+          german: ["4"],
+        },
+      }),
+    );
+  });
+
+  it("collects the ids across a language's size variants", () => {
+    expect(getFavoriteQuoteIds("english_10k")).toEqual(["1", "2", "3"]);
+    expect(getFavoriteQuoteIds("french")).toEqual([]);
+  });
+
+  it("tells whether a quote is a favourite", () => {
+    expect(isQuoteFavorite({ language: "english", id: 3 })).toBe(true);
+    expect(isQuoteFavorite({ language: "german", id: 1 })).toBe(false);
+  });
+
+  it("has no favourites when signed out", () => {
+    __testing.setUser(undefined);
+    expect(getFavoriteQuoteIds("english")).toEqual([]);
+    expect(isQuoteFavorite({ language: "english", id: 1 })).toBe(false);
   });
 });
