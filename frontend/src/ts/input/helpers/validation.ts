@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { type CommitCharacterType } from "./util";
 
 /**
@@ -17,7 +17,7 @@ export function isCharCorrect(options: {
 }): boolean {
   const { data, inputValue, targetWord, correctShiftUsed } = options;
 
-  if (Config.mode === "zen") return true;
+  if (getConfig.mode === "zen") return true;
   if (correctShiftUsed === false) return false;
 
   const targetChar = targetWord[inputValue.length];
@@ -53,14 +53,14 @@ export function shouldGoToNextWord(options: {
 
   if (commitType === false) return false;
 
-  if (Config.mode === "zen") return true;
+  if (getConfig.mode === "zen") return true;
 
   //strict space: a leading separator on empty input must not skip the word.
   //nospace commits (final letter of a 1-letter word) are legitimate here.
   if (
     inputValue.length === 0 &&
     commitType === "separator" &&
-    (Config.strictSpace || Config.difficulty !== "normal")
+    (getConfig.strictSpace || getConfig.difficulty !== "normal")
   ) {
     return false;
   }
@@ -68,16 +68,16 @@ export function shouldGoToNextWord(options: {
   const correct = inputValue + data === targetWord;
 
   //stop on error
-  if (Config.stopOnError === "word" && !correct) {
+  if (getConfig.stopOnError === "word" && !correct) {
     return false;
   }
 
-  if (Config.stopOnError === "letter" && !correct) {
+  if (getConfig.stopOnError === "letter" && !correct) {
     return false;
   }
 
   //delete on error
-  if (Config.deleteOnError !== "off" && !correct) {
+  if (getConfig.deleteOnError !== "off" && !correct) {
     return false;
   }
 

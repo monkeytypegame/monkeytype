@@ -146,7 +146,7 @@ export function Theme(): JSXElement {
                     ? {
                         image: getConfig.customBackground,
                         size: getConfig.customBackgroundSize,
-                        filter: getConfig.customBackgroundFilter,
+                        filter: [...getConfig.customBackgroundFilter],
                       }
                     : undefined,
                 });

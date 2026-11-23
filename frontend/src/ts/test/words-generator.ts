@@ -1,5 +1,5 @@
 import { getTestSettings } from "./engine/test-settings";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
 import QuotesController, {
@@ -445,7 +445,7 @@ export function getLimit(): number {
       .flatMap((fb) => fb.properties ?? [])
       .find((prop) => prop.startsWith("toPush:")) ?? "";
 
-  if (Config.showAllLines) {
+  if (getConfig.showAllLines) {
     if (getTestSettings().mode === "custom") {
       limit = getTestSettings().customText.limit.value;
     }
@@ -958,7 +958,7 @@ export async function getNextWord(
   const randomWordLanguage =
     (currentWordset instanceof PolyglotWordset
       ? currentWordset.wordsWithLanguage.get(randomWord)
-      : getTestSettings().language) ?? getTestSettings().language; // Fall back to Config language if per-word language is unavailable
+      : getTestSettings().language) ?? getTestSettings().language; // Fall back to getConfig language if per-word language is unavailable
 
   if (
     getTestSettings().mode !== "custom" &&

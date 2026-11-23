@@ -46,7 +46,6 @@ describe("ConfigMeta", () => {
         "strictSpace",
         "stopOnError",
         "lazyMode",
-        "layout",
         "codeUnindentOnBackspace",
       ].sort(),
     );

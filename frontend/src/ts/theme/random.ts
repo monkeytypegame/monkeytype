@@ -1,6 +1,6 @@
 import * as Arrays from "../utils/arrays";
 import { isColorDark, isColorLight } from "../utils/colors";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { getCustomTheme, getCustomThemes } from "../queries/custom-themes";
 import { ThemeName } from "@monkeytype/schemas/configs";
@@ -11,19 +11,23 @@ let randomThemeIndex = 0;
 let themesList: (ThemeName | string)[] = [];
 
 export function updateThemeList(): void {
-  if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
-    themesList = Config.favThemes;
-  } else if (Config.randomTheme === "light") {
+  if (getConfig.randomTheme === "fav" && getConfig.favThemes.length > 0) {
+    // a copy: the list is shuffled in place, the store is read-only
+    themesList = [...getConfig.favThemes];
+  } else if (getConfig.randomTheme === "light") {
     themesList = ThemesList.filter((t) => isColorLight(t.bg)).map(
       (t) => t.name,
     );
-  } else if (Config.randomTheme === "dark") {
+  } else if (getConfig.randomTheme === "dark") {
     themesList = ThemesList.filter((t) => isColorDark(t.bg)).map((t) => t.name);
-  } else if (Config.randomTheme === "on" || Config.randomTheme === "auto") {
+  } else if (
+    getConfig.randomTheme === "on" ||
+    getConfig.randomTheme === "auto"
+  ) {
     themesList = ThemesList.map((t) => {
       return t.name;
     });
-  } else if (Config.randomTheme === "custom") {
+  } else if (getConfig.randomTheme === "custom") {
     themesList = getCustomThemes().map((ct) => ct._id);
   }
   Arrays.shuffle(themesList);
@@ -37,13 +41,13 @@ export function randomizeTheme(): void {
   }
 
   // before picking: the configured theme effect clears the random theme
-  if (Config.customTheme) {
+  if (getConfig.customTheme) {
     setConfig("customTheme", false, {
       nosave: true,
     });
   }
 
-  if (Config.randomTheme === "custom") {
+  if (getConfig.randomTheme === "custom") {
     const theme = getCustomTheme(nextFromList());
     setRandomTheme({
       name: "custom",
@@ -53,7 +57,7 @@ export function randomizeTheme(): void {
   }
 
   let filter = (_: string): boolean => true;
-  if (Config.randomTheme === "auto") {
+  if (getConfig.randomTheme === "auto") {
     filter = prefersDarkScheme() ? isColorDark : isColorLight;
   }
 

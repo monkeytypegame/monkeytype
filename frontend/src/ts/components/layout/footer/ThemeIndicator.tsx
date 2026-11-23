@@ -3,7 +3,7 @@ import { createMemo, JSXElement, Show } from "solid-js";
 
 import { isAuthenticated } from "../../../auth/state";
 import { setConfig } from "../../../config/setters";
-import { Config, getConfig } from "../../../config/store";
+import { getConfig } from "../../../config/store";
 import { getCustomThemes } from "../../../queries/custom-themes";
 import { showCommandline } from "../../../states/commandline";
 import { showNoticeNotification } from "../../../states/notifications";
@@ -39,7 +39,7 @@ export function ThemeIndicator(): JSXElement {
 
   const handleClick = (e: MouseEvent): void => {
     if (e.shiftKey) {
-      if (Config.customTheme) {
+      if (getConfig.customTheme) {
         setConfig("customTheme", false);
         return;
       }
@@ -49,7 +49,7 @@ export function ThemeIndicator(): JSXElement {
       }
       setConfig("customTheme", true);
     } else {
-      const subgroup = Config.customTheme ? "customTheme" : "themes";
+      const subgroup = getConfig.customTheme ? "customTheme" : "themes";
       showCommandline({ subgroupOverride: subgroup });
     }
   };

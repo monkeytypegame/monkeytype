@@ -14,8 +14,6 @@ export function PbNotice() {
     if (!isAuthenticated()) return "";
     const format = getFormatting();
 
-    //react on config.funbox
-    const _funbox = getConfig.funbox;
     //react on new localPB
     const _userData = getUserData();
 

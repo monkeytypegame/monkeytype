@@ -1,5 +1,5 @@
 import type { Howl } from "howler";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 
 let howlerModulePromise: Promise<typeof import("howler")> | null = null;
 export async function getHowlerModule(): Promise<typeof import("howler")> {
@@ -29,7 +29,7 @@ let initPromise: Promise<void> | null = null;
 export async function initHowlerVolume(): Promise<void> {
   initPromise ??= (async () => {
     const { Howler } = await getHowlerModule();
-    Howler.volume(Config.soundVolume);
+    Howler.volume(getConfig.soundVolume);
   })();
 
   await initPromise;
