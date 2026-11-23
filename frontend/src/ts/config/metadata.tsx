@@ -912,7 +912,7 @@ const configMetadataEntries = {
     key: "layout",
     fa: { icon: "fa-keyboard" },
     displayString: "layout",
-    changeRequiresRestart: true,
+    changeRequiresRestart: false,
     group: "input",
     description:
       "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",

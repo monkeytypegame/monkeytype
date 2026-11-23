@@ -35,7 +35,6 @@ export const TEST_SETTINGS_KEYS = [
   "strictSpace",
   "stopOnError",
   "lazyMode",
-  "layout",
   "codeUnindentOnBackspace",
 ] as const satisfies readonly (keyof ConfigType)[];
 
