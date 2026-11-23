@@ -1,4 +1,5 @@
 import { getTestSettings } from "../test/engine/test-settings";
+import { getLiveCachedTimerStartMs } from "../test/engine/events/live-cache";
 import { createMemo, createRoot } from "solid-js";
 
 import { getConfig } from "../config/store";
@@ -69,9 +70,14 @@ export function getBarTarget(): {
     if (seconds === undefined || limit === 0) {
       return { width: "100vw", duration: 0 };
     }
+    // one linear run to empty over the time left, re-synced every tick: a late
+    // tick can't leave the bar parked at the previous second's target
+    const startMs = getLiveCachedTimerStartMs();
+    const elapsedMs =
+      startMs === null ? seconds * 1000 : performance.now() - startMs;
     return {
-      width: `${100 - ((seconds + 1) / limit) * 100}vw`,
-      duration: 1000,
+      width: "0vw",
+      duration: Math.max(0, limit * 1000 - elapsedMs),
       ease: "linear",
     };
   }
