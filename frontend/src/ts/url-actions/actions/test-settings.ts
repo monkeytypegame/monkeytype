@@ -21,7 +21,7 @@ import {
 import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
 import { setSelectedQuoteId } from "../../states/test";
 import * as CustomText from "../../test/custom-text";
@@ -163,7 +163,7 @@ async function applyTestSettings(settings: SharedTestSettings): Promise<void> {
     applied["mode"] = settings.mode;
   }
 
-  const mode = settings.mode ?? Config.mode;
+  const mode = settings.mode ?? getConfig.mode;
   if (settings.mode2 !== undefined) {
     if (mode === "time") {
       setConfig("time", parseInt(settings.mode2, 10), {
