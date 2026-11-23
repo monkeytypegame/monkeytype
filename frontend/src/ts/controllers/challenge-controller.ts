@@ -8,7 +8,7 @@ import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 
 import { setConfig } from "../config/setters";
-import { Config, getConfig } from "../config/store";
+import { getConfig } from "../config/store";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
@@ -126,7 +126,7 @@ function verifyRequirement(
     const requirementValue = requirements.config;
     for (const configKey of typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
-      if (Config[configKey] !== configValue) {
+      if (getConfig[configKey] !== configValue) {
         requirementsMet = false;
         failReasons.push(`${configKey} not set to ${configValue}`);
       }
