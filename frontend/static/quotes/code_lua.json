@@ -94,13 +94,13 @@
     {
       "text": "local list = {1, 4, 6, 9, 23}\nlocal largest_number = 0\nlocal temporary = 0\nfor i, v in ipairs(list) do\n\ttemporary = v\n\tif temporary > largest_number then\n\t\tlargest_number = temporary\n\tend\nend\nio.write(\"The largest number in this set is \", largest_number, \"\\n\")",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 3",
-      "length": 259,
+      "length": 260,
       "id": 15
     },
     {
       "text": "io.write(\" > \")\nlocal input = io.read(\"*line\")\ninputUpper = input:upper()\ninputLower = input:lower()\nlocal output = \"\"\nlocal map = {[0] = inputUpper, [1] = inputLower}\nfor i = 1, input:len() do\n\toutput = output..map[i%2]:sub(i,i)\nend\nio.write(output, \"\\n\")",
       "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 4",
-      "length": 255,
+      "length": 256,
       "id": 16
     }
 	
