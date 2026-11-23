@@ -1,12 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  afterAll,
-  vi,
-} from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
 import * as ConfigUtils from "../../src/ts/config/utils";
@@ -20,7 +12,6 @@ import {
 } from "@monkeytype/schemas/configs";
 import * as FunboxValidation from "../../src/ts/config/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config/validation";
-import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
 import * as EngineState from "../../src/ts/test/engine/state";
@@ -46,7 +37,6 @@ describe("Config", () => {
       ConfigValidation,
       "isConfigValueValid",
     );
-    const dispatchConfigEventMock = vi.spyOn(configEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
     const notificationAddMock = vi.spyOn(
       Notifications,
@@ -59,7 +49,6 @@ describe("Config", () => {
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,
       isConfigValueValidMock,
-      dispatchConfigEventMock,
       dbSaveConfigMock,
       notificationAddMock,
       miscReloadAfterMock,
@@ -206,25 +195,10 @@ describe("Config", () => {
       Config.setConfig("confidenceMode", "max");
 
       //THEN
-      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith({
-        key: "freedomMode",
-        newValue: false,
-        nosave: true,
-        previousValue: true,
-      });
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "stopOnError",
-        newValue: "off",
-        nosave: false,
-        previousValue: "letter",
-      });
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "confidenceMode",
-        newValue: "max",
-        nosave: false,
-        previousValue: "off",
+      expect(getConfig()).toMatchObject({
+        confidenceMode: "max",
+        freedomMode: false,
+        stopOnError: "off",
       });
     });
 
@@ -276,25 +250,6 @@ describe("Config", () => {
       await vi.advanceTimersByTimeAsync(2500);
 
       expect(dbSaveConfigMock).not.toHaveBeenCalled();
-    });
-
-    it("dispatches event on set", () => {
-      //GIVEN
-      replaceConfig({ numbers: false });
-
-      //WHEN
-      Config.setConfig("numbers", true, {
-        nosave: true,
-      });
-
-      //THEN
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "numbers",
-        newValue: true,
-        nosave: true,
-        previousValue: false,
-      });
     });
 
     it("triggers resize if property is set", () => {
@@ -509,31 +464,16 @@ describe("Config", () => {
       expect(config.keymapMode).toEqual("off");
     });
   });
-  describe("store is updated before the config event fires", () => {
-    let seen: Partial<Record<string, unknown>>;
-    let unsubscribe: () => void;
-    beforeEach(() => {
-      seen = {};
-      unsubscribe = configEvent.subscribe(({ key }) => {
-        if (key === "fullConfigChange") return;
-        if (key === "fullConfigChangeFinished") {
-          seen[key] = {
-            funbox: [...getConfigStore.funbox],
-            mode: getConfigStore.mode,
-          };
-          return;
-        }
-        seen[key] = structuredClone(unwrap(getConfigStore[key]));
-      });
-    });
-    afterEach(() => unsubscribe());
-
+  describe("store writes", () => {
     it("setConfig, including keys set by overrideConfig", () => {
       replaceConfig({ monkey: false, liveSpeedStyle: "text" });
 
       expect(Config.setConfig("monkey", true)).toBe(true);
 
-      expect(seen).toMatchObject({ monkey: true, liveSpeedStyle: "mini" });
+      expect(getConfigStore).toMatchObject({
+        monkey: true,
+        liveSpeedStyle: "mini",
+      });
     });
 
     it("toggleFunbox", () => {
@@ -541,7 +481,7 @@ describe("Config", () => {
 
       expect(Config.toggleFunbox("mirror")).toBe(true);
 
-      expect(seen).toMatchObject({ funbox: ["mirror"] });
+      expect(unwrap(getConfigStore).funbox).toEqual(["mirror"]);
     });
 
     it("applyConfig, including keys reset after a failed set", async () => {
@@ -549,11 +489,8 @@ describe("Config", () => {
 
       await Lifecycle.applyConfig({ mode: "quote", funbox: ["58008"] });
 
-      expect(seen).toMatchObject({
-        mode: "quote",
-        fullConfigChangeFinished: { funbox: [], mode: "quote" },
-      });
-      expect(getConfigStore.funbox).toEqual([]);
+      expect(getConfigStore.mode).toBe("quote");
+      expect(unwrap(getConfigStore).funbox).toEqual([]);
     });
 
     it("applyConfig keeps auto switch theme next to a theme", async () => {

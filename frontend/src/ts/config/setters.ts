@@ -1,7 +1,6 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
@@ -36,8 +35,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
       currentConfig: Config,
     });
   }
-
-  const previousValue = Config[key];
 
   if (
     changeRequiresRestart(key, Config) &&
@@ -125,14 +122,6 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   setConfigStore(key, value);
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
 
-  // @ts-expect-error i can't figure this out
-  configEvent.dispatch({
-    key: key,
-    newValue: value,
-    nosave: options?.nosave ?? false,
-    previousValue: previousValue,
-  });
-
   if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
   }
@@ -184,8 +173,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
-  const previousValue = Config.funbox;
-
   let newConfig: FunboxName[] = Config.funbox;
 
   if (newConfig.includes(funbox)) {
@@ -201,12 +188,6 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
   Config.funbox = newConfig;
   setConfigStore("funbox", newConfig);
   saveToLocalStorage("funbox", nosave);
-  configEvent.dispatch({
-    key: "funbox",
-    newValue: Config.funbox,
-    nosave,
-    previousValue,
-  });
 
   return true;
 }
