@@ -6,7 +6,7 @@ import { batch, createSignal, For, JSXElement, Show, untrack } from "solid-js";
 import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import {
   getCustomTextIndicator,
   setCustomTextIndicator,
@@ -164,7 +164,7 @@ export function CustomTextModal(): JSXElement {
         showNoticeNotification("Challenge cleared");
         setLoadedChallenge(null);
       }
-      if (Config.mode !== "custom") {
+      if (getConfig.mode !== "custom") {
         setConfig("mode", "custom");
       }
       PractiseWords.resetBefore();

@@ -3,7 +3,7 @@ import { CaretStyle } from "@monkeytype/schemas/configs";
 import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
 
-import { Config } from "../../../config/store";
+import { getConfig } from "../../../config/store";
 import * as TestWords from "../../../test/engine/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
@@ -45,7 +45,7 @@ export function getTapeLetterShift(
   for (let i = 0; i < inputLength; i++) {
     const letter = word.getLetter(i);
     if (
-      (Config.blindMode || Config.hideExtraLetters) &&
+      (getConfig.blindMode || getConfig.hideExtraLetters) &&
       letter?.getAttribute("data-ui-state") === "extra"
     ) {
       continue;
@@ -253,13 +253,13 @@ export class Caret {
     width?: number;
   }): void {
     const smoothCaretSpeed =
-      Config.smoothCaret === "off"
+      getConfig.smoothCaret === "off"
         ? 0
-        : Config.smoothCaret === "slow"
+        : getConfig.smoothCaret === "slow"
           ? 150
-          : Config.smoothCaret === "medium"
+          : getConfig.smoothCaret === "medium"
             ? 100
-            : Config.smoothCaret === "fast"
+            : getConfig.smoothCaret === "fast"
               ? 85
               : 0;
 
@@ -315,7 +315,7 @@ export class Caret {
       if (options.letterIndex >= wordLength) {
         side = "afterLetter";
 
-        if (Config.blindMode || Config.hideExtraLetters) {
+        if (getConfig.blindMode || getConfig.hideExtraLetters) {
           options.letterIndex = wordLength - 1;
         } else {
           options.letterIndex -= 1;
@@ -460,11 +460,11 @@ export class Caret {
     const wrapperWidth = this.getWordsWrapper().offsetWidth;
     const tapeOffset =
       options.testDirection === "rtl"
-        ? wrapperWidth * (1 - Config.tapeMargin / 100)
-        : wrapperWidth * (Config.tapeMargin / 100);
+        ? wrapperWidth * (1 - getConfig.tapeMargin / 100)
+        : wrapperWidth * (getConfig.tapeMargin / 100);
 
     const lockedInTape =
-      this.isMainCaret && lockedMainCaretInTape && Config.tapeMode !== "off";
+      this.isMainCaret && lockedMainCaretInTape && getConfig.tapeMode !== "off";
     // the tape anchors the word's start in the test's direction. A word
     // running the other way starts at its other edge: the caret can't stay at
     // the anchor, it goes to its letter in the word as laid out once the tape
@@ -475,7 +475,7 @@ export class Caret {
       tapeAnchorsLetter = false;
       const wordWidth = wordEl.getOffsetWidth();
       const shift =
-        Config.tapeMode === "letter"
+        getConfig.tapeMode === "letter"
           ? getTapeLetterShift(word, options.inputLength)
           : 0;
       wordLeft =
@@ -494,14 +494,17 @@ export class Caret {
           afterLetterCorrection += letter.offsetWidth * -1;
         }
       }
-      if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
+      if (
+        getConfig.tapeMode === "off" ||
+        (lockedInTape && !tapeAnchorsLetter)
+      ) {
         if (!this.isFullWidth()) {
           left += letter.offsetWidth;
         }
         left += letter.offsetLeft;
         left += wordLeft;
         left += afterLetterCorrection;
-      } else if (Config.tapeMode === "word") {
+      } else if (getConfig.tapeMode === "word") {
         if (!this.isFullWidth()) {
           left += letter.offsetWidth;
         }
@@ -514,7 +517,7 @@ export class Caret {
           left += wordEl.getOffsetLeft();
           left += wordEl.getOffsetWidth();
         }
-      } else if (Config.tapeMode === "letter") {
+      } else if (getConfig.tapeMode === "letter") {
         if (this.isFullWidth()) {
           left += width * -1;
         }
@@ -532,11 +535,14 @@ export class Caret {
       if (options.side === "afterLetter") {
         afterLetterCorrection += letter.offsetWidth;
       }
-      if (Config.tapeMode === "off" || (lockedInTape && !tapeAnchorsLetter)) {
+      if (
+        getConfig.tapeMode === "off" ||
+        (lockedInTape && !tapeAnchorsLetter)
+      ) {
         left += letter.offsetLeft;
         left += wordLeft;
         left += afterLetterCorrection;
-      } else if (Config.tapeMode === "word") {
+      } else if (getConfig.tapeMode === "word") {
         left += letter.offsetLeft;
         left += afterLetterCorrection;
         if (tapeAnchorsLetter) {
@@ -544,7 +550,7 @@ export class Caret {
         } else {
           left += wordEl.getOffsetLeft();
         }
-      } else if (Config.tapeMode === "letter") {
+      } else if (getConfig.tapeMode === "letter") {
         if (tapeAnchorsLetter) {
           left += tapeOffset;
         } else {

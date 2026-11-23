@@ -4,7 +4,7 @@ import type { JSAnimation } from "animejs";
 import { Accessor, createEffect, createSignal, on, onCleanup } from "solid-js";
 import { debounce, throttle } from "throttle-debounce";
 
-import { Config, getConfig } from "../../../config/store";
+import { getConfig } from "../../../config/store";
 import { focusInputElement } from "../../../input/input-element";
 import { getFontPreview } from "../../../states/font";
 import {
@@ -195,7 +195,7 @@ function setMarginLeft(
   marginLeft: number,
   duration: number,
 ): void {
-  if (Config.smoothLineScroll) {
+  if (getConfig.smoothLineScroll) {
     el.animate({ marginLeft, duration, ease: tapeScrollEase });
   } else {
     el.setStyle({ marginLeft: `${marginLeft}px` });
@@ -319,7 +319,7 @@ export function createWordsLayout(options: {
     if (caretHandle?.native !== el) {
       caretHandle = new Caret(el, {
         isMainCaret: true,
-        style: () => Config.caretStyle,
+        style: () => getConfig.caretStyle,
         wordsWrapper: () => wordsWrapperEl().native,
         wordRegistry: registry,
       });
@@ -333,7 +333,7 @@ export function createWordsLayout(options: {
     if (paceCaretHandle?.native !== el) {
       paceCaretHandle = new Caret(el, {
         isMainCaret: false,
-        style: () => Config.paceCaretStyle,
+        style: () => getConfig.paceCaretStyle,
         wordsWrapper: () => wordsWrapperEl().native,
         wordRegistry: registry,
       });
@@ -365,7 +365,7 @@ export function createWordsLayout(options: {
           testDirection,
         ),
       }),
-      animate: Config.smoothCaret !== "off" && !noAnim,
+      animate: getConfig.smoothCaret !== "off" && !noAnim,
     });
   }
 
@@ -402,17 +402,17 @@ export function createWordsLayout(options: {
       return;
     }
 
-    const letterHeight = convertRemToPixels(Config.fontSize);
+    const letterHeight = convertRemToPixels(getConfig.fontSize);
     // the middle of the letters, +1 for half of border
     const centerY = activeWord.getOffsetTop() + letterHeight / 2 + 1;
 
     const maxWidth =
-      Config.tapeMode !== "off" ? 100 - Config.tapeMargin : undefined;
+      getConfig.tapeMode !== "off" ? 100 - getConfig.tapeMargin : undefined;
     const width = Math.max(activeWord.getOffsetWidth(), letterHeight);
 
     let left: number;
-    if (Config.tapeMode !== "off") {
-      left = wordsWrapperEl().getOffsetWidth() * (Config.tapeMargin / 100);
+    if (getConfig.tapeMode !== "off") {
+      left = wordsWrapperEl().getOffsetWidth() * (getConfig.tapeMargin / 100);
     } else if (
       activeWord.getOffsetWidth() < letterHeight &&
       isTestRightToLeft()
@@ -500,7 +500,7 @@ export function createWordsLayout(options: {
     activeWordTop = newActiveWord.getOffsetTop();
 
     if (previousActiveWordTop !== null) {
-      if (isTimedTest() || !Config.showAllLines) {
+      if (isTimedTest() || !getConfig.showAllLines) {
         if (activeWordTop > previousActiveWordTop) {
           // several word changes in one frame can cross more than one line:
           // jump to the line right above the active word, hiding all lines
@@ -521,7 +521,7 @@ export function createWordsLayout(options: {
       }
     }
 
-    if (wordChange !== "initial" && Config.tapeMode !== "off") {
+    if (wordChange !== "initial" && getConfig.tapeMode !== "off") {
       await scrollTape();
     }
 
@@ -534,7 +534,7 @@ export function createWordsLayout(options: {
     // unless slow timer is on, then it needs to happen
     // because the word jump check is disabled
     if (getTestSettings().mode !== "zen" && !isSlowTimer()) return;
-    if (Config.showAllLines) return;
+    if (getConfig.showAllLines) return;
     const wordAtIndex = getWordElement(wordIndex);
     if (wordAtIndex === null) return;
     const wordTop = wordAtIndex.getOffsetTop();
@@ -549,7 +549,7 @@ export function createWordsLayout(options: {
   }
 
   async function centerActiveLine(): Promise<void> {
-    if (Config.showAllLines) return;
+    if (getConfig.showAllLines) return;
     centeringActiveLine = jumpToActiveLine();
     await centeringActiveLine;
   }
@@ -579,7 +579,7 @@ export function createWordsLayout(options: {
       parseInt(wordComputedStyle.marginBottom);
     const wordHeight = activeWordEl.getOffsetHeight() + wordMargin;
 
-    const showAllLines = Config.showAllLines && !isTimedTest();
+    const showAllLines = getConfig.showAllLines && !isTimedTest();
 
     if (showAllLines) {
       //allow the wrapper to grow and shink with the words
@@ -588,7 +588,7 @@ export function createWordsLayout(options: {
       //zen mode, showAllLines off
       wordsWrapperEl().setStyle({ height: `${wordHeight * 2}px` });
     } else {
-      if (Config.tapeMode === "off") {
+      if (getConfig.tapeMode === "off") {
         //tape off, showAllLines off, non-zen mode
         let lines = 0;
         let lastTop = 0;
@@ -625,7 +625,7 @@ export function createWordsLayout(options: {
   }
 
   function updateWordsMargin(): void {
-    if (Config.tapeMode !== "off") {
+    if (getConfig.tapeMode !== "off") {
       wordsEl().setStyle({ marginLeft: "0" });
       void scrollTape(true);
     } else {
@@ -765,7 +765,7 @@ export function createWordsLayout(options: {
     /* calculate current word width to add to #words margin */
     let currentWordWidth = 0;
     const inputLength = getRenderedInput(activeItem.index).input.length;
-    if (Config.tapeMode === "letter" && inputLength > 0) {
+    if (getConfig.tapeMode === "letter" && inputLength > 0) {
       const activeWord = registry.getWord(activeItem.index);
       if (activeWord !== undefined) {
         currentWordWidth = getTapeLetterShift(activeWord, inputLength);
@@ -773,7 +773,7 @@ export function createWordsLayout(options: {
     }
 
     /* change to new #words & .afterNewline margins */
-    const tapeMarginPx = wordsWrapperWidth * (Config.tapeMargin / 100);
+    const tapeMarginPx = wordsWrapperWidth * (getConfig.tapeMargin / 100);
     let newMarginOffset = wordsWidthBeforeActive + currentWordWidth;
     let newMargin = tapeMarginPx - newMarginOffset;
     if (isRtl) {
@@ -785,7 +785,7 @@ export function createWordsLayout(options: {
 
     const caretScrollOptions = {
       newValue: newMarginOffset * -1,
-      duration: Config.smoothLineScroll ? duration : 0,
+      duration: getConfig.smoothLineScroll ? duration : 0,
       ease: tapeScrollEase,
     };
 
@@ -876,11 +876,11 @@ export function createWordsLayout(options: {
 
     const caretLineJumpOptions = {
       newMarginTop,
-      duration: Config.smoothLineScroll ? duration : 0,
+      duration: getConfig.smoothLineScroll ? duration : 0,
     };
     for (const c of allCarets()) c.handleLineJump(caretLineJumpOptions);
 
-    if (Config.smoothLineScroll) {
+    if (getConfig.smoothLineScroll) {
       lineTransition = true;
       const generation = layoutGeneration;
       await new Promise<void>((resolve) => {
@@ -946,7 +946,7 @@ export function createWordsLayout(options: {
   function layoutChange(flush: WordsFlush): void {
     if (flush.wordChange !== undefined) {
       void layoutActiveWord(flush.wordChange);
-    } else if (flush.updatedWords.length > 0 && Config.tapeMode !== "off") {
+    } else if (flush.updatedWords.length > 0 && getConfig.tapeMode !== "off") {
       // typing moves the tape
       void scrollTape();
     }
@@ -1013,7 +1013,7 @@ export function createWordsLayout(options: {
   const resized = debounce(250, async () => {
     if (isTestFinished()) return;
     const generation = layoutGeneration;
-    if (Config.tapeMode !== "off") {
+    if (getConfig.tapeMode !== "off") {
       await scrollTape();
     } else {
       const centering = centerActiveLine();
