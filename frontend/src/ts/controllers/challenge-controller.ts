@@ -1,4 +1,4 @@
-import { createRoot } from "solid-js";
+import { createEffect, createMemo, createRoot, on } from "solid-js";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -9,25 +9,21 @@ import * as Funbox from "../test/funbox/funbox";
 
 import { setConfig } from "../config/setters";
 import { Config, getConfig } from "../config/store";
-import { createEffectOn } from "../hooks/effects";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
-import { isTestRestarting } from "../test/engine/state";
+import { TEST_SETTINGS_KEYS } from "../test/engine/test-settings";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 
 let challengeLoading = false;
 
 export function clearActive(): void {
-  if (
-    getLoadedChallenge() !== null &&
-    !challengeLoading &&
-    !isTestRestarting()
-  ) {
+  if (getLoadedChallenge() !== null && !challengeLoading) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);
   }
@@ -358,26 +354,24 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   }
 }
 
-// a root so the effect is owned, it lives as long as the page
+// Changing a test setting, or a key the loaded challenge watches, clears it.
+// Only user writes reach these: funboxes write keys outside the test settings
+// (layout, keymap, show all lines), which challenges don't watch.
+function clearOnChange(key: keyof ConfigType): void {
+  // serialized, so changes inside arrays (funbox, quote length) count
+  const value = createMemo(() => JSON.stringify(getConfig[key]));
+  createEffect(on(value, () => clearActive(), { defer: true }));
+}
+
+// a root so the effects are owned, they live as long as the page
 createRoot(() => {
-  createEffectOn(
-    [
-      () => getConfig.difficulty,
-      () => getConfig.numbers,
-      () => getConfig.punctuation,
-      () => getConfig.mode,
-      () => [...getConfig.funbox],
-      () => getConfig.paceCaret,
-      () => getConfig.showAllLines,
-      () => getConfig.highlightMode,
-      () => getConfig.time,
-      () => getConfig.words,
-      () => getConfig.keymapMode,
-      () => getConfig.keymapLayout,
-      () => getConfig.layout,
-      () => getConfig.fontFamily,
-    ],
-    () => clearActive(),
-    { defer: true },
+  for (const key of TEST_SETTINGS_KEYS) clearOnChange(key);
+  // per loaded challenge, disposed when it changes
+  createEffect(
+    on(getLoadedChallenge, (challenge) => {
+      for (const key of challenge?.settings?.clearOnConfigChange ?? []) {
+        clearOnChange(key);
+      }
+    }),
   );
 });
