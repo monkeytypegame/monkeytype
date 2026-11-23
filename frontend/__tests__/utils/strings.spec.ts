@@ -408,6 +408,18 @@ describe("string utils", () => {
           expected: true,
         },
         {
+          desc: "latin ë and ё are equivalent",
+          char1: "ë",
+          char2: "ё",
+          expected: true,
+        },
+        {
+          desc: "latin Ë and Ё are equivalent",
+          char1: "Ë",
+          char2: "Ё",
+          expected: true,
+        },
+        {
           desc: "lowercase and uppercase are not equivalent",
           char1: "е",
           char2: "Ё",

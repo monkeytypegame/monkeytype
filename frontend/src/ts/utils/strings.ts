@@ -265,7 +265,7 @@ export const CHAR_EQUIVALENCE_SETS = [
 export const LANGUAGE_EQUIVALENCE_SETS: Partial<
   Record<Language, Set<string>[]>
 > = {
-  russian: [new Set(["ё", "е", "e"]), new Set(["Ё", "Е", "E"])],
+  russian: [new Set(["ё", "е", "e", "ë"]), new Set(["Ё", "Е", "E", "Ë"])],
 };
 
 /**
