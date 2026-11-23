@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue } from "../input-element";
 import { isWordRendered } from "../../states/words-render";
@@ -42,12 +42,12 @@ export function onBeforeDelete(event: InputEvent): void {
     }
   }
 
-  if (Config.freedomMode) {
+  if (getConfig.freedomMode) {
     //allow anything in freedom mode
     return;
   }
 
-  const confidence = Config.confidenceMode;
+  const confidence = getConfig.confidenceMode;
   const previousWord = TestWords.words.get(getActiveWordIndex() - 1);
   const previousWordCorrect =
     getInputForWord(getActiveWordIndex() - 1) === previousWord?.textWithCommit;

@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 // the spec's one documented exception: a synchronous measurement exported by
 // Words
 // oxlint-disable-next-line no-restricted-imports
@@ -38,7 +38,7 @@ export function onBeforeInsertText(data: string): boolean {
   }
 
   //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
+  if (data === "\n" && !wordsHaveNewline() && getConfig.mode !== "zen") {
     return true;
   }
 
@@ -68,18 +68,20 @@ export function onBeforeInsertText(data: string): boolean {
   //so it can be counted as a mistake and send the user back a word - it can
   //never be a mistake in zen, so dont let it through there
   const deleteOnErrorIsHard =
-    Config.mode !== "zen" &&
-    (Config.deleteOnError === "letter_hard" ||
-      Config.deleteOnError === "word_hard");
+    getConfig.mode !== "zen" &&
+    (getConfig.deleteOnError === "letter_hard" ||
+      getConfig.deleteOnError === "word_hard");
   const allowFirstSeparator =
-    Config.strictSpace || Config.difficulty !== "normal" || deleteOnErrorIsHard;
+    getConfig.strictSpace ||
+    getConfig.difficulty !== "normal" ||
+    deleteOnErrorIsHard;
   if (isSpace(data) && inputValue === "" && !allowFirstSeparator) {
     return true;
   }
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
+    getConfig.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
   const goingToNextWord = shouldGoToNextWord({
     data,
@@ -102,12 +104,12 @@ export function onBeforeInsertText(data: string): boolean {
   if (
     !isSlowTimer() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
-    !Config.blindMode &&
-    !Config.hideExtraLetters &&
-    !Config.deleteOnError.includes("hard") &&
+    !getConfig.blindMode &&
+    !getConfig.hideExtraLetters &&
+    !getConfig.deleteOnError.includes("hard") &&
     inputIsLongerThanOrEqualToWord &&
     !goingToNextWord &&
-    Config.mode !== "zen"
+    getConfig.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)

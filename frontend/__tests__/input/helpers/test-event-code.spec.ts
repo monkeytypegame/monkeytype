@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 const mockConfig = vi.hoisted(() => ({ funbox: "" }));
 vi.mock("../../../src/ts/config/store", () => ({
-  Config: mockConfig,
+  getConfig: mockConfig,
 }));
 
 import {

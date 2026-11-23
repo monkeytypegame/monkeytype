@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { logTestEvent } from "../../test/engine/events/data";
 import { getTestEventCode, keysToTrack } from "../helpers/test-event-code";
 
@@ -16,7 +16,7 @@ export async function onKeyup(event: KeyboardEvent): Promise<void> {
   }
 
   // allow arrows in arrows funbox
-  const arrowsActive = Config.funbox.includes("arrows");
+  const arrowsActive = getConfig.funbox.includes("arrows");
   if (
     event.key === "Home" ||
     event.key === "End" ||

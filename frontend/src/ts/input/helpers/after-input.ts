@@ -1,6 +1,6 @@
 // What follows each test input: render buffer writes, keymap
 // highlight, focus mode and sounds. Buffered, rendered in the next words frame.
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { createEvent } from "../../hooks/createEvent";
 import { playClick, playError } from "../../audio";
 import {
@@ -31,7 +31,7 @@ function updateWordLetters(input: string, acceptedLength?: number): void {
 }
 
 function highlightNextKey(): void {
-  if (Config.keymapMode !== "next") return;
+  if (getConfig.keymapMode !== "next") return;
   const keyToHighlight =
     TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
   if (keyToHighlight !== undefined) {
@@ -47,8 +47,8 @@ function afterAnyTestInput(
   if (type === "textInput" || type === "compositionUpdate") {
     if (
       correctInput === true ||
-      Config.playSoundOnError === "off" ||
-      Config.blindMode
+      getConfig.playSoundOnError === "off" ||
+      getConfig.blindMode
     ) {
       void playClick();
     } else {
@@ -109,7 +109,7 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
 
   highlightNextKey();
 
-  if (direction === "back" && Config.mode === "zen") {
+  if (direction === "back" && getConfig.mode === "zen") {
     truncateWords(activeWordIndex + 1);
   }
 }
