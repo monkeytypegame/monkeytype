@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
+import * as Persistence from "../../src/ts/config/persistence";
+import * as RemoteConfig from "../../src/ts/config/remote";
 import * as ConfigUtils from "../../src/ts/config/utils";
 import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
@@ -545,6 +547,47 @@ describe("Config", () => {
 
       expect(runs).toEqual([["words", true, true]]);
       dispose();
+    });
+  });
+
+  describe("whole-config reads", () => {
+    it("saves a copy, not the live store", () => {
+      const saveConfigMock = vi
+        .spyOn(ApeConfig, "saveConfig")
+        .mockResolvedValue();
+      replaceConfig({ funbox: ["mirror"] });
+
+      Persistence.saveFullConfigToLocalStorage();
+      Config.setConfig("funbox", [], { nosave: true });
+
+      const sent = saveConfigMock.mock.calls[0]?.[0] as Partial<ConfigType>;
+      expect(sent.funbox).toEqual(["mirror"]);
+      saveConfigMock.mockRestore();
+    });
+
+    it("applyFromServer applies only a different config", async () => {
+      const applyConfigMock = vi.spyOn(Lifecycle, "applyConfig");
+      replaceConfig({ fontSize: 2 });
+
+      await RemoteConfig.applyFromServer(getConfig());
+      expect(applyConfigMock).not.toHaveBeenCalled();
+
+      await RemoteConfig.applyFromServer({ ...getConfig(), fontSize: 3 });
+      expect(applyConfigMock).toHaveBeenCalledOnce();
+      expect(getConfigStore.fontSize).toBe(3);
+      applyConfigMock.mockRestore();
+    });
+
+    it("getConfigChanges returns the store's changed values", () => {
+      replaceConfig({ fontSize: 3, funbox: ["mirror"] });
+
+      const changes = ConfigUtils.getConfigChanges();
+
+      expect(changes).toMatchObject({ fontSize: 3, funbox: ["mirror"] });
+      // scalars at their default are left out (arrays always count as
+      // changed: compared by reference)
+      expect(changes).not.toHaveProperty("mode");
+      expect(changes).not.toHaveProperty("punctuation");
     });
   });
 });
