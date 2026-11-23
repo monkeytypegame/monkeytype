@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { getChallenge } from "@monkeytype/challenges";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
-import { Config, setConfigStore } from "../../src/ts/config/store";
+import { setConfigStore } from "../../src/ts/config/store";
 import { __testing } from "../../src/ts/config/testing";
 import "../../src/ts/controllers/challenge-controller";
 import {
@@ -13,7 +13,6 @@ import { setTestPhase } from "../../src/ts/test/engine/state";
 const { replaceConfig } = __testing;
 
 function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
-  Config[key] = value;
   setConfigStore(key, value);
 }
 

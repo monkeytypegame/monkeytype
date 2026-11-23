@@ -1,7 +1,7 @@
 import { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { saveConfig } from "../ape/config";
 import { setAccountButtonSpinner } from "../states/header";
-import { Config } from "./store";
+import { getConfigSnapshot } from "./store";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
 import { migrateConfig } from "./utils";
@@ -30,20 +30,22 @@ export function saveToLocalStorage(
   noDbCheck = false,
 ): void {
   if (nosave) return;
-  configLS.set(Config);
+  const config = getConfigSnapshot();
+  configLS.set(config);
   if (!noDbCheck) {
     //@ts-expect-error this is fine
-    configToSend[key] = Config[key];
+    configToSend[key] = config[key];
     saveToDatabase();
   }
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
-  configLS.set(Config);
+  const config = getConfigSnapshot();
+  configLS.set(config);
   if (!noDbCheck) {
     setAccountButtonSpinner(true);
-    void saveConfig(Config).finally(() => {
+    void saveConfig(config).finally(() => {
       setAccountButtonSpinner(false);
     });
   }

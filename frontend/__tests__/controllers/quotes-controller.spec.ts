@@ -1,10 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
-import { Config, setConfigStore } from "../../src/ts/config/store";
+import { setConfigStore } from "../../src/ts/config/store";
 import quoteController from "../../src/ts/controllers/quotes-controller";
 
 function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
-  Config[key] = value;
   setConfigStore(key, value);
 }
 

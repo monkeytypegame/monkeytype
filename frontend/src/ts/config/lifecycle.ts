@@ -9,7 +9,7 @@ import {
   saveToLocalStorage,
   saveFullConfigToLocalStorage,
 } from "./persistence";
-import { Config, setFullConfigStore } from "./store";
+import { setFullConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
 import { migrateConfig } from "./utils";
 import { setConfig } from "./setters";
@@ -79,12 +79,7 @@ export async function applyConfig(
 
   // batch so store effects run once, after the whole config is applied
   batch(() => {
-    const defaultConfig = getDefaultConfig();
-    for (const key of typedKeys(fullConfig)) {
-      //@ts-expect-error this is fine, both are of type config
-      Config[key] = defaultConfig[key];
-    }
-    setFullConfigStore(defaultConfig);
+    setFullConfigStore(getDefaultConfig());
 
     const firstKeys = typedKeys(fullConfig).filter(
       (key) => !lastConfigsToApply.has(key),

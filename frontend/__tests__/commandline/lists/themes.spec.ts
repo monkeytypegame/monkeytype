@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Config, setConfigStore } from "../../../src/ts/config/store";
+import { setConfigStore } from "../../../src/ts/config/store";
 import commands from "../../../src/ts/commandline/lists/themes";
 import { randomizeTheme } from "../../../src/ts/theme";
 import { __testing } from "../../../src/ts/config/testing";
@@ -10,11 +10,8 @@ describe("themes commandline list config effects", () => {
     commands[0]?.subgroup?.list[0]?.configValue as string | undefined;
 
   it("puts new favorites first", () => {
-    Config.favThemes = ["nord"];
     setConfigStore("favThemes", ["nord"]);
     expect(firstTheme()).toBe("nord");
-
-    Config.favThemes = ["nord", "8008"];
     setConfigStore("favThemes", ["nord", "8008"]);
     expect(firstTheme()).toBe("8008");
   });

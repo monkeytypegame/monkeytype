@@ -1,17 +1,20 @@
 import { checkForcedConfig, getFunbox } from "@monkeytype/funbox";
 import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
+import { DeepReadonly } from "../utils/types";
 
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: ConfigValue,
-  funbox: FunboxName[] = [],
+  value: DeepReadonly<ConfigValue>,
+  funbox: readonly FunboxName[] = [],
 ): boolean {
   const funboxes = getFunbox(funbox);
   if (key === "mode") {
     let fb = getFunbox(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
-        !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value),
+        !(
+          f.frontendForcedConfig["mode"] as DeepReadonly<ConfigValue>[]
+        ).includes(value),
     );
     if (value === "zen") {
       fb = fb.concat(
@@ -86,12 +89,12 @@ export function getFunboxUnsupportedReason(
 
 export type FunboxConfigError = {
   key: string;
-  value: ConfigValue;
+  value: DeepReadonly<ConfigValue>;
 };
 
 export function canSetFunboxWithConfig(
   funbox: FunboxName,
-  config: Config,
+  config: DeepReadonly<Config>,
 ): { ok: true } | { ok: false; errors: FunboxConfigError[] } {
   const funboxToCheck = [...config.funbox, funbox];
 

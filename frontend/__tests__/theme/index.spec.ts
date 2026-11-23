@@ -5,7 +5,7 @@ import {
   previewTheme,
   randomizeTheme,
 } from "../../src/ts/theme";
-import { Config, setConfigStore } from "../../src/ts/config/store";
+import { getConfig, setConfigStore } from "../../src/ts/config/store";
 import { setConfig } from "../../src/ts/config/setters";
 import { applyConfig } from "../../src/ts/config/lifecycle";
 import { __testing } from "../../src/ts/config/testing";
@@ -28,7 +28,6 @@ vi.mock("../../src/ts/queries/custom-themes", () => ({
 const { replaceConfig } = __testing;
 
 function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
-  Config[key] = value;
   setConfigStore(key, value);
 }
 
@@ -49,7 +48,7 @@ describe("theme", () => {
     expect(getTheme().name).toBe("custom");
 
     const colors = [
-      ...Config.customThemeColors,
+      ...getConfig.customThemeColors,
     ] as ConfigType["customThemeColors"];
     colors[0] = "#123456";
     set("customThemeColors", colors);
@@ -73,11 +72,11 @@ describe("theme", () => {
 
     expect(getRandomTheme()).not.toBeNull();
     expect(getTheme().name).toBe(getRandomTheme()?.name);
-    expect(Config.customTheme).toBe(false);
+    expect(getConfig.customTheme).toBe(false);
   });
 
   it("picks a random custom theme", () => {
-    const colors = [...Config.customThemeColors];
+    const colors = [...getConfig.customThemeColors];
     colors[0] = "#0a0b0c";
     customThemes.splice(0, customThemes.length, {
       _id: "id1",
@@ -181,7 +180,7 @@ describe("theme", () => {
 
     it("previews custom colors", () => {
       const colors = [
-        ...Config.customThemeColors,
+        ...getConfig.customThemeColors,
       ] as ConfigType["customThemeColors"];
       colors[0] = "#abcdef";
       previewTheme("custom", colors);
@@ -231,7 +230,7 @@ describe("theme", () => {
     it("is dropped when the custom colors are saved", () => {
       updateCustomThemeDraftColor("bg", "#111111");
       const colors = [
-        ...Config.customThemeColors,
+        ...getConfig.customThemeColors,
       ] as ConfigType["customThemeColors"];
       colors[1] = "#222222";
       set("customThemeColors", colors);

@@ -6,15 +6,15 @@ import { saveFullConfigToLocalStorage } from "./persistence";
 import Ape from "../ape";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { getDefaultConfig } from "../constants/default-config";
-import { Config } from "./store";
+import { getConfig } from "./store";
 
 export async function applyFromServer(
   remoteConfig: ConfigSchemas.Config,
 ): Promise<void> {
   const areConfigsEqual =
-    JSON.stringify(Config) === JSON.stringify(remoteConfig);
+    JSON.stringify(getConfig) === JSON.stringify(remoteConfig);
 
-  if (Config === undefined || !areConfigsEqual) {
+  if (!areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db",
     );
