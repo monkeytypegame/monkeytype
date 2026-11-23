@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement, createSignal } from "solid-js";
 
 import Ape from "../../ape";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import QuotesController from "../../controllers/quotes-controller";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
@@ -34,7 +34,7 @@ export function QuoteReportModal(): JSXElement {
     },
     onSubmit: async ({ value }) => {
       const id = quoteId().toString();
-      const quoteLanguage = removeLanguageSize(Config.language);
+      const quoteLanguage = removeLanguageSize(getConfig.language);
 
       if (value.captcha === "") {
         showNoticeNotification("Please complete the captcha");
@@ -94,7 +94,7 @@ export function QuoteReportModal(): JSXElement {
     form.reset();
 
     const language =
-      Config.language === "swiss_german" ? "german" : Config.language;
+      getConfig.language === "swiss_german" ? "german" : getConfig.language;
     const { quotes } = await QuotesController.getQuotes(language);
     const quote = quotes.find((q) => q.id === quoteId());
     setQuoteText(quote?.text ?? "");

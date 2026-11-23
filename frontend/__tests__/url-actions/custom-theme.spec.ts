@@ -1,4 +1,19 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { getConfig } from "../../src/ts/config/store";
+
+// a write that throws, to exercise the rollback
+const failOn = vi.hoisted(() => ({ key: null as string | null }));
+vi.mock("../../src/ts/config/setters", async (importOriginal) => {
+  const setters =
+    await importOriginal<typeof import("../../src/ts/config/setters")>();
+  return {
+    ...setters,
+    setConfig: ((key, value, options) => {
+      if (key === failOn.key) throw new Error(`can't set ${key}`);
+      return setters.setConfig(key, value, options);
+    }) as typeof setters.setConfig,
+  };
+});
 import { readUrlAction } from "../../src/ts/url-actions/action";
 import {
   buildCustomThemeLink,
@@ -58,5 +73,28 @@ describe("reading customThemeAction", () => {
 
   it("rejects a theme without colors", () => {
     expect(() => decodeCustomTheme(btoa(JSON.stringify({})))).toThrow();
+  });
+});
+
+describe("applying customThemeAction", () => {
+  it("rolls the colors back when a later write fails", () => {
+    const before = [...getConfig.customThemeColors];
+    failOn.key = "customBackground";
+    try {
+      // apply throws synchronously
+      expect(() => {
+        void customThemeAction.apply({
+          // varied: a palette of one color is replaced by the default
+          colors: Array.from(
+            { length: 10 },
+            (_, i) => `#${i}${i}${i}${i}${i}${i}`,
+          ) as SharedCustomTheme["colors"],
+          background: { image: "", size: "cover", filter: [0, 1, 1, 1] },
+        });
+      }).toThrow("can't set customBackground");
+    } finally {
+      failOn.key = null;
+    }
+    expect([...getConfig.customThemeColors]).toEqual(before);
   });
 });

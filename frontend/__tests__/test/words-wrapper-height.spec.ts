@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
-vi.mock("../../src/ts/controllers/theme-controller", () => ({
+vi.mock("../../src/ts/theme", () => ({
   randomizeTheme: vi.fn(),
 }));
 

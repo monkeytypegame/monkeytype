@@ -3,7 +3,7 @@ import { createMemo, JSXElement } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../../collections/results";
 
-import { getTheme } from "../../../states/theme";
+import { getTheme } from "../../../theme/state";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";
 import { ChartJs } from "../../common/ChartJs";
 

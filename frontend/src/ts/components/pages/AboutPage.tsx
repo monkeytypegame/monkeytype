@@ -8,7 +8,7 @@ import {
   getTypingStatsQueryOptions,
 } from "../../queries/public";
 import { showModal } from "../../states/modals";
-import { getTheme } from "../../states/theme";
+import { getTheme } from "../../theme/state";
 import { getNumberWithMagnitude } from "../../utils/numbers";
 import { Advertisement } from "../common/Advertisement";
 import AsyncContent from "../common/AsyncContent";

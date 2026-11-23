@@ -1,5 +1,5 @@
 import { PlaySoundOnClick } from "@monkeytype/schemas/configs";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import {
   clickSoundConfig,
   ScaleSoundConfig,
@@ -21,7 +21,7 @@ export async function preloadSounds(): Promise<void> {
   await initErrorSounds();
 
   //preload sounds
-  const clickId = Config.playSoundOnClick;
+  const clickId = getConfig.playSoundOnClick;
   if (clickId === "off") return;
 
   if (!loadedBundles.has(clickId)) {
@@ -111,7 +111,7 @@ export async function previewClick(clickId: PlaySoundOnClick): Promise<void> {
 }
 
 export async function playClick(codeOverride?: string): Promise<void> {
-  const val = Config.playSoundOnClick;
+  const val = getConfig.playSoundOnClick;
   if (val === "off") return;
 
   const config = soundsConfig[val];

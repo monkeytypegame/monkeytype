@@ -1,5 +1,5 @@
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { SupportedOscillatorTypes, ValidNotes } from "../constants/sounds";
 import { getModifierState } from "../states/modifiers";
 import { showErrorNotification } from "../states/notifications";
@@ -131,7 +131,7 @@ export function playScale(
   const gainNode = audioCtx.createGain();
 
   oscillatorNode.type = "sine";
-  gainNode.gain.value = Config.soundVolume / 10;
+  gainNode.gain.value = getConfig.soundVolume / 10;
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
   oscillatorNode.frequency.value = currentFrequency;
@@ -163,7 +163,7 @@ export function playNote(options: {
   const gainNode = audioCtx.createGain();
 
   oscillatorNode.type = options.oscillatorType;
-  gainNode.gain.value = Config.soundVolume / 10;
+  gainNode.gain.value = getConfig.soundVolume / 10;
 
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);

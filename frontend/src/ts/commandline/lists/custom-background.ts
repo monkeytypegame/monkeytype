@@ -2,7 +2,7 @@ import { Command } from "../types";
 import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 import { showNoticeNotification } from "../../states/notifications";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 
 const fromMeta = buildCommandForConfigKey("customBackground");
@@ -73,7 +73,7 @@ const customBackgroundCommand: Command = {
         available: async (): Promise<boolean> => {
           return (
             (await FileStorage.hasFile("LocalBackgroundFile")) ||
-            Config.customBackground !== ""
+            getConfig.customBackground !== ""
           );
         },
         exec: async (): Promise<void> => {

@@ -143,11 +143,9 @@ function ZenMode() {
 }
 
 function Language() {
-  const isUsingPolyglot = createMemo(() => {
-    //react on config.funbox
-    const _ = getConfig.funbox;
-    return getActiveFunboxNames().includes("polyglot");
-  });
+  const isUsingPolyglot = createMemo(() =>
+    getActiveFunboxNames().includes("polyglot"),
+  );
 
   return (
     <>

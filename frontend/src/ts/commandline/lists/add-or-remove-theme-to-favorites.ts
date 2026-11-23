@@ -1,11 +1,11 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
-import { getRandomTheme } from "../../states/theme";
+import { getRandomTheme } from "../../theme/state";
 import { Command } from "../types";
 
 const getCurrentTheme = (): ThemeName =>
-  (getRandomTheme()?.name as ThemeName | undefined) ?? Config.theme;
+  (getRandomTheme()?.name as ThemeName | undefined) ?? getConfig.theme;
 
 const commands: Command[] = [
   {
@@ -14,11 +14,12 @@ const commands: Command[] = [
     fa: { icon: "fa-star" },
     available: (): boolean => {
       return (
-        !Config.customTheme && !Config.favThemes.includes(getCurrentTheme())
+        !getConfig.customTheme &&
+        !getConfig.favThemes.includes(getCurrentTheme())
       );
     },
     exec: (): void => {
-      const { favThemes, customTheme } = Config;
+      const { favThemes, customTheme } = getConfig;
       const themeToUpdate = getCurrentTheme();
       if (!customTheme && !favThemes.includes(themeToUpdate)) {
         setConfig("favThemes", [...favThemes, themeToUpdate]);
@@ -31,11 +32,12 @@ const commands: Command[] = [
     fa: { icon: "fa-star", variant: "regular" },
     available: (): boolean => {
       return (
-        !Config.customTheme && Config.favThemes.includes(getCurrentTheme())
+        !getConfig.customTheme &&
+        getConfig.favThemes.includes(getCurrentTheme())
       );
     },
     exec: (): void => {
-      const { favThemes, customTheme } = Config;
+      const { favThemes, customTheme } = getConfig;
       const themeToUpdate = getCurrentTheme();
       if (!customTheme && favThemes.includes(themeToUpdate)) {
         setConfig("favThemes", [

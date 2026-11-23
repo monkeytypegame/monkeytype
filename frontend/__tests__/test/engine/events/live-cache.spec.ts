@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 vi.mock("../../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
-  getConfig: {},
+  getConfig: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
 }));
 
 vi.mock("../../../../src/ts/test/engine/test-words", () => ({

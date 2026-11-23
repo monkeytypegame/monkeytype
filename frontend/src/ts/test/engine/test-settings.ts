@@ -2,7 +2,7 @@ import { createMemo, createRoot } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { getCustomTextIndicator } from "../../states/core";
 import { getSelectedQuoteId } from "../../states/test";
 import { canQuickRestart } from "../../utils/quick-restart";
@@ -35,7 +35,6 @@ export const TEST_SETTINGS_KEYS = [
   "strictSpace",
   "stopOnError",
   "lazyMode",
-  "layout",
   "codeUnindentOnBackspace",
 ] as const satisfies readonly (keyof ConfigType)[];
 
@@ -59,7 +58,7 @@ function copy<T>(value: T): T {
 
 function snapshot(customText: CustomTextSettings): TestSettings {
   const config = Object.fromEntries(
-    TEST_SETTINGS_KEYS.map((key) => [key, copy(Config[key])]),
+    TEST_SETTINGS_KEYS.map((key) => [key, copy(getConfig[key])]),
   ) as Pick<ConfigType, TestSettingsKey>;
   return {
     ...config,
@@ -71,7 +70,7 @@ function snapshot(customText: CustomTextSettings): TestSettings {
 // until the first restart takes them (every test starts with one)
 const [testSettings, setTestSettings] = createStore<TestSettings>({
   ...(Object.fromEntries(
-    TEST_SETTINGS_KEYS.map((key) => [key, copy(Config[key])]),
+    TEST_SETTINGS_KEYS.map((key) => [key, copy(getConfig[key])]),
   ) as Pick<ConfigType, TestSettingsKey>),
   customText: {
     text: [],

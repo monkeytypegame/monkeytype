@@ -11,8 +11,7 @@ import {
 import { debounce } from "throttle-debounce";
 
 import { clearAllSounds, playFartReverb } from "../../../audio";
-import { Config, getConfig } from "../../../config/store";
-import * as ThemeController from "../../../controllers/theme-controller";
+import { getConfig } from "../../../config/store";
 import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
 import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
@@ -60,6 +59,7 @@ import {
   closeResultWords,
   toggleResultWords,
 } from "../../../test/words-history";
+import { randomizeTheme } from "../../../theme";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
 import { canQuickRestart } from "../../../utils/quick-restart";
@@ -132,9 +132,9 @@ export function TestPage(): JSXElement {
         if (!isTestActive()) return;
         if (
           canQuickRestart(
-            Config.mode,
-            Config.words,
-            Config.time,
+            getConfig.mode,
+            getConfig.words,
+            getConfig.time,
             CustomText.getData(),
             getCustomTextIndicator()?.isLong ?? false,
           )
@@ -240,7 +240,7 @@ export function TestPage(): JSXElement {
     if (!isOnline()) showOfflineBanner();
     setFocusMode(false);
     if (
-      Config.alwaysShowWordsHistory &&
+      getConfig.alwaysShowWordsHistory &&
       canQuickRestart(
         getTestSettings().mode,
         getTestSettings().words,
@@ -328,8 +328,8 @@ export function TestPage(): JSXElement {
       // the restart's side effects
       ResultWordHighlight.destroy();
       if (source === "resultPage") {
-        if (Config.randomTheme !== "off") {
-          void ThemeController.randomizeTheme();
+        if (getConfig.randomTheme !== "off") {
+          randomizeTheme();
         }
         skipBreakdownEvent.dispatch();
       }
@@ -393,7 +393,7 @@ export function TestPage(): JSXElement {
     on(
       isTestFinished,
       (finished) => {
-        if (finished && Config.playSoundOnClick === "16") {
+        if (finished && getConfig.playSoundOnClick === "16") {
           void playFartReverb();
         }
       },

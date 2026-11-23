@@ -1,10 +1,11 @@
 import * as TestWords from "./engine/test-words";
 import { showNoticeNotification } from "../states/notifications";
 
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
+import { createRoot } from "solid-js";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import {
@@ -35,7 +36,7 @@ export function init(
 ): boolean {
   const eventLog = getResultData()?.eventLog;
   if (eventLog === undefined) return false;
-  if (Config.mode === "zen") return false;
+  if (getConfig.mode === "zen") return false;
   let limit;
   if ((missed === "words" && !slow) || (missed === "off" && slow)) {
     limit = 20;
@@ -150,12 +151,12 @@ export function init(
     }
   });
 
-  const mode = before.mode ?? Config.mode;
-  const punctuation = before.punctuation ?? Config.punctuation;
-  const numbers = before.numbers ?? Config.numbers;
+  const mode = before.mode ?? getConfig.mode;
+  const punctuation = before.punctuation ?? getConfig.punctuation;
+  const numbers = before.numbers ?? getConfig.numbers;
 
   let customText = null;
-  if (Config.mode === "custom") {
+  if (getConfig.mode === "custom") {
     customText = CustomText.getData();
   }
 
@@ -190,6 +191,14 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-configEvent.subscribe(({ key }) => {
-  if (key === "mode") resetBefore();
+// a mode change leaves practise: no revert on the next restart. Not on custom,
+// which practise sets itself (before saving what it reverts to)
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.mode,
+    (mode) => {
+      if (mode !== "custom") resetBefore();
+    },
+    { defer: true },
+  );
 });

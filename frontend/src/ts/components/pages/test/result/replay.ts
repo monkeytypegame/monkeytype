@@ -2,7 +2,7 @@ import { createStore, produce } from "solid-js/store";
 
 import { playClick, playError } from "../../../../audio";
 import * as Arrays from "../../../../utils/arrays";
-import { Config } from "../../../../config/store";
+import { getConfig } from "../../../../config/store";
 import { getResultData } from "../../../../test/engine/state";
 import {
   getEventsForWord,
@@ -183,7 +183,7 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (Config.playSoundOnError !== "off") {
+    if (getConfig.playSoundOnError !== "off") {
       void playError();
     } else {
       void playClick();

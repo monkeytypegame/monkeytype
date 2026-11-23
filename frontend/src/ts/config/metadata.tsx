@@ -9,14 +9,16 @@ import { isAuthenticated } from "../auth/state";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
+import { setPrefersArabicLazyMode } from "../states/lazy-mode";
 import { showNoticeNotification } from "../states/notifications";
-import { setRandomTheme } from "../states/theme";
+import { setRandomTheme } from "../theme/state";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
+import { DeepReadonly } from "../utils/types";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getOptions } from "../utils/zod";
 import {
@@ -138,7 +140,9 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    * it to the configs where the setting matters (eg. only while a funbox is
    * active). Either way the key is a test setting.
    */
-  changeRequiresRestart: boolean | ((config: ConfigSchemas.Config) => boolean);
+  changeRequiresRestart:
+    | boolean
+    | ((config: DeepReadonly<ConfigSchemas.Config>) => boolean);
   /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
@@ -902,6 +906,12 @@ const configMetadataEntries = {
     group: "input",
     description:
       "Replaces accents / diacritics / special characters with their normal letter equivalents.",
+    // remember the user's choice for arabic (writes that save are the user's)
+    afterSet: ({ nosave, currentConfig }) => {
+      if (!nosave && currentConfig.language.startsWith("arabic")) {
+        setPrefersArabicLazyMode(currentConfig.lazyMode);
+      }
+    },
     commandline: {
       subgroup: {
         options: "fromSchema",
@@ -912,7 +922,7 @@ const configMetadataEntries = {
     key: "layout",
     fa: { icon: "fa-keyboard" },
     displayString: "layout",
-    changeRequiresRestart: true,
+    changeRequiresRestart: false,
     group: "input",
     description:
       "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
@@ -1974,7 +1984,7 @@ export const configMetadata: ConfigMetadataObject = configMetadataEntries;
 /** Whether changing `key` restarts the test, given `config`. */
 export function changeRequiresRestart(
   key: keyof ConfigSchemas.Config,
-  config: ConfigSchemas.Config,
+  config: DeepReadonly<ConfigSchemas.Config>,
 ): boolean {
   const requires = configMetadata[key].changeRequiresRestart;
   return typeof requires === "function" ? requires(config) : requires;

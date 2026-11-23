@@ -26,7 +26,7 @@ import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,
   getCheckboxes,
-  getConfigChanges,
+  buildPresetConfig,
 } from "./preset-modal-utils";
 
 export function EditPresetModal(): JSXElement {
@@ -72,7 +72,7 @@ export function EditPresetModal(): JSXElement {
 
       let result;
       if (value.updateConfig) {
-        const configChanges = getConfigChanges(presetType(), checkboxes);
+        const configChanges = buildPresetConfig(presetType(), checkboxes);
         const activeSettingGroups: ConfigGroupName[] | null =
           presetType() === "partial"
             ? getActiveSettingGroups(checkboxes)
