@@ -13,15 +13,15 @@ import {
   setGlarsesMode,
 } from "../../states/glarses-mode";
 import {
+  getSmoothedBurst,
+  resetSmoothedBurst,
+  setSmoothedBurst,
+} from "../../states/result";
+import {
   getSarcasticResultMessage,
   resetSarcasticResultMessage,
   setSarcasticResultMessage,
 } from "../../states/sarcastic-result-message";
-import {
-  getSmoothedBurst,
-  resetSmoothedBurst,
-  setSmoothedBurst,
-} from "../../states/smoothed-burst";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Balloon } from "../common/Balloon";
@@ -51,7 +51,7 @@ function defineSetting<T extends SettingValue>(definition: {
   schema?: z.ZodType<T>;
 }): SettingDefinition {
   return {
-    ...(definition ?? {}),
+    ...definition,
     set: (value) => definition.set(value as T),
   };
 }
@@ -163,6 +163,7 @@ function Setting(props: { setting: SettingDefinition }): JSXElement {
               invalid() && "text-error",
             )}
             type={typeof value() === "number" ? "number" : "text"}
+            autocomplete="off"
             value={String(value())}
             onInput={() => setInvalid(false)}
             onBlur={(e) => {

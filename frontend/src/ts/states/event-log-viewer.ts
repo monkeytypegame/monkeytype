@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-import type { EventLog, TestEventType } from "../test/events/types";
+import type { EventLog, TestEventType } from "../test/engine/events/types";
 
 /**
  * State for the dev event log viewer, deliberately kept outside the component.

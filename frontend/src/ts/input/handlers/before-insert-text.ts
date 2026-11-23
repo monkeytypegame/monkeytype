@@ -1,18 +1,22 @@
 import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
-import * as TestWords from "../../test/test-words";
+// the spec's one documented exception: a synchronous measurement exported by
+// Words
+// oxlint-disable-next-line no-restricted-imports
+import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
+import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
-import * as SlowTimer from "../../legacy-states/slow-timer";
+import { isRestartAnimating } from "../../states/test";
 import {
   isTestRestarting,
-  isResultCalculating,
+  isTestFinished,
   wordsHaveNewline,
-} from "../../states/test";
+} from "../../test/engine/state";
+import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
-import { getCurrentInput } from "../../test/events/data";
+import { getCurrentInput } from "../../test/engine/events/data";
 import { isSpace } from "../../utils/strings";
 
 /**
@@ -21,7 +25,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (isTestRestarting()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     return true;
   }
 
@@ -29,7 +33,7 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (isResultCalculating()) {
+  if (isTestFinished()) {
     return true;
   }
 
@@ -96,7 +100,7 @@ export function onBeforeInsertText(data: string): boolean {
     getCurrentInput().length >= currentWordTextDisplay.length;
 
   if (
-    !SlowTimer.get() && // don't do this check if slow timer is active
+    !isSlowTimer() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
     !Config.blindMode &&
     !Config.hideExtraLetters &&
@@ -108,7 +112,7 @@ export function onBeforeInsertText(data: string): boolean {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)
 
-    if (TestUI.wouldActiveWordOverflow(inputValue, data)) {
+    if (wouldActiveWordOverflow(inputValue, data)) {
       return true;
     }
   }

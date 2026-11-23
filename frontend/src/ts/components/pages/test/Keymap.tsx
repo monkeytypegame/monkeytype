@@ -11,9 +11,9 @@ import {
   getKeymapLayout,
   keymapLayoutObject,
   setKeymapFlashState,
-  wordsHaveNumbers,
 } from "../../../states/test";
-import { getTheme } from "../../../states/theme";
+import { wordsHaveNumbers } from "../../../test/engine/state";
+import { getTheme } from "../../../theme/state";
 import { cn } from "../../../utils/cn";
 import { isMacLike } from "../../../utils/misc";
 import { Anime } from "../../common/anime";
@@ -72,6 +72,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
       (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
       getConfig.keymapKeys === "full" ||
       getConfig.keymapKeys === "minimal_numrow" ||
+      getKeymapLayout().isUpsideDown ||
       (getConfig.keymapKeys === "minimal" && props.layoutData.keymapShowTopRow),
   );
 
@@ -177,7 +178,10 @@ function Key(
     }
 
     const entry = props.flashEntry();
-    return { tick: entry?.tick ?? 0, correct: entry?.correct ?? true };
+    return {
+      tick: entry?.tick ?? 0,
+      correct: getConfig.blindMode || (entry?.correct ?? true),
+    };
   });
 
   const isNext = createMemo(
@@ -288,7 +292,9 @@ function Key(
       }}
     >
       <Show
-        when={props.isLayoutIndicator}
+        when={
+          props.isLayoutIndicator && getConfig.keymapLegendStyle !== "blank"
+        }
         fallback={
           <>
             {props.label}

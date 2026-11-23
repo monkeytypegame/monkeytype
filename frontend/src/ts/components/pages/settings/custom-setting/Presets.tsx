@@ -1,10 +1,7 @@
-import { JSXElement, For } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
-import {
-  deletePreset,
-  usePresetsLiveQuery,
-} from "../../../../collections/presets";
-import { apply } from "../../../../controllers/preset-controller";
+import { applyPreset } from "../../../../config/presets";
+import { deletePreset, getPresets } from "../../../../queries/presets";
 import { showEditPresetModal } from "../../../../states/edit-preset-modal";
 import { showModal } from "../../../../states/modals";
 import { showSimpleModal } from "../../../../states/simple-modal";
@@ -12,8 +9,6 @@ import { Button } from "../../../common/Button";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function Presets(): JSXElement {
-  const presets = usePresetsLiveQuery();
-
   return (
     <SearchableSetting
       key="presets"
@@ -24,13 +19,13 @@ export function Presets(): JSXElement {
       }}
       inputs={
         <div class="grid gap-2">
-          <For each={presets()}>
+          <For each={getPresets()}>
             {(preset) => (
               <div class="grid grid-cols-[1fr_auto_auto] gap-2">
                 <Button
                   text={preset.name}
                   onClick={() => {
-                    void apply(preset._id);
+                    void applyPreset(preset._id);
                   }}
                 />
                 <Button
@@ -54,7 +49,16 @@ export function Presets(): JSXElement {
                       text: `Are you sure you want to delete preset "${preset.name}"? This action cannot be undone.`,
                       buttonText: "delete",
                       execFn: async () => {
-                        await deletePreset({ presetId: preset._id });
+                        const { error } = await deletePreset({
+                          presetId: preset._id,
+                        });
+                        if (error !== null) {
+                          return {
+                            status: "error",
+                            message: "Failed to delete preset",
+                            notificationOptions: { error },
+                          };
+                        }
 
                         return {
                           status: "success",

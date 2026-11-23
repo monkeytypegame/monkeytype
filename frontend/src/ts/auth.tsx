@@ -15,40 +15,32 @@ import {
   updateEmail,
   updateProfile,
   User,
-  User as UserType,
 } from "firebase/auth";
-import { createMemo } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
-import { waitForPresetsReady } from "./collections/presets";
-import { waitForTagsReady } from "./collections/tags";
-import { updateFromServer as updateConfigFromServer } from "./config/remote";
-import * as DB from "./db";
-import { authEvent } from "./events/auth";
+import { getUserId, isAuthenticated } from "./auth/state";
 import {
   signOut as authSignOut,
   createUserWithEmailAndPassword,
+  finishSignUp,
   getAuthenticatedUser,
   isAuthAvailable,
-  resetIgnoreAuthCallback,
+  cancelSignUp,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "./firebase";
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
-import * as Sentry from "./sentry";
-import { getUserId, isAuthenticated, setUserId } from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
-  showNoticeNotification,
   showSuccessNotification,
 } from "./states/notifications";
 import { FaObject } from "./types/font-awesome";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
-import { SnapshotInitError } from "./utils/snapshot-init-error";
 import { OneOf } from "./utils/types";
 
 type AuthMethodInfo = {
@@ -122,30 +114,34 @@ const [getAuthenticatedUserReactive, { updateAuthenticatedUser }] =
   });
 export { getAuthenticatedUser };
 
-createEffectOn(getUserId, () => {
-  updateAuthenticatedUser();
-});
-
-const authenticationMemos = Object.fromEntries(
-  typedKeys(authMethods).map((authMethod) => {
-    const memo = createMemo(() => {
-      const providerId = getProviderId(authMethod);
-
-      const user = getAuthenticatedUserReactive();
-      if (user === null) return undefined;
-      const provider = user.providerData.find(
-        (p) => p.providerId === providerId,
-      );
-      const result = {
-        isInUse: provider !== undefined,
-        email: provider?.email ?? undefined,
-        hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
-      };
-
-      return result;
-    });
-    return [authMethod, memo];
+createRoot(() =>
+  createEffectOn(getUserId, () => {
+    updateAuthenticatedUser();
   }),
+);
+
+const authenticationMemos = createRoot(() =>
+  Object.fromEntries(
+    typedKeys(authMethods).map((authMethod) => {
+      const memo = createMemo(() => {
+        const providerId = getProviderId(authMethod);
+
+        const user = getAuthenticatedUserReactive();
+        if (user === null) return undefined;
+        const provider = user.providerData.find(
+          (p) => p.providerId === providerId,
+        );
+        const result = {
+          isInUse: provider !== undefined,
+          email: provider?.email ?? undefined,
+          hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
+        };
+
+        return result;
+      });
+      return [authMethod, memo];
+    }),
+  ),
 );
 
 export async function sendVerificationEmail(): Promise<void> {
@@ -163,87 +159,6 @@ export async function sendVerificationEmail(): Promise<void> {
     hideLoaderBar();
     showSuccessNotification("Verification email sent");
   }
-}
-
-async function getDataAndInit(): Promise<boolean> {
-  try {
-    console.log("getting account data");
-    const snapshot = await DB.initSnapshot();
-    //TODO: preload collections for now, remove when __nonReactive is removed from collections
-    await waitForPresetsReady();
-    await waitForTagsReady();
-
-    if (snapshot === false) {
-      throw new Error(
-        "Snapshot didn't initialize due to lacking authentication even though user is authenticated",
-      );
-    }
-
-    void Sentry.setUser(snapshot.uid, snapshot.name);
-
-    await updateConfigFromServer();
-    return true;
-  } catch (error) {
-    console.error(error);
-    if (error instanceof SnapshotInitError) {
-      if (error.responseCode === 429) {
-        showNoticeNotification(
-          "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-          {
-            durationMs: 0,
-          },
-        );
-        showNoticeNotification(
-          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-          {
-            durationMs: 0,
-          },
-        );
-      }
-
-      showErrorNotification(`Failed to get user data: ${error.message}`);
-    } else {
-      showErrorNotification("Failed to get user data", { error });
-    }
-    return false;
-  }
-}
-
-export async function loadUser(_user: UserType): Promise<void> {
-  if (!(await getDataAndInit())) {
-    signOut();
-    return;
-  }
-  authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
-}
-
-export async function onAuthStateChanged(
-  authInitialisedAndConnected: boolean,
-  user: UserType | null,
-): Promise<void> {
-  console.debug(`account controller ready`);
-
-  let userPromise: Promise<void> = Promise.resolve();
-
-  if (authInitialisedAndConnected) {
-    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
-    if (user) {
-      setUserId(user.uid);
-      userPromise = loadUser(user);
-    } else {
-      setUserId(null);
-      DB.setSnapshot(undefined);
-    }
-  }
-
-  if (!authInitialisedAndConnected || !user) {
-    void Sentry.clearUser();
-  }
-
-  authEvent.dispatch({
-    type: "authStateChanged",
-    data: { isUserSignedIn: user !== null, loadPromise: userPromise },
-  });
 }
 
 export async function signIn(
@@ -370,7 +285,6 @@ async function addPopupProvider(
   }
 
   await linkWithPopup(user, provider);
-  authEvent.dispatch({ type: "authConfigUpdated" });
 }
 
 export async function removeAuthProvider(
@@ -448,8 +362,7 @@ export async function signUp(
 
     await updateProfile(createdAuthUser.user, { displayName: name });
     await sendVerificationEmail();
-    await onAuthStateChanged(true, createdAuthUser.user);
-    resetIgnoreAuthCallback();
+    finishSignUp();
 
     showSuccessNotification("Account created");
     return { success: true };
@@ -466,7 +379,7 @@ export async function signUp(
     }
 
     showErrorNotification(message);
-    signOut();
+    void cancelSignUp();
     return { success: false, message };
   }
 }

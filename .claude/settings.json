@@ -6,10 +6,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/format-and-lint.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-and-lint.sh"
           }
         ]
       }
     ]
+  },
+  "env": {
+    "BROWSERSLIST_IGNORE_OLD_DATA": "1"
   }
 }

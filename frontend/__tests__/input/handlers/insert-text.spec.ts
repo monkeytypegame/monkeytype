@@ -22,7 +22,6 @@ vi.mock("../../../src/ts/input/input-element", () => ({
   },
   getInputElement: () => null,
   moveInputElementCaretToTheEnd: () => undefined,
-  isInputElementFocused: () => true,
   focusInputElement: () => undefined,
   blurInputElement: () => undefined,
 }));
@@ -40,45 +39,53 @@ const nav = vi.hoisted(() => ({
 }));
 vi.mock("../../../src/ts/input/helpers/word-navigation", () => nav);
 
-vi.mock("../../../src/ts/test/test-words", () => {
+vi.mock("../../../src/ts/test/engine/test-words", () => {
   type CommitChar = " " | "\n" | "";
   type Word = { text: string; textWithCommit: string; commit: CommitChar };
   const list: Word[] = [];
-  return {
-    words: {
-      list,
-      get: (index?: number) => (index === undefined ? [...list] : list[index]),
-      getCurrent: () => list[mockState.activeWordIndex],
-      push(word: string, _index?: number) {
-        let commit: CommitChar = "";
-        if (word.endsWith(" ")) {
-          commit = " ";
-          word = word.slice(0, -1);
-        } else if (word.endsWith("\n")) {
-          commit = "\n";
-          word = word.slice(0, -1);
-        }
-        list.push({ text: word, textWithCommit: word + commit, commit });
-      },
-      reset() {
-        list.length = 0;
-      },
-      get length() {
-        return list.length;
-      },
+  const words = {
+    list,
+    get: (index?: number) => (index === undefined ? [...list] : list[index]),
+    getCurrent: () => list[mockState.activeWordIndex],
+    push(word: string, _index?: number) {
+      let commit: CommitChar = "";
+      if (word.endsWith(" ")) {
+        commit = " ";
+        word = word.slice(0, -1);
+      } else if (word.endsWith("\n")) {
+        commit = "\n";
+        word = word.slice(0, -1);
+      }
+      list.push({ text: word, textWithCommit: word + commit, commit });
     },
+    reset() {
+      list.length = 0;
+    },
+    get length() {
+      return list.length;
+    },
+  };
+  return {
+    words,
+    pushWord: (word: string, index: number) => words.push(word, index),
+    resetWords: () => words.reset(),
   };
 });
 
-vi.mock("../../../src/ts/states/test", () => ({
+vi.mock("../../../src/ts/test/engine/state", () => ({
   getActiveWordIndex: () => mockState.activeWordIndex,
   isTestActive: () => true,
-  isResultCalculating: () => false,
-  isTestRestarting: () => false,
   wordsHaveNewline: () => false,
-  getCurrentQuote: () => null,
-  getBailedOut: () => false,
+  getTestEnd: () => null,
   getKoreanStatus: () => false,
+  scheduleLiveStatsFlush: () => undefined,
+}));
+
+vi.mock("../../../src/ts/states/test", () => ({
+  getCurrentQuote: () => null,
+  isComposing: () => false,
+  getCompositionData: () => "",
+  flashKeymapKey: vi.fn(),
 }));
 
 vi.mock("../../../src/ts/input/state", () => ({
@@ -94,9 +101,11 @@ vi.mock("../../../src/ts/test/custom-text", () => ({
 }));
 
 // peripheral collaborators - none of them feed back into the events we assert
-vi.mock("../../../src/ts/test/test-ui", () => ({
+vi.mock("../../../src/ts/input/helpers/after-input", () => ({
   afterTestTextInput: vi.fn(),
-  // words scrolled off the screen are removed from the dom
+}));
+vi.mock("../../../src/ts/states/words-render", () => ({
+  // words scrolled off the screen are no longer rendered
   isWordRendered: vi.fn(
     (index: number) => !mockState.wordsScrolledOff.has(index),
   ),
@@ -108,13 +117,8 @@ vi.mock("../../../src/ts/test/test-logic", () => ({
   addWord: vi.fn(),
 }));
 vi.mock("../../../src/ts/test/weak-spot", () => ({ updateScore: vi.fn() }));
-vi.mock("../../../src/ts/events/keymap", () => ({ flash: vi.fn() }));
 vi.mock("../../../src/ts/states/notifications", () => ({
   showNoticeNotification: vi.fn(),
-}));
-vi.mock("../../../src/ts/legacy-states/composition", () => ({
-  getComposing: () => false,
-  getData: () => "",
 }));
 vi.mock("../../../src/ts/test/words-generator", () => ({
   areAllWordsGenerated: () => true,
@@ -133,15 +137,15 @@ import {
   resetTestEvents,
   getAllTestEvents,
   getInputForWord,
-} from "../../../src/ts/test/events/data";
+} from "../../../src/ts/test/engine/events/data";
 import {
   findInputValueMismatches,
   getEventsForWord,
-} from "../../../src/ts/test/events/helpers";
-import type { InputEventNoMs } from "../../../src/ts/test/events/types";
-import { words as TestWords } from "../../../src/ts/test/test-words";
+} from "../../../src/ts/test/engine/events/helpers";
+import type { InputEventNoMs } from "../../../src/ts/test/engine/events/types";
+import * as TestWords from "../../../src/ts/test/engine/test-words";
 import { __testing } from "../../../src/ts/config/testing";
-import { DeleteInputType } from "../../../src/ts/input/helpers/input-type";
+import { DeleteInputType } from "../../../src/ts/test/engine/input-type";
 
 const { replaceConfig } = __testing;
 
@@ -179,7 +183,7 @@ nav.goToPreviousWord.mockImplementation((inputType: DeleteInputType) => {
 
 function pushWords(...words: string[]): void {
   words.forEach((word, i) => {
-    TestWords.push(i === words.length - 1 ? word : `${word} `, i);
+    TestWords.pushWord(i === words.length - 1 ? word : `${word} `, i);
   });
 }
 
@@ -209,7 +213,7 @@ describe("onInsertText - delete on error", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetTestEvents();
-    TestWords.reset();
+    TestWords.resetWords();
     mockState.activeWordIndex = 0;
     mockState.correctShiftUsed = true;
     mockState.wordsScrolledOff.clear();

@@ -1,12 +1,18 @@
+// #wordsInput is rendered by WordsInput and registered here on every mount
 let el: HTMLTextAreaElement | undefined;
+
+/** Returns the unregister. */
+export function registerInputElement(element: HTMLTextAreaElement): () => void {
+  el = element;
+  return () => {
+    // a remount may have registered a new element already
+    if (el === element) el = undefined;
+  };
+}
 
 export function getInputElement(): HTMLTextAreaElement {
   if (el === undefined) {
-    const found = document.querySelector<HTMLTextAreaElement>("#wordsInput");
-    if (found === null) {
-      throw new Error("Words input element not found");
-    }
-    el = found;
+    throw new Error("Words input element not mounted");
   }
   return el;
 }
@@ -39,16 +45,14 @@ export function replaceInputElementLastValueChar(char: string): void {
   setInputElementValue(inputValue.slice(0, -1) + char);
 }
 
-export function isInputElementFocused(): boolean {
-  return document.activeElement === getInputElement();
-}
-
 export function focusInputElement(preventScroll = false): void {
   getInputElement().focus({
     preventScroll,
   });
 }
 
+// no-op once unmounted: TestPage's cleanup blurs after WordsInput unregistered
+// its input
 export function blurInputElement(): void {
-  getInputElement().blur();
+  el?.blur();
 }

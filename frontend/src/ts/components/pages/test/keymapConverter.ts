@@ -48,9 +48,12 @@ function convert(options: {
             keyDef.layoutPosition.col
           ];
 
-        const legends = keyDef.isLayoutIndicator
-          ? buildLegends(" ")
-          : buildLegends(keyDef.legend ?? layoutLegend);
+        const legends =
+          keyDef.isLayoutIndicator === true || keyDef.legend === " "
+            ? buildLegends(
+                options.legends.row5[0]?.length === 0 ? undefined : " ",
+              )
+            : buildLegends(keyDef.legend ?? layoutLegend);
 
         if (keyDef.isExtraKey && !isShowAllKeys) {
           return undefined;
