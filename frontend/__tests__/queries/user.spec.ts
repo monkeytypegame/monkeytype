@@ -36,7 +36,6 @@ vi.mock(
   }),
 );
 
-const DAY = 24 * 60 * 60 * 1000;
 const LAST_DAY = Date.UTC(2026, 9, 20, 12);
 
 function user(overrides: Partial<UserData> = {}): UserData {
@@ -201,7 +200,7 @@ describe("useUser", () => {
 });
 
 describe("direct writes", () => {
-  it("records a result: typing stats, activity and pb", () => {
+  it("records a result: typing stats and pb", () => {
     recordResult(result(), { isPb: true });
 
     const u = getUserData();
@@ -210,7 +209,6 @@ describe("direct writes", () => {
       startedTests: 4,
       completedTests: 1,
     });
-    expect(u?.testActivity?.testsByDays).toEqual([3, null, 3]);
     expect(u?.personalBests.time["15"]).toEqual([
       expect.objectContaining({ wpm: 100, raw: 105, language: "english" }),
     ]);
@@ -221,13 +219,9 @@ describe("direct writes", () => {
     ]);
   });
 
-  it("records a result on a later day, padding missed days", () => {
-    recordResult(result({ timestamp: LAST_DAY + 3 * DAY }), { isPb: false });
+  it("records a result without a pb", () => {
+    recordResult(result(), { isPb: false });
 
-    expect(getUserData()?.testActivity).toEqual({
-      testsByDays: [3, null, 2, null, null, 1],
-      lastDay: LAST_DAY + 3 * DAY,
-    });
     expect(getUserData()?.personalBests.time).toEqual({});
   });
 

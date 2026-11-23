@@ -1,28 +1,42 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
-  TestActivityCalendar,
-  ModifiableTestActivityCalendar,
-  TestActivityDay,
-} from "../../src/ts/elements/test-activity-calendar";
+  clearTestActivity,
+  getCells,
+  getLast12MonthsCalendar,
+  getMonths,
+  getTestActivity,
+  getTotalTests,
+  getYearCalendar,
+  incrementTestActivity,
+  initTestActivity,
+  loadAllYearsTestActivity,
+  TestActivityCell,
+  toTestActivityDays,
+} from "../../src/ts/states/test-activity";
+import Ape from "../../src/ts/ape";
+import { __testing } from "../../src/ts/queries/user";
+import { getDefaultUserData } from "../../src/ts/constants/user-data";
 import * as Dates from "date-fns";
 import { MatcherResult } from "../vitest";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
 
-describe("test-activity-calendar.ts", () => {
+describe("test-activity.ts", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
+    clearTestActivity();
   });
-  describe("TestActivityCalendar", () => {
+  describe("calendars", () => {
     describe("getMonths", () => {
       it("for lastDay in april", () => {
         //set today
         vi.setSystemTime(getDate("2024-04-10"));
-        const calendar = new TestActivityCalendar([], getDate("2024-04-10"), 0);
+        const calendar = last12Months([], getDate("2024-04-10"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "apr",
             weeks: 4,
@@ -76,9 +90,9 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in april start weeks on monday", () => {
         //set today
         vi.setSystemTime(getDate("2024-04-10"));
-        const calendar = new TestActivityCalendar([], getDate("2024-04-10"), 1);
+        const calendar = last12Months([], getDate("2024-04-10"), 1);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "apr",
             weeks: 3,
@@ -133,9 +147,9 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in april, not test for the current week", () => {
         //set today
         vi.setSystemTime(getDate("2024-04-24"));
-        const calendar = new TestActivityCalendar([], getDate("2024-04-10"), 0);
+        const calendar = last12Months([], getDate("2024-04-10"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "",
             weeks: 2,
@@ -194,9 +208,9 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in april, not test for the current week start weeks on monday", () => {
         //set today
         vi.setSystemTime(getDate("2024-04-24"));
-        const calendar = new TestActivityCalendar([], getDate("2024-04-10"), 1);
+        const calendar = last12Months([], getDate("2024-04-10"), 1);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "",
             weeks: 1,
@@ -254,9 +268,9 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in january", () => {
         //set today
         vi.setSystemTime(getDate("2023-01-01"));
-        const calendar = new TestActivityCalendar([], getDate("2023-01-01"), 0);
+        const calendar = last12Months([], getDate("2023-01-01"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jan",
             weeks: 5,
@@ -308,14 +322,9 @@ describe("test-activity-calendar.ts", () => {
         ]);
       });
       it("for lastDay and full year starting with sunday", () => {
-        const calendar = new TestActivityCalendar(
-          [],
-          getDate("2023-05-10"),
-          0,
-          true,
-        );
+        const calendar = yearCalendar([0], getDate("2023-05-10"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jan",
             weeks: 5,
@@ -367,14 +376,9 @@ describe("test-activity-calendar.ts", () => {
         ]);
       });
       it("for lastDay and full year starting with sunday start weeks on monday", () => {
-        const calendar = new TestActivityCalendar(
-          [],
-          getDate("2023-05-10"),
-          1,
-          true,
-        );
+        const calendar = yearCalendar([0], getDate("2023-05-10"), 1);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jan",
             weeks: 6,
@@ -426,14 +430,9 @@ describe("test-activity-calendar.ts", () => {
         ]);
       });
       it("for lastDay and full year starting with monday", () => {
-        const calendar = new TestActivityCalendar(
-          [],
-          getDate("2024-05-10"),
-          0,
-          true,
-        );
+        const calendar = yearCalendar([0], getDate("2024-05-10"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jan",
             weeks: 5,
@@ -485,14 +484,9 @@ describe("test-activity-calendar.ts", () => {
         ]);
       });
       it("for lastDay and full year starting with monday start weeks on Monday", () => {
-        const calendar = new TestActivityCalendar(
-          [],
-          getDate("2024-05-10"),
-          1,
-          true,
-        );
+        const calendar = yearCalendar([0], getDate("2024-05-10"), 1);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jan",
             weeks: 5,
@@ -546,9 +540,9 @@ describe("test-activity-calendar.ts", () => {
       it("for first day in june", () => {
         //set today
         vi.setSystemTime(getDate("2024-06-01"));
-        const calendar = new TestActivityCalendar([], getDate("2024-06-01"), 0);
+        const calendar = last12Months([], getDate("2024-06-01"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "jun",
             weeks: 4,
@@ -602,9 +596,9 @@ describe("test-activity-calendar.ts", () => {
       it("no double month for for 16th june", () => {
         //set today
         vi.setSystemTime(getDate("2024-06-16"));
-        const calendar = new TestActivityCalendar([], getDate("2024-06-01"), 0);
+        const calendar = last12Months([], getDate("2024-06-01"), 0);
 
-        expect(calendar.getMonths()).toEqual([
+        expect(getMonths(calendar)).toEqual([
           {
             text: "",
             weeks: 2,
@@ -665,12 +659,8 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in april", () => {
         const data = getData("2023-04-10", "2024-04-10");
         vi.setSystemTime(getDate("2024-04-30"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-04-10"),
-          0,
-        );
-        const days = calendar.getDays();
+        const calendar = last12Months(data, getDate("2024-04-10"), 0);
+        const days = getCells(calendar);
 
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
 
@@ -704,12 +694,8 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in april start weeks on Monday", () => {
         const data = getData("2023-04-10", "2024-04-10");
         vi.setSystemTime(getDate("2024-04-30"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-04-10"),
-          1,
-        );
-        const days = calendar.getDays();
+        const calendar = last12Months(data, getDate("2024-04-10"), 1);
+        const days = getCells(calendar);
 
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
 
@@ -745,14 +731,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2024-01-01", "2024-12-31");
         vi.setSystemTime(getDate("2024-12-31"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-12-31"),
-          0,
-        );
+        const calendar = last12Months(data, getDate("2024-12-31"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
@@ -777,14 +759,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2024-01-01", "2024-12-31");
         vi.setSystemTime(getDate("2024-12-31"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-12-31"),
-          1,
-        );
+        const calendar = last12Months(data, getDate("2024-12-31"), 1);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
@@ -809,14 +787,14 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2022-11-30", "2023-12-31");
         vi.setSystemTime(getDate("2023-12-31"));
-        const calendar = new TestActivityCalendar(
+        const calendar = last12Months(
           data,
           new Date("2023-12-31T23:59:59Z"),
           0,
         ); //2023-12-31T23:59:59Z
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(0 + 365 + 6); //no filler on the start, 365 days in leap year, six fillers at the end
@@ -846,14 +824,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2023-03-28", "2024-04-10"); //extra data in front of the calendar
         vi.setSystemTime(getDate("2024-04-30"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-04-10"),
-          0,
-        );
+        const calendar = last12Months(data, getDate("2024-04-10"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
@@ -872,14 +846,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2024-04-01", "2024-04-10");
         vi.setSystemTime(getDate("2024-04-30"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-04-10"),
-          0,
-        );
+        const calendar = last12Months(data, getDate("2024-04-10"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
@@ -904,14 +874,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2022-02-10", "2023-02-10");
         vi.setSystemTime(getDate("2023-02-28"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2023-02-10"),
-          0,
-        );
+        const calendar = last12Months(data, getDate("2023-02-10"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(2 + 365 + 4); //two filler on the start, 365 days in the  year, four fillers at the end
@@ -942,14 +908,10 @@ describe("test-activity-calendar.ts", () => {
         //GIVEN
         const data = getData("2022-02-10", "2023-02-10");
         vi.setSystemTime(getDate("2023-02-12"));
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2023-02-10"),
-          0,
-        );
+        const calendar = last12Months(data, getDate("2023-02-10"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         expect(days).toHaveLength(2 + 365 + 4); //two filler on the start, 365 days in the  year, four fillers at the end
@@ -974,15 +936,10 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in february full year", () => {
         //GIVEN
         const data = getData("2023-02-10", "2024-02-10");
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-02-10"),
-          0,
-          true,
-        );
+        const calendar = yearCalendar(data, getDate("2024-02-10"), 0);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         //january 24 starts with a monday, skip one day
@@ -1003,15 +960,10 @@ describe("test-activity-calendar.ts", () => {
       it("for lastDay in february full year start weeks on Monday", () => {
         //GIVEN
         const data = getData("2023-02-10", "2024-02-10");
-        const calendar = new TestActivityCalendar(
-          data,
-          getDate("2024-02-10"),
-          1,
-          true,
-        );
+        const calendar = yearCalendar(data, getDate("2024-02-10"), 1);
 
         //WHEN
-        const days = calendar.getDays();
+        const days = getCells(calendar);
 
         //THEN
         //january 24 starts with a monday,
@@ -1031,150 +983,175 @@ describe("test-activity-calendar.ts", () => {
       });
     });
   });
-  describe("ModifiableTestActivityCalendar", () => {
-    describe("increment", () => {
-      it("increments on lastDay", () => {
-        //GIVEN
-        const lastDate = getDate("2024-04-10");
-        vi.setSystemTime(getDate("2024-04-30"));
-        const calendar = new ModifiableTestActivityCalendar(
-          [1, 2, 3],
-          lastDate,
-          0,
-        );
+  describe("weeks starting on monday", () => {
+    it("fills the first week of a year starting on sunday", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2023-12-31"));
+      const calendar = yearCalendar(
+        getData("2023-01-01", "2023-12-31"),
+        getDate("2023-12-31"),
+        1,
+      );
 
-        //WHEN
-        calendar.increment(lastDate);
+      //WHEN
+      const days = getCells(calendar);
 
-        //THEN
-        const days = calendar.getDays();
+      //THEN
+      //2023 starts and ends with a sunday
+      expect(days).toHaveLength(6 + 365 + 0);
+      for (let day = 0; day < 6; day++) {
+        expect(days[day]).toBeFiller();
+      }
+      expect(days[6]).toBeDate("2023-01-01").toHaveTests(1);
+      expect(days[370]).toBeDate("2023-12-31").toHaveTests(365);
+    });
+    it("adds no fillers after today on a sunday", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2024-04-14"));
+      const calendar = last12Months([1], getDate("2024-04-14"), 1);
 
-        expect(days[343]).toHaveLevel(0);
-        expect(days[344]).toBeDate("2024-04-08").toHaveTests(1);
-        expect(days[345]).toBeDate("2024-04-09").toHaveTests(2);
-        expect(days[346]).toBeDate("2024-04-10").toHaveTests(4);
-        expect(days[347]).toHaveLevel(0);
-      });
-      it("increments after lastDay", () => {
-        //GIVEN
-        const lastDate = getDate("2024-04-10");
-        vi.setSystemTime(getDate("2024-04-10"));
-        const calendar = new ModifiableTestActivityCalendar(
-          [1, 2, 3],
-          lastDate,
-          0,
-        );
+      //WHEN
+      const days = getCells(calendar);
 
-        //WHEN
-        vi.setSystemTime(getDate("2024-04-12"));
-        calendar.increment(getDate("2024-04-12"));
-
-        //THEN
-        let days = calendar.getDays();
-        expect(days[364]).toHaveLevel(0);
-        expect(days[365]).toBeDate("2024-04-08").toHaveTests(1);
-        expect(days[366]).toBeDate("2024-04-09").toHaveTests(2);
-        expect(days[367]).toBeDate("2024-04-10").toHaveTests(3);
-        expect(days[368]).toHaveLevel(0);
-        expect(days[369]).toBeDate("2024-04-12").toHaveTests(1);
-        expect(days[370]).toBeFiller();
-
-        //WHEN
-        calendar.increment(getDate("2024-04-12"));
-
-        //THEN
-        days = calendar.getDays();
-
-        expect(days[364]).toHaveLevel(0);
-        expect(days[365]).toBeDate("2024-04-08").toHaveTests(1);
-        expect(days[366]).toBeDate("2024-04-09").toHaveTests(2);
-        expect(days[367]).toBeDate("2024-04-10").toHaveTests(3);
-        expect(days[368]).toHaveLevel(0);
-        expect(days[369]).toBeDate("2024-04-12").toHaveTests(2);
-        expect(days[370]).toBeFiller();
-      });
-
-      it("increments after two months", () => {
-        //GIVEN
-        vi.setSystemTime(getDate("2024-04-10"));
-        const calendar = new ModifiableTestActivityCalendar(
-          [1, 2, 3],
-          getDate("2024-04-10"),
-          0,
-        );
-
-        //WHEN
-        vi.setSystemTime(getDate("2024-06-12"));
-        calendar.increment(getDate("2024-06-12"));
-
-        //THEN
-        const days = calendar.getDays();
-        expect(days[301]).toHaveLevel(0);
-        expect(days[302]).toBeDate("2024-04-08").toHaveTests(1);
-        expect(days[303]).toBeDate("2024-04-09").toHaveTests(2);
-        expect(days[304]).toBeDate("2024-04-10").toHaveTests(3);
-        expect(days[305]).toHaveLevel(0);
-
-        expect(days[366]).toHaveLevel(0);
-        expect(days[367]).toBeDate("2024-06-12").toHaveTests(1);
-        expect(days[368]).toBeFiller();
-      });
-      it("increments in new year", () => {
-        //GIVEN
-        vi.setSystemTime(getDate("2024-12-24"));
-        const calendar = new ModifiableTestActivityCalendar(
-          getData("2023-12-20", "2024-12-24"),
-          getDate("2024-12-24"),
-          0,
-        );
-
-        //WHEN
-        vi.setSystemTime(getDate("2025-01-02"));
-        calendar.increment(getDate("2025-01-02"));
-
-        //THEN
-        const days = calendar.getDays();
-        expect(days[359]).toBeDate("2024-12-24").toHaveTests(359);
-        for (let day = 360; day <= 367; day++) {
-          expect(days[day]).toHaveLevel(0);
-        }
-        expect(days[368]).toBeDate("2025-01-02").toHaveTests(1);
-        expect(days[369]).toBeFiller();
-      });
-      it("fails increment in the past", () => {
-        //GIVEN
-        const calendar = new ModifiableTestActivityCalendar(
-          [1, 2, 3],
-          getDate("2024-04-10"),
-          0,
-        );
-
-        //WHEN
-        expect(() => calendar.increment(getDate("2024-04-09"))).toThrow(
-          new Error("cannot alter data in the past."),
-        );
-      });
+      //THEN
+      expect(days).toHaveLength(52 * 7);
+      expect(days[0]).toBeDate("2023-04-17");
+      expect(days[363]).toBeDate("2024-04-14").toHaveTests(1);
     });
   });
-  describe("getFullYearCalendar", () => {
+  describe("incrementTestActivity", () => {
+    it("increments on lastDay", () => {
+      //GIVEN
+      const lastDate = getDate("2024-04-10");
+      vi.setSystemTime(getDate("2024-04-30"));
+      initTestActivity(activity([1, 2, 3], lastDate));
+
+      //WHEN
+      incrementTestActivity(lastDate);
+
+      //THEN
+      const days = currentCells(0);
+
+      expect(days[343]).toHaveLevel(0);
+      expect(days[344]).toBeDate("2024-04-08").toHaveTests(1);
+      expect(days[345]).toBeDate("2024-04-09").toHaveTests(2);
+      expect(days[346]).toBeDate("2024-04-10").toHaveTests(4);
+      expect(days[347]).toHaveLevel(0);
+    });
+    it("increments later on lastDay (utc)", () => {
+      //GIVEN
+      initTestActivity(activity([1], getDate("2024-04-10")));
+
+      //WHEN
+      incrementTestActivity(new Date("2024-04-10T23:59:59Z"));
+
+      //THEN
+      expect(getTestActivity()).toEqual([
+        { date: getDate("2024-04-10"), tests: 2 },
+      ]);
+    });
+    it("increments after lastDay", () => {
+      //GIVEN
+      const lastDate = getDate("2024-04-10");
+      vi.setSystemTime(getDate("2024-04-10"));
+      initTestActivity(activity([1, 2, 3], lastDate));
+
+      //WHEN
+      vi.setSystemTime(getDate("2024-04-12"));
+      incrementTestActivity(getDate("2024-04-12"));
+
+      //THEN
+      let days = currentCells(0);
+      expect(days[364]).toHaveLevel(0);
+      expect(days[365]).toBeDate("2024-04-08").toHaveTests(1);
+      expect(days[366]).toBeDate("2024-04-09").toHaveTests(2);
+      expect(days[367]).toBeDate("2024-04-10").toHaveTests(3);
+      expect(days[368]).toHaveLevel(0);
+      expect(days[369]).toBeDate("2024-04-12").toHaveTests(1);
+      expect(days[370]).toBeFiller();
+
+      //WHEN
+      incrementTestActivity(getDate("2024-04-12"));
+
+      //THEN
+      days = currentCells(0);
+
+      expect(days[364]).toHaveLevel(0);
+      expect(days[365]).toBeDate("2024-04-08").toHaveTests(1);
+      expect(days[366]).toBeDate("2024-04-09").toHaveTests(2);
+      expect(days[367]).toBeDate("2024-04-10").toHaveTests(3);
+      expect(days[368]).toHaveLevel(0);
+      expect(days[369]).toBeDate("2024-04-12").toHaveTests(2);
+      expect(days[370]).toBeFiller();
+    });
+
+    it("increments after two months", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2024-04-10"));
+      initTestActivity(activity([1, 2, 3], getDate("2024-04-10")));
+
+      //WHEN
+      vi.setSystemTime(getDate("2024-06-12"));
+      incrementTestActivity(getDate("2024-06-12"));
+
+      //THEN
+      const days = currentCells(0);
+      expect(days[301]).toHaveLevel(0);
+      expect(days[302]).toBeDate("2024-04-08").toHaveTests(1);
+      expect(days[303]).toBeDate("2024-04-09").toHaveTests(2);
+      expect(days[304]).toBeDate("2024-04-10").toHaveTests(3);
+      expect(days[305]).toHaveLevel(0);
+
+      expect(days[366]).toHaveLevel(0);
+      expect(days[367]).toBeDate("2024-06-12").toHaveTests(1);
+      expect(days[368]).toBeFiller();
+    });
+    it("increments in new year", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2024-12-24"));
+      initTestActivity(
+        activity(getData("2023-12-20", "2024-12-24"), getDate("2024-12-24")),
+      );
+
+      //WHEN
+      vi.setSystemTime(getDate("2025-01-02"));
+      incrementTestActivity(getDate("2025-01-02"));
+
+      //THEN
+      const days = currentCells(0);
+      expect(days[359]).toBeDate("2024-12-24").toHaveTests(359);
+      for (let day = 360; day <= 367; day++) {
+        expect(days[day]).toHaveLevel(0);
+      }
+      expect(days[368]).toBeDate("2025-01-02").toHaveTests(1);
+      expect(days[369]).toBeFiller();
+    });
+    it("fails increment in the past", () => {
+      //GIVEN
+      initTestActivity(activity([1, 2, 3], getDate("2024-04-10")));
+
+      //WHEN
+      expect(() => incrementTestActivity(getDate("2024-04-09"))).toThrow(
+        new Error("cannot alter data in the past."),
+      );
+    });
+    it("does nothing without activity", () => {
+      incrementTestActivity(getDate("2024-04-09"));
+      expect(getTestActivity()).toBeUndefined();
+    });
+  });
+  describe("getYearCalendar", () => {
     it("gets calendar", () => {
       const date = new Date(2024, 8, 1);
       vi.setSystemTime(date);
 
       //GIVEN
-      const lastDate = getDate("2024-01-02");
-      const calendar = new ModifiableTestActivityCalendar(
-        [1, 2, 3, 4],
-        lastDate,
-        0,
-      );
+      initTestActivity(activity([1, 2, 3, 4], getDate("2024-01-02")));
 
       //WHEN
-      const fullYear = calendar.getFullYearCalendar();
+      const days = getCells(yearOf(2024));
 
       //THEN
-      const days = fullYear.getDays();
-
       //2024 starts with a monday
       expect(days).toHaveLength(1 + 366 + 4);
       expect(days[0]).toBeFiller();
@@ -1189,28 +1166,175 @@ describe("test-activity-calendar.ts", () => {
       expect(days[369]).toBeFiller();
       expect(days[370]).toBeFiller();
     });
+    it("gets empty calendar for the current year without tests", () => {
+      vi.setSystemTime(getDate("2025-03-01"));
+      initTestActivity(activity([1, 2], getDate("2024-12-31")));
+
+      const calendar = yearOf(2025);
+
+      expect(getTotalTests(calendar)).toEqual(0);
+      expect(getCells(calendar)[3]).toBeDate("2025-01-01").toHaveLevel(0);
+    });
+    it("has no calendar for past years without data", () => {
+      vi.setSystemTime(getDate("2025-03-01"));
+      initTestActivity(activity([1, 2], getDate("2024-12-31")));
+
+      expect(getYearCalendar(getTestActivity() ?? [], 2023, 0)).toBeUndefined();
+    });
   });
   describe("getTotalTests", () => {
     it("gets amount of tests", () => {
       const date = new Date(2024, 8, 1);
       vi.setSystemTime(date);
       //GIVEN
-      const lastDate = getDate("2024-01-02");
-      const calendar = new ModifiableTestActivityCalendar(
-        [1, 2, 3, 4],
-        lastDate,
-        0,
-      );
+      initTestActivity(activity([1, 2, 3, 4], getDate("2024-01-02")));
 
       //THEN
-      expect(calendar.getTotalTests()).toEqual(1 + 2 + 3 + 4);
+      expect(
+        getTotalTests(getLast12MonthsCalendar(getTestActivity() ?? [], 0)),
+      ).toEqual(1 + 2 + 3 + 4);
 
       //WHEN
-      const fullYear = calendar.getFullYearCalendar();
-      expect(fullYear.getTotalTests()).toEqual(3 + 4);
+      expect(getTotalTests(yearOf(2024))).toEqual(3 + 4);
+    });
+  });
+  describe("days without tests", () => {
+    it("shows no activity", () => {
+      vi.setSystemTime(getDate("2024-04-10"));
+      const days = getCells(
+        last12Months([5, null, 0, 5], getDate("2024-04-10"), 0),
+      );
+
+      expect(days[364]).toBeDate("2024-04-07").toHaveTests(5);
+      expect(days[365]?.label).toEqual("no activity on Monday 08 Apr 2024");
+      expect(days[366]?.label).toEqual("no activity on Tuesday 09 Apr 2024");
+      expect(days[367]).toBeDate("2024-04-10").toHaveTests(5).toHaveLevel(2);
+    });
+  });
+  describe("user query", () => {
+    it("seeds from the user and clears on sign out", async () => {
+      vi.useRealTimers();
+      __testing.setUser({
+        ...getDefaultUserData(),
+        testActivity: {
+          testsByDays: [1, null, 3],
+          lastDay: Date.UTC(2024, 3, 10),
+        },
+      });
+
+      await vi.waitFor(() =>
+        expect(getTestActivity()).toEqual([
+          { date: getDate("2024-04-08"), tests: 1 },
+          { date: getDate("2024-04-09"), tests: 0 },
+          { date: getDate("2024-04-10"), tests: 3 },
+        ]),
+      );
+
+      __testing.setUser(undefined);
+      await vi.waitFor(() => expect(getTestActivity()).toBeUndefined());
+    });
+  });
+  describe("loadAllYearsTestActivity", () => {
+    it("merges past years (utc), keeps the user's days and loads once", async () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2024-01-03"));
+      initTestActivity(activity([7, 8, 1, 2], getDate("2024-01-02")));
+      const getTestActivityMock = vi
+        .spyOn(Ape.users, "getTestActivity")
+        .mockResolvedValue({
+          status: 200,
+          body: {
+            message: "ok",
+            data: {
+              "2022": [5, null, 6],
+              "2023": [1, 2],
+              "2024": [99, 99],
+            },
+          },
+        } as never);
+
+      //WHEN
+      await expect(loadAllYearsTestActivity()).resolves.toEqual(true);
+      await loadAllYearsTestActivity();
+
+      //THEN
+      expect(getTestActivityMock).toHaveBeenCalledOnce();
+      const days = getTestActivity() ?? [];
+      expect(days.slice(0, 3)).toEqual([
+        { date: getDate("2022-01-01"), tests: 5 },
+        { date: getDate("2022-01-02"), tests: 0 },
+        { date: getDate("2022-01-03"), tests: 6 },
+      ]);
+      expect(days.slice(3, 5)).toEqual([
+        { date: getDate("2023-01-01"), tests: 1 },
+        { date: getDate("2023-01-02"), tests: 2 },
+      ]);
+      expect(days.slice(-4)).toEqual([
+        { date: getDate("2023-12-30"), tests: 7 },
+        { date: getDate("2023-12-31"), tests: 8 },
+        { date: getDate("2024-01-01"), tests: 1 },
+        { date: getDate("2024-01-02"), tests: 2 },
+      ]);
+
+      const year2022 = getCells(yearOf(2022));
+      //2022 starts with a saturday
+      expect(year2022[6]).toBeDate("2022-01-01").toHaveTests(5);
+      expect(yearOf(2021, false)).toBeUndefined();
+    });
+    it("loads again after a failure", async () => {
+      initTestActivity(activity([1], getDate("2024-01-02")));
+      const getTestActivityMock = vi
+        .spyOn(Ape.users, "getTestActivity")
+        .mockResolvedValue({ status: 500, body: { message: "err" } } as never);
+
+      await expect(loadAllYearsTestActivity()).resolves.toEqual(false);
+      await loadAllYearsTestActivity();
+
+      expect(getTestActivityMock).toHaveBeenCalledTimes(2);
+      expect(getTestActivity()).toHaveLength(1);
     });
   });
 });
+
+function last12Months(
+  data: (number | null)[],
+  lastDay: Date,
+  firstDayOfWeek: Dates.Day,
+): ReturnType<typeof getLast12MonthsCalendar> {
+  return getLast12MonthsCalendar(
+    toTestActivityDays(activity(data, lastDay)),
+    firstDayOfWeek,
+  );
+}
+
+function yearCalendar(
+  data: (number | null)[],
+  lastDay: Date,
+  firstDayOfWeek: Dates.Day,
+): ReturnType<typeof getLast12MonthsCalendar> {
+  const calendar = getYearCalendar(
+    toTestActivityDays(activity(data, lastDay)),
+    new UTCDateMini(lastDay).getFullYear(),
+    firstDayOfWeek,
+  );
+  if (calendar === undefined) throw new Error("no calendar");
+  return calendar;
+}
+
+function currentCells(firstDayOfWeek: Dates.Day): TestActivityCell[] {
+  return getCells(
+    getLast12MonthsCalendar(getTestActivity() ?? [], firstDayOfWeek),
+  );
+}
+
+function yearOf(
+  year: number,
+  required = true,
+): ReturnType<typeof getLast12MonthsCalendar> {
+  const calendar = getYearCalendar(getTestActivity() ?? [], year, 0);
+  if (calendar === undefined && required) throw new Error("no calendar");
+  return calendar as ReturnType<typeof getLast12MonthsCalendar>;
+}
 
 function getDate(date: string): Date {
   return new UTCDateMini(Dates.parseISO(`${date}T00:00:00Z`));
@@ -1226,7 +1350,7 @@ function getData(from: string, to: string): number[] {
 }
 
 expect.extend({
-  toBeDate(received: TestActivityDay, expected: string): MatcherResult {
+  toBeDate(received: TestActivityCell, expected: string): MatcherResult {
     const expectedDate = Dates.format(getDate(expected), "EEEE dd MMM yyyy");
     const actual = received.label?.substring(received.label.indexOf("on") + 3);
 
@@ -1237,7 +1361,7 @@ expect.extend({
       expected: expectedDate,
     };
   },
-  toHaveTests(received: TestActivityDay, expected: number): MatcherResult {
+  toHaveTests(received: TestActivityCell, expected: number): MatcherResult {
     const expectedLabel = `${expected} ${expected === 1 ? "test" : "tests"}`;
     const actual = received.label?.substring(0, received.label.indexOf(" on"));
 
@@ -1249,7 +1373,7 @@ expect.extend({
     };
   },
   toHaveLevel(
-    received: TestActivityDay,
+    received: TestActivityCell,
     expected: string | number,
   ): MatcherResult {
     return {
@@ -1260,7 +1384,7 @@ expect.extend({
     };
   },
 
-  toBeFiller(received: TestActivityDay): MatcherResult {
+  toBeFiller(received: TestActivityCell): MatcherResult {
     return {
       pass: received.level === "filler",
       message: () => `Is not a filler.`,
@@ -1269,3 +1393,10 @@ expect.extend({
     };
   },
 });
+
+function activity(
+  testsByDays: (number | null)[],
+  lastDay: Date,
+): { testsByDays: (number | null)[]; lastDay: number } {
+  return { testsByDays, lastDay: lastDay.getTime() };
+}
