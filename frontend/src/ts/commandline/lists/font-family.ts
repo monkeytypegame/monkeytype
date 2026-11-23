@@ -4,7 +4,7 @@ import { buildCommandForConfigKey } from "../util";
 import FileStorage from "../../utils/file-storage";
 
 import { showNoticeNotification } from "../../states/notifications";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 
 const fromMeta = buildCommandForConfigKey("fontFamily");
@@ -28,7 +28,7 @@ if (fromMeta.subgroup) {
             schema: FontNameSchema,
           },
           defaultValue: (): string => {
-            return Config.fontFamily.replace(/_/g, " ");
+            return getConfig.fontFamily.replace(/_/g, " ");
           },
           exec: ({ input }): void => {
             if (input === undefined || input === "") return;

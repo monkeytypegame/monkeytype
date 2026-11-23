@@ -1,5 +1,5 @@
 import { createRoot } from "solid-js";
-import { Config, getConfig } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { previewTheme } from "../../theme";
@@ -10,7 +10,7 @@ import { createEffectOn } from "../../hooks/effects";
 import * as getErrorMessage from "../../utils/error";
 
 const isFavorite = (theme: ThemeWithName): boolean =>
-  Config.favThemes.includes(theme.name);
+  getConfig.favThemes.includes(theme.name);
 
 /**
  * creates a theme command object for the given theme

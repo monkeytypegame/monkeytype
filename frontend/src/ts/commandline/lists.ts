@@ -14,7 +14,7 @@ import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
 import LoadChallengeCommands from "./lists/load-challenge";
 
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { randomizeTheme } from "../theme";
 import { showModal } from "../states/modals";
@@ -191,7 +191,7 @@ export const commands: CommandsSubgroup = {
       fa: { icon: "fa-random" },
       exec: (): void => randomizeTheme(),
       available: (): boolean => {
-        return Config.randomTheme !== "off";
+        return getConfig.randomTheme !== "off";
       },
     },
 
@@ -230,7 +230,7 @@ export const commands: CommandsSubgroup = {
       alias: "export config",
       input: true,
       defaultValue: (): string => {
-        return JSON.stringify(Config);
+        return JSON.stringify(getConfig);
       },
     },
     {
