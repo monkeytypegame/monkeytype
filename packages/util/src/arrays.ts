@@ -20,7 +20,10 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
  * @param b The second array.
  * @returns True if the arrays are equal, false otherwise.
  */
-export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
+export function areUnsortedArraysEqual<T>(
+  a: readonly T[],
+  b: readonly T[],
+): boolean {
   return a.length === b.length && a.every((v) => b.includes(v));
 }
 

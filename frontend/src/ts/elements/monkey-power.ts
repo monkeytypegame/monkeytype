@@ -1,9 +1,10 @@
-import { isSlowTimer } from "../states/test";
-import { Config } from "../config/store";
+import { textInsertedEvent } from "../input/helpers/after-input";
+import { isSlowTimer } from "../test/engine/test-timer";
+import { getConfig } from "../config/store";
 import { isSafeNumber } from "@monkeytype/util/numbers";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
 import { qs, qsr } from "../utils/dom";
-import { getTheme } from "../states/theme";
+import { getTheme } from "../theme/state";
 
 const html = qsr("html");
 const body = qsr("body");
@@ -124,6 +125,7 @@ function updateParticle(particle: Particle): void {
 export function init(): void {
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
+  textInsertedEvent.subscribe((correct) => void addPower(correct));
 }
 
 function render(): void {
@@ -204,13 +206,13 @@ function randomColor(): string {
  * @param {boolean} good Good power or not?
  */
 export async function addPower(good = true, extra = false): Promise<void> {
-  if (Config.monkeyPowerLevel === "off" || isSlowTimer()) return;
+  if (getConfig.monkeyPowerLevel === "off" || isSlowTimer()) return;
 
   requestDebouncedAnimationFrame("monkey-power.addPower", async () => {
-    if (Config.blindMode) good = true;
+    if (getConfig.blindMode) good = true;
 
     // Shake
-    if (["3", "4"].includes(Config.monkeyPowerLevel)) {
+    if (["3", "4"].includes(getConfig.monkeyPowerLevel)) {
       html.setStyle({ overflow: "hidden" });
       const shake = [
         Math.round(shakeAmount - Math.random() * shakeAmount),
@@ -239,7 +241,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
       i--
     ) {
       const { caret, error } = getTheme();
-      const color = ["2", "4"].includes(Config.monkeyPowerLevel)
+      const color = ["2", "4"].includes(getConfig.monkeyPowerLevel)
         ? randomColor()
         : good
           ? caret

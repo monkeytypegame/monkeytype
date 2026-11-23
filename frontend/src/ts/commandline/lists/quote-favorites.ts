@@ -1,10 +1,11 @@
-import { Config } from "../../config/store";
-import QuotesController, { Quote } from "../../controllers/quotes-controller";
+import { getConfig } from "../../config/store";
+import { isQuoteFavorite, setQuoteFavorite } from "../../queries/user";
+import { Quote } from "../../types/quotes";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../../states/notifications";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../auth/state";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { Command } from "../types";
 import { getCurrentQuote } from "../../states/test";
@@ -19,16 +20,18 @@ const commands: Command[] = [
       return (
         isAuthenticated() &&
         quote !== null &&
-        Config.mode === "quote" &&
-        !QuotesController.isQuoteFavorite(quote)
+        getConfig.mode === "quote" &&
+        !isQuoteFavorite(quote)
       );
     },
     exec: async (): Promise<void> => {
       showLoaderBar();
-      const { error } = await QuotesController.setQuoteFavorite(
-        getCurrentQuote() as Quote,
-        true,
-      );
+      const quote = getCurrentQuote() as Quote;
+      const { error } = await setQuoteFavorite({
+        language: quote.language,
+        quoteId: quote.id.toString(),
+        favorite: true,
+      });
       hideLoaderBar();
       if (error !== null) {
         showErrorNotification("Failed to add quote to favorites", { error });
@@ -46,16 +49,18 @@ const commands: Command[] = [
       return (
         isAuthenticated() &&
         quote !== null &&
-        Config.mode === "quote" &&
-        QuotesController.isQuoteFavorite(quote)
+        getConfig.mode === "quote" &&
+        isQuoteFavorite(quote)
       );
     },
     exec: async (): Promise<void> => {
       showLoaderBar();
-      const { error } = await QuotesController.setQuoteFavorite(
-        getCurrentQuote() as Quote,
-        false,
-      );
+      const quote = getCurrentQuote() as Quote;
+      const { error } = await setQuoteFavorite({
+        language: quote.language,
+        quoteId: quote.id.toString(),
+        favorite: false,
+      });
       hideLoaderBar();
       if (error !== null) {
         showErrorNotification("Failed to remove quote from favorites", {

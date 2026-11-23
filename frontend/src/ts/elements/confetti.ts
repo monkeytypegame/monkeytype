@@ -1,4 +1,4 @@
-import { isSlowTimer } from "../states/test";
+import { isSlowTimer } from "../test/engine/test-timer";
 import confetti from "canvas-confetti";
 
 export function showConfetti(): void {

@@ -1,5 +1,6 @@
 import type { Config as ConfigSchema } from "@monkeytype/schemas/configs";
 import { getDefaultConfig } from "../constants/default-config";
+import { DeepReadonly } from "../utils/types";
 import { createStore, reconcile } from "solid-js/store";
 
 export const Config: ConfigSchema = {
@@ -9,8 +10,10 @@ export const Config: ConfigSchema = {
 const [getConfigStore, setConfigStoreRaw] =
   createStore<ConfigSchema>(getDefaultConfig());
 
-// the store object itself, not a getter function: read `getConfig.fontSize`
-export const getConfig = getConfigStore;
+// the store object itself, not a getter function: read `getConfig.fontSize`.
+// Read-only: write with setConfig. Its arrays update in place, so copy one
+// that must keep its value past a write (eg. a value to roll back to)
+export const getConfig: DeepReadonly<ConfigSchema> = getConfigStore;
 
 export function setFullConfigStore(newConfig: ConfigSchema): void {
   setConfigStoreRaw(reconcile(newConfig));

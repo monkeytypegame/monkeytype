@@ -11,9 +11,8 @@ import {
   getPaceCaretWpm,
   isPaceRepeat,
   isRepeated,
-  wordsHaveNewline,
-  wordsHaveTab,
 } from "../../../../states/test";
+import { wordsHaveNewline, wordsHaveTab } from "../../../../test/engine/state";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
 import {
@@ -144,11 +143,9 @@ function ZenMode() {
 }
 
 function Language() {
-  const isUsingPolyglot = createMemo(() => {
-    //react on config.funbox
-    const _ = getConfig.funbox;
-    return getActiveFunboxNames().includes("polyglot");
-  });
+  const isUsingPolyglot = createMemo(() =>
+    getActiveFunboxNames().includes("polyglot"),
+  );
 
   return (
     <>

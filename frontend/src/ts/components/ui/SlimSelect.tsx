@@ -43,7 +43,7 @@ export type SlimSelectProps = {
   | {
       multiple: true;
       onChange?: (selected: string[]) => void;
-      selected?: string[];
+      selected?: readonly string[];
     }
 );
 

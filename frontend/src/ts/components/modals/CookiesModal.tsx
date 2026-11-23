@@ -1,7 +1,7 @@
 import { createEffect, createSignal, JSXElement } from "solid-js";
 
-import { showConsentPopup } from "../../controllers/ad-controller";
 import { getAcceptedCookies, setAcceptedCookies } from "../../cookies";
+import { showConsentPopup } from "../../integrations/ads";
 import { hideModal, isModalOpen } from "../../states/modals";
 import { showErrorNotification } from "../../states/notifications";
 import { cn } from "../../utils/cn";

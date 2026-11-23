@@ -1,18 +1,15 @@
 import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import {
-  isTestFinished,
-  isFocusMode,
-  isTestRestarting,
-} from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
+import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";

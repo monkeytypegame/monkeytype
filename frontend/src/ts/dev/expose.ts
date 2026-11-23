@@ -1,7 +1,7 @@
 // Dev-only `window.__mt` handle for poking app internals from the browser console
 // or browser automation. Loaded via dynamic import behind `import.meta.env.DEV`.
 import type { Command } from "../commandline/types";
-import { Config, getConfig } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { getInputElement } from "../input/input-element";
 import { setPreloading } from "../router/create-router";
@@ -10,9 +10,9 @@ import { navigate } from "../router/navigate";
 import { getRoutePage } from "../states/router";
 import { hideModal, showModal } from "../states/modals";
 import * as CustomText from "../test/custom-text";
-import { getCurrentInput } from "../test/events/data";
+import { getCurrentInput } from "../test/engine/events/data";
 import { restartTest } from "../test/test-logic";
-import { quickLogin, signOut } from "./auth";
+import { quickLogin, signOut, whenUserDataLoaded } from "./auth";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
 
@@ -136,19 +136,19 @@ function checkLayout(): string[] {
     issues.push(`words input off the active word by ${px(input.top - ar.top)}`);
   }
 
-  if (Config.tapeMode !== "off") {
-    const margin = wr.left + (wr.width * Config.tapeMargin) / 100;
+  if (getConfig.tapeMode !== "off") {
+    const margin = wr.left + (wr.width * getConfig.tapeMargin) / 100;
     const letters = active.querySelectorAll(LETTER_SELECTOR);
     const anchor =
-      Config.tapeMode === "letter"
+      getConfig.tapeMode === "letter"
         ? letters[getCurrentInput().length]?.getBoundingClientRect().left
         : ar.left;
     if (anchor !== undefined && Math.abs(anchor - margin) > 3) {
       issues.push(`tape anchor ${px(anchor - margin)} from the tape margin`);
     }
   } else if (
-    Config.mode !== "zen" &&
-    (!Config.showAllLines || Config.mode === "time")
+    getConfig.mode !== "zen" &&
+    (!getConfig.showAllLines || getConfig.mode === "time")
   ) {
     const wordEls = [...words.querySelectorAll<HTMLElement>(".word")];
     const tops = [
@@ -237,10 +237,13 @@ function findSignal(name: string): (typeof trackedSignals)[number] {
  */
 const mt = {
   /**
-   * Client-side route change: `navigate({ to, params, search })`, or
-   * `navigate({ href: "/settings?x=1" })` for a raw path.
+   * Client-side route change: `navigate("/settings?x=1")` for a raw path, or
+   * `navigate({ to, params, search })`.
    */
-  navigate,
+  navigate: async (
+    options: string | Parameters<typeof navigate>[0],
+  ): Promise<void> =>
+    navigate(typeof options === "string" ? { href: options } : options),
   /** Page name of the last resolved route ("loading" before the first or after a failed load). */
   getRoutePage,
   /** Whether a navigation is in progress (the loading page may cover the page). */
@@ -254,8 +257,8 @@ const mt = {
   /** The config store object, not a function: `getConfig.fontSize`. */
   getConfig,
   /**
-   * Writes a config key. Doesn't restart the test (callers restart until T6b):
-   * use `runCommand` when the restart matters.
+   * Writes a config key. A test setting (flagged `changeRequiresRestart`)
+   * restarts the test on the test page.
    */
   setConfig,
   /** Opens a modal by `ModalId`. */
@@ -293,6 +296,12 @@ const mt = {
    * tags, results, sync.
    */
   quickLogin,
+  /**
+   * Resolves once the signed in user's account data has loaded and its config
+   * is applied (at once when signed out). On a signed in page load, await it
+   * before `setConfig`: the account's config replaces earlier changes.
+   */
+  whenUserDataLoaded,
   /**
    * Signs out the current session; resolves once the app clears it, rejects
    * after 10s. No-op without a session.

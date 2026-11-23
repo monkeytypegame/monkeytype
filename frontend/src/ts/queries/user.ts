@@ -22,10 +22,11 @@ import { configurationPromise } from "../ape/server-configuration";
 import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { UserData } from "../constants/user-data";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import { setXpBarData } from "../states/header";
 import { UserDataLoadError } from "../utils/user-data-load-error";
 import { DeepReadonly } from "../utils/types";
+import { removeLanguageSize } from "../utils/strings";
 import {
   type ApiResponse,
   type MutationOptions,
@@ -331,6 +332,23 @@ export async function setQuoteFavorite(
   favorite: QuoteFavorite,
 ): Promise<Result<void>> {
   return runMutation(setQuoteFavoriteMutation, favorite);
+}
+
+/** The favourite quote ids for a language, across its size variants. */
+export function getFavoriteQuoteIds(language: Language): string[] {
+  const favoriteQuotes = getUserData()?.favoriteQuotes;
+  if (favoriteQuotes === undefined) return [];
+  const normalized = removeLanguageSize(language);
+  return (Object.keys(favoriteQuotes) as Language[])
+    .filter((lang) => removeLanguageSize(lang) === normalized)
+    .flatMap((lang) => favoriteQuotes[lang] ?? []);
+}
+
+export function isQuoteFavorite(quote: {
+  language: Language;
+  id: number;
+}): boolean {
+  return getFavoriteQuoteIds(quote.language).includes(quote.id.toString());
 }
 
 type ProfileUpdate = {

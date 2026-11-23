@@ -493,12 +493,13 @@ export function getList(): FunboxMetadata[] {
 }
 
 export function getFunbox(name: FunboxName): FunboxMetadata;
-export function getFunbox(names: FunboxName[]): FunboxMetadata[];
+export function getFunbox(names: readonly FunboxName[]): FunboxMetadata[];
 export function getFunbox(
-  nameOrNames: FunboxName | FunboxName[],
+  nameOrNames: FunboxName | readonly FunboxName[],
 ): FunboxMetadata | FunboxMetadata[] {
   if (nameOrNames === undefined) return [];
-  if (Array.isArray(nameOrNames)) {
+  // not Array.isArray: it doesn't narrow readonly arrays
+  if (typeof nameOrNames !== "string") {
     const out = nameOrNames.map((name) => getObject()[name]);
 
     //@ts-expect-error sanity check

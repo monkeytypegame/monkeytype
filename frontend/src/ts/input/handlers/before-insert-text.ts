@@ -1,18 +1,22 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
+// the spec's one documented exception: a synchronous measurement exported by
+// Words
+// oxlint-disable-next-line no-restricted-imports
 import { wouldActiveWordOverflow } from "../../components/pages/test/words-layout";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { getInputElementValue } from "../input-element";
 import { isAwaitingNextWord } from "../state";
+import { isRestartAnimating } from "../../states/test";
 import {
   isTestRestarting,
-  isResultCalculating,
+  isTestFinished,
   wordsHaveNewline,
-  isSlowTimer,
-} from "../../states/test";
+} from "../../test/engine/state";
+import { isSlowTimer } from "../../test/engine/test-timer";
 import { shouldGoToNextWord } from "../helpers/validation";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
-import { getCurrentInput } from "../../test/events/data";
+import { getCurrentInput } from "../../test/engine/events/data";
 import { isSpace } from "../../utils/strings";
 
 /**
@@ -21,7 +25,7 @@ import { isSpace } from "../../utils/strings";
  * @returns Whether to prevent the default insertion behavior.
  */
 export function onBeforeInsertText(data: string): boolean {
-  if (isTestRestarting()) {
+  if (isTestRestarting() || isRestartAnimating()) {
     return true;
   }
 
@@ -29,12 +33,12 @@ export function onBeforeInsertText(data: string): boolean {
     return true;
   }
 
-  if (isResultCalculating()) {
+  if (isTestFinished()) {
     return true;
   }
 
   //only allow newlines if the test has newlines or in zen mode
-  if (data === "\n" && !wordsHaveNewline() && Config.mode !== "zen") {
+  if (data === "\n" && !wordsHaveNewline() && getConfig.mode !== "zen") {
     return true;
   }
 
@@ -64,18 +68,20 @@ export function onBeforeInsertText(data: string): boolean {
   //so it can be counted as a mistake and send the user back a word - it can
   //never be a mistake in zen, so dont let it through there
   const deleteOnErrorIsHard =
-    Config.mode !== "zen" &&
-    (Config.deleteOnError === "letter_hard" ||
-      Config.deleteOnError === "word_hard");
+    getConfig.mode !== "zen" &&
+    (getConfig.deleteOnError === "letter_hard" ||
+      getConfig.deleteOnError === "word_hard");
   const allowFirstSeparator =
-    Config.strictSpace || Config.difficulty !== "normal" || deleteOnErrorIsHard;
+    getConfig.strictSpace ||
+    getConfig.difficulty !== "normal" ||
+    deleteOnErrorIsHard;
   if (isSpace(data) && inputValue === "" && !allowFirstSeparator) {
     return true;
   }
 
   // block input if the word is too long
   const inputLimit =
-    Config.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
+    getConfig.mode === "zen" ? 30 : currentWordTextWithCommit.length + 20;
   const overLimit = inputValue.length >= inputLimit;
   const goingToNextWord = shouldGoToNextWord({
     data,
@@ -98,12 +104,12 @@ export function onBeforeInsertText(data: string): boolean {
   if (
     !isSlowTimer() && // don't do this check if slow timer is active
     dataIsNotFalsy &&
-    !Config.blindMode &&
-    !Config.hideExtraLetters &&
-    !Config.deleteOnError.includes("hard") &&
+    !getConfig.blindMode &&
+    !getConfig.hideExtraLetters &&
+    !getConfig.deleteOnError.includes("hard") &&
     inputIsLongerThanOrEqualToWord &&
     !goingToNextWord &&
-    Config.mode !== "zen"
+    getConfig.mode !== "zen"
   ) {
     // make sure to only check this when really necessary
     // because this check is expensive (causes layout reflows)

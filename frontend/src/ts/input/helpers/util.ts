@@ -1,6 +1,6 @@
 import { isFunboxActiveWithProperty } from "../../test/funbox/list";
 import { areCharactersVisuallyEqual, isSpace } from "../../utils/strings";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 
 /**
  * What kind of commit a character triggers, or false if it does not commit.
@@ -46,7 +46,7 @@ export function normalizeData(
   const targetChar = targetWord[inputValue.length];
   if (
     targetChar !== undefined &&
-    areCharactersVisuallyEqual(data, targetChar, Config.language)
+    areCharactersVisuallyEqual(data, targetChar, getConfig.language)
   ) {
     return targetChar;
   }

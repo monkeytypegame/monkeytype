@@ -8,7 +8,7 @@ import {
   reauthenticate,
   signOut,
 } from "../../../auth";
-import { isAuthenticated } from "../../../states/core";
+import { isAuthenticated } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
 

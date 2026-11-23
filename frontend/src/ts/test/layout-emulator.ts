@@ -1,7 +1,7 @@
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
 
-import { __nonReactive } from "../states/test";
+import { loadInputLayout } from "../states/test";
 
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
@@ -31,7 +31,7 @@ export async function getCharFromEvent(
 
   let layout;
   try {
-    layout = await __nonReactive.getInputLayout();
+    layout = await loadInputLayout();
   } catch (e) {
     showErrorNotification("Failed to emulate event", { error: e });
     return null;

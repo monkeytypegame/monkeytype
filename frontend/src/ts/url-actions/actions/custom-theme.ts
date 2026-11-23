@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { showSuccessNotification } from "../../states/notifications";
 import { buildUrlActionLink, defineSearchAction } from "../action";
 
@@ -72,8 +72,11 @@ function toSharedCustomTheme(
 }
 
 function applyCustomTheme(theme: SharedCustomTheme): void {
-  const oldCustomTheme = Config.customTheme;
-  const oldCustomThemeColors = Config.customThemeColors;
+  const oldCustomTheme = getConfig.customTheme;
+  // a copy: the store updates its array in place, the rollback needs the old
+  const oldCustomThemeColors: CustomThemeColors = [
+    ...getConfig.customThemeColors,
+  ];
   try {
     setConfig("customThemeColors", theme.colors);
 
@@ -83,7 +86,7 @@ function applyCustomTheme(theme: SharedCustomTheme): void {
       setConfig("customBackgroundFilter", theme.background.filter);
     }
 
-    if (!Config.customTheme) setConfig("customTheme", true);
+    if (!getConfig.customTheme) setConfig("customTheme", true);
   } catch (e) {
     // the action's error notification says what went wrong
     setConfig("customTheme", oldCustomTheme);

@@ -66,6 +66,12 @@ type ChallengeParameter =
 export type ChallengeSettings = {
   autoRole?: boolean;
   message?: string;
+  /**
+   * Config keys that clear the loaded challenge when changed, on top of the
+   * test settings. Never one its own funbox writes (eg. layout for
+   * layoutfluid): the funbox would clear its own challenge.
+   */
+  clearOnConfigChange?: (keyof Config)[];
   requirements?: {
     wpm?: { min: number } | { exact: number };
     acc?: { min: number } | { exact: number };
@@ -86,6 +92,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Complete a 69-second test and achieve 69 WPM, 69 raw, 69% accuracy, and 69% consistency.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customTime",
       message:
@@ -204,6 +211,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Get 100 WPM on a randomized, 100-word custom test with the words list: to of in it is as at be we he so on an or do if up by my go.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customText",
       parameters: {
@@ -255,6 +263,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description: "Get at least 200 wpm typing antidisestablishmentarianism.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customText",
       parameters: {
@@ -308,6 +317,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Complete a 5-minute test with exactly 60 WPM without using the live WPM or pace caret.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customTime",
       parameters: { time: 300 },
@@ -324,6 +334,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Get 100 wpm on a randomised custom test with the input: a b c d e f g h i j k l m n o p q r s t u v w x y z (the alphabet) and a word count of 100.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customText",
       parameters: {
@@ -342,6 +353,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "speed",
     description: "Get 400 WPM while typing power 10 times.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "customText",
       parameters: {
@@ -360,6 +372,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "accuracy",
     description: "Complete a 10-minute Master mode test.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
@@ -377,6 +390,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "accuracy",
     description: "Complete a 20-minute Master mode test.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
@@ -394,6 +408,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "accuracy",
     description: "Complete a 30-minute Master mode test.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "accuracy",
       message: "Minimum 60wpm and 100% accuracy required.",
@@ -424,6 +439,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Type the beepboop script with 100% accuracy and at least 45 WPM.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       type: "script",
       message: "Minimum 45 WPM and 100% accuracy required.",
       parameters: { script: "beepboop.txt", funboxes: ["nospace"] },
@@ -464,6 +480,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     category: "script",
     description: "Type the Jolly script with a minimum of 70 wpm.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "script",
       message: "Minimum 70wpm required.",
@@ -489,6 +506,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Type out the lyrics of Eminem's Rap God at a minimum of 85 WPM and 90% accuracy, including punctuation.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "script",
       message: "Minimum 85wpm and 90% accuracy required.",
@@ -503,6 +521,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Type out the Navy Seal copy pasta with 100% accuracy and minimum 60 WPM.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "script",
       message: "Minimum 60wpm and 100% accuracy required.",
@@ -669,6 +688,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Achieve 100+ WPM using the read ahead funbox on a 60-second test.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "funbox",
       parameters: { funbox: "read_ahead", mode: "time", mode2: 60 },
@@ -687,6 +707,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Achieve 100+ WPM using the read ahead hard funbox on a 60-second test.",
     settings: {
+      clearOnConfigChange: ["paceCaret"],
       autoRole: true,
       type: "funbox",
       parameters: { funbox: "read_ahead_hard", mode: "time", mode2: 60 },
@@ -843,6 +864,7 @@ const challenges: Record<ChallengeName, Omit<Challenge, "name">> = {
     description:
       "Complete a 10-word Master mode test using the Wingdings custom font.",
     settings: {
+      clearOnConfigChange: ["fontFamily", "keymapMode"],
       type: "other",
       message:
         "Complete a 10-word Master mode test using the Wingdings custom font. No keymap allowed. Minimum 60 WPM and 100% accuracy required.",

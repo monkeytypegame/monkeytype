@@ -4,9 +4,9 @@ import {
   setActiveTags,
   toggleTagActive,
 } from "../../queries/tags";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import * as PaceCaret from "../../test/pace-caret";
-import { isAuthenticated } from "../../states/core";
+import { isAuthenticated } from "../../auth/state";
 import { Command, CommandsSubgroup } from "../types";
 import { showAddTagModal } from "../../components/modals/AddTagModal";
 
@@ -43,9 +43,9 @@ function update(): void {
       exec: async (): Promise<void> => {
         setActiveTags([]);
         if (
-          Config.paceCaret === "average" ||
-          Config.paceCaret === "tagPb" ||
-          Config.paceCaret === "daily"
+          getConfig.paceCaret === "average" ||
+          getConfig.paceCaret === "tagPb" ||
+          getConfig.paceCaret === "daily"
         ) {
           await PaceCaret.init();
         }
@@ -64,9 +64,9 @@ function update(): void {
           toggleTagActive(tag._id);
 
           if (
-            Config.paceCaret === "average" ||
-            Config.paceCaret === "tagPb" ||
-            Config.paceCaret === "daily"
+            getConfig.paceCaret === "average" ||
+            getConfig.paceCaret === "tagPb" ||
+            getConfig.paceCaret === "daily"
           ) {
             await PaceCaret.init();
           }

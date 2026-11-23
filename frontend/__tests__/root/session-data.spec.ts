@@ -23,18 +23,21 @@ vi.mock("../../src/ts/config/remote", () => ({
   fetchFromServer: vi.fn(async () => ({})),
   applyFromServer: vi.fn(async () => undefined),
 }));
-vi.mock("../../src/ts/sentry", () => ({
-  setUser: vi.fn(),
-  clearUser: vi.fn(),
+vi.mock("../../src/ts/integrations/sentry", () => ({
+  setSentryUser: vi.fn(),
+  clearSentryUser: vi.fn(),
 }));
 
 import * as RemoteConfig from "../../src/ts/config/remote";
-import * as Sentry from "../../src/ts/sentry";
+import {
+  clearSentryUser,
+  setSentryUser,
+} from "../../src/ts/integrations/sentry";
 import {
   getUserDataLoadState,
   reloadUserData,
 } from "../../src/ts/session-data";
-import { setUserId } from "../../src/ts/states/core";
+import { setUserId } from "../../src/ts/auth/state";
 
 // stands in for firebase.ts, the auth signals' writer
 function signIn(uid = "uid"): void {
@@ -65,7 +68,7 @@ describe("session data", () => {
     await settle();
 
     expect(getUserDataLoadState()).toEqual({ status: "loaded" });
-    expect(Sentry.setUser).toHaveBeenCalledWith("uid", "name");
+    expect(setSentryUser).toHaveBeenCalledWith("uid", "name");
   });
 
   it("is loading for whoever reacts to signing in before the load starts", () => {
@@ -124,7 +127,7 @@ describe("session data", () => {
     signOut();
 
     expect(getUserDataLoadState()).toEqual({ status: "idle" });
-    expect(Sentry.clearUser).toHaveBeenCalled();
+    expect(clearSentryUser).toHaveBeenCalled();
 
     loads[0]?.resolve(undefined);
     await settle();

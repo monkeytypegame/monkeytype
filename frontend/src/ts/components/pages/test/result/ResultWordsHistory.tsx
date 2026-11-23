@@ -14,10 +14,10 @@ import { Dynamic } from "solid-js/web";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { getFormatting, getIsScreenshotting } from "../../../../states/core";
-import { isTestFinished, isErrorBorderDisabled } from "../../../../states/test";
-import { getTheme } from "../../../../states/theme";
-import { getWordBurstHistory } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+import { isErrorBorderDisabled } from "../../../../states/test";
+import { getWordBurstHistory } from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
+import { isTestFinished } from "../../../../test/engine/state";
 import {
   buildWordsHistory,
   copyMissedWordsList,
@@ -27,6 +27,7 @@ import {
   isWordsHistoryAnimated,
   isWordsHistoryOpen,
 } from "../../../../test/words-history";
+import { getTheme } from "../../../../theme/state";
 import { cn } from "../../../../utils/cn";
 import { blendTwoHexColors } from "../../../../utils/colors";
 import { get as getTypingSpeedUnit } from "../../../../utils/typing-speed-units";

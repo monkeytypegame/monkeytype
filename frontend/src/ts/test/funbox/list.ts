@@ -34,16 +34,17 @@ for (const [name, data] of Object.entries(metadata)) {
 }
 
 export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
-export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
 export function get(
-  funboxNameOrNames: FunboxName | FunboxName[],
+  funboxNames: readonly FunboxName[],
+): FunboxMetadataWithFunctions[];
+export function get(
+  funboxNameOrNames: FunboxName | readonly FunboxName[],
 ): FunboxMetadataWithFunctions | FunboxMetadataWithFunctions[] {
-  if (Array.isArray(funboxNameOrNames)) {
-    const fns = funboxNameOrNames.map((name) => metadataWithFunctions[name]);
-    return fns;
-  } else {
+  // not Array.isArray: it doesn't narrow readonly arrays
+  if (typeof funboxNameOrNames === "string") {
     return metadataWithFunctions[funboxNameOrNames];
   }
+  return funboxNameOrNames.map((name) => metadataWithFunctions[name]);
 }
 
 export function getAllFunboxes(): FunboxMetadataWithFunctions[] {

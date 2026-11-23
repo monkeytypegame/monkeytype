@@ -8,7 +8,7 @@ import type { NormalizedLocalResult } from "../../../collections/results";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { getFormatting } from "../../../states/core";
-import { getTheme } from "../../../states/theme";
+import { getTheme } from "../../../theme/state";
 import { blendTwoHexColors } from "../../../utils/colors";
 import { Formatting } from "../../../utils/format";
 import { findLineByLeastSquares } from "../../../utils/numbers";

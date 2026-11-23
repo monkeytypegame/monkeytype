@@ -2,7 +2,7 @@ import { getUserData } from "../queries/user";
 import * as ServerConfiguration from "../ape/server-configuration";
 import { blendTwoHexColors } from "../utils/colors";
 import { mapRange } from "@monkeytype/util/numbers";
-import { getTheme } from "../states/theme";
+import { getTheme } from "../theme/state";
 import { qs } from "../utils/dom";
 
 //TODO

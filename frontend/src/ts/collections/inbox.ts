@@ -12,13 +12,13 @@ import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import * as BadgeController from "../controllers/badge-controller";
+import { getBadge } from "../constants/badges";
 import { addBadge, addXp } from "../queries/user";
 import { keepForever } from "./utils/misc";
 
@@ -109,7 +109,7 @@ function claimRewards(pendingRewards: AllRewards[]): void {
     if (reward.type === "xp") {
       totalXp += reward.item;
     } else if (reward.type === "badge") {
-      const badge = BadgeController.getById(reward.item.id);
+      const badge = getBadge(reward.item.id);
       if (badge) {
         badgeNames.push(badge.name);
         addBadge(reward.item);

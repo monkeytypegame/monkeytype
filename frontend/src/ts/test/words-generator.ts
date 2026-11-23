@@ -1,11 +1,11 @@
-import { Config } from "../config/store";
+import { getTestSettings } from "./engine/test-settings";
+import { getConfig } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
-import * as CustomText from "./custom-text";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
-import QuotesController, {
-  Quote,
-  QuoteWithTextSplit,
-} from "../controllers/quotes-controller";
+import { Quote, QuoteWithTextSplit } from "../types/quotes";
+import { getQuoteById, getLanguageQuotes } from "../constants/quotes";
+import { pickFavoriteQuote, pickQueuedQuote } from "./quote-picker";
+import { getFavoriteQuoteIds } from "../queries/user";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -27,13 +27,8 @@ import { WordGenError } from "../utils/word-gen-error";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
 import { LanguageObject } from "@monkeytype/schemas/languages";
-import {
-  getSelectedQuoteId,
-  getCurrentQuote,
-  isRepeated,
-  setCurrentQuote,
-} from "../states/test";
-import * as TestWords from "./test-words";
+import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
+import * as TestWords from "./engine/test-words";
 
 //pin implementation
 const random = Math.random;
@@ -51,7 +46,7 @@ export async function punctuateWord(
 ): Promise<string> {
   let word = currentWord;
 
-  const currentLanguage = Config.language.split("_")[0];
+  const currentLanguage = getTestSettings().language.split("_")[0];
 
   const lastChar =
     previousWord !== undefined ? Strings.getLastChar(previousWord) : undefined;
@@ -169,7 +164,7 @@ export async function punctuateWord(
       const brackets = ["()", "{}", "[]", "<>"];
 
       // add `word` in javascript
-      if (Config.language.startsWith("code_javascript")) {
+      if (getTestSettings().language.startsWith("code_javascript")) {
         brackets.push("``");
       }
 
@@ -285,13 +280,13 @@ export async function punctuateWord(
     ];
 
     if (
-      (Config.language.startsWith("code_c") &&
-        !Config.language.startsWith("code_css")) ||
-      Config.language.startsWith("code_arduino")
+      (getTestSettings().language.startsWith("code_c") &&
+        !getTestSettings().language.startsWith("code_css")) ||
+      getTestSettings().language.startsWith("code_arduino")
     ) {
       word = Arrays.randomElementFromArray(specialsC);
     } else {
-      if (Config.language.startsWith("code_javascript")) {
+      if (getTestSettings().language.startsWith("code_javascript")) {
         word = Arrays.randomElementFromArray([...specials, "`"]);
       } else {
         word = Arrays.randomElementFromArray(specials);
@@ -335,7 +330,9 @@ async function getFunboxSection(): Promise<string[]> {
   const funbox = findSingleActiveFunboxWithFunction("pullSection");
 
   if (funbox) {
-    const section = await funbox.functions.pullSection(Config.language);
+    const section = await funbox.functions.pullSection(
+      getTestSettings().language,
+    );
 
     if (section === false || section === undefined) {
       toggleFunbox(funbox.name);
@@ -343,7 +340,10 @@ async function getFunboxSection(): Promise<string[]> {
     }
 
     for (const word of section.words) {
-      if (ret.length >= Config.words && Config.mode === "words") {
+      if (
+        ret.length >= getTestSettings().words &&
+        getTestSettings().mode === "words"
+      ) {
         break;
       }
       ret.push(word);
@@ -380,11 +380,11 @@ async function applyBritishEnglishToWord(
   word: string,
   previousWord: string | undefined,
 ): Promise<string> {
-  if (!Config.britishEnglish) return word;
-  if (!Config.language.includes("english")) return word;
+  if (!getTestSettings().britishEnglish) return word;
+  if (!getTestSettings().language.includes("english")) return word;
   const currentQuote = getCurrentQuote();
   if (
-    Config.mode === "quote" &&
+    getTestSettings().mode === "quote" &&
     currentQuote?.britishText !== undefined &&
     currentQuote?.britishText !== ""
   ) {
@@ -402,16 +402,18 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
       ? currentWordset.languageProperties.get(langName)
       : undefined;
     const allowLazyMode =
-      (langProps && !langProps.noLazyMode) === true || Config.mode === "custom";
-    if (Config.lazyMode && allowLazyMode && langProps) {
+      (langProps && !langProps.noLazyMode) === true ||
+      getTestSettings().mode === "custom";
+    if (getTestSettings().lazyMode && allowLazyMode && langProps) {
       word = LazyMode.replaceAccents(word, langProps.additionalAccents);
     }
     return word;
   }
 
   // normal mode
-  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
-  if (Config.lazyMode && allowLazyMode) {
+  const allowLazyMode =
+    !language.noLazyMode || getTestSettings().mode === "custom";
+  if (getTestSettings().lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
@@ -426,7 +428,7 @@ export function getWordOrder(): FunboxWordOrder {
 }
 
 export function getLimit(): number {
-  if (Config.mode === "zen") {
+  if (getTestSettings().mode === "zen") {
     return 0;
   }
 
@@ -434,7 +436,7 @@ export function getLimit(): number {
 
   const currentQuote = getCurrentQuote();
 
-  if (Config.mode === "quote" && currentQuote === null) {
+  if (getTestSettings().mode === "quote" && currentQuote === null) {
     throw new WordGenError("Random quote is null");
   }
 
@@ -443,33 +445,35 @@ export function getLimit(): number {
       .flatMap((fb) => fb.properties ?? [])
       .find((prop) => prop.startsWith("toPush:")) ?? "";
 
-  if (Config.showAllLines) {
-    if (Config.mode === "custom") {
-      limit = CustomText.getLimitValue();
+  if (getConfig.showAllLines) {
+    if (getTestSettings().mode === "custom") {
+      limit = getTestSettings().customText.limit.value;
     }
-    if (Config.mode === "words") {
-      limit = Config.words;
+    if (getTestSettings().mode === "words") {
+      limit = getTestSettings().words;
     }
-    if (Config.mode === "quote") {
+    if (getTestSettings().mode === "quote") {
       limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
   }
 
   //infinite words
-  if (Config.mode === "words" && Config.words === 0) {
+  if (getTestSettings().mode === "words" && getTestSettings().words === 0) {
     limit = 100;
   }
 
   //custom
-  if (Config.mode === "custom") {
+  if (getTestSettings().mode === "custom") {
     if (
-      CustomText.getLimitValue() === 0 ||
-      CustomText.getLimitMode() === "time"
+      getTestSettings().customText.limit.value === 0 ||
+      getTestSettings().customText.limit.mode === "time"
     ) {
       limit = 100;
     } else {
       limit =
-        CustomText.getLimitValue() > 100 ? 100 : CustomText.getLimitValue();
+        getTestSettings().customText.limit.value > 100
+          ? 100
+          : getTestSettings().customText.limit.value;
     }
   }
 
@@ -479,24 +483,28 @@ export function getLimit(): number {
   }
 
   //make sure the limit is not higher than the word count
-  if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
-    limit = Config.words;
+  if (
+    getTestSettings().mode === "words" &&
+    getTestSettings().words !== 0 &&
+    getTestSettings().words < limit
+  ) {
+    limit = getTestSettings().words;
   }
 
   if (
-    Config.mode === "quote" &&
+    getTestSettings().mode === "quote" &&
     (currentQuote as QuoteWithTextSplit).textSplit.length < limit
   ) {
     limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
   }
 
   if (
-    Config.mode === "custom" &&
-    CustomText.getLimitMode() === "word" &&
-    CustomText.getLimitValue() < limit &&
-    CustomText.getLimitValue() !== 0
+    getTestSettings().mode === "custom" &&
+    getTestSettings().customText.limit.mode === "word" &&
+    getTestSettings().customText.limit.value < limit &&
+    getTestSettings().customText.limit.value !== 0
   ) {
-    limit = CustomText.getLimitValue();
+    limit = getTestSettings().customText.limit.value;
   }
 
   return limit;
@@ -521,69 +529,77 @@ async function getQuoteWordList(
       return currentWordset.words;
     }
   }
-  const languageToGet = language.name.startsWith("swiss_german")
-    ? "german"
-    : language.name;
-
   showLoaderBar();
-  const quotesCollection = await QuotesController.getQuotes(
-    languageToGet,
-    Config.quoteLength,
-  );
+  const languageQuotes = await getLanguageQuotes(language.name);
   hideLoaderBar();
 
-  if (quotesCollection.length === 0) {
+  if (languageQuotes.quotes.length === 0) {
     setConfig("mode", "words");
     throw new WordGenError(
-      `No ${Config.language
-        .replace(/_\d*k$/g, "")
+      `No ${getTestSettings()
+        .language.replace(/_\d*k$/g, "")
         .replace(/_/g, " ")} quotes found`,
     );
   }
 
-  let rq: Quote;
-  if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-    const targetQuote = QuotesController.getQuoteById(getSelectedQuoteId());
+  let picked: Quote;
+  if (
+    getTestSettings().quoteLength.includes(-2) &&
+    getTestSettings().quoteLength.length === 1
+  ) {
+    const targetQuote = getQuoteById(
+      languageQuotes,
+      getTestSettings().selectedQuoteId,
+    );
     if (targetQuote === undefined) {
       setQuoteLengthAll();
-      throw new WordGenError(`Quote ${getSelectedQuoteId()} does not exist`);
+      throw new WordGenError(
+        `Quote ${getTestSettings().selectedQuoteId} does not exist`,
+      );
     }
-    rq = targetQuote;
-  } else if (Config.quoteLength.includes(-3)) {
-    const randomQuote = QuotesController.getRandomFavoriteQuote(
-      Config.language,
+    picked = targetQuote;
+  } else if (getTestSettings().quoteLength.includes(-3)) {
+    const randomQuote = pickFavoriteQuote(
+      languageQuotes,
+      getFavoriteQuoteIds(getTestSettings().language),
     );
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
-    rq = randomQuote;
+    picked = randomQuote;
   } else {
-    const randomQuote = QuotesController.getRandomQuote();
+    const randomQuote = pickQueuedQuote(
+      languageQuotes,
+      getTestSettings().quoteLength,
+    );
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
-    rq = randomQuote;
+    picked = randomQuote;
   }
 
-  rq.language = Strings.removeLanguageSize(Config.language);
-  rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  rq.text = rq.text.replace(/…/g, "...");
-  rq.text = rq.text.trim();
+  // a copy: the loaded quotes stay unchanged
+  const text = picked.text
+    .replace(/ +/gm, " ")
+    .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
+    .replace(/…/g, "...")
+    .trim();
+  const textSplit =
+    picked.britishText !== undefined &&
+    picked.britishText !== "" &&
+    getTestSettings().britishEnglish
+      ? picked.britishText.split(" ")
+      : text.split(" ");
+  const rq: QuoteWithTextSplit = {
+    ...picked,
+    language: Strings.removeLanguageSize(getTestSettings().language),
+    text,
+    textSplit,
+  };
 
-  if (
-    rq.britishText !== undefined &&
-    rq.britishText !== "" &&
-    Config.britishEnglish
-  ) {
-    rq.textSplit = rq.britishText.split(" ");
-  } else {
-    rq.textSplit = rq.text.split(" ");
-  }
-
-  setCurrentQuote(rq as QuoteWithTextSplit);
+  setCurrentQuote(rq);
 
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {
@@ -663,16 +679,17 @@ export async function generateWords(
   console.debug("Word order", wordOrder);
 
   let wordList = language.words;
-  if (Config.mode === "custom") {
-    wordList = CustomText.getText();
-  } else if (Config.mode === "quote") {
+  if (getTestSettings().mode === "custom") {
+    wordList = getTestSettings().customText.text;
+  } else if (getTestSettings().mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
-  } else if (Config.mode === "zen") {
+  } else if (getTestSettings().mode === "zen") {
     wordList = [];
   }
 
   const customAndUsingPipeDelimiter =
-    Config.mode === "custom" && CustomText.getPipeDelimiter();
+    getTestSettings().mode === "custom" &&
+    getTestSettings().customText.pipeDelimiter;
 
   const limit = getLimit();
   console.debug(
@@ -737,14 +754,16 @@ export async function generateWords(
 
   const quote = getCurrentQuote();
 
-  if (Config.mode === "quote" && quote === null) {
+  if (getTestSettings().mode === "quote" && quote === null) {
     throw new WordGenError("Random quote is null");
   }
 
   const facts = getTestWordFacts([
     ret.words,
     currentWordset.words,
-    Config.mode === "quote" ? (quote as QuoteWithTextSplit).textSplit : [],
+    getTestSettings().mode === "quote"
+      ? (quote as QuoteWithTextSplit).textSplit
+      : [],
   ]);
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
@@ -791,7 +810,7 @@ export async function getNextWord(
   //because quote test can be repeated in the middle of a test
   //we cant rely on data inside previousGetNextWordReturns
   //because it might not include the full quote
-  if (isRepeated() && Config.mode !== "quote") {
+  if (isRepeated() && getTestSettings().mode !== "quote") {
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
@@ -802,15 +821,17 @@ export async function getNextWord(
       let continueRandomGeneration = false;
 
       if (
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
-        (Config.mode === "custom" &&
-          CustomText.getLimitMode() === "word" &&
-          wordIndex < CustomText.getLimitValue()) ||
-        (Config.mode === "custom" &&
-          CustomText.getLimitMode() === "section" &&
-          sectionIndex < CustomText.getLimitValue()) ||
-        (Config.mode === "words" && wordIndex < Config.words)
+        getTestSettings().mode === "time" ||
+        (getTestSettings().mode === "custom" &&
+          getTestSettings().customText.limit.mode === "time") ||
+        (getTestSettings().mode === "custom" &&
+          getTestSettings().customText.limit.mode === "word" &&
+          wordIndex < getTestSettings().customText.limit.value) ||
+        (getTestSettings().mode === "custom" &&
+          getTestSettings().customText.limit.mode === "section" &&
+          sectionIndex < getTestSettings().customText.limit.value) ||
+        (getTestSettings().mode === "words" &&
+          wordIndex < getTestSettings().words)
       ) {
         continueRandomGeneration = true;
       }
@@ -841,21 +862,27 @@ export async function getNextWord(
   if (currentSection.length === 0) {
     const funboxSection = await getFunboxSection();
 
-    if (Config.mode === "quote") {
-      randomWord = currentWordset.nextWord();
-    } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
+    if (getTestSettings().mode === "quote") {
       randomWord = currentWordset.nextWord();
     } else if (
-      Config.mode === "custom" &&
-      CustomText.getMode() === "random" &&
+      getTestSettings().mode === "custom" &&
+      getTestSettings().customText.mode === "repeat"
+    ) {
+      randomWord = currentWordset.nextWord();
+    } else if (
+      getTestSettings().mode === "custom" &&
+      getTestSettings().customText.mode === "random" &&
       (currentWordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
       randomWord = currentWordset.randomWord(funboxFrequency);
-    } else if (Config.mode === "custom" && CustomText.getMode() === "shuffle") {
+    } else if (
+      getTestSettings().mode === "custom" &&
+      getTestSettings().customText.mode === "shuffle"
+    ) {
       randomWord = currentWordset.shuffledWord();
     } else if (
-      Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section"
+      getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.mode === "section"
     ) {
       randomWord = currentWordset.randomWord(funboxFrequency);
 
@@ -883,15 +910,15 @@ export async function getNextWord(
         regenarationCount < 100 &&
         (previousWordRaw === firstAfterSplitLazy ||
           previousWord2Raw === firstAfterSplitLazy ||
-          (Config.mode !== "custom" &&
-            !Config.punctuation &&
+          (getTestSettings().mode !== "custom" &&
+            !getTestSettings().punctuation &&
             randomWord === "I") ||
-          (Config.mode !== "custom" &&
-            !Config.punctuation &&
-            !Config.language.startsWith("code") &&
+          (getTestSettings().mode !== "custom" &&
+            !getTestSettings().punctuation &&
+            !getTestSettings().language.startsWith("code") &&
             /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
-          (Config.mode !== "custom" &&
-            !Config.numbers &&
+          (getTestSettings().mode !== "custom" &&
+            !getTestSettings().numbers &&
             /[0-9]/i.test(randomWord)))
       ) {
         regenarationCount++;
@@ -932,13 +959,13 @@ export async function getNextWord(
   const randomWordLanguage =
     (currentWordset instanceof PolyglotWordset
       ? currentWordset.wordsWithLanguage.get(randomWord)
-      : Config.language) ?? Config.language; // Fall back to Config language if per-word language is unavailable
+      : getTestSettings().language) ?? getTestSettings().language; // Fall back to getConfig language if per-word language is unavailable
 
   if (
-    Config.mode !== "custom" &&
-    Config.mode !== "quote" &&
+    getTestSettings().mode !== "custom" &&
+    getTestSettings().mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
-    !Config.punctuation &&
+    !getTestSettings().punctuation &&
     !randomWordLanguage.startsWith("german") &&
     !randomWordLanguage.startsWith("swiss_german") &&
     !randomWordLanguage.startsWith("code") &&
@@ -953,12 +980,12 @@ export async function getNextWord(
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, currentLanguage);
 
-  if (Config.language.startsWith("swiss_german")) {
+  if (getTestSettings().language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
   if (
-    Config.punctuation &&
+    getTestSettings().punctuation &&
     !currentLanguage.originalPunctuation &&
     !isCurrentlyUsingFunboxSection
   ) {
@@ -972,17 +999,17 @@ export async function getNextWord(
 
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.numbers) {
+  if (getTestSettings().numbers) {
     if (random() < 0.1) {
       randomWord = GetText.getNumbers(4);
 
-      if (Config.language.startsWith("kurdish")) {
+      if (getTestSettings().language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabic(randomWord);
-      } else if (Config.language.startsWith("nepali")) {
+      } else if (getTestSettings().language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
-      } else if (Config.language.startsWith("bangla")) {
+      } else if (getTestSettings().language.startsWith("bangla")) {
         randomWord = Misc.convertNumberToBangla(randomWord);
-      } else if (Config.language.startsWith("hindi")) {
+      } else if (getTestSettings().language.startsWith("hindi")) {
         randomWord = Misc.convertNumberToHindi(randomWord);
       }
     }
@@ -1018,19 +1045,19 @@ export function appendCommitCharacter(word: string): string {
 
 export function areAllWordsGenerated(): boolean {
   return (
-    (Config.mode === "words" &&
-      TestWords.words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "word" &&
-      TestWords.words.length >= CustomText.getLimitValue() &&
-      CustomText.getLimitValue() !== 0) ||
-    (Config.mode === "quote" &&
+    (getTestSettings().mode === "words" &&
+      TestWords.words.length >= getTestSettings().words &&
+      getTestSettings().words > 0) ||
+    (getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.mode === "word" &&
+      TestWords.words.length >= getTestSettings().customText.limit.value &&
+      getTestSettings().customText.limit.value !== 0) ||
+    (getTestSettings().mode === "quote" &&
       TestWords.words.length >= (getCurrentQuote()?.textSplit?.length ?? 0)) ||
-    (Config.mode === "custom" &&
-      CustomText.getLimitMode() === "section" &&
-      sectionIndex >= CustomText.getLimitValue() &&
+    (getTestSettings().mode === "custom" &&
+      getTestSettings().customText.limit.mode === "section" &&
+      sectionIndex >= getTestSettings().customText.limit.value &&
       currentSection.length === 0 &&
-      CustomText.getLimitValue() !== 0)
+      getTestSettings().customText.limit.value !== 0)
   );
 }

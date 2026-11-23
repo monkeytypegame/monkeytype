@@ -14,11 +14,11 @@ import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { For, JSXElement, Show } from "solid-js";
 
+import { getUserId, isAuthenticated } from "../../../auth/state";
 import { addConnection, hasConnection } from "../../../collections/connections";
+import { getLastResult } from "../../../collections/results";
 import { UserData } from "../../../constants/user-data";
 import { bp } from "../../../states/breakpoints";
-import { getUserId, isAuthenticated } from "../../../states/core";
-import { getLastResult } from "../../../states/last-result";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { setUserToReport } from "../../../states/user-report";

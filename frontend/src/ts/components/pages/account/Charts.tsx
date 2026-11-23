@@ -2,13 +2,14 @@ import { ResultFilters, ResultFiltersKeys } from "@monkeytype/schemas/users";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { Accessor, createMemo, JSXElement } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import {
   buildResultsQuery,
   ResultsQueryState,
 } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
 import { getTags, type Tag } from "../../../queries/tags";
-import { getFormatting, isAuthenticated } from "../../../states/core";
+import { getFormatting } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import {
   capitalizeFirstLetter,

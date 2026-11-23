@@ -1,23 +1,18 @@
-import * as TestWords from "./test-words";
-import { Config } from "../config/store";
+import { getTestSettings } from "./engine/test-settings";
+import * as TestWords from "./engine/test-words";
+import { getConfig } from "../config/store";
 import { getLocalPB } from "../queries/user";
 import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
 import { getActiveFunboxes } from "./funbox/list";
-import { createSignal } from "solid-js";
+import { createRoot, createSignal } from "solid-js";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import {
-  getActiveWordIndex,
-  getCurrentQuote,
-  isTestFinished,
-  isPaceRepeat,
-  isTestActive,
-  setPaceCaretWpm,
-} from "../states/test";
+import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import { getActiveWordIndex, isTestActive } from "./engine/state";
 
 type Settings = {
   wpm: number;
@@ -62,37 +57,37 @@ export function setLastTestWpm(wpm: number): void {
 
 export async function init(): Promise<void> {
   setPaceCaretTarget(undefined);
-  const mode2 = Misc.getMode2(Config, getCurrentQuote());
+  const mode2 = Misc.getMode2(getTestSettings(), getCurrentQuote());
   let wpm = 0;
-  if (Config.paceCaret === "pb") {
+  if (getConfig.paceCaret === "pb") {
     wpm =
       getLocalPB(
-        Config.mode,
+        getTestSettings().mode,
         mode2,
-        Config.punctuation,
-        Config.numbers,
-        Config.language,
-        Config.difficulty,
-        Config.lazyMode,
+        getTestSettings().punctuation,
+        getTestSettings().numbers,
+        getTestSettings().language,
+        getTestSettings().difficulty,
+        getTestSettings().lazyMode,
         getActiveFunboxes(),
       )?.wpm ?? 0;
-  } else if (Config.paceCaret === "tagPb") {
+  } else if (getConfig.paceCaret === "tagPb") {
     wpm = getActiveTagsPB(
-      Config.mode,
+      getTestSettings().mode,
       mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
+      getTestSettings().punctuation,
+      getTestSettings().numbers,
+      getTestSettings().language,
+      getTestSettings().difficulty,
+      getTestSettings().lazyMode,
     );
-  } else if (Config.paceCaret === "average") {
-    wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "daily") {
-    wpm = Math.round((await getUserDailyBestOnce({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "custom") {
-    wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || isPaceRepeat()) {
+  } else if (getConfig.paceCaret === "average") {
+    wpm = Math.round((await getUserAverage10Once({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "daily") {
+    wpm = Math.round((await getUserDailyBestOnce({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "custom") {
+    wpm = getConfig.paceCaretCustomSpeed;
+  } else if (getConfig.paceCaret === "last" || isPaceRepeat()) {
     wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
@@ -120,7 +115,7 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || isTestFinished()) {
+  if (currentSettings === null || !isTestActive()) {
     return;
   }
 
@@ -172,7 +167,7 @@ function incrementLetterIndex(): void {
     }
     settings.currentLetterIndex++;
 
-    if (!Config.blindMode) {
+    if (!getConfig.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
@@ -214,7 +209,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings?.wordsStatus[getActiveWordIndex()] === true &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
@@ -223,7 +218,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
     if (
       settings !== null &&
       settings.wordsStatus[getActiveWordIndex()] === undefined &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
@@ -237,6 +232,11 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-configEvent.subscribe(({ key }) => {
-  if (key === "paceCaret") void init();
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.paceCaret,
+    () => void init(),
+    { defer: true },
+  );
 });

@@ -6,17 +6,19 @@ import { roundTo1 } from "@monkeytype/util/numbers";
 import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
 
+import { isAuthenticated } from "../auth/state";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
-import { isAuthenticated } from "../states/core";
+import { setPrefersArabicLazyMode } from "../states/lazy-mode";
 import { showNoticeNotification } from "../states/notifications";
-import { setRandomTheme } from "../states/theme";
+import { setRandomTheme } from "../theme/state";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
+import { DeepReadonly } from "../utils/types";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getOptions } from "../utils/zod";
 import {
@@ -134,9 +136,13 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
   group: ConfigSchemas.ConfigGroupName;
 
   /**
-   * Is a test restart required after this config change?
+   * Is a test restart required after this config change? A function narrows
+   * it to the configs where the setting matters (eg. only while a funbox is
+   * active). Either way the key is a test setting.
    */
-  changeRequiresRestart: boolean;
+  changeRequiresRestart:
+    | boolean
+    | ((config: DeepReadonly<ConfigSchemas.Config>) => boolean);
   /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
@@ -677,7 +683,7 @@ const configMetadataEntries = {
     key: "customLayoutfluid",
     fa: { icon: "fa-tint" },
     displayString: "custom layoutfluid",
-    changeRequiresRestart: true,
+    changeRequiresRestart: (config) => config.funbox.includes("layoutfluid"),
     group: "behavior",
     description:
       "Select which layouts you want the layoutfluid funbox to cycle through.",
@@ -698,7 +704,7 @@ const configMetadataEntries = {
     key: "customPolyglot",
     fa: { icon: "fa-language" },
     displayString: "polyglot languages",
-    changeRequiresRestart: false,
+    changeRequiresRestart: true,
     group: "behavior",
     description: "Select which languages you want the polyglot funbox to use.",
     overrideValue: ({ value }) => {
@@ -900,6 +906,12 @@ const configMetadataEntries = {
     group: "input",
     description:
       "Replaces accents / diacritics / special characters with their normal letter equivalents.",
+    // remember the user's choice for arabic (writes that save are the user's)
+    afterSet: ({ nosave, currentConfig }) => {
+      if (!nosave && currentConfig.language.startsWith("arabic")) {
+        setPrefersArabicLazyMode(currentConfig.lazyMode);
+      }
+    },
     commandline: {
       subgroup: {
         options: "fromSchema",
@@ -910,7 +922,7 @@ const configMetadataEntries = {
     key: "layout",
     fa: { icon: "fa-keyboard" },
     displayString: "layout",
-    changeRequiresRestart: true,
+    changeRequiresRestart: false,
     group: "input",
     description:
       "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
@@ -1951,19 +1963,8 @@ const configMetadataEntries = {
     changeRequiresRestart: false,
     description: `You can disable or enable ads at any time. "Result" will show one ad on the result page, "on" will add floating vertical banners, and "sellout" will add multiple ads on every page.`,
     group: "ads",
-    overrideValue: ({ value }) => {
-      if (isDevEnvironment()) {
-        return "off";
-      }
-      return value;
-    },
-    isBlocked: ({ value }) => {
-      if (value !== "off" && isDevEnvironment()) {
-        showNoticeNotification("Ads are disabled in development mode.");
-        return true;
-      }
-      return false;
-    },
+    // dev: the slots show as placeholders, the ads integration loads no ad
+    // scripts
     afterSet: ({ nosave }) => {
       if (!nosave && !isDevEnvironment()) {
         reloadAfter(3);
@@ -1979,6 +1980,15 @@ const configMetadataEntries = {
 } satisfies ConfigMetadataObject;
 
 export const configMetadata: ConfigMetadataObject = configMetadataEntries;
+
+/** Whether changing `key` restarts the test, given `config`. */
+export function changeRequiresRestart(
+  key: keyof ConfigSchemas.Config,
+  config: DeepReadonly<ConfigSchemas.Config>,
+): boolean {
+  const requires = configMetadata[key].changeRequiresRestart;
+  return typeof requires === "function" ? requires(config) : requires;
+}
 
 /**
  * Config keys that have a generated commandline command

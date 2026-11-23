@@ -10,13 +10,17 @@ import {
 import { z } from "zod";
 
 import Ape from "../../ape";
+import { isAuthenticated } from "../../auth/state";
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
-import QuotesController, { Quote } from "../../controllers/quotes-controller";
+import { getConfig } from "../../config/store";
+import { getLanguageQuotes } from "../../constants/quotes";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
-import { getUserData } from "../../queries/user";
-import { isAuthenticated } from "../../states/core";
+import {
+  getUserData,
+  isQuoteFavorite,
+  setQuoteFavorite,
+} from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import {
   hideModalAndClearChain,
@@ -31,6 +35,7 @@ import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import { setSelectedQuoteId } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
+import { Quote } from "../../types/quotes";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
@@ -110,7 +115,7 @@ function Item(props: {
   const loggedOut = (): boolean => !isAuthenticated();
   const [isFav, setIsFav] = createSignal(
     // oxlint-disable-next-line solid/reactivity -- intentionally reading once as initial value
-    !loggedOut() && QuotesController.isQuoteFavorite(props.quote),
+    !loggedOut() && isQuoteFavorite(props.quote),
   );
 
   const handleToggleFavorite = async (): Promise<void> => {
@@ -275,7 +280,7 @@ export function QuoteSearchModal(): JSXElement {
     }
 
     const quoteSearchService = getSearchService<Quote>(
-      Config.language,
+      getConfig.language,
       allQuotes,
       (quote: Quote) => `${quote.text} ${quote.id} ${quote.source}`,
     );
@@ -328,9 +333,7 @@ export function QuoteSearchModal(): JSXElement {
     }
 
     if (showFavoritesOnly()) {
-      result = result.filter((quote) =>
-        QuotesController.isQuoteFavorite(quote),
-      );
+      result = result.filter((quote) => isQuoteFavorite(quote));
     }
 
     return result;
@@ -391,10 +394,10 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const handleAfterShow = async (): Promise<void> => {
-    const quotesLanguage = await getLanguage(Config.language);
+    const quotesLanguage = await getLanguage(getConfig.language);
     setIsRtl(quotesLanguage?.rightToLeft ?? false);
-    const { quotes: fetchedQuotes } = await QuotesController.getQuotes(
-      Config.language,
+    const { quotes: fetchedQuotes } = await getLanguageQuotes(
+      getConfig.language,
     );
     setQuotes(fetchedQuotes);
     performSearch(form.state.values.searchText);
@@ -412,13 +415,14 @@ export function QuoteSearchModal(): JSXElement {
   };
 
   const toggleFavorite = async (quote: Quote): Promise<boolean> => {
-    const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
+    const alreadyFavorited = isQuoteFavorite(quote);
 
     showLoaderBar();
-    const { error } = await QuotesController.setQuoteFavorite(
-      quote,
-      !alreadyFavorited,
-    );
+    const { error } = await setQuoteFavorite({
+      language: quote.language,
+      quoteId: quote.id.toString(),
+      favorite: !alreadyFavorited,
+    });
     hideLoaderBar();
     if (error !== null) {
       showErrorNotification(
