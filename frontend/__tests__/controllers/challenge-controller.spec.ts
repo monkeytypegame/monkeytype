@@ -55,6 +55,11 @@ describe("challenge controller config effects", () => {
     expect(getLoadedChallenge()).not.toBeNull();
   });
 
+  it("keeps the challenge on a lazy mode change", () => {
+    set("lazyMode", true);
+    expect(getLoadedChallenge()).not.toBeNull();
+  });
+
   it("keeps the challenge on keys only other challenges watch", () => {
     set("paceCaret", "average");
     set("fontFamily", "Wingdings");

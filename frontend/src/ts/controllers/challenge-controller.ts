@@ -356,7 +356,9 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
 
 // Changing a test setting, or a key the loaded challenge watches, clears it.
 // Only user writes reach these: funboxes write keys outside the test settings
-// (layout, keymap, show all lines), which challenges don't watch.
+// (layout, keymap, show all lines), which challenges don't watch. Lazy mode is
+// left out: a restart writes it (a language's remembered lazy mode), which
+// would clear a challenge that just loaded.
 function clearOnChange(key: keyof ConfigType): void {
   // serialized, so changes inside arrays (funbox, quote length) count
   const value = createMemo(() => JSON.stringify(getConfig[key]));
@@ -365,7 +367,9 @@ function clearOnChange(key: keyof ConfigType): void {
 
 // a root so the effects are owned, they live as long as the page
 createRoot(() => {
-  for (const key of TEST_SETTINGS_KEYS) clearOnChange(key);
+  for (const key of TEST_SETTINGS_KEYS) {
+    if (key !== "lazyMode") clearOnChange(key);
+  }
   // per loaded challenge, disposed when it changes
   createEffect(
     on(getLoadedChallenge, (challenge) => {
