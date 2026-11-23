@@ -12,7 +12,8 @@ let themesList: (ThemeName | string)[] = [];
 
 export function updateThemeList(): void {
   if (getConfig.randomTheme === "fav" && getConfig.favThemes.length > 0) {
-    themesList = getConfig.favThemes;
+    // a copy: the list is shuffled in place, the store is read-only
+    themesList = [...getConfig.favThemes];
   } else if (getConfig.randomTheme === "light") {
     themesList = ThemesList.filter((t) => isColorLight(t.bg)).map(
       (t) => t.name,
