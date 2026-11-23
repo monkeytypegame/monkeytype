@@ -1,6 +1,6 @@
 import { getTestSettings } from "./engine/test-settings";
 import * as TestWords from "./engine/test-words";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { getLocalPB } from "../queries/user";
 import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
@@ -59,7 +59,7 @@ export async function init(): Promise<void> {
   setPaceCaretTarget(undefined);
   const mode2 = Misc.getMode2(getTestSettings(), getCurrentQuote());
   let wpm = 0;
-  if (Config.paceCaret === "pb") {
+  if (getConfig.paceCaret === "pb") {
     wpm =
       getLocalPB(
         getTestSettings().mode,
@@ -71,7 +71,7 @@ export async function init(): Promise<void> {
         getTestSettings().lazyMode,
         getActiveFunboxes(),
       )?.wpm ?? 0;
-  } else if (Config.paceCaret === "tagPb") {
+  } else if (getConfig.paceCaret === "tagPb") {
     wpm = getActiveTagsPB(
       getTestSettings().mode,
       mode2,
@@ -81,13 +81,13 @@ export async function init(): Promise<void> {
       getTestSettings().difficulty,
       getTestSettings().lazyMode,
     );
-  } else if (Config.paceCaret === "average") {
-    wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "daily") {
-    wpm = Math.round((await getUserDailyBestOnce({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "custom") {
-    wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || isPaceRepeat()) {
+  } else if (getConfig.paceCaret === "average") {
+    wpm = Math.round((await getUserAverage10Once({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "daily") {
+    wpm = Math.round((await getUserDailyBestOnce({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "custom") {
+    wpm = getConfig.paceCaretCustomSpeed;
+  } else if (getConfig.paceCaret === "last" || isPaceRepeat()) {
     wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
@@ -167,7 +167,7 @@ function incrementLetterIndex(): void {
     }
     settings.currentLetterIndex++;
 
-    if (!Config.blindMode) {
+    if (!getConfig.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
@@ -209,7 +209,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings?.wordsStatus[getActiveWordIndex()] === true &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
@@ -218,7 +218,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
     if (
       settings !== null &&
       settings.wordsStatus[getActiveWordIndex()] === undefined &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;

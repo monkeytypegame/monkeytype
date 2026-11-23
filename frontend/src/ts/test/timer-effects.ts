@@ -1,7 +1,7 @@
 import { createEffect, createRoot, on } from "solid-js";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
 import { clearLowFpsMode, setLowFpsMode } from "../anim";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { playTimeWarning } from "../audio";
 import {
@@ -21,19 +21,19 @@ import * as TestWords from "./engine/test-words";
 // seconds, before the timer checks the time limit.
 
 function getMaxTime(): number | undefined {
-  if (Config.mode === "time") return Config.time;
-  if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+  if (getConfig.mode === "time") return getConfig.time;
+  if (getConfig.mode === "custom" && CustomText.getLimitMode() === "time") {
     return CustomText.getLimitValue();
   }
   return undefined;
 }
 
 function timeWarning(testTime: number): void {
-  if (Config.playTimeWarning === "off") return;
+  if (getConfig.playTimeWarning === "off") return;
   const maxTime = getMaxTime();
   if (
     maxTime !== undefined &&
-    testTime === maxTime - parseInt(Config.playTimeWarning, 10)
+    testTime === maxTime - parseInt(getConfig.playTimeWarning, 10)
   ) {
     void playTimeWarning();
   }
@@ -41,10 +41,12 @@ function timeWarning(testTime: number): void {
 
 // layoutfluid funbox: T6b+ turns it into an engine plugin timing hook
 function layoutfluid(time: number): void {
-  if (!Config.funbox.includes("layoutfluid") || Config.mode !== "time") return;
+  if (!getConfig.funbox.includes("layoutfluid") || getConfig.mode !== "time") {
+    return;
+  }
 
-  const layouts = Config.customLayoutfluid;
-  const switchTime = Config.time / layouts.length;
+  const layouts = getConfig.customLayoutfluid;
+  const switchTime = getConfig.time / layouts.length;
   const index = Math.floor(time / switchTime);
   const layout = layouts[index];
   const flooredSwitchTimes: number[] = [];
@@ -62,7 +64,7 @@ function layoutfluid(time: number): void {
     setLayoutfluidTimerVisible(true);
   }
 
-  if (Config.layout !== layout && layout !== undefined) {
+  if (getConfig.layout !== layout && layout !== undefined) {
     setLayoutfluidTimerVisible(false);
     setConfig("layout", layout as Layout, {
       nosave: true,
@@ -71,7 +73,7 @@ function layoutfluid(time: number): void {
       nosave: true,
     });
 
-    if (Config.keymapMode === "next") {
+    if (getConfig.keymapMode === "next") {
       setTimeout(() => {
         highlightKeymapKey(
           TestWords.words.getCurrent()?.text.charAt(getCurrentInput().length) ??

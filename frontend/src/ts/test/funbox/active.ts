@@ -1,11 +1,11 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { FunboxProperty, getFunboxObject } from "@monkeytype/funbox";
 import { FunboxName } from "@monkeytype/schemas/configs";
 
 const metadata = getFunboxObject();
 
 export function getActiveFunboxNames(): FunboxName[] {
-  return Config.funbox ?? [];
+  return getConfig.funbox ?? [];
 }
 
 export function isFunboxActive(funbox: FunboxName): boolean {

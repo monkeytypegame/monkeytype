@@ -1,10 +1,10 @@
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import * as JSONData from "../utils/json-data";
 import { configEvent } from "../events/config";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
-export async function setLanguage(lang = Config.language): Promise<void> {
+export async function setLanguage(lang = getConfig.language): Promise<void> {
   if (!voice) return;
   const language = await JSONData.getLanguage(lang);
   const bcp = language.bcp47 ?? "en-US";
@@ -38,7 +38,7 @@ configEvent.subscribe(({ key, newValue }) => {
       clear();
     }
   }
-  if (key === "language" && Config.funbox.includes("tts")) {
+  if (key === "language" && getConfig.funbox.includes("tts")) {
     void setLanguage();
   }
 });

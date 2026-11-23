@@ -1,6 +1,6 @@
 import * as Numbers from "@monkeytype/util/numbers";
 import { CompletedEventCustomText } from "@monkeytype/schemas/results";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { getActiveTags } from "../../queries/tags";
 import { getUserData } from "../../queries/user";
 import {
@@ -251,7 +251,7 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     bailedOut: getTestEnd()?.type === "bailedOut",
     funbox: [...getTestSettings().funbox],
     difficulty: getTestSettings().difficulty,
-    blindMode: Config.blindMode,
+    blindMode: getConfig.blindMode,
     stopOnLetter: getTestSettings().stopOnError === "letter",
     restartCount: getRestartCount(),
     incompleteTests: getIncompleteTests(),

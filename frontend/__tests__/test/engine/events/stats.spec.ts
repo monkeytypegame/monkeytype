@@ -7,8 +7,7 @@ vi.mock("../../../../src/ts/test/test-stats", () => ({
 const mockState = vi.hoisted(() => ({ activeWordIndex: 0 }));
 
 vi.mock("../../../../src/ts/config/store", () => ({
-  Config: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
-  getConfig: {},
+  getConfig: { mode: "words", funbox: [] as string[], words: 25, time: 0 },
 }));
 
 vi.mock("../../../../src/ts/test/engine/test-words", () => {
@@ -49,10 +48,10 @@ vi.mock("../../../../src/ts/test/engine/test-words", () => {
 const customTextLimit = { mode: "words" as "words" | "time", value: 0 };
 // the mocked config doubles as the test settings
 vi.mock("../../../../src/ts/test/engine/test-settings", async () => {
-  const { Config } = await import("../../../../src/ts/config/store");
+  const { getConfig } = await import("../../../../src/ts/config/store");
   return {
     getTestSettings: () => ({
-      ...Config,
+      ...getConfig,
       customText: { limit: customTextLimit },
     }),
   };
@@ -110,7 +109,7 @@ import type {
   KeyupEventData,
   TimerEventData,
 } from "../../../../src/ts/test/engine/events/types";
-import { Config } from "../../../../src/ts/config/store";
+import { getConfig } from "../../../../src/ts/config/store";
 import { Keycode } from "../../../../src/ts/constants/keys";
 import * as TestWords from "../../../../src/ts/test/engine/test-words";
 import { isFunboxActiveWithProperty } from "../../../../src/ts/test/funbox/list";
@@ -214,10 +213,10 @@ describe("stats.ts", () => {
   beforeEach(() => {
     resetTestEvents();
     __testing.resetPressedKeys();
-    (Config as { mode: string }).mode = "words";
-    (Config as { funbox: string[] }).funbox = [];
-    (Config as { words: number }).words = 25;
-    (Config as { time: number }).time = 0;
+    (getConfig as { mode: string }).mode = "words";
+    (getConfig as { funbox: string[] }).funbox = [];
+    (getConfig as { words: number }).words = 25;
+    (getConfig as { time: number }).time = 0;
     mockState.activeWordIndex = 0;
     TestWords.resetWords();
     inputPerWord.clear();
@@ -337,7 +336,7 @@ describe("stats.ts", () => {
     });
 
     it("adjusts end in zen mode by removing trailing afk", () => {
-      (Config as { mode: string }).mode = "zen";
+      (getConfig as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("keyup", 1600, keyUp());
@@ -371,7 +370,7 @@ describe("stats.ts", () => {
       // 120s time test where timer fires step 120 slightly early at ~119.99s.
       // Legacy time mode never pushes an extra bucket — CE2 must match by
       // skipping the end boundary entirely.
-      (Config as { mode: string }).mode = "time";
+      (getConfig as { mode: string }).mode = "time";
       logTestEvent("timer", 0, timer("start", 0));
       for (let i = 1; i <= 120; i++) {
         logTestEvent("timer", i * 1000 - 8, timer("step", i));
@@ -385,7 +384,7 @@ describe("stats.ts", () => {
     });
 
     it("skips end boundary in custom time mode", () => {
-      (Config as { mode: string }).mode = "custom";
+      (getConfig as { mode: string }).mode = "custom";
       customTextLimit.mode = "time";
       try {
         logTestEvent("timer", 0, timer("start", 0));
@@ -508,7 +507,7 @@ describe("stats.ts", () => {
     });
 
     it("omits fractional tail in time mode regardless of remainder", () => {
-      (Config as { mode: string }).mode = "time";
+      (getConfig as { mode: string }).mode = "time";
       logTestEvent("timer", 0, timer("start", 0));
       logTestEvent("timer", 15500, timer("end", 15));
 
@@ -518,7 +517,7 @@ describe("stats.ts", () => {
     });
 
     it("trims zen-mode trailing afk and caps tick count", () => {
-      (Config as { mode: string }).mode = "zen";
+      (getConfig as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("keyup", 1600, keyUp());
@@ -622,7 +621,7 @@ describe("stats.ts", () => {
     });
 
     it("returns 0 in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
+      (getConfig as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1150, keyDown());
 
@@ -646,7 +645,7 @@ describe("stats.ts", () => {
     });
 
     it("returns 0 in zen mode", () => {
-      (Config as { mode: string }).mode = "zen";
+      (getConfig as { mode: string }).mode = "zen";
       logTestEvent("timer", 1000, timer("start", 0));
       logTestEvent("keydown", 1500, keyDown());
       logTestEvent("timer", 2000, timer("end", 1));
@@ -987,7 +986,7 @@ describe("stats.ts", () => {
       // its negative offset to 0 — so the first spacing must clamp the same
       // way, else sum(keySpacing) inflates by |firstKeydown| and breaks
       // the testDuration vs key timings check.
-      (Config as { mode: string }).mode = "time";
+      (getConfig as { mode: string }).mode = "time";
       logTestEvent("keydown", -16240, keyDown());
       logTestEvent("timer", 0, timer("start", 0));
       logTestEvent("input", 0, input());
@@ -1019,7 +1018,7 @@ describe("stats.ts", () => {
       // while getLastKeypressToEndMs clamps the negative diff to 0, breaking
       // the invariant. finish() calls cleanupData() before the check —
       // that's the centralised filter; this test exercises the same path.
-      (Config as { mode: string }).mode = "time";
+      (getConfig as { mode: string }).mode = "time";
       logTestEvent("timer", 0, timer("start", 0));
       logTestEvent("keydown", 500, keyDown());
       logTestEvent("keyup", 580, keyUp());
@@ -1446,7 +1445,7 @@ describe("stats.ts", () => {
     });
 
     it("counts non-last word as correct without trailing space when nospace funbox is active", () => {
-      (Config as { funbox: string[] }).funbox = ["nospace"];
+      (getConfig as { funbox: string[] }).funbox = ["nospace"];
       pushWords("ab", "cd");
       mockState.activeWordIndex = 1;
 
