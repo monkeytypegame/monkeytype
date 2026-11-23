@@ -279,8 +279,12 @@ export function getCells(calendar: TestActivityCalendar): TestActivityCell[] {
     return "4";
   };
 
+  // position of a day in the week, 0 for `firstDayOfWeek`
+  const weekdayIndex = (date: Date): number =>
+    (date.getDay() - firstDayOfWeek + 7) % 7;
+
   //skip weekdays in the previous month
-  for (let i = 0; i < start.getDay() - firstDayOfWeek; i++) {
+  for (let i = 0; i < weekdayIndex(start); i++) {
     result.push({ level: "filler" });
   }
 
@@ -296,7 +300,7 @@ export function getCells(calendar: TestActivityCalendar): TestActivityCell[] {
   }
 
   //add weekdays missing
-  for (let i = end.getDay() - firstDayOfWeek; i < 6; i++) {
+  for (let i = weekdayIndex(end); i < 6; i++) {
     result.push({ level: "filler" });
   }
 

@@ -983,6 +983,42 @@ describe("test-activity.ts", () => {
       });
     });
   });
+  describe("weeks starting on monday", () => {
+    it("fills the first week of a year starting on sunday", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2023-12-31"));
+      const calendar = yearCalendar(
+        getData("2023-01-01", "2023-12-31"),
+        getDate("2023-12-31"),
+        1,
+      );
+
+      //WHEN
+      const days = getCells(calendar);
+
+      //THEN
+      //2023 starts and ends with a sunday
+      expect(days).toHaveLength(6 + 365 + 0);
+      for (let day = 0; day < 6; day++) {
+        expect(days[day]).toBeFiller();
+      }
+      expect(days[6]).toBeDate("2023-01-01").toHaveTests(1);
+      expect(days[370]).toBeDate("2023-12-31").toHaveTests(365);
+    });
+    it("adds no fillers after today on a sunday", () => {
+      //GIVEN
+      vi.setSystemTime(getDate("2024-04-14"));
+      const calendar = last12Months([1], getDate("2024-04-14"), 1);
+
+      //WHEN
+      const days = getCells(calendar);
+
+      //THEN
+      expect(days).toHaveLength(52 * 7);
+      expect(days[0]).toBeDate("2023-04-17");
+      expect(days[363]).toBeDate("2024-04-14").toHaveTests(1);
+    });
+  });
   describe("incrementTestActivity", () => {
     it("increments on lastDay", () => {
       //GIVEN
