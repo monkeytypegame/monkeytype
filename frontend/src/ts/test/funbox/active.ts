@@ -4,7 +4,7 @@ import { FunboxName } from "@monkeytype/schemas/configs";
 
 const metadata = getFunboxObject();
 
-export function getActiveFunboxNames(): FunboxName[] {
+export function getActiveFunboxNames(): readonly FunboxName[] {
   return getConfig.funbox ?? [];
 }
 

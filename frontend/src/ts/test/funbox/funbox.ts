@@ -78,9 +78,7 @@ createRoot(() => {
 export async function activate(
   funbox?: FunboxName[],
 ): Promise<boolean | undefined> {
-  if (funbox === undefined || funbox === null) {
-    funbox = getConfig.funbox;
-  } else if (getConfig.funbox !== funbox) {
+  if (funbox !== undefined && getConfig.funbox !== funbox) {
     setConfig("funbox", funbox, { nosave: true });
   }
 
