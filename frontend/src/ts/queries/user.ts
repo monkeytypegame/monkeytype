@@ -1,4 +1,3 @@
-import { UTCDateMini } from "@date-fns/utc/date/mini";
 import { FunboxMetadata } from "@monkeytype/funbox";
 import { Difficulty } from "@monkeytype/schemas/configs";
 import { Language } from "@monkeytype/schemas/languages";
@@ -9,13 +8,8 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/schemas/shared";
-import {
-  Badge,
-  TestActivity,
-  UserProfileDetails,
-} from "@monkeytype/schemas/users";
+import { Badge, UserProfileDetails } from "@monkeytype/schemas/users";
 import { Result } from "@monkeytype/util/trycatch";
-import { differenceInDays, isBefore, isSameDay } from "date-fns";
 
 import Ape from "../ape";
 import { configurationPromise } from "../ape/server-configuration";
@@ -142,10 +136,6 @@ export function recordResult(
   options: { isPb: boolean },
 ): void {
   userQuery.update((user) => {
-    if (user.testActivity !== undefined) {
-      incrementTestActivity(user.testActivity, result.timestamp);
-    }
-
     user.typingStats.timeTyping +=
       result.testDuration + result.incompleteTestSeconds - result.afkDuration;
     user.typingStats.startedTests += result.restartCount + 1;
@@ -386,25 +376,6 @@ export function getLocalPB<M extends Mode>(
 }
 
 // --- Helpers ---
-
-function incrementTestActivity(
-  activity: TestActivity,
-  timestamp: number,
-): void {
-  const date = new UTCDateMini(timestamp);
-  const lastDay = new UTCDateMini(activity.lastDay);
-  if (isSameDay(date, lastDay)) {
-    const last = activity.testsByDays.length - 1;
-    activity.testsByDays[last] = (activity.testsByDays[last] ?? 0) + 1;
-  } else if (isBefore(date, lastDay)) {
-    throw new Error("cannot alter data in the past.");
-  } else {
-    const missedDays = differenceInDays(date, lastDay) - 1;
-    for (let i = 0; i < missedDays; i++) activity.testsByDays.push(null);
-    activity.testsByDays.push(1);
-    activity.lastDay = timestamp;
-  }
-}
 
 function savePb(
   personalBests: PersonalBests,

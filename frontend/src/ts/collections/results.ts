@@ -50,6 +50,7 @@ import { getMode2 } from "../utils/misc";
 import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
 import { addXp, getUserData, recordResult, setStreak } from "../queries/user";
+import { incrementTestActivity } from "../states/test-activity";
 import { removeLanguageSize } from "../utils/strings";
 
 export type NormalizedLocalResult<M extends Mode> = Omit<
@@ -482,6 +483,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
     void insertLocalResult({ result: data.result });
     setLastResult(data.result);
     recordResult(data.result, { isPb: data.isPb ?? false });
+    incrementTestActivity(data.result.timestamp);
   }
 
   if (data.streak !== undefined) setStreak(data.streak);

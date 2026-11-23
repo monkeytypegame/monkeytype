@@ -1,7 +1,10 @@
 import {
+  getCells,
+  getMonths,
+  getTotalTests,
   TestActivityCalendar,
   TestActivityMonth,
-} from "./test-activity-calendar";
+} from "../states/test-activity";
 
 const tooltipViewportPadding = 8;
 
@@ -109,17 +112,17 @@ export function update(
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  updateMonths(getMonths(calendar));
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
   {
     if (title !== null) {
-      title.innerHTML = `${calendar.getTotalTests()} tests`;
+      title.innerHTML = `${getTotalTests(calendar)} tests`;
     }
   }
 
-  for (const day of calendar.getDays()) {
+  for (const day of getCells(calendar)) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {

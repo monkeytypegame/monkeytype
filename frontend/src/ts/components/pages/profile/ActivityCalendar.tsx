@@ -1,84 +1,41 @@
 import { TestActivity } from "@monkeytype/schemas/users";
-import * as Dates from "date-fns";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
-import Ape from "../../../ape";
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
-import { isAuthenticated } from "../../../auth/state";
 import {
   clear as clearTestActivity,
   init as initTestActivity,
   update,
 } from "../../../elements/test-activity";
-import {
-  ModifiableTestActivityCalendar,
-  TestActivityCalendar,
-} from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getUserData } from "../../../queries/user";
-import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
-import { showErrorNotification } from "../../../states/notifications";
+import {
+  getLast12MonthsCalendar,
+  getTestActivity,
+  getYearCalendar,
+  loadAllYearsTestActivity,
+  TestActivityCalendar,
+  toTestActivityDays,
+} from "../../../states/test-activity";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 import { DeepReadonly } from "../../../utils/types";
 import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
-// per-year calendars for past years, downloaded once
-let testActivityByYear: Record<string, TestActivityCalendar> | undefined;
-
 async function getTestActivityCalendar(
   yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
-  const userData = getUserData();
-  if (!isAuthenticated() || userData === undefined) return undefined;
-
-  const currentYear = new Date().getFullYear().toString();
-  if (yearString === "current" || yearString === currentYear) {
-    if (userData.testActivity === undefined) return undefined;
-    const calendar = new ModifiableTestActivityCalendar(
-      [...userData.testActivity.testsByDays],
-      new Date(userData.testActivity.lastDay),
-      firstDayOfTheWeek,
-    );
-    return yearString === "current" ? calendar : calendar.getFullYearCalendar();
+  if (getTestActivity() === undefined) return undefined;
+  if (yearString === "current") {
+    return getLast12MonthsCalendar(getTestActivity() ?? [], firstDayOfTheWeek);
   }
 
-  if (testActivityByYear === undefined) {
-    showLoaderBar();
-    const response = await Ape.users.getTestActivity();
-    if (response.status !== 200) {
-      showErrorNotification("Error getting test activities", { response });
-      hideLoaderBar();
-      return undefined;
-    }
-
-    testActivityByYear = {};
-    for (const year in response.body.data) {
-      if (year === currentYear) continue;
-      const testsByDays = response.body.data[year] ?? [];
-      const lastDay = Dates.addDays(
-        new Date(parseInt(year), 0, 1),
-        testsByDays.length,
-      );
-
-      testActivityByYear[year] = new TestActivityCalendar(
-        testsByDays,
-        lastDay,
-        firstDayOfTheWeek,
-        true,
-      );
-    }
-    hideLoaderBar();
+  const year = parseInt(yearString);
+  if (year !== new Date().getFullYear()) {
+    if (!(await loadAllYearsTestActivity())) return undefined;
   }
-
-  return testActivityByYear[yearString];
+  return getYearCalendar(getTestActivity() ?? [], year, firstDayOfTheWeek);
 }
 
 export function ActivityCalendar(props: {
@@ -88,32 +45,25 @@ export function ActivityCalendar(props: {
   // Refs are assigned by SolidJS via the ref attribute
   const [elementRef, element] = useRefWithUtils<HTMLElement>();
 
-  let calendar: TestActivityCalendar | undefined;
-
-  // a memo: the effect re-runs when the activity changes, not on any user write
-  const accountActivity = createMemo(() => getUserData()?.testActivity);
-
   createEffect(() =>
     (() => {
-      const testActivity = props.isAccountPage
-        ? accountActivity()
-        : props.testActivity;
-      if (testActivity === undefined || element() === undefined) {
-        calendar = undefined;
+      const days = props.isAccountPage
+        ? getTestActivity()
+        : props.testActivity !== undefined
+          ? toTestActivityDays(
+              props.testActivity.testsByDays,
+              props.testActivity.lastDay,
+            )
+          : undefined;
+      if (days === undefined || element() === undefined) {
         clearTestActivity(element()?.native);
         return;
       }
 
-      calendar = new TestActivityCalendar(
-        [...testActivity.testsByDays],
-        new Date(testActivity.lastDay),
-        firstDayOfTheWeek,
-      );
-
       initTestActivity(
         // oxlint-disable-next-line typescript/no-non-null-assertion
         element()!.native,
-        calendar,
+        getLast12MonthsCalendar(days, firstDayOfTheWeek),
       );
 
       if (!props.isAccountPage) {
