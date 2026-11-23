@@ -17,12 +17,14 @@ import {
   startOfYear,
   subWeeks,
 } from "date-fns";
+import { TestActivity } from "@monkeytype/schemas/users";
 import { createMemo, createRoot, createSignal } from "solid-js";
 
 import Ape from "../ape";
 import { createEffectOn } from "../hooks/effects";
 import { getUserData } from "../queries/user";
 import { hideLoaderBar, showLoaderBar } from "./loader-bar";
+import { DeepReadonly } from "../utils/types";
 import { showErrorNotification } from "./notifications";
 
 /** Tests on one UTC day; `date` is the start of that day in UTC. */
@@ -40,8 +42,10 @@ export type TestActivityCalendar = {
   days: TestActivityDay[];
 };
 
+export type TestActivityLevel = "filler" | "0" | "1" | "2" | "3" | "4";
+
 export type TestActivityCell = {
-  level: string;
+  level: TestActivityLevel;
   label?: string;
 };
 
@@ -56,22 +60,17 @@ export type TestActivityMonth = {
  * The signed-in user's activity: sorted by date, one entry per day the server
  * has data for. Seeded from the user query, past years merged in on demand.
  */
-const [testActivity, setTestActivity] = createSignal<
+export const [getTestActivity, setTestActivity] = createSignal<
   TestActivityDay[] | undefined
 >(undefined);
-
-export const getTestActivity = testActivity;
 
 // past years are downloaded once per seed
 let allYearsLoaded = false;
 
-/** Replaces the activity with the user's `testsByDays` ending on `lastDay`. */
-export function initTestActivity(
-  testsByDays: readonly (number | null)[],
-  lastDay: number | Date,
-): void {
+/** Replaces the activity with the user's. */
+export function initTestActivity(activity: DeepReadonly<TestActivity>): void {
   allYearsLoaded = false;
-  setTestActivity(toTestActivityDays(testsByDays, lastDay));
+  setTestActivity(toTestActivityDays(activity));
 }
 
 export function clearTestActivity(): void {
@@ -81,7 +80,7 @@ export function clearTestActivity(): void {
 
 /** Counts a test finished at `timestamp`; no-op without activity. */
 export function incrementTestActivity(timestamp: number | Date): void {
-  const days = testActivity();
+  const days = getTestActivity();
   if (days === undefined) return;
 
   const date = startOfDay(new UTCDateMini(timestamp));
@@ -115,7 +114,7 @@ export function incrementTestActivity(timestamp: number | Date): void {
  */
 export async function loadAllYearsTestActivity(): Promise<boolean> {
   if (allYearsLoaded) return true;
-  if (testActivity() === undefined) return false;
+  if (getTestActivity() === undefined) return false;
 
   showLoaderBar();
   const response = await Ape.users.getTestActivity();
@@ -126,10 +125,10 @@ export async function loadAllYearsTestActivity(): Promise<boolean> {
   }
 
   // the user may have signed out meanwhile
-  const days = testActivity();
+  const days = getTestActivity();
   if (days === undefined) return false;
 
-  const currentYear = new UTCDateMini().getFullYear();
+  const currentYear = getCurrentYear();
   const byDay = new Map<number, TestActivityDay>();
   for (const year in response.body.data) {
     if (parseInt(year) === currentYear) continue;
@@ -148,25 +147,34 @@ export async function loadAllYearsTestActivity(): Promise<boolean> {
   return true;
 }
 
-// seeds the activity from the user query: on load, on sign out
+// Seeds the activity from the user query: on load, on sign out. The state
+// keeps its own copy as this session's tests and the past years are added
+// here only; the user query keeps the activity as downloaded. Reseeds (and
+// drops this session's tests) whenever the query's `testActivity` changes, so
+// writes to the user query must leave it untouched.
 createRoot(() => {
   const userActivity = createMemo(() => getUserData()?.testActivity);
   createEffectOn(userActivity, (activity) => {
     if (activity === undefined) {
       clearTestActivity();
     } else {
-      initTestActivity(activity.testsByDays, activity.lastDay);
+      initTestActivity(activity);
     }
   });
 });
 
 // --- Calendars ---
 
+/** The current year in UTC, the timezone of the activity days. */
+export function getCurrentYear(): number {
+  return new UTCDateMini().getFullYear();
+}
+
 /** Days of `testsByDays`, the last one on the UTC day of `lastDay`. */
-export function toTestActivityDays(
-  testsByDays: readonly (number | null | undefined)[],
-  lastDay: number | Date,
-): TestActivityDay[] {
+export function toTestActivityDays({
+  testsByDays,
+  lastDay,
+}: DeepReadonly<TestActivity>): TestActivityDay[] {
   const end = startOfDay(new UTCDateMini(lastDay));
   return testsByDays.map((tests, i) => ({
     date: addDays(end, i - testsByDays.length + 1),
@@ -199,7 +207,7 @@ export function getYearCalendar(
 ): TestActivityCalendar | undefined {
   const start = startOfYear(new UTCDateMini(Date.UTC(year, 0, 1)));
   const end = startOfDay(endOfYear(start));
-  const isCurrentYear = year === new UTCDateMini().getFullYear();
+  const isCurrentYear = year === getCurrentYear();
   if (!isCurrentYear && !days.some((it) => it.date.getFullYear() === year)) {
     return undefined;
   }
@@ -262,10 +270,11 @@ export function getCells(calendar: TestActivityCalendar): TestActivityCell[] {
   const { start, end, firstDayOfWeek } = calendar;
   const result: TestActivityCell[] = [];
   const buckets = getBuckets(calendar);
-  const getLevel = (tests: number): string => {
+  const levels = ["1", "2", "3", "4"] as const;
+  const getLevel = (tests: number): TestActivityLevel => {
     if (tests === 0) return "0";
     for (let b = 0; b < 4; b++) {
-      if (tests <= (buckets[b] ?? 0)) return (1 + b).toString();
+      if (tests <= (buckets[b] ?? 0)) return levels[b] ?? "4";
     }
     return "4";
   };

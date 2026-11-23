@@ -988,7 +988,7 @@ describe("test-activity.ts", () => {
       //GIVEN
       const lastDate = getDate("2024-04-10");
       vi.setSystemTime(getDate("2024-04-30"));
-      initTestActivity([1, 2, 3], lastDate);
+      initTestActivity(activity([1, 2, 3], lastDate));
 
       //WHEN
       incrementTestActivity(lastDate);
@@ -1004,7 +1004,7 @@ describe("test-activity.ts", () => {
     });
     it("increments later on lastDay (utc)", () => {
       //GIVEN
-      initTestActivity([1], getDate("2024-04-10"));
+      initTestActivity(activity([1], getDate("2024-04-10")));
 
       //WHEN
       incrementTestActivity(new Date("2024-04-10T23:59:59Z"));
@@ -1018,7 +1018,7 @@ describe("test-activity.ts", () => {
       //GIVEN
       const lastDate = getDate("2024-04-10");
       vi.setSystemTime(getDate("2024-04-10"));
-      initTestActivity([1, 2, 3], lastDate);
+      initTestActivity(activity([1, 2, 3], lastDate));
 
       //WHEN
       vi.setSystemTime(getDate("2024-04-12"));
@@ -1052,7 +1052,7 @@ describe("test-activity.ts", () => {
     it("increments after two months", () => {
       //GIVEN
       vi.setSystemTime(getDate("2024-04-10"));
-      initTestActivity([1, 2, 3], getDate("2024-04-10"));
+      initTestActivity(activity([1, 2, 3], getDate("2024-04-10")));
 
       //WHEN
       vi.setSystemTime(getDate("2024-06-12"));
@@ -1074,8 +1074,7 @@ describe("test-activity.ts", () => {
       //GIVEN
       vi.setSystemTime(getDate("2024-12-24"));
       initTestActivity(
-        getData("2023-12-20", "2024-12-24"),
-        getDate("2024-12-24"),
+        activity(getData("2023-12-20", "2024-12-24"), getDate("2024-12-24")),
       );
 
       //WHEN
@@ -1093,7 +1092,7 @@ describe("test-activity.ts", () => {
     });
     it("fails increment in the past", () => {
       //GIVEN
-      initTestActivity([1, 2, 3], getDate("2024-04-10"));
+      initTestActivity(activity([1, 2, 3], getDate("2024-04-10")));
 
       //WHEN
       expect(() => incrementTestActivity(getDate("2024-04-09"))).toThrow(
@@ -1111,7 +1110,7 @@ describe("test-activity.ts", () => {
       vi.setSystemTime(date);
 
       //GIVEN
-      initTestActivity([1, 2, 3, 4], getDate("2024-01-02"));
+      initTestActivity(activity([1, 2, 3, 4], getDate("2024-01-02")));
 
       //WHEN
       const days = getCells(yearOf(2024));
@@ -1133,7 +1132,7 @@ describe("test-activity.ts", () => {
     });
     it("gets empty calendar for the current year without tests", () => {
       vi.setSystemTime(getDate("2025-03-01"));
-      initTestActivity([1, 2], getDate("2024-12-31"));
+      initTestActivity(activity([1, 2], getDate("2024-12-31")));
 
       const calendar = yearOf(2025);
 
@@ -1142,7 +1141,7 @@ describe("test-activity.ts", () => {
     });
     it("has no calendar for past years without data", () => {
       vi.setSystemTime(getDate("2025-03-01"));
-      initTestActivity([1, 2], getDate("2024-12-31"));
+      initTestActivity(activity([1, 2], getDate("2024-12-31")));
 
       expect(getYearCalendar(getTestActivity() ?? [], 2023, 0)).toBeUndefined();
     });
@@ -1152,7 +1151,7 @@ describe("test-activity.ts", () => {
       const date = new Date(2024, 8, 1);
       vi.setSystemTime(date);
       //GIVEN
-      initTestActivity([1, 2, 3, 4], getDate("2024-01-02"));
+      initTestActivity(activity([1, 2, 3, 4], getDate("2024-01-02")));
 
       //THEN
       expect(
@@ -1203,7 +1202,7 @@ describe("test-activity.ts", () => {
     it("merges past years (utc), keeps the user's days and loads once", async () => {
       //GIVEN
       vi.setSystemTime(getDate("2024-01-03"));
-      initTestActivity([7, 8, 1, 2], getDate("2024-01-02"));
+      initTestActivity(activity([7, 8, 1, 2], getDate("2024-01-02")));
       const getTestActivityMock = vi
         .spyOn(Ape.users, "getTestActivity")
         .mockResolvedValue({
@@ -1247,7 +1246,7 @@ describe("test-activity.ts", () => {
       expect(yearOf(2021, false)).toBeUndefined();
     });
     it("loads again after a failure", async () => {
-      initTestActivity([1], getDate("2024-01-02"));
+      initTestActivity(activity([1], getDate("2024-01-02")));
       const getTestActivityMock = vi
         .spyOn(Ape.users, "getTestActivity")
         .mockResolvedValue({ status: 500, body: { message: "err" } } as never);
@@ -1267,7 +1266,7 @@ function last12Months(
   firstDayOfWeek: Dates.Day,
 ): ReturnType<typeof getLast12MonthsCalendar> {
   return getLast12MonthsCalendar(
-    toTestActivityDays(data, lastDay),
+    toTestActivityDays(activity(data, lastDay)),
     firstDayOfWeek,
   );
 }
@@ -1278,7 +1277,7 @@ function yearCalendar(
   firstDayOfWeek: Dates.Day,
 ): ReturnType<typeof getLast12MonthsCalendar> {
   const calendar = getYearCalendar(
-    toTestActivityDays(data, lastDay),
+    toTestActivityDays(activity(data, lastDay)),
     new UTCDateMini(lastDay).getFullYear(),
     firstDayOfWeek,
   );
@@ -1358,3 +1357,10 @@ expect.extend({
     };
   },
 });
+
+function activity(
+  testsByDays: (number | null)[],
+  lastDay: Date,
+): { testsByDays: (number | null)[]; lastDay: number } {
+  return { testsByDays, lastDay: lastDay.getTime() };
+}

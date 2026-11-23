@@ -6,6 +6,8 @@ import {
   TestActivityMonth,
 } from "../states/test-activity";
 
+// Stepping stone: replaced by a Solid activity calendar component in U2
+
 const tooltipViewportPadding = 8;
 
 function getTooltipHorizontalOffset(
@@ -74,26 +76,26 @@ function positionTooltip(element: HTMLElement): void {
   element.style.setProperty("--activity-tooltip-offset", `${offset}px`);
 }
 
-export function init(
+export function initActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
   if (calendar === undefined) {
-    clear(element);
+    clearActivityCalendar(element);
     return;
   }
   element.classList.remove("hidden");
 
   updateLabels(element, calendar.firstDayOfWeek);
-  update(element, calendar);
+  updateActivityCalendar(element, calendar);
 }
 
-export function clear(element?: HTMLElement): void {
+export function clearActivityCalendar(element?: HTMLElement): void {
   element?.classList.add("hidden");
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-export function update(
+export function updateActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
