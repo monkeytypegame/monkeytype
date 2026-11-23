@@ -115,7 +115,8 @@ export async function activate(
   }
 
   setMemoryTimerDuration(null);
-  setAppliedFunboxes(getActiveFunboxNames());
+  // a copy: the config's funbox array is the store's, updated in place
+  setAppliedFunboxes([...getActiveFunboxNames()]);
 
   setWordsWrapperHidden(false);
 

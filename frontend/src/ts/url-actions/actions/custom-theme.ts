@@ -73,7 +73,10 @@ function toSharedCustomTheme(
 
 function applyCustomTheme(theme: SharedCustomTheme): void {
   const oldCustomTheme = getConfig.customTheme;
-  const oldCustomThemeColors = getConfig.customThemeColors;
+  // a copy: the store updates its array in place, the rollback needs the old
+  const oldCustomThemeColors: CustomThemeColors = [
+    ...getConfig.customThemeColors,
+  ];
   try {
     setConfig("customThemeColors", theme.colors);
 
