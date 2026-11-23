@@ -396,6 +396,24 @@ describe("string utils", () => {
           expected: true,
         },
         {
+          desc: "Е and Ё are equivalent",
+          char1: "Е",
+          char2: "Ё",
+          expected: true,
+        },
+        {
+          desc: "E and Ё are equivalent",
+          char1: "E",
+          char2: "Ё",
+          expected: true,
+        },
+        {
+          desc: "lowercase and uppercase are not equivalent",
+          char1: "е",
+          char2: "Ё",
+          expected: false,
+        },
+        {
           desc: "non-equivalent characters return false",
           char1: "а",
           char2: "б",
