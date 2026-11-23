@@ -15,8 +15,21 @@ import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
 import { isTestActive } from "../test/engine/state";
+import { untrack } from "solid-js";
 
+// Writes read the store to validate: untracked, so a write from inside an
+// effect or memo doesn't subscribe it to the keys the checks read
 export function setConfig<T extends keyof ConfigSchemas.Config>(
+  key: T,
+  value: ConfigSchemas.Config[T],
+  options?: {
+    nosave?: boolean;
+  },
+): boolean {
+  return untrack(() => setConfigUntracked(key, value, options));
+}
+
+function setConfigUntracked<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   options?: {
@@ -139,6 +152,10 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
+  return untrack(() => toggleFunboxUntracked(funbox, nosave));
+}
+
+function toggleFunboxUntracked(funbox: FunboxName, nosave?: boolean): boolean {
   if (isTestActive() && getConfig.funbox.includes("no_quit")) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",

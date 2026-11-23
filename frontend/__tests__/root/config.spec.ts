@@ -502,6 +502,26 @@ describe("Config", () => {
       expect(getConfig().autoSwitchTheme).toBe(true);
     });
 
+    it("setConfig and toggleFunbox don't subscribe the calling effect", () => {
+      replaceConfig({ funbox: [], numbers: false });
+      let runs = 0;
+      const dispose = createRoot((dispose) => {
+        createEffect(() => {
+          runs++;
+          Config.setConfig("numbers", true, { nosave: true });
+          Config.toggleFunbox("mirror", true);
+        });
+        return dispose;
+      });
+      runs = 0;
+
+      Config.setConfig("fontSize", 3, { nosave: true });
+      Config.setConfig("mode", "words", { nosave: true });
+
+      expect(runs).toBe(0);
+      dispose();
+    });
+
     it("applyConfig runs store effects once", async () => {
       replaceConfig({ mode: "time", punctuation: false, numbers: false });
       const runs: unknown[] = [];
