@@ -9,6 +9,7 @@ import { isAuthenticated } from "../auth/state";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
+import { setPrefersArabicLazyMode } from "../states/lazy-mode";
 import { showNoticeNotification } from "../states/notifications";
 import { setRandomTheme } from "../theme/state";
 import { FaObject } from "../types/font-awesome";
@@ -905,6 +906,12 @@ const configMetadataEntries = {
     group: "input",
     description:
       "Replaces accents / diacritics / special characters with their normal letter equivalents.",
+    // remember the user's choice for arabic (writes that save are the user's)
+    afterSet: ({ nosave, currentConfig }) => {
+      if (!nosave && currentConfig.language.startsWith("arabic")) {
+        setPrefersArabicLazyMode(currentConfig.lazyMode);
+      }
+    },
     commandline: {
       subgroup: {
         options: "fromSchema",

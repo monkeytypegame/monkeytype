@@ -4,7 +4,8 @@ import { showNoticeNotification } from "../states/notifications";
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import * as CustomText from "./custom-text";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
+import { createRoot } from "solid-js";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CustomTextSettings } from "@monkeytype/schemas/results";
 import {
@@ -190,6 +191,14 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-configEvent.subscribe(({ key }) => {
-  if (key === "mode") resetBefore();
+// a mode change leaves practise: no revert on the next restart. Not on custom,
+// which practise sets itself (before saving what it reverts to)
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.mode,
+    (mode) => {
+      if (mode !== "custom") resetBefore();
+    },
+    { defer: true },
+  );
 });

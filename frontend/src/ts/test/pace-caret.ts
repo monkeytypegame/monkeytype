@@ -4,9 +4,9 @@ import { getConfig } from "../config/store";
 import { getLocalPB } from "../queries/user";
 import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
 import { getActiveFunboxes } from "./funbox/list";
-import { createSignal } from "solid-js";
+import { createRoot, createSignal } from "solid-js";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
@@ -232,6 +232,11 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-configEvent.subscribe(({ key }) => {
-  if (key === "paceCaret") void init();
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.paceCaret,
+    () => void init(),
+    { defer: true },
+  );
 });

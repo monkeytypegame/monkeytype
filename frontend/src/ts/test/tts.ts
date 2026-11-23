@@ -1,6 +1,7 @@
 import { getConfig } from "../config/store";
 import * as JSONData from "../utils/json-data";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
+import { createRoot } from "solid-js";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
@@ -30,15 +31,25 @@ export async function speak(text: string): Promise<void> {
   }
 }
 
-configEvent.subscribe(({ key, newValue }) => {
-  if (key === "funbox") {
-    if (newValue.includes("tts")) {
-      void init();
-    } else {
-      clear();
-    }
-  }
-  if (key === "language" && getConfig.funbox.includes("tts")) {
-    void setLanguage();
-  }
+// a root so the effects are owned, they live as long as the page
+createRoot(() => {
+  createEffectOn(
+    // serialized, so changes inside the funbox array count
+    () => JSON.stringify(getConfig.funbox),
+    () => {
+      if (getConfig.funbox.includes("tts")) {
+        void init();
+      } else {
+        clear();
+      }
+    },
+    { defer: true },
+  );
+  createEffectOn(
+    () => getConfig.language,
+    () => {
+      if (getConfig.funbox.includes("tts")) void setLanguage();
+    },
+    { defer: true },
+  );
 });

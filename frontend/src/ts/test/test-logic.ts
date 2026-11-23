@@ -3,7 +3,6 @@ import {
   getRememberLazyMode,
   setRememberLazyMode,
   getPrefersArabicLazyMode,
-  setPrefersArabicLazyMode,
 } from "../states/lazy-mode";
 import Ape from "../ape";
 import { createEffect, createMemo, createRoot, on, untrack } from "solid-js";
@@ -85,7 +84,6 @@ import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import { isTestPageMounted } from "./test-page-bridge";
-import { configEvent } from "../events/config";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import { logAnalyticsEvent } from "../integrations/analytics";
@@ -1123,46 +1121,56 @@ export function repeatTest(): void {
 
 // ===============================
 
-configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (untrack(isTestPageMounted)) {
-    if (key === "language") {
-      //automatically enable lazy mode for arabic
-      if (
-        (newValue as string)?.startsWith("arabic") &&
-        getPrefersArabicLazyMode()
-      ) {
-        setConfig("lazyMode", true, {
-          nosave: true,
-        });
-      }
-    }
+// Config reactions on the test page. T8d moves them out of test-logic: arabic
+// lazy mode to the config area, the keymap highlight to Keymap, the zipf check
+// to its funbox definition
+createRoot(() => {
+  // automatically enable lazy mode for arabic
+  createEffect(
+    on(
+      () => getConfig.language,
+      (language) => {
+        if (!untrack(isTestPageMounted)) return;
+        if (language.startsWith("arabic") && getPrefersArabicLazyMode()) {
+          setConfig("lazyMode", true, {
+            nosave: true,
+          });
+        }
+      },
+      { defer: true },
+    ),
+  );
 
-    if (
-      key === "keymapMode" &&
-      newValue === "next" &&
-      getConfig.mode !== "zen"
-    ) {
-      setTimeout(() => {
-        highlightKeymapKey(
-          nthElementFromArray(
-            // ignoring for now but this might need a different approach
-            // oxlint-disable-next-line no-misused-spread
-            [...(TestWords.words.getCurrent()?.text ?? "")],
-            0,
-          ) as string,
-        );
-      }, 0);
-    }
-    if (
-      (key === "language" || key === "funbox") &&
-      getConfig.funbox.includes("zipf")
-    ) {
-      debouncedZipfCheck();
-    }
-  }
-  if (key === "lazyMode" && !nosave) {
-    if (getConfig.language.startsWith("arabic")) {
-      setPrefersArabicLazyMode(newValue);
-    }
-  }
+  createEffect(
+    on(
+      () => getConfig.keymapMode,
+      (keymapMode) => {
+        if (!untrack(isTestPageMounted)) return;
+        if (keymapMode !== "next" || getConfig.mode === "zen") return;
+        setTimeout(() => {
+          highlightKeymapKey(
+            nthElementFromArray(
+              // ignoring for now but this might need a different approach
+              // oxlint-disable-next-line no-misused-spread
+              [...(TestWords.words.getCurrent()?.text ?? "")],
+              0,
+            ) as string,
+          );
+        }, 0);
+      },
+      { defer: true },
+    ),
+  );
+
+  createEffect(
+    on(
+      // serialized, so changes inside the funbox array count
+      [() => getConfig.language, () => JSON.stringify(getConfig.funbox)],
+      () => {
+        if (!untrack(isTestPageMounted)) return;
+        if (getConfig.funbox.includes("zipf")) debouncedZipfCheck();
+      },
+      { defer: true },
+    ),
+  );
 });
