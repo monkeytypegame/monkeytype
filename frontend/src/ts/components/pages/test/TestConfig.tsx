@@ -1,4 +1,4 @@
-import { ComponentProps, For, JSXElement, Show } from "solid-js";
+import { ComponentProps, createSignal, For, JSXElement, Show } from "solid-js";
 
 import { isAuthenticated } from "../../../auth/state";
 import { configMetadata } from "../../../config/metadata";
@@ -7,12 +7,23 @@ import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { showModal } from "../../../states/modals";
+import {
+  showErrorNotification,
+  showNoticeNotification,
+} from "../../../states/notifications";
 import { isFocusMode } from "../../../states/test";
+import * as CustomText from "../../../test/custom-text";
 import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
 import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
+import {
+  extractTextFromFile,
+  getFileKind,
+  supportedFileTypes,
+  TextExtractionError,
+} from "../../../utils/file-text-extractor";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
 
@@ -121,6 +132,59 @@ function PuncAndNum(): JSXElement {
 function Mode(): JSXElement {
   const modeOptions = ["time", "words", "quote", "zen", "custom"] as const;
 
+  const [importing, setImporting] = createSignal(false);
+  // oxlint-disable-next-line no-unassigned-vars -- assigned via ref
+  let uploadRef!: HTMLInputElement;
+
+  const importFile = async (): Promise<void> => {
+    const file = uploadRef.files?.[0];
+    uploadRef.value = "";
+    if (!file) return;
+    if (getFileKind(file) === undefined) {
+      showErrorNotification("File type is not supported", { durationMs: 5000 });
+      return;
+    }
+
+    setImporting(true);
+    showNoticeNotification("Extracting text from file...", {
+      durationMs: 3000,
+    });
+    try {
+      const content = await extractTextFromFile(file);
+      //keep paragraph breaks as newline tokens (same as the custom text modal)
+      //instead of collapsing every whitespace run into a single space
+      const words = content
+        .normalize()
+        .replace(/[ -    ]/g, " ")
+        .replace(/ +/g, " ")
+        .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
+        .split(" ")
+        .filter((word) => word !== "");
+      if (words.length === 0) {
+        showNoticeNotification("No text found in file", { durationMs: 5000 });
+        return;
+      }
+      CustomText.setMode("repeat");
+      CustomText.setPipeDelimiter(false);
+      CustomText.setText(words);
+      CustomText.setLimitMode("word");
+      CustomText.setLimitValue(words.length);
+      setConfig("mode", "custom");
+      void restartTest();
+    } catch (e) {
+      if (e instanceof TextExtractionError) {
+        showErrorNotification(e.message, { durationMs: 5000 });
+      } else {
+        showErrorNotification("Failed to read file", {
+          durationMs: 5000,
+          error: e,
+        });
+      }
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <div class={cn("z-2", cardClass)}>
       <For each={modeOptions}>
@@ -142,6 +206,19 @@ function Mode(): JSXElement {
           />
         )}
       </For>
+      <input
+        ref={uploadRef}
+        type="file"
+        class="hidden"
+        accept={supportedFileTypes}
+        onChange={() => void importFile()}
+      />
+      <TCButton
+        fa={{ icon: "fa-file-import" }}
+        text={importing() ? "importing" : "upload"}
+        disabled={importing()}
+        onClick={() => uploadRef.click()}
+      />
     </div>
   );
 }

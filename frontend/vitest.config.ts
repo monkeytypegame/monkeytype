@@ -5,11 +5,13 @@ import { defineConfig, UserWorkspaceConfig } from "vitest/config";
 import { workspacePackagesAlias } from "./vite-plugins/workspace-packages";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { envConfig } from "./vite-plugins/env-config";
+import { vendorAssets } from "./vite-plugins/vendor-assets";
 import solidPlugin from "vite-plugin-solid";
 
 const plugins = [
   languageHashes({ skip: true }),
   envConfig({ isDevelopment: true, clientVersion: "TESTING", env: {} }),
+  vendorAssets(),
   solidPlugin({ hot: false }),
 ];
 
