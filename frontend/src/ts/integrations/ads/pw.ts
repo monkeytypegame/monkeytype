@@ -4,7 +4,7 @@
 //@ts-nocheck too many errors from 3rd party ad code
 
 import { getAdSlotWrapper } from "../../components/common/Advertisement";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { isTestPageHidingAds } from "../../states/ads";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
@@ -166,11 +166,11 @@ export function initPwAds(): void {
 function getUnits(): unknown {
   let units = undefined;
 
-  if (Config.ads === "result") {
+  if (getConfig.ads === "result") {
     units = resultUnits;
-  } else if (Config.ads === "on") {
+  } else if (getConfig.ads === "on") {
     units = onUnits;
-  } else if (Config.ads === "sellout") {
+  } else if (getConfig.ads === "sellout") {
     units = selloutUnits;
   }
 

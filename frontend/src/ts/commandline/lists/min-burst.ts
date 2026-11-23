@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig } from "../../config/setters";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 import { Command, CommandsSubgroup } from "../types";
@@ -23,7 +23,7 @@ const subgroup: CommandsSubgroup = {
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
         setConfig("minBurst", "fixed");
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+        const newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(
           parseInt(input),
         );
         setConfig("minBurstCustomSpeed", newVal);
@@ -37,7 +37,7 @@ const subgroup: CommandsSubgroup = {
       exec: ({ input }): void => {
         if (input === undefined || input === "") return;
         setConfig("minBurst", "flex");
-        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+        const newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(
           parseInt(input),
         );
         setConfig("minBurstCustomSpeed", newVal);

@@ -1,4 +1,4 @@
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import {
   CommandlineConfigKey,
@@ -220,7 +220,7 @@ function buildInputCommand<K extends keyof ConfigSchemas.Config>({
   const result = {
     id: `set${capitalizeFirstLetter(key)}Custom`,
     defaultValue:
-      inputProps?.defaultValue ?? (() => Config[key]?.toString() ?? ""),
+      inputProps?.defaultValue ?? (() => getConfig[key]?.toString() ?? ""),
     configValue:
       inputProps !== undefined && "configValue" in inputProps
         ? (inputProps.configValue ?? undefined)

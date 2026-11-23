@@ -40,7 +40,7 @@ export function ShareTestSettings(): JSXElement {
       numbers: values.numbers ? getConfig.numbers : undefined,
       language: values.language ? getConfig.language : undefined,
       difficulty: values.difficulty ? getConfig.difficulty : undefined,
-      funbox: values.funbox ? getConfig.funbox : undefined,
+      funbox: values.funbox ? [...getConfig.funbox] : undefined,
     });
   };
 

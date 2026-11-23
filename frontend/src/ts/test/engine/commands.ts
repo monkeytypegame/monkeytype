@@ -1,6 +1,6 @@
 import { batch } from "solid-js";
 import { isSafeNumber } from "@monkeytype/util/numbers";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { isDevEnvironment } from "../../utils/env";
 import { getWordBurst } from "./events/stats";
 import {
@@ -177,7 +177,9 @@ export function commitRestart(token: number): boolean {
  * min burst check. null when neither needs it.
  */
 export function measureWordBurst(now: number): number | null {
-  if (Config.minBurst === "off" && Config.liveBurstStyle === "off") return null;
+  if (getConfig.minBurst === "off" && getConfig.liveBurstStyle === "off") {
+    return null;
+  }
   const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
   if (isSafeNumber(burst)) setLastBurst(burst);
   return burst;

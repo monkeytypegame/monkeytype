@@ -1,6 +1,6 @@
 import type { Howl } from "howler";
 import { PlaySoundOnError } from "@monkeytype/schemas/configs";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { randomElementFromArray } from "../utils/arrays";
 import { getHowl, getHowlerModule, playFromStart } from "./howler";
 
@@ -19,7 +19,7 @@ export async function initErrorSounds(): Promise<ErrorSounds> {
       await getHowl("../sounds/error4/2.wav"),
     ],
   };
-  (await getHowlerModule()).Howler.volume(Config.soundVolume);
+  (await getHowlerModule()).Howler.volume(getConfig.soundVolume);
   return errorSounds;
 }
 
@@ -33,8 +33,8 @@ export async function previewError(val: PlaySoundOnError): Promise<void> {
 }
 
 export async function playError(): Promise<void> {
-  if (Config.playSoundOnError === "off") return;
-  const sounds = (await initErrorSounds())[Config.playSoundOnError];
+  if (getConfig.playSoundOnError === "off") return;
+  const sounds = (await initErrorSounds())[getConfig.playSoundOnError];
   if (sounds === undefined) throw new Error("Invalid error sound ID");
 
   const randomSound = randomElementFromArray(sounds);

@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { Keycode } from "../../constants/keys";
 
 // Translating browser key events into the EventLog's key codes is input's
@@ -77,11 +77,11 @@ export const keysToTrack = new Set<Keycode | "NoCode">([
 ]);
 
 export function getTestEventCode(event: KeyboardEvent): Keycode | "NoCode" {
-  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+  if (event.code === "NumpadEnter" && getConfig.funbox.includes("58008")) {
     return "Space";
   }
 
-  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+  if (event.code.includes("Arrow") && getConfig.funbox.includes("arrows")) {
     return "NoCode";
   }
 

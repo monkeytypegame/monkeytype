@@ -2,7 +2,7 @@ import { afterTestDelete } from "../helpers/after-input";
 import * as TestWords from "../../test/engine/test-words";
 import { getInputElementValue, setInputElementValue } from "../input-element";
 
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { goToPreviousWord } from "../helpers/word-navigation";
 import { DeleteInputType } from "../../test/engine/input-type";
 import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
@@ -24,8 +24,8 @@ export function onDelete(inputType: DeleteInputType, now: number): void {
 
   //special check for code languages
   if (
-    Config.language.startsWith("code") &&
-    Config.codeUnindentOnBackspace &&
+    getConfig.language.startsWith("code") &&
+    getConfig.codeUnindentOnBackspace &&
     inputBeforeDelete.length > 0 &&
     beforeDeleteOnlyTabs &&
     allTabsCorrect

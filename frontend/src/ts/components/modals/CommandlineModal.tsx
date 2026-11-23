@@ -6,6 +6,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  on,
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
@@ -16,7 +17,7 @@ import {
   CommandsSubgroup,
   CommandWithValidation,
 } from "../../commandline/types";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { createInputEventHandler } from "../../elements/input-validation";
 import { logAnalyticsEvent } from "../../integrations/analytics";
 import {
@@ -74,17 +75,17 @@ function isCommandActive(
   }
 
   if (command.configValueMode !== "include") {
-    return Config[configKey] === command.configValue;
+    return getConfig[configKey] === command.configValue;
   }
 
   if (Array.isArray(command.configValue)) {
     return areUnsortedArraysEqual(
-      intersect(Config[configKey] as unknown[], command.configValue),
+      intersect(getConfig[configKey] as unknown[], command.configValue),
       command.configValue,
     );
   }
 
-  return (Config[configKey] as unknown[]).includes(command.configValue);
+  return (getConfig[configKey] as unknown[]).includes(command.configValue);
 }
 
 /**
@@ -201,7 +202,7 @@ export function CommandlineModal(): JSXElement {
 
   const removeCommandlineBackground = (): void => {
     setNoBackground(true);
-    if (Config.showOutOfFocusWarning) {
+    if (getConfig.showOutOfFocusWarning) {
       setTestFocusState("focused");
     }
   };
@@ -290,8 +291,8 @@ export function CommandlineModal(): JSXElement {
 
     const windowed = found.slice(offset, offset + MAX_RENDERED_COMMANDS);
 
-    // `isCommandActive` reads the non-reactive Config, so the result is pinned
-    // here rather than recomputed per row. Keeping it out of the list items
+    // `isCommandActive` reads config untracked here (refresh runs after an
+    // await), so the result is pinned here rather than recomputed per row. Keeping it out of the list items
     // leaves those referentially stable, which is what lets `<For>` reuse rows
     // instead of rebuilding every one of them on each keystroke.
     const activeIds = new Set<string>();
@@ -479,7 +480,7 @@ export function CommandlineModal(): JSXElement {
 
     command.exec?.({});
 
-    if (Config.singleListCommandLine === "on") {
+    if (getConfig.singleListCommandLine === "on") {
       lastSingleListModeInputValue = inputValue();
     }
 
@@ -516,7 +517,7 @@ export function CommandlineModal(): JSXElement {
 
     if (subgroupOverride === null) {
       setUsingSingleList(
-        Config.singleListCommandLine === "on"
+        getConfig.singleListCommandLine === "on"
           ? true
           : inputValue().startsWith(">"),
       );
@@ -556,7 +557,7 @@ export function CommandlineModal(): JSXElement {
     if (e.key === "ArrowUp" || (e.ctrlKey && (key === "k" || key === "p"))) {
       // recall the last search when reopening the single list on an empty input
       if (
-        Config.singleListCommandLine === "on" &&
+        getConfig.singleListCommandLine === "on" &&
         subgroupOverride === null &&
         inputValue() === "" &&
         lastSingleListModeInputValue !== ""
@@ -639,7 +640,7 @@ export function CommandlineModal(): JSXElement {
       setUsingSingleList(false);
     } else {
       subgroupOverride = null;
-      setUsingSingleList(Config.singleListCommandLine === "on");
+      setUsingSingleList(getConfig.singleListCommandLine === "on");
     }
 
     setFocusMode(false);
@@ -679,26 +680,28 @@ export function CommandlineModal(): JSXElement {
     }
   };
 
-  // theme and font previews follow the active command
-  createEffect(() => {
-    const command = activeCommand();
-    if (isAnimating) return;
+  // theme and font previews follow the active command, and only it: the hover
+  // reads config (eg. sound volume) and focus, which mustn't replay it
+  createEffect(
+    on(activeCommand, (command) => {
+      if (isAnimating) return;
 
-    setFontPreview(null);
+      setFontPreview(null);
 
-    if (
-      command !== undefined &&
-      (command.id.startsWith("changeTheme") ||
-        command.id.startsWith("setCustomThemeId"))
-    ) {
-      removeCommandlineBackground();
-    } else {
-      clearThemePreview();
-      addCommandlineBackground();
-    }
+      if (
+        command !== undefined &&
+        (command.id.startsWith("changeTheme") ||
+          command.id.startsWith("setCustomThemeId"))
+      ) {
+        removeCommandlineBackground();
+      } else {
+        clearThemePreview();
+        addCommandlineBackground();
+      }
 
-    command?.hover?.();
-  });
+      command?.hover?.();
+    }),
+  );
 
   // keep the active command in view when navigating with the keyboard
   createEffect(() => {
