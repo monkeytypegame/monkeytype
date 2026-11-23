@@ -100,11 +100,18 @@ export function upsideDownLayout(layout: LayoutObject): LayoutObject {
   const space = [" "];
   const empty: string[] = [];
   const newRow1 = new Array<string[]>(13).fill(empty);
+  const isIso = layout.type === "iso";
   const upside_down_keys: LayoutObject["keys"] = {
     row1: newRow1.fill(space, 3, 9),
-    row2: [...[...layout.keys.row4].reverse(), empty, empty, empty],
+    row2: [...[...layout.keys.row4].reverse(), empty, empty, empty].slice(
+      0,
+      isIso ? 12 : 13,
+    ),
     row3: [...layout.keys.row3].reverse(),
-    row4: [...layout.keys.row2.slice(0, 10)].reverse(),
+    row4: [
+      ...(isIso ? [empty] : []),
+      ...[...layout.keys.row2.slice(0, 10)].reverse(),
+    ],
     row5: [empty],
   };
 

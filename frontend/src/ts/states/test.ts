@@ -208,9 +208,9 @@ const getInputLayout = createMemo<{
 const [inputLayoutObject, inputLayoutPromise] = useResourceWithPromise(
   getInputLayout,
   async (layout) => {
-    const result = await getLayout(layout.layout);
+    let result = await getLayout(layout.layout);
     if (layout.isUpsideDown) {
-      return upsideDownLayout(result);
+      result = upsideDownLayout(result);
     }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);
@@ -222,9 +222,9 @@ const [inputLayoutObject, inputLayoutPromise] = useResourceWithPromise(
 const [keymapLayoutObject, keymapLayoutPromise] = useResourceWithPromise(
   getKeymapLayout,
   async (layout) => {
-    const result = await getLayout(layout.layout);
+    let result = await getLayout(layout.layout);
     if (layout.isUpsideDown) {
-      return upsideDownLayout(result);
+      result = upsideDownLayout(result);
     }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);

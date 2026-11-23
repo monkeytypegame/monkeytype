@@ -215,6 +215,7 @@ export async function getCharFromEvent(
       return null;
     }
   }
+  // keys without legends type nothing (e.g. space in upside down funbox)
   if (layoutMap[mapIndex]?.length === 0) {
     event.preventDefault();
   }
