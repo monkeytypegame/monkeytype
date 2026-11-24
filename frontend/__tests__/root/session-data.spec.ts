@@ -23,11 +23,13 @@ vi.mock("../../src/ts/config/remote", () => ({
   fetchFromServer: vi.fn(async () => ({})),
   applyFromServer: vi.fn(async () => undefined),
 }));
+vi.mock("../../src/ts/ape/user", () => ({ clearUserResponse: vi.fn() }));
 vi.mock("../../src/ts/integrations/sentry", () => ({
   setSentryUser: vi.fn(),
   clearSentryUser: vi.fn(),
 }));
 
+import { clearUserResponse } from "../../src/ts/ape/user";
 import * as RemoteConfig from "../../src/ts/config/remote";
 import {
   clearSentryUser,
@@ -120,6 +122,18 @@ describe("session data", () => {
     await reloaded;
 
     expect(getUserDataLoadState()).toEqual({ status: "loaded" });
+  });
+
+  it("reloadUserData downloads the user again, not the cached response", async () => {
+    signIn();
+    loads[0]?.reject(new Error("down"));
+    await settle();
+    expect(clearUserResponse).not.toHaveBeenCalled();
+
+    const reloaded = reloadUserData();
+    expect(clearUserResponse).toHaveBeenCalledOnce();
+    loads[1]?.resolve(undefined);
+    await reloaded;
   });
 
   it("signing out resets the load and clears the Sentry user, and a load it overtook doesn't set it", async () => {

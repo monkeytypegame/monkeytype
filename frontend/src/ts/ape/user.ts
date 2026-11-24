@@ -42,7 +42,11 @@ async function sync(): Promise<void> {
   }
 }
 
-function reset(): void {
+/**
+ * Drops the cached response, so the next read downloads again. The cache only
+ * shares one request between a load's readers (user, tags, filter presets).
+ */
+export function clearUserResponse(): void {
   cache = undefined;
   fetchPromise = null;
 }
@@ -51,7 +55,7 @@ function reset(): void {
 createRoot(() =>
   createEffectOn(isAuthenticated, (isAuthenticated) => {
     if (!isAuthenticated) {
-      reset();
+      clearUserResponse();
     }
   }),
 );
