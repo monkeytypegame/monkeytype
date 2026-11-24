@@ -1,9 +1,8 @@
-import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { z } from "zod";
 
 import type { Quote } from "../types/quotes";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 import { showSuccessNotification } from "./notifications";
 
 /**
@@ -96,28 +95,12 @@ export function setResultTagsAfterEdit(
 // smoothed burst (chart)
 
 // not part of the config schema on purpose - this is a local only preference
-const smoothedBurstLS = new LocalStorageWithSchema({
-  key: "smoothedBurst",
-  schema: z.boolean(),
-  fallback: true,
-});
-
-const [smoothedBurst, setSignal] = createSignal(smoothedBurstLS.get());
-
-export function getSmoothedBurst(): boolean {
-  return smoothedBurst();
-}
-
-export function setSmoothedBurst(value: boolean): void {
-  if (smoothedBurstLS.set(value)) {
-    setSignal(value);
-  }
-}
-
-export function resetSmoothedBurst(): void {
-  smoothedBurstLS.remove();
-  setSignal(smoothedBurstLS.get());
-}
+export const [getSmoothedBurst, setSmoothedBurst, resetSmoothedBurst] =
+  createLocalStorageSignal({
+    key: "smoothedBurst",
+    schema: z.boolean(),
+    fallback: true,
+  });
 
 // dev helper, exposed on window
 export function toggleSmoothedBurst(): void {

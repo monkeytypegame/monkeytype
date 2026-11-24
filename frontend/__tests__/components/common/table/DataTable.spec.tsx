@@ -10,9 +10,9 @@ import {
 const [localStorage, setLocalStorage] = createSignal<
   { id: string; desc: boolean }[]
 >([]);
-vi.mock("../../../../src/ts/hooks/useLocalStorage", () => {
+vi.mock("../../../../src/ts/hooks/createLocalStorageSignal", () => {
   return {
-    useLocalStorage: () => {
+    createLocalStorageSignal: () => {
       return [localStorage, setLocalStorage] as const;
     },
   };

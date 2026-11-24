@@ -1,8 +1,7 @@
 import { LanguageSchema } from "@monkeytype/schemas/languages";
 import { ModeSchema } from "@monkeytype/schemas/shared";
-import { Accessor, Setter, createRoot } from "solid-js";
 import { z } from "zod";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
 import { SearchFlagSchema } from "../router/search-params";
@@ -52,7 +51,7 @@ export type LeaderboardSearch = z.infer<typeof LeaderboardSearchSchema>;
 
 // the last shown selection, used when opening the leaderboards without one.
 // the leaderboards page sets it (useLeaderboardSearch)
-const [getLastSelection, setLastSelection] = createRoot(() => lsSelection());
+const [getLastSelection, setLastSelection] = lsSelection();
 export { setLastSelection };
 
 /** The search params showing `selection` on the 0-based `page`. */
@@ -102,8 +101,8 @@ export function toSelection(search: LeaderboardSearch): Selection {
   };
 }
 
-function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
-  return useLocalStorage<Selection>({
+function lsSelection(): ReturnType<typeof createLocalStorageSignal<Selection>> {
+  return createLocalStorageSignal<Selection>({
     key: "leaderboardSelector",
     schema: SelectionSchema,
     fallback: {

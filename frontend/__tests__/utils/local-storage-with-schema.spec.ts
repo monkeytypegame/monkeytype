@@ -300,5 +300,31 @@ describe("local-storage-with-schema.ts", () => {
         expect(getItemMock).toHaveBeenCalledOnce();
       });
     });
+
+    describe("clearCache", () => {
+      it("should read from localStorage again after clearing the cache", () => {
+        ls.set(defaultObject);
+        const changed = { ...defaultObject, fontSize: 20 };
+        getItemMock.mockReturnValue(JSON.stringify(changed));
+
+        ls.clearCache();
+
+        expect(ls.get()).toEqual(changed);
+        expect(getItemMock).toHaveBeenCalledWith("config");
+      });
+
+      it("should not skip set() of the previously cached value", () => {
+        ls.set(defaultObject);
+        ls.clearCache();
+        setItemMock.mockReset();
+
+        ls.set(defaultObject);
+
+        expect(setItemMock).toHaveBeenCalledWith(
+          "config",
+          JSON.stringify(defaultObject),
+        );
+      });
+    });
   });
 });

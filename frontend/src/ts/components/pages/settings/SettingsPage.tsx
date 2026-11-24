@@ -5,7 +5,7 @@ import { playTimeWarning, previewClick, previewError } from "../../../audio";
 import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { getConfig } from "../../../config/store";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { createLocalStorageSignal } from "../../../hooks/createLocalStorageSignal";
 import { isCustomBackgroundLoaded } from "../../../states/custom-background";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
@@ -270,7 +270,7 @@ export function SettingsPage(): JSXElement {
 }
 
 function AccountSettingsNotice(): JSXElement {
-  const [dismissed, setDismissed] = useLocalStorage({
+  const [dismissed, setDismissed] = createLocalStorageSignal({
     key: "accountSettingsMessageDismissed",
     schema: z.boolean(),
     fallback: false,

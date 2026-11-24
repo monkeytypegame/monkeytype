@@ -19,7 +19,6 @@ import {
   JSXElement,
   Show,
   untrack,
-  createRoot,
 } from "solid-js";
 import { z } from "zod";
 
@@ -27,7 +26,7 @@ import { isAuthenticated } from "../../../../auth/state";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { Theme } from "../../../../constants/themes";
-import { useLocalStorage } from "../../../../hooks/useLocalStorage";
+import { createLocalStorageSignal } from "../../../../hooks/createLocalStorageSignal";
 import { getTag } from "../../../../queries/tags";
 import { getLocalPB } from "../../../../queries/user";
 import { showSuccessNotification } from "../../../../states/notifications";
@@ -339,8 +338,8 @@ type ChartDataVisibility = {
   tagPbLine: boolean;
 };
 
-const [getChartDataVisibility, setChartDataVisibility] = createRoot(() =>
-  useLocalStorage<ChartDataVisibility>({
+const [getChartDataVisibility, setChartDataVisibility] =
+  createLocalStorageSignal<ChartDataVisibility>({
     key: "resultChartDataVisibility",
     schema: z
       .object({
@@ -358,8 +357,7 @@ const [getChartDataVisibility, setChartDataVisibility] = createRoot(() =>
       pbLine: true,
       tagPbLine: true,
     },
-  }),
-);
+  });
 
 const [isFakeChartData, setFakeChartData] = createSignal(false);
 

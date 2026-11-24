@@ -7,7 +7,7 @@ import {
 } from "solid-js";
 import { z } from "zod";
 import { getConfig } from "../config/store";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 
 import { Challenge } from "@monkeytype/challenges";
 import { FunboxName } from "@monkeytype/schemas/configs";
@@ -304,13 +304,12 @@ export async function loadInputLayout(): Promise<LayoutObject> {
   return result;
 }
 
-export const [getSelectedQuoteId, setSelectedQuoteId] = createRoot(() =>
-  useLocalStorage({
+export const [getSelectedQuoteId, setSelectedQuoteId] =
+  createLocalStorageSignal({
     key: "selectedQuoteId",
     schema: z.number().int().min(1),
     fallback: 1,
-  }),
-);
+  });
 
 export const [isLanguageRightToLeft, setIsLanguageRightToLeft] =
   createSignal(false);

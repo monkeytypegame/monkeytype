@@ -27,8 +27,8 @@ import {
 } from "solid-js";
 import { z } from "zod";
 
+import { createLocalStorageSignal } from "../../../hooks/createLocalStorageSignal";
 import { createEffectOn } from "../../../hooks/effects";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
 import { qs } from "../../../utils/dom";
 import { Fa } from "../Fa";
@@ -95,7 +95,7 @@ export type DataTableProps<TData extends RowData, TValue> = {
 export function DataTable<TData extends RowData, TValue = any>(
   props: DataTableProps<TData, TValue>,
 ): JSXElement {
-  const [sorting, setSorting] = useLocalStorage<SortingState>({
+  const [sorting, setSorting] = createLocalStorageSignal<SortingState>({
     //oxlint-disable-next-line solid/reactivity
     key: `${props.id}Sort`,
     schema: SortingStateSchema,

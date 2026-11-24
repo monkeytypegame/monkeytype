@@ -16,7 +16,7 @@ import Ape from "../ape";
 import { fetchUserFromApi } from "../ape/user";
 import type { NormalizedLocalResult } from "../collections/results";
 import { tempId } from "../collections/utils/misc";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 import { updateTagsInFilterStorage } from "../states/result-filters";
 import {
   replaceSpacesWithUnderscores,
@@ -57,14 +57,12 @@ const emptyPbs = (): PersonalBests => ({
   custom: {},
 });
 
-const [activeIds, setActiveIds] = createRoot(() =>
-  useLocalStorage({
-    key: "activeTags",
-    schema: z.array(IdSchema),
-    fallback: [],
-    syncAcrossTabs: false,
-  }),
-);
+const [activeIds, setActiveIds] = createLocalStorageSignal({
+  key: "activeTags",
+  schema: z.array(IdSchema),
+  fallback: [],
+  syncAcrossTabs: false,
+});
 
 const tags = createRoot(() =>
   createMemo(() =>
