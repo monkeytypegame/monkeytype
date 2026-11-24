@@ -102,3 +102,17 @@ _Avoid_: restarting setting, test-affecting config
 **Theme attributes**:
 The `data-ui-element`, `data-ui-state` and `data-ui-variant` attributes on themeable parts of the site, which themes and custom CSS target, plus one attribute per fact independent of the state (eg. `data-ui-active`, `data-ui-word-highlight`, `data-ui-blind`, `data-ui-corrected`). Ids and class names are not part of them and can change.
 _Avoid_: theme selectors, theme classes, theme hooks
+
+## Charts
+
+**Result chart**:
+The per-test speed graph on the result page: wpm over the test's seconds, with raw, burst, errors and PB lines.
+_Avoid_: result graph, wpm chart
+
+**History chart**:
+The signed-in user's speed-over-time graph on the account page, with accuracy, rolling averages, and PB step.
+_Avoid_: account chart, speed history
+
+**Activity calendar**:
+The contribution-style grid of one test per day coloured by activity level, on the account page (the user's own) and the profile page (a profile's).
+_Avoid_: activity graph, activity heatmap
