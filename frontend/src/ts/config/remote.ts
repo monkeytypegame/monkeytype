@@ -15,9 +15,7 @@ export async function applyFromServer(
     JSON.stringify(getConfig) === JSON.stringify(remoteConfig);
 
   if (!areConfigsEqual) {
-    console.log(
-      "no local config or local and db configs are different - applying db",
-    );
+    console.log("local and db configs are different - applying db");
     await applyConfig(remoteConfig);
     saveFullConfigToLocalStorage(true);
   }
