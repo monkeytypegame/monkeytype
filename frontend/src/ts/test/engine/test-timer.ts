@@ -1,4 +1,4 @@
-import { getTestSettings } from "./test-settings";
+import { getTestSettings, getTestTimeLimit } from "./test-settings";
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
@@ -191,16 +191,7 @@ function checkIfFailed(
 function checkIfTimeIsUp(testTime: number): void {
   if (timerDebug) console.time("times up check");
 
-  let maxTime = undefined;
-
-  if (getTestSettings().mode === "time") {
-    maxTime = getTestSettings().time;
-  } else if (
-    getTestSettings().mode === "custom" &&
-    getTestSettings().customText.limit.mode === "time"
-  ) {
-    maxTime = getTestSettings().customText.limit.value;
-  }
+  const maxTime = getTestTimeLimit();
   if (maxTime !== undefined && maxTime !== 0 && testTime >= maxTime) {
     //times up
     if (timer !== null) clearTimeout(timer);

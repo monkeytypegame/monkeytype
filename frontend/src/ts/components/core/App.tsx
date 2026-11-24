@@ -25,6 +25,7 @@ import { CustomBackground } from "./CustomBackground";
 import { Font } from "./Font";
 import { Funbox } from "./Funbox";
 import { NoCssDetails } from "./NoCssDetails";
+import { PreventSpaceScroll } from "./PreventSpaceScroll";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
@@ -44,6 +45,7 @@ export function App(): JSXElement {
       <CustomBackground />
       <Theme />
       <Font />
+      <PreventSpaceScroll />
       <Funbox />
       <BarTimerProgress />
       <div id="solidmodals">

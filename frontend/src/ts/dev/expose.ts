@@ -1,7 +1,7 @@
 // Dev-only `window.__mt` handle for poking app internals from the browser console
 // or browser automation. Loaded via dynamic import behind `import.meta.env.DEV`.
 import type { Command } from "../commandline/types";
-import { Config, getConfig } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { getInputElement } from "../input/input-element";
 import { setPreloading } from "../router/create-router";
@@ -136,19 +136,19 @@ function checkLayout(): string[] {
     issues.push(`words input off the active word by ${px(input.top - ar.top)}`);
   }
 
-  if (Config.tapeMode !== "off") {
-    const margin = wr.left + (wr.width * Config.tapeMargin) / 100;
+  if (getConfig.tapeMode !== "off") {
+    const margin = wr.left + (wr.width * getConfig.tapeMargin) / 100;
     const letters = active.querySelectorAll(LETTER_SELECTOR);
     const anchor =
-      Config.tapeMode === "letter"
+      getConfig.tapeMode === "letter"
         ? letters[getCurrentInput().length]?.getBoundingClientRect().left
         : ar.left;
     if (anchor !== undefined && Math.abs(anchor - margin) > 3) {
       issues.push(`tape anchor ${px(anchor - margin)} from the tape margin`);
     }
   } else if (
-    Config.mode !== "zen" &&
-    (!Config.showAllLines || Config.mode === "time")
+    getConfig.mode !== "zen" &&
+    (!getConfig.showAllLines || getConfig.mode === "time")
   ) {
     const wordEls = [...words.querySelectorAll<HTMLElement>(".word")];
     const tops = [
@@ -269,7 +269,8 @@ const mt = {
   restartTest,
   /**
    * Types through the real input handlers; `"\n"` is a line break, `"\b"` a
-   * backspace. Paced with `msPerChar`, else all in one task.
+   * backspace. Second arg `msPerChar` (a number, eg. `typeText(text, 40)`)
+   * paces it; else all in one task.
    */
   typeText,
   /**

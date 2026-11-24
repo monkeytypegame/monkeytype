@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { whorf } from "../../utils/misc";
 import { type CommitCharacterType } from "./util";
 
@@ -15,18 +15,19 @@ export function checkIfFailedDueToMinBurst(options: {
   lastBurst: number | null;
 }): boolean {
   const { testInputWithData, currentWord, lastBurst } = options;
-  if (Config.minBurst !== "off" && lastBurst !== null) {
+  if (getConfig.minBurst !== "off" && lastBurst !== null) {
     let wordLength: number;
-    if (Config.mode === "zen") {
+    if (getConfig.mode === "zen") {
       wordLength = testInputWithData.length;
     } else {
       wordLength = currentWord.length;
     }
 
-    const flex: number = whorf(Config.minBurstCustomSpeed, wordLength);
+    const flex: number = whorf(getConfig.minBurstCustomSpeed, wordLength);
     if (
-      (Config.minBurst === "fixed" && lastBurst < Config.minBurstCustomSpeed) ||
-      (Config.minBurst === "flex" && lastBurst < flex)
+      (getConfig.minBurst === "fixed" &&
+        lastBurst < getConfig.minBurstCustomSpeed) ||
+      (getConfig.minBurst === "flex" && lastBurst < flex)
     ) {
       return true;
     }
@@ -54,17 +55,17 @@ export function checkIfFailedDueToDifficulty(options: {
   // Using space or newline instead of shouldInsertSpace or increasedWordIndex
   // because we want expert mode to fail no matter if confidence or stop on error is on
 
-  if (Config.mode === "zen") return false;
+  if (getConfig.mode === "zen") return false;
 
   const shouldFailDueToExpert =
-    Config.difficulty === "expert" &&
+    getConfig.difficulty === "expert" &&
     commitCharacterType !== false &&
     // a leading separator (empty input) commits nothing and must not fail;
     // a nospace commit (e.g. a 1-letter word) does commit on empty input
     !(commitCharacterType === "separator" && testInput.length === 0) &&
     testInput + data !== targetWord;
 
-  const shouldFailDueToMaster = Config.difficulty === "master" && !correct;
+  const shouldFailDueToMaster = getConfig.difficulty === "master" && !correct;
 
   if (shouldFailDueToExpert || shouldFailDueToMaster) {
     return true;
@@ -99,10 +100,10 @@ export function checkIfFinished(options: {
   // stop on error and delete on error both take the last character back, so
   // quick end must not finish the test on a character that is about to go away
   const shouldQuickEnd =
-    Config.quickEnd &&
+    getConfig.quickEnd &&
     currentWord.length === testInputWithData.length &&
-    Config.stopOnError === "off" &&
-    Config.deleteOnError === "off";
+    getConfig.stopOnError === "off" &&
+    getConfig.deleteOnError === "off";
   if (
     allWordsTyped &&
     allWordsGenerated &&

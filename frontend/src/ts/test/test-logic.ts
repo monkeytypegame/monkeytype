@@ -3,7 +3,6 @@ import {
   getRememberLazyMode,
   setRememberLazyMode,
   getPrefersArabicLazyMode,
-  setPrefersArabicLazyMode,
 } from "../states/lazy-mode";
 import Ape from "../ape";
 import { createEffect, createMemo, createRoot, on, untrack } from "solid-js";
@@ -85,7 +84,6 @@ import "./timer-effects";
 import * as TestWords from "./engine/test-words";
 import * as WordsGenerator from "./words-generator";
 import { isTestPageMounted } from "./test-page-bridge";
-import { configEvent } from "../events/config";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import { logAnalyticsEvent } from "../integrations/analytics";
@@ -110,7 +108,7 @@ import { ResultDetails, setResultState, setCrownType } from "../states/result";
 import { blurInputElement } from "../input/input-element";
 import { debounce } from "throttle-debounce";
 import { setAccountButtonSpinner } from "../states/header";
-import { Config, getConfig } from "../config/store";
+import { getConfig } from "../config/store";
 import { setQuoteLengthAll, toggleFunbox, setConfig } from "../config/setters";
 import { buildEventLog } from "./engine/events/data";
 import {
@@ -144,7 +142,10 @@ export function startTest(now: number): boolean {
   }
 
   try {
-    if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat())) {
+    if (
+      getConfig.paceCaret !== "off" ||
+      (getConfig.repeatedPace && isPaceRepeat())
+    ) {
       PaceCaret.start();
     }
   } catch (e) {}
@@ -158,7 +159,7 @@ export function startTest(now: number): boolean {
 }
 
 function recordIncompleteTest(): void {
-  if (!Config.resultSaving) return;
+  if (!getConfig.resultSaving) return;
   // Finalize the abandoned test before measuring it: logging the timer
   // "end" event gives getAfkDuration its interval boundaries, so idle time
   // is actually subtracted. Without it AFK is always 0 and the full
@@ -276,11 +277,11 @@ function requestRestart(options: RestartRequestOptions): void {
         )
       ) {
         let message = "Use your mouse to confirm.";
-        if (Config.quickRestart === "tab") {
+        if (getConfig.quickRestart === "tab") {
           message = "Press shift + tab or use your mouse to confirm.";
-        } else if (Config.quickRestart === "esc") {
+        } else if (getConfig.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
-        } else if (Config.quickRestart === "enter") {
+        } else if (getConfig.quickRestart === "enter") {
           message = "Press shift + enter or use your mouse to confirm.";
         }
         showNoticeNotification(
@@ -308,7 +309,7 @@ function requestRestart(options: RestartRequestOptions): void {
     getTestSettings().mode === "quote" &&
     currentQuote !== null &&
     getTestSettings().language.startsWith(currentQuote.language) &&
-    Config.repeatQuotes === "typing" &&
+    getConfig.repeatQuotes === "typing" &&
     (isTestActive() || getTestEnd()?.type === "failed")
   ) {
     withSameWordset = true;
@@ -390,7 +391,7 @@ createRoot(() => {
       on(
         value,
         () => {
-          if (!changeRequiresRestart(key, Config)) return;
+          if (!changeRequiresRestart(key, getConfig)) return;
           void restartTest({ settingsChanged: true });
         },
         { defer: true },
@@ -420,7 +421,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
 
   showLoaderBar();
   const { data: language, error } = await tryCatch(
-    JSONData.getLanguage(Config.language),
+    JSONData.getLanguage(getConfig.language),
   );
   hideLoaderBar();
   if (!Engine.isCurrentRestart(token)) return "superseded";
@@ -429,7 +430,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     showErrorNotification("Failed to load language", { error });
   }
 
-  if (!language || language.name !== Config.language) {
+  if (!language || language.name !== getConfig.language) {
     return await init(token);
   }
 
@@ -439,17 +440,17 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     if (!Engine.isCurrentRestart(token)) return "superseded";
   }
 
-  if (Config.mode === "quote") {
-    if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
+  if (getConfig.mode === "quote") {
+    if (getConfig.quoteLength.includes(-3) && !isAuthenticated()) {
       setQuoteLengthAll();
     }
   }
 
-  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  const allowLazyMode = !language.noLazyMode || getConfig.mode === "custom";
 
   // polyglot mode, check to enable lazy mode if any support it
   if (getActiveFunboxNames().includes("polyglot")) {
-    const polyglotLanguages = Config.customPolyglot;
+    const polyglotLanguages = getConfig.customPolyglot;
     const languagePromises = polyglotLanguages.map(async (langName) => {
       const { data: lang, error } = await tryCatch(
         JSONData.getLanguage(langName),
@@ -467,7 +468,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
       .some((lang) => !lang.noLazyMode);
     if (!Engine.isCurrentRestart(token)) return "superseded";
 
-    if (Config.lazyMode && !anySupportsLazyMode) {
+    if (getConfig.lazyMode && !anySupportsLazyMode) {
       setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification(
@@ -486,7 +487,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     }
   } else {
     // normal mode
-    if (Config.lazyMode && !allowLazyMode) {
+    if (getConfig.lazyMode && !allowLazyMode) {
       setRememberLazyMode(true);
       if (!showedLazyModeNotification) {
         showNoticeNotification("This language does not support lazy mode.", {
@@ -502,11 +503,11 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     }
   }
 
-  if (!Config.lazyMode && !language.noLazyMode) {
+  if (!getConfig.lazyMode && !language.noLazyMode) {
     setRememberLazyMode(false);
   }
 
-  if (Config.mode === "custom") {
+  if (getConfig.mode === "custom") {
     console.debug("Custom text", CustomText.getData());
   }
 
@@ -519,9 +520,9 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
       ...CustomText.getData(),
       text: `${CustomText.getText().length} words`,
     },
-    mode: Config.mode,
-    mode2: Misc.getMode2(Config, null),
-    funbox: Config.funbox,
+    mode: getConfig.mode,
+    mode2: Misc.getMode2(getConfig, null),
+    funbox: getConfig.funbox,
     currentQuote: getCurrentQuote(),
   });
 
@@ -534,7 +535,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
   takeTestSettings(CustomText.getData());
   const { withSameWordset } = getRestartOptions();
   setIsRepeated(withSameWordset);
-  setIsPaceRepeat(Config.repeatedPace && withSameWordset);
+  setIsPaceRepeat(getConfig.repeatedPace && withSameWordset);
 
   let wordsHaveTab = false;
   let wordsHaveNewline = false;
@@ -593,7 +594,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     TestWords.removeCommitCharFromLastWord();
   }
 
-  if (Config.keymapMode === "next" && getTestSettings().mode !== "zen") {
+  if (getConfig.keymapMode === "next" && getTestSettings().mode !== "zen") {
     highlightKeymapKey(
       nthElementFromArray(
         // ignoring for now but this might need a different approach
@@ -776,7 +777,7 @@ function onResult({
   const completedEvent = structuredClone(ce) as CompletedEvent;
 
   if (isRepeated() || difficultyFailed) {
-    if (Config.resultSaving) {
+    if (getConfig.resultSaving) {
       pushIncompleteTest({
         acc: completedEvent.acc,
         seconds: getIncompleteTestSeconds(eventLog),
@@ -879,7 +880,7 @@ function onResult({
     tooShort: check === "tooShort",
     invalid,
     stopOnError: getTestSettings().stopOnError,
-    deleteOnError: Config.deleteOnError,
+    deleteOnError: getConfig.deleteOnError,
     quote: getTestSettings().mode === "quote" ? getCurrentQuote() : null,
   };
 
@@ -946,7 +947,7 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean,
 ): Promise<Engine.SaveOutcome> {
-  if (!Config.resultSaving) {
+  if (!getConfig.resultSaving) {
     showErrorNotification("Result not saved: disabled by user", {
       durationMs: 3000,
       customTitle: "Notice",
@@ -1096,7 +1097,7 @@ export function onRestartButtonClick(): void {
   if (isResultPending()) return;
   if (
     isTestActive() &&
-    Config.repeatQuotes === "typing" &&
+    getConfig.repeatQuotes === "typing" &&
     getTestSettings().mode === "quote"
   ) {
     void restartTest({
@@ -1119,42 +1120,56 @@ export function repeatTest(): void {
 
 // ===============================
 
-configEvent.subscribe(({ key, newValue, nosave }) => {
-  if (untrack(isTestPageMounted)) {
-    if (key === "language") {
-      //automatically enable lazy mode for arabic
-      if (
-        (newValue as string)?.startsWith("arabic") &&
-        getPrefersArabicLazyMode()
-      ) {
-        setConfig("lazyMode", true, {
-          nosave: true,
-        });
-      }
-    }
+// Config reactions on the test page. T8d moves them out of test-logic: arabic
+// lazy mode to the config area, the keymap highlight to Keymap, the zipf check
+// to its funbox definition
+createRoot(() => {
+  // automatically enable lazy mode for arabic
+  createEffect(
+    on(
+      () => getConfig.language,
+      (language) => {
+        if (!untrack(isTestPageMounted)) return;
+        if (language.startsWith("arabic") && getPrefersArabicLazyMode()) {
+          setConfig("lazyMode", true, {
+            nosave: true,
+          });
+        }
+      },
+      { defer: true },
+    ),
+  );
 
-    if (key === "keymapMode" && newValue === "next" && Config.mode !== "zen") {
-      setTimeout(() => {
-        highlightKeymapKey(
-          nthElementFromArray(
-            // ignoring for now but this might need a different approach
-            // oxlint-disable-next-line no-misused-spread
-            [...(TestWords.words.getCurrent()?.text ?? "")],
-            0,
-          ) as string,
-        );
-      }, 0);
-    }
-    if (
-      (key === "language" || key === "funbox") &&
-      Config.funbox.includes("zipf")
-    ) {
-      debouncedZipfCheck();
-    }
-  }
-  if (key === "lazyMode" && !nosave) {
-    if (Config.language.startsWith("arabic")) {
-      setPrefersArabicLazyMode(newValue);
-    }
-  }
+  createEffect(
+    on(
+      () => getConfig.keymapMode,
+      (keymapMode) => {
+        if (!untrack(isTestPageMounted)) return;
+        if (keymapMode !== "next" || getConfig.mode === "zen") return;
+        setTimeout(() => {
+          highlightKeymapKey(
+            nthElementFromArray(
+              // ignoring for now but this might need a different approach
+              // oxlint-disable-next-line no-misused-spread
+              [...(TestWords.words.getCurrent()?.text ?? "")],
+              0,
+            ) as string,
+          );
+        }, 0);
+      },
+      { defer: true },
+    ),
+  );
+
+  createEffect(
+    on(
+      // serialized, so changes inside the funbox array count
+      [() => getConfig.language, () => JSON.stringify(getConfig.funbox)],
+      () => {
+        if (!untrack(isTestPageMounted)) return;
+        if (getConfig.funbox.includes("zipf")) debouncedZipfCheck();
+      },
+      { defer: true },
+    ),
+  );
 });

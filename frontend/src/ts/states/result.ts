@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { z } from "zod";
 
-import type { Quote } from "../controllers/quotes-controller";
+import type { Quote } from "../types/quotes";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { showSuccessNotification } from "./notifications";
 

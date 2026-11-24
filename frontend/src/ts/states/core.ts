@@ -1,6 +1,4 @@
-import { createMemo, createSignal, createRoot } from "solid-js";
-import { Formatting } from "../utils/format";
-import { getConfig } from "../config/store";
+import { createSignal } from "solid-js";
 
 export const [getVersion, setVersion] = createSignal<{
   text: string;
@@ -8,18 +6,6 @@ export const [getVersion, setVersion] = createSignal<{
 }>({
   text: "",
   isNew: false,
-});
-
-export const [getThemeIndicator, setThemeIndicator] = createSignal<{
-  /**
-   * human readable display name, this is not the ThemeName.
-   * e.g. the display is `serika dark` for the ThemeName `serika_dark`
-   */
-  text: string;
-  isFavorite: boolean;
-}>({
-  text: "serika dark",
-  isFavorite: false,
 });
 
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
@@ -30,12 +16,3 @@ export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);
-
-export const getFormatting = createRoot(() =>
-  createMemo(() => {
-    return new Formatting({
-      alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-      typingSpeedUnit: getConfig.typingSpeedUnit,
-    });
-  }),
-);

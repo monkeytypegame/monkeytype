@@ -1,7 +1,7 @@
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import objectHash from "object-hash";
-import { createMemo, createRoot, JSX } from "solid-js";
+import { createRoot, JSX } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../collections/results";
 
@@ -25,7 +25,11 @@ import {
   setLastSignedOutResult,
 } from "../../states/test";
 import { cn } from "../../utils/cn";
-import { Formatting } from "../../utils/format";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatTypingSpeed,
+} from "../../utils/format";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
@@ -33,14 +37,6 @@ import { Separator } from "../common/Separator";
 const modalId = "LastSignedOutResult";
 
 export function LastSignedOutResultModal() {
-  const format = createMemo(
-    () =>
-      new Formatting({
-        alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-        typingSpeedUnit: getConfig.typingSpeedUnit,
-      }),
-  );
-
   const handleDiscard = () => {
     showNoticeNotification("Last test result discarded");
     hideModal(modalId);
@@ -65,23 +61,21 @@ export function LastSignedOutResultModal() {
       <div class="grid grid-cols-2 gap-2">
         <Value
           class="text-2xl"
-          label={format().typingSpeedUnit}
-          value={format().typingSpeed(getLastSignedOutResult()?.wpm ?? 0)}
+          label={getConfig.typingSpeedUnit}
+          value={formatTypingSpeed(getLastSignedOutResult()?.wpm ?? 0)}
         />
         <Value
           class="text-2xl"
           label="accuracy"
-          value={format().accuracy(getLastSignedOutResult()?.acc ?? 0)}
+          value={formatAccuracy(getLastSignedOutResult()?.acc ?? 0)}
         />
         <Value
           label="raw"
-          value={format().typingSpeed(getLastSignedOutResult()?.rawWpm ?? 0)}
+          value={formatTypingSpeed(getLastSignedOutResult()?.rawWpm ?? 0)}
         />
         <Value
           label="consistency"
-          value={format().percentage(
-            getLastSignedOutResult()?.consistency ?? 0,
-          )}
+          value={formatPercentage(getLastSignedOutResult()?.consistency ?? 0)}
         />
         <Value
           class="col-span-2"

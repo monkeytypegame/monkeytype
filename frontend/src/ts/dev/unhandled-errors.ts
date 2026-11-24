@@ -1,15 +1,7 @@
+// Installed at the top of the entry, before render, so it also catches
+// errors thrown while modules load and during the first render.
 import { showErrorNotification } from "../states/notifications";
 import { isDevEnvironment } from "../utils/env";
-
-//stop space scrolling
-window.addEventListener("keydown", function (e) {
-  if (
-    e.code === "Space" &&
-    (e.target === document.body || (e.target as HTMLElement)?.id === "result")
-  ) {
-    e.preventDefault();
-  }
-});
 
 window.onerror = function (message, url, line, column, error): void {
   if (isDevEnvironment()) {

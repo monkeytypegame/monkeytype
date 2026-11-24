@@ -11,7 +11,7 @@ import {
 } from "vitest";
 
 // opens indexedDB on import, which jsdom lacks
-vi.mock("../../src/ts/controllers/theme-controller", () => ({
+vi.mock("../../src/ts/theme", () => ({
   randomizeTheme: vi.fn(),
 }));
 // uses matchMedia on import, which jsdom lacks
@@ -38,7 +38,10 @@ import { WordsInput } from "../../src/ts/components/pages/test/WordsInput";
 import { applyConfig } from "../../src/ts/config/lifecycle";
 import { setConfig } from "../../src/ts/config/setters";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { afterTestWordChange } from "../../src/ts/input/helpers/after-input";
+import {
+  afterTestTextInput,
+  afterTestWordChange,
+} from "../../src/ts/input/helpers/after-input";
 import {
   appendRenderedWord,
   isWordRendered,
@@ -219,6 +222,26 @@ describe("after-input words rendering", () => {
     expect(parseFloat(input.style.top) - parseFloat(topBefore)).toBe(
       lineHeight,
     );
+  });
+
+  it("keeps the caret before a letter blocked by stop on letter", () => {
+    const { words } = mount();
+    appendRenderedWord({ display: "word" });
+    setActiveWord(0);
+    runFrames();
+    currentInput = "w";
+    afterTestTextInput(true);
+    runFrames();
+    caretGoTo.mockClear();
+
+    // stop on letter: "x" is shown, the accepted input stays "w"
+    afterTestTextInput(false, "wx");
+    runFrames();
+
+    expect(
+      words.querySelectorAll(".word[data-wordindex='0'] letter.incorrect"),
+    ).toHaveLength(1);
+    expect(caretGoTo.mock.calls.at(-1)?.[0].letterIndex).toBe(1);
   });
 
   it("marks the previous word typed and a bad word as error on the next frame", () => {

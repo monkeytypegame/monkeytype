@@ -139,6 +139,12 @@
                   "**/elements/**",
                   "**/input/**",
                   "**/controllers/**",
+                  "**/audio",
+                  "**/audio/**",
+                  "**/theme",
+                  "**/theme/**",
+                  // the theme state is data
+                  "!**/theme/state",
                   // integrations, except Sentry: the engine may report errors
                   "**/integrations/ads",
                   "**/integrations/ads/**",

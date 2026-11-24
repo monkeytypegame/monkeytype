@@ -10,14 +10,12 @@ import {
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
-import { Config, getConfig } from "../../../config/store";
-import * as SoundController from "../../../controllers/sound-controller";
-import * as ThemeController from "../../../controllers/theme-controller";
+import { clearAllSounds, playFartReverb } from "../../../audio";
+import { getConfig } from "../../../config/store";
 import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
 import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
-import { getCustomTextIndicator } from "../../../states/core";
 import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
@@ -37,7 +35,6 @@ import {
   setTestFadedOut,
 } from "../../../states/test";
 import { replaceWords, resetWordsRender } from "../../../states/words-render";
-import * as CustomText from "../../../test/custom-text";
 import {
   getActiveWordIndex,
   getRestartOptions,
@@ -47,7 +44,10 @@ import {
   isTestActive,
   isTestFinished,
 } from "../../../test/engine/state";
-import { getTestSettings } from "../../../test/engine/test-settings";
+import {
+  getTestSettings,
+  isLongTest,
+} from "../../../test/engine/test-settings";
 import * as TestWords from "../../../test/engine/test-words";
 import * as Funbox from "../../../test/funbox/funbox";
 import {
@@ -60,9 +60,9 @@ import {
   closeResultWords,
   toggleResultWords,
 } from "../../../test/words-history";
+import { randomizeTheme } from "../../../theme";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
-import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -130,15 +130,7 @@ export function TestPage(): JSXElement {
       "beforeunload",
       (event) => {
         if (!isTestActive()) return;
-        if (
-          canQuickRestart(
-            Config.mode,
-            Config.words,
-            Config.time,
-            CustomText.getData(),
-            getCustomTextIndicator()?.isLong ?? false,
-          )
-        ) {
+        if (!isLongTest()) {
           return;
         }
         event.preventDefault();
@@ -240,14 +232,8 @@ export function TestPage(): JSXElement {
     if (!isOnline()) showOfflineBanner();
     setFocusMode(false);
     if (
-      Config.alwaysShowWordsHistory &&
-      canQuickRestart(
-        getTestSettings().mode,
-        getTestSettings().words,
-        getTestSettings().time,
-        getTestSettings().customText,
-        getCustomTextIndicator()?.isLong ?? false,
-      ) &&
+      getConfig.alwaysShowWordsHistory &&
+      !isLongTest() &&
       !getGlarsesMode()
     ) {
       toggleResultWords(true);
@@ -328,13 +314,13 @@ export function TestPage(): JSXElement {
       // the restart's side effects
       ResultWordHighlight.destroy();
       if (source === "resultPage") {
-        if (Config.randomTheme !== "off") {
-          void ThemeController.randomizeTheme();
+        if (getConfig.randomTheme !== "off") {
+          randomizeTheme();
         }
         skipBreakdownEvent.dispatch();
       }
       destroyResultAds();
-      void SoundController.clearAllSounds();
+      void clearAllSounds();
       MonkeyPower.reset();
     }
     // fade hides the test synchronously, before the new words paint
@@ -393,8 +379,8 @@ export function TestPage(): JSXElement {
     on(
       isTestFinished,
       (finished) => {
-        if (finished && Config.playSoundOnClick === "16") {
-          void SoundController.playFartReverb();
+        if (finished && getConfig.playSoundOnClick === "16") {
+          void playFartReverb();
         }
       },
       { defer: true },

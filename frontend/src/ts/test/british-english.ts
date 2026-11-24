@@ -1,4 +1,4 @@
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import britishEnglishReplacements from "../constants/british-english";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
@@ -39,7 +39,7 @@ export async function replace(
         : [rule.britishWord, rule.exceptPreviousWords];
 
     if (
-      Config.mode === "quote" &&
+      getConfig.mode === "quote" &&
       previousWord !== undefined &&
       exceptions.includes(previousWord)
     ) {

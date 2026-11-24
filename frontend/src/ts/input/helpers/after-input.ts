@@ -1,8 +1,8 @@
 // What follows each test input: render buffer writes, keymap
 // highlight, focus mode and sounds. Buffered, rendered in the next words frame.
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { createEvent } from "../../hooks/createEvent";
-import * as SoundController from "../../controllers/sound-controller";
+import { playClick, playError } from "../../audio";
 import {
   getCompositionData,
   highlightKeymapKey,
@@ -21,12 +21,17 @@ import * as TestWords from "../../test/engine/test-words";
 /** Dispatched after each typed character, with whether it was correct. */
 export const textInsertedEvent = createEvent<boolean>();
 
-function updateWordLetters(input: string): void {
-  setWordInput(getActiveWordIndex(), input, getCompositionData());
+function updateWordLetters(input: string, acceptedLength?: number): void {
+  setWordInput(
+    getActiveWordIndex(),
+    input,
+    getCompositionData(),
+    acceptedLength,
+  );
 }
 
 function highlightNextKey(): void {
-  if (Config.keymapMode !== "next") return;
+  if (getConfig.keymapMode !== "next") return;
   const keyToHighlight =
     TestWords.words.getCurrent()?.textWithCommit[getCurrentInput().length];
   if (keyToHighlight !== undefined) {
@@ -42,15 +47,15 @@ function afterAnyTestInput(
   if (type === "textInput" || type === "compositionUpdate") {
     if (
       correctInput === true ||
-      Config.playSoundOnError === "off" ||
-      Config.blindMode
+      getConfig.playSoundOnError === "off" ||
+      getConfig.blindMode
     ) {
-      void SoundController.playClick();
+      void playClick();
     } else {
-      void SoundController.playError();
+      void playError();
     }
   } else if (type === "delete") {
-    void SoundController.playClick();
+    void playClick();
   }
 
   highlightNextKey();
@@ -70,7 +75,11 @@ export function afterTestTextInput(
     input = input.replace(/ $/, "");
   }
 
-  updateWordLetters(input);
+  // stop on letter: the override shows the blocked letter, the caret stays
+  updateWordLetters(
+    input,
+    inputOverride === undefined ? undefined : getCurrentInput().length,
+  );
 
   afterAnyTestInput("textInput", correct);
 }
@@ -100,7 +109,7 @@ export function afterTestWordChange(direction: "forward" | "back"): void {
 
   highlightNextKey();
 
-  if (direction === "back" && Config.mode === "zen") {
+  if (direction === "back" && getConfig.mode === "zen") {
     truncateWords(activeWordIndex + 1);
   }
 }

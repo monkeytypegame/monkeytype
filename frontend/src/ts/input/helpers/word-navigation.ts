@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { afterTestWordChange, beforeTestWordChange } from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
@@ -74,7 +74,7 @@ export async function goToNextWord({
 
   if (
     getActiveWordIndex() < TestWords.words.length - 1 ||
-    Config.mode === "zen"
+    getConfig.mode === "zen"
   ) {
     ret.increasedWordIndex = true;
     incrementActiveWordIndex();

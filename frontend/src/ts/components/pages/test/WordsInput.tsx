@@ -2,7 +2,7 @@
 /* oxlint-disable react/no-unknown-property */
 import { createEffect, JSXElement, on, onCleanup, onMount } from "solid-js";
 
-import { Config, getConfig } from "../../../config/store";
+import { getConfig } from "../../../config/store";
 import { ModifierKeys } from "../../../constants/modifier-keys";
 import {
   registerInputElement,
@@ -166,7 +166,7 @@ function autofocusWords(e: KeyboardEvent): void {
     return;
   }
   focusWordsEvent.dispatch({ force: false });
-  if (Config.showOutOfFocusWarning) {
+  if (getConfig.showOutOfFocusWarning) {
     e.preventDefault();
   }
 }

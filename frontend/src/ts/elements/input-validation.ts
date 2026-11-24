@@ -6,7 +6,7 @@ import {
   ConfigSchema,
   Config as ConfigType,
 } from "@monkeytype/schemas/configs";
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { showSuccessNotification } from "../states/notifications";
 import { ElementWithUtils } from "../utils/dom";
@@ -264,7 +264,7 @@ export function handleConfigInput<T extends ConfigKey>({
   const handleStore = (): void => {
     if (input.getValue() === "" && (validation?.resetIfEmpty ?? true)) {
       //use last config value, clear validation
-      input.setValue(new String(Config[configName]).toString());
+      input.setValue(new String(getConfig[configName]).toString());
       input.dispatch("input");
     }
     if (status === "failed") {
@@ -280,7 +280,7 @@ export function handleConfigInput<T extends ConfigKey>({
     const value = (inputValueConvert?.(input.getValue() ?? "") ??
       input.getValue()) as ConfigType[T];
 
-    if (Config[configName] === value) {
+    if (getConfig[configName] === value) {
       return;
     }
     const didConfigSave = setConfig(configName, value);

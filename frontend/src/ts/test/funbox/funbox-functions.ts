@@ -1,6 +1,6 @@
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { setConfig, toggleFunbox } from "../../config/setters";
 import * as Misc from "../../utils/misc";
 import * as Strings from "../../utils/strings";
@@ -81,7 +81,7 @@ async function readAheadHandleKeydown(
     (currentInput !== "" ||
       input.forWord(getActiveWordIndex() - 1) !==
         TestWords.words.get(getActiveWordIndex() - 1)?.textWithCommit ||
-      Config.freedomMode)
+      getConfig.freedomMode)
   ) {
     setReadAheadDisabled(true);
   } else if (event.key === " ") {
@@ -187,9 +187,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   "58008": {
     getWord(): string {
       let num = GetText.getNumbers(7);
-      if (Config.language.startsWith("kurdish")) {
+      if (getConfig.language.startsWith("kurdish")) {
         num = Misc.convertNumberToArabic(num);
-      } else if (Config.language.startsWith("nepali")) {
+      } else if (getConfig.language.startsWith("nepali")) {
         num = Misc.convertNumberToNepali(num);
       }
       return num;
@@ -218,7 +218,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return word;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers);
+      save("numbers", getConfig.numbers);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       if (event.key === "Enter") {
@@ -234,7 +234,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode);
+      save("keymapMode", getConfig.keymapMode);
     },
   },
   tts: {
@@ -244,7 +244,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode);
+      save("keymapMode", getConfig.keymapMode);
     },
     toggleScript(params: string[]): void {
       if (window.speechSynthesis === undefined) {
@@ -259,7 +259,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return DDR.chart2Word(wordIndex === 0);
     },
     rememberSettings(): void {
-      save("highlightMode", Config.highlightMode);
+      save("highlightMode", getConfig.highlightMode);
     },
     getEmulatedChar(event: KeyboardEvent): string | null {
       const ekey = event.key;
@@ -344,8 +344,8 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   layout_mirror: {
     applyConfig(): void {
-      let layout = Config.layout;
-      if (Config.layout === "default") {
+      let layout = getConfig.layout;
+      if (getConfig.layout === "default") {
         layout = "qwerty";
       }
       setConfig("layout", layout, {
@@ -356,13 +356,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode);
-      save("layout", Config.layout);
+      save("keymapMode", getConfig.keymapMode);
+      save("layout", getConfig.layout);
     },
   },
   layoutfluid: {
     applyConfig(): void {
-      const layout = Config.customLayoutfluid[0] ?? "qwerty";
+      const layout = getConfig.customLayoutfluid[0] ?? "qwerty";
 
       setConfig("layout", layout as Layout, {
         nosave: true,
@@ -372,13 +372,13 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       });
     },
     rememberSettings(): void {
-      save("keymapMode", Config.keymapMode);
-      save("layout", Config.layout);
-      save("keymapLayout", Config.keymapLayout);
+      save("keymapMode", getConfig.keymapMode);
+      save("layout", getConfig.layout);
+      save("keymapLayout", getConfig.keymapLayout);
     },
     handleSpace(input): void {
-      if (Config.mode !== "time") {
-        const layouts = Config.customLayoutfluid;
+      if (getConfig.mode !== "time") {
+        const layouts = getConfig.customLayoutfluid;
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor((getActiveWordIndex() + 1) / wordsPerLayout);
@@ -418,7 +418,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       }
     },
     getResultContent(): string {
-      return Config.customLayoutfluid.join(" ");
+      return getConfig.customLayoutfluid.join(" ");
     },
   },
   gibberish: {
@@ -438,7 +438,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_easy: {
     rememberSettings(): void {
-      save("highlightMode", Config.highlightMode);
+      save("highlightMode", getConfig.highlightMode);
     },
     async handleKeydown(event, input): Promise<void> {
       await readAheadHandleKeydown(event, input);
@@ -446,7 +446,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead: {
     rememberSettings(): void {
-      save("highlightMode", Config.highlightMode);
+      save("highlightMode", getConfig.highlightMode);
     },
     async handleKeydown(event, input): Promise<void> {
       await readAheadHandleKeydown(event, input);
@@ -454,7 +454,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   read_ahead_hard: {
     rememberSettings(): void {
-      save("highlightMode", Config.highlightMode);
+      save("highlightMode", getConfig.highlightMode);
     },
     async handleKeydown(event, input): Promise<void> {
       await readAheadHandleKeydown(event, input);
@@ -466,17 +466,17 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       setConfig("showAllLines", true, {
         nosave: true,
       });
-      if (Config.keymapMode === "next") {
+      if (getConfig.keymapMode === "next") {
         setConfig("keymapMode", "react", {
           nosave: true,
         });
       }
     },
     rememberSettings(): void {
-      save("mode", Config.mode);
-      save("showAllLines", Config.showAllLines);
-      if (Config.keymapMode === "next") {
-        save("keymapMode", Config.keymapMode);
+      save("mode", getConfig.mode);
+      save("showAllLines", getConfig.showAllLines);
+      if (getConfig.keymapMode === "next") {
+        save("keymapMode", getConfig.keymapMode);
       }
     },
     start(): void {
@@ -486,14 +486,14 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     restart(): void {
       setMemoryTimerDuration(Math.round(Math.pow(TestWords.words.length, 1.2)));
       setWordsHidden(false);
-      if (Config.keymapMode === "next") {
+      if (getConfig.keymapMode === "next") {
         setConfig("keymapMode", "react");
       }
     },
   },
   nospace: {
     rememberSettings(): void {
-      save("highlightMode", Config.highlightMode);
+      save("highlightMode", getConfig.highlightMode);
     },
   },
   poetry: {
@@ -530,7 +530,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers);
+      save("numbers", getConfig.numbers);
     },
   },
   IPv6: {
@@ -549,7 +549,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return w;
     },
     rememberSettings(): void {
-      save("numbers", Config.numbers);
+      save("numbers", getConfig.numbers);
     },
   },
   binary: {
@@ -565,7 +565,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return `0x${word}`;
     },
     rememberSettings(): void {
-      save("punctuation", Config.punctuation);
+      save("punctuation", getConfig.punctuation);
     },
   },
   zipf: {
@@ -605,7 +605,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
   polyglot: {
     async withWords(_words) {
-      const promises = Config.customPolyglot.map(async (language) =>
+      const promises = getConfig.customPolyglot.map(async (language) =>
         JSONData.getLanguage(language).catch(() => {
           showNoticeNotification(
             `Failed to load language: ${language}. It will be ignored.`,
@@ -621,7 +621,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       if (languages.length === 0) {
         toggleFunbox("polyglot");
         throw new Error(
-          `No valid languages found. Please check your polyglot languages config (${Config.customPolyglot.join(
+          `No valid languages found. Please check your polyglot languages config (${getConfig.customPolyglot.join(
             ", ",
           )}).`,
         );
@@ -634,7 +634,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         });
         toggleFunbox("polyglot", true);
         showNoticeNotification(
-          `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${Config.customPolyglot.join(
+          `Disabled polyglot funbox because only one valid language was found. Check your polyglot languages config (${getConfig.customPolyglot.join(
             ", ",
           )}).`,
           {
@@ -647,7 +647,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       // direction conflict check
       const allRightToLeft = languages.every((lang) => lang.rightToLeft);
       const allLeftToRight = languages.every((lang) => !lang.rightToLeft);
-      const mainLanguage = await JSONData.getLanguage(Config.language);
+      const mainLanguage = await JSONData.getLanguage(getConfig.language);
       const mainLanguageIsRTL = mainLanguage?.rightToLeft ?? false;
       if (
         (mainLanguageIsRTL && allLeftToRight) ||

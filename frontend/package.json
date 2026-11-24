@@ -135,6 +135,9 @@
     "*.{ts,js,tsx}": [
       "oxlint --type-aware --type-check",
       "vitest related --run --passWithNoTests"
+    ],
+    "*.{scss,css}": [
+      "pnpm exec stylelint"
     ]
   },
   "browserslist": [

@@ -6,8 +6,14 @@ import {
 import { formatDate } from "date-fns/format";
 import { createMemo, For, JSXElement, Show } from "solid-js";
 
-import { getFormatting } from "../../../states/core";
+import { getConfig } from "../../../config/store";
 import { showPbTablesModal } from "../../../states/pb-tables-modal";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatRank,
+  formatTypingSpeed,
+} from "../../../utils/format";
 import { formatTopPercentage } from "../../../utils/misc";
 import { DeepReadonly } from "../../../utils/types";
 import { Button } from "../../common/Button";
@@ -66,8 +72,6 @@ function LeaderboardPosition(props: {
   top15?: RankAndCount;
   top60?: RankAndCount;
 }): JSXElement {
-  const format = getFormatting;
-
   return (
     <Show when={props.top15 !== undefined || props.top60 !== undefined}>
       <div class="grid w-full grid-cols-1 items-center gap-4 rounded bg-sub-alt p-4 text-sub md:grid-cols-2 lg:grid-cols-3">
@@ -78,7 +82,7 @@ function LeaderboardPosition(props: {
           <div class="grid grid-cols-2 gap-x-4">
             <div class="justify-self-end">15 seconds</div>
             <div class="row-span-2 text-3xl text-text">
-              {format().rank(props.top15?.rank)}
+              {formatRank(props.top15?.rank)}
             </div>
             <div class="justify-self-end text-xs">
               {formatTopPercentage(props.top15)}
@@ -89,7 +93,7 @@ function LeaderboardPosition(props: {
           <div class="grid grid-cols-2 gap-x-4">
             <div class="justify-self-end">60 seconds</div>
             <div class="row-span-2 text-3xl text-text">
-              {format().rank(props.top60?.rank)}
+              {formatRank(props.top60?.rank)}
             </div>
             <div class="justify-self-end text-xs">
               {formatTopPercentage(props.top60)}
@@ -107,8 +111,6 @@ function PbCard<M extends "time" | "words">(props: {
   pbs: DeepReadonly<PersonalBests[M]>;
   isAccountPage?: true;
 }): JSXElement {
-  const format = getFormatting;
-
   const bests = createMemo(() =>
     props.mode2.map((mode) => {
       const pbArray = props.pbs[mode] ?? [];
@@ -142,12 +144,12 @@ function PbCard<M extends "time" | "words">(props: {
                   {item.mode2} {props.mode === "time" ? "seconds" : "words"}
                 </div>
                 <div class="text-4xl">
-                  {format().typingSpeed(item.pb?.wpm, {
+                  {formatTypingSpeed(item.pb?.wpm, {
                     showDecimalPlaces: false,
                   })}
                 </div>
                 <div class="text-xl opacity-75">
-                  {format().accuracy(item.pb?.acc, {
+                  {formatAccuracy(item.pb?.acc, {
                     showDecimalPlaces: false,
                   })}
                 </div>
@@ -159,12 +161,12 @@ function PbCard<M extends "time" | "words">(props: {
                     {item.mode2} {props.mode === "time" ? "seconds" : "words"}
                   </div>
                   <div>
-                    {format().typingSpeed(item.pb?.wpm)}{" "}
-                    {format().typingSpeedUnit}
+                    {formatTypingSpeed(item.pb?.wpm)}{" "}
+                    {getConfig.typingSpeedUnit}
                   </div>
-                  <div>{format().typingSpeed(item.pb?.raw)} raw</div>
-                  <div>{format().accuracy(item.pb?.acc)} acc</div>
-                  <div>{format().percentage(item.pb?.consistency)} con</div>
+                  <div>{formatTypingSpeed(item.pb?.raw)} raw</div>
+                  <div>{formatAccuracy(item.pb?.acc)} acc</div>
+                  <div>{formatPercentage(item.pb?.consistency)} con</div>
                   <div class="text-sub">
                     {formatDate(item.pb?.timestamp ?? 0, "dd MMM yyyy")}
                   </div>

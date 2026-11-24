@@ -7,7 +7,11 @@ import { getConfig } from "../../config/store";
 import { getUserData } from "../../queries/user";
 import { pbTablesMode } from "../../states/pb-tables-modal";
 import { cn } from "../../utils/cn";
-import { Formatting } from "../../utils/format";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatTypingSpeed,
+} from "../../utils/format";
 import { getLanguageDisplayString } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
@@ -52,12 +56,9 @@ function buildRows(mode: Mode): PBRow[] {
   return rows;
 }
 
-function getColumns(options: {
-  format: Formatting;
-  mode: Mode;
-}): DataTableColumnDef<PBRow>[] {
+function getColumns(options: { mode: Mode }): DataTableColumnDef<PBRow>[] {
   const defineColumn = createColumnHelper<DataTableFeatures, PBRow>().accessor;
-  const { format: f, mode: m } = options;
+  const { mode: m } = options;
 
   const columns = [
     defineColumn("mode2", {
@@ -76,16 +77,16 @@ function getColumns(options: {
     defineColumn("wpm", {
       header: () => (
         <>
-          {f.typingSpeedUnit}
+          {getConfig.typingSpeedUnit}
           <br />
           <span class="text-sub">accuracy</span>
         </>
       ),
       cell: (info) => (
         <>
-          {f.typingSpeed(info.getValue())}
+          {formatTypingSpeed(info.getValue())}
           <br />
-          <span class="text-sub">{f.accuracy(info.row.original.acc)}</span>
+          <span class="text-sub">{formatAccuracy(info.row.original.acc)}</span>
         </>
       ),
       meta: { align: "right" },
@@ -100,10 +101,10 @@ function getColumns(options: {
       ),
       cell: (info) => (
         <>
-          {f.typingSpeed(info.getValue())}
+          {formatTypingSpeed(info.getValue())}
           <br />
           <span class="text-sub">
-            {f.percentage(info.row.original.consistency)}
+            {formatPercentage(info.row.original.consistency)}
           </span>
         </>
       ),
@@ -161,9 +162,7 @@ function getColumns(options: {
 
 export function PbTablesModal(): JSXElement {
   const [rows, setRows] = createSignal<PBRow[]>([]);
-  const columns = createMemo(() =>
-    getColumns({ format: new Formatting(getConfig), mode: pbTablesMode() }),
-  );
+  const columns = createMemo(() => getColumns({ mode: pbTablesMode() }));
 
   return (
     <AnimatedModal

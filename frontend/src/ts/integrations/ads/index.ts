@@ -1,6 +1,6 @@
 /* oxlint-disable no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import {
   initEgAds,
   refreshVisibleEgAds,
@@ -118,7 +118,7 @@ export async function checkCookieblocker(): Promise<void> {
 }
 
 export async function reinstateAds(): Promise<boolean> {
-  if (Config.ads === "off" || noAdScripts) return false;
+  if (getConfig.ads === "off" || noAdScripts) return false;
   if (!initialised) {
     initAds();
     return true;
@@ -135,7 +135,7 @@ export async function reinstateAds(): Promise<boolean> {
 }
 
 export async function renderResultAds(): Promise<void> {
-  if (Config.ads === "off" || noAdScripts) return;
+  if (getConfig.ads === "off" || noAdScripts) return;
   if (!initialised) {
     initAds();
   }
@@ -177,7 +177,7 @@ export function destroyResultAds(): void {
 
 // a slot shown or hidden at a breakpoint: PW only fills the visible slots
 const onSlotBreakpoint = debounce(500, () => {
-  if (Config.ads === "off" || !initialised) return;
+  if (getConfig.ads === "off" || !initialised) return;
   void reinstatePwAds();
 });
 for (const query of adSlotMediaQueries) {

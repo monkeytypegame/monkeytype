@@ -14,6 +14,7 @@ import { loadPresets } from "./queries/presets";
 import { loadTags } from "./queries/tags";
 import { loadUserData } from "./queries/user";
 import { clearSentryUser, setSentryUser } from "./integrations/sentry";
+import { clearUserResponse } from "./ape/user";
 import { getUserId } from "./auth/state";
 import { UserDataLoadError } from "./utils/user-data-load-error";
 
@@ -96,6 +97,8 @@ async function load(uid: string): Promise<void> {
 export async function reloadUserData(): Promise<void> {
   const uid = getUserId();
   if (uid === null) return;
+  // the retry downloads again, not the failed load's cached user
+  clearUserResponse();
   await load(uid);
 }
 

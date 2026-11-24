@@ -1,5 +1,5 @@
 import { getUserData } from "../queries/user";
-import { Config } from "../config/store";
+import { getConfigSnapshot } from "../config/store";
 import { applyConfig } from "../config/lifecycle";
 import { showSuccessNotification } from "../states/notifications";
 import * as TestLogic from "../test/test-logic";
@@ -8,7 +8,7 @@ import { saveFullConfigToLocalStorage } from "../config/persistence";
 import { type PartialConfig } from "@monkeytype/schemas/configs";
 import { getPreset, type Preset } from "../queries/presets";
 
-export async function apply(_id: string): Promise<void> {
+export async function applyPreset(_id: string): Promise<void> {
   const userData = getUserData();
   if (!userData) return;
 
@@ -21,7 +21,7 @@ export async function apply(_id: string): Promise<void> {
   const config = presetToApply.config as PartialConfig;
   if (isPartialPreset(presetToApply)) {
     await applyConfig({
-      ...structuredClone(Config),
+      ...getConfigSnapshot(),
       ...config,
     });
   } else {

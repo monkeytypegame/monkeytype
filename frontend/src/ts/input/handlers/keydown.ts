@@ -1,4 +1,4 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import * as TestLogic from "../../test/test-logic";
 import { getCharFromEvent } from "../../test/layout-emulator";
 import { emulateInsertText } from "./insert-text";
@@ -8,8 +8,7 @@ import {
 } from "../../states/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
-import { canQuickRestart } from "../../utils/quick-restart";
-import * as CustomText from "../../test/custom-text";
+import { isLongTest } from "../../test/engine/test-settings";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
@@ -20,7 +19,6 @@ import { Keycode } from "../../constants/keys";
 import { loadKeymapLayout } from "../../states/test";
 import { wordsHaveTab } from "../../test/engine/state";
 
-import { getCustomTextIndicator } from "../../states/core";
 import {
   getCurrentInput,
   getInputForWord,
@@ -41,18 +39,10 @@ export async function handleEnter(
   _now: number,
 ): Promise<void> {
   if (e.shiftKey) {
-    if (Config.mode === "zen") {
+    if (getConfig.mode === "zen") {
       TestLogic.finish();
       return;
-    } else if (
-      !canQuickRestart(
-        Config.mode,
-        Config.words,
-        Config.time,
-        CustomText.getData(),
-        getCustomTextIndicator()?.isLong ?? false,
-      )
-    ) {
+    } else if (isLongTest()) {
       const delay = Date.now() - getLastBailoutAttempt();
       if (getLastBailoutAttempt() === -1 || delay > 200) {
         setLastBailoutAttempt(Date.now());
@@ -77,8 +67,8 @@ export async function handleEnter(
 
 export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
   if (
-    Config.oppositeShiftMode === "keymap" &&
-    Config.keymapLayout !== "overrideSync"
+    getConfig.oppositeShiftMode === "keymap" &&
+    getConfig.keymapLayout !== "overrideSync"
   ) {
     let keymapLayout = await loadKeymapLayout().catch(() => undefined);
     if (keymapLayout === undefined) {
@@ -139,7 +129,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
   }
 
   // allow arrows in arrows funbox
-  const arrowsActive = Config.funbox.includes("arrows");
+  const arrowsActive = getConfig.funbox.includes("arrows");
   if (
     event.key === "Home" ||
     event.key === "End" ||
@@ -151,7 +141,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     return;
   }
 
-  if (Config.oppositeShiftMode !== "off") {
+  if (getConfig.oppositeShiftMode !== "off") {
     await handleOppositeShift(event);
   }
 
@@ -161,7 +151,7 @@ export async function onKeydown(event: KeyboardEvent): Promise<void> {
     return;
   }
 
-  if (Config.layout !== "default") {
+  if (getConfig.layout !== "default") {
     const emulatedChar = await getCharFromEvent(event);
     if (emulatedChar !== null) {
       await emulateInsertText({ data: emulatedChar, now });

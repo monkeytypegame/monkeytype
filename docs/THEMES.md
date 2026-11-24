@@ -75,6 +75,21 @@ export const themes: Record<ThemeName, Theme>  = {
 }
 ```
 
+#### How your CSS interacts with the core styles
+
+Core styles compile into a CSS cascade layer (`@layer custom-styles` in `frontend/src/styles/index.scss`); theme files are **unlayered**. Unlayered styles beat layered ones regardless of specificity, so any rule in your theme file overrides the matching core rule — including the core's blind-mode rules.
+
+In blind mode an error word must look exactly like a correctly typed one, and the core can't enforce that against an unlayered theme. If your theme styles error display (borders, colors, or animations on error words or letters), guard the rules against blind mode:
+
+```css
+[data-ui-element="words"]:not([data-ui-blind])
+  [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
+  border-bottom: dotted 2px var(--text-color);
+}
+```
+
+Useful hooks: `#words` carries `data-ui-blind`, `data-ui-flipped`, and `data-ui-colorful` while the matching modes are on, and words and letters carry `data-ui-state` (`untyped`, `typed`, `typedIncorrectly` for words; `untyped`, `correct`, `incorrect`, `extra`, `dead`, `deadCorrect` for letters).
+
 
 ### Committing Themes
 

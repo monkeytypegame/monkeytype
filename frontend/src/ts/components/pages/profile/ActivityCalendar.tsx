@@ -1,84 +1,45 @@
 import { TestActivity } from "@monkeytype/schemas/users";
-import * as Dates from "date-fns";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  JSXElement,
-  Show,
-} from "solid-js";
+import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
-import Ape from "../../../ape";
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
-import { isAuthenticated } from "../../../auth/state";
 import {
-  clear as clearTestActivity,
-  init as initTestActivity,
-  update,
+  clearActivityCalendar,
+  initActivityCalendar,
+  updateActivityCalendar,
 } from "../../../elements/test-activity";
-import {
-  ModifiableTestActivityCalendar,
-  TestActivityCalendar,
-} from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
 import { getUserData } from "../../../queries/user";
-import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
-import { showErrorNotification } from "../../../states/notifications";
+import {
+  getCurrentYear,
+  getLast12MonthsCalendar,
+  getTestActivity,
+  getYearCalendar,
+  loadAllYearsTestActivity,
+  TestActivityCalendar,
+  toTestActivityDays,
+} from "../../../states/test-activity";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 import { DeepReadonly } from "../../../utils/types";
 import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
-// per-year calendars for past years, downloaded once
-let testActivityByYear: Record<string, TestActivityCalendar> | undefined;
-
 async function getTestActivityCalendar(
   yearString: string,
 ): Promise<TestActivityCalendar | undefined> {
-  const userData = getUserData();
-  if (!isAuthenticated() || userData === undefined) return undefined;
-
-  const currentYear = new Date().getFullYear().toString();
-  if (yearString === "current" || yearString === currentYear) {
-    if (userData.testActivity === undefined) return undefined;
-    const calendar = new ModifiableTestActivityCalendar(
-      [...userData.testActivity.testsByDays],
-      new Date(userData.testActivity.lastDay),
-      firstDayOfTheWeek,
-    );
-    return yearString === "current" ? calendar : calendar.getFullYearCalendar();
+  const days = getTestActivity();
+  if (days === undefined) return undefined;
+  if (yearString === "current") {
+    return getLast12MonthsCalendar(days, firstDayOfTheWeek);
   }
 
-  if (testActivityByYear === undefined) {
-    showLoaderBar();
-    const response = await Ape.users.getTestActivity();
-    if (response.status !== 200) {
-      showErrorNotification("Error getting test activities", { response });
-      hideLoaderBar();
-      return undefined;
-    }
-
-    testActivityByYear = {};
-    for (const year in response.body.data) {
-      if (year === currentYear) continue;
-      const testsByDays = response.body.data[year] ?? [];
-      const lastDay = Dates.addDays(
-        new Date(parseInt(year), 0, 1),
-        testsByDays.length,
-      );
-
-      testActivityByYear[year] = new TestActivityCalendar(
-        testsByDays,
-        lastDay,
-        firstDayOfTheWeek,
-        true,
-      );
-    }
-    hideLoaderBar();
+  const year = parseInt(yearString);
+  if (year === getCurrentYear()) {
+    return getYearCalendar(days, year, firstDayOfTheWeek);
   }
-
-  return testActivityByYear[yearString];
+  if (!(await loadAllYearsTestActivity())) return undefined;
+  // past years were merged into the activity
+  return getYearCalendar(getTestActivity() ?? [], year, firstDayOfTheWeek);
 }
 
 export function ActivityCalendar(props: {
@@ -88,32 +49,23 @@ export function ActivityCalendar(props: {
   // Refs are assigned by SolidJS via the ref attribute
   const [elementRef, element] = useRefWithUtils<HTMLElement>();
 
-  let calendar: TestActivityCalendar | undefined;
-
-  // a memo: the effect re-runs when the activity changes, not on any user write
-  const accountActivity = createMemo(() => getUserData()?.testActivity);
-
+  // Stepping stone: replaced by a Solid activity calendar component in U2
   createEffect(() =>
     (() => {
-      const testActivity = props.isAccountPage
-        ? accountActivity()
-        : props.testActivity;
-      if (testActivity === undefined || element() === undefined) {
-        calendar = undefined;
-        clearTestActivity(element()?.native);
+      const days = props.isAccountPage
+        ? getTestActivity()
+        : props.testActivity !== undefined
+          ? toTestActivityDays(props.testActivity)
+          : undefined;
+      if (days === undefined || element() === undefined) {
+        clearActivityCalendar(element()?.native);
         return;
       }
 
-      calendar = new TestActivityCalendar(
-        [...testActivity.testsByDays],
-        new Date(testActivity.lastDay),
-        firstDayOfTheWeek,
-      );
-
-      initTestActivity(
+      initActivityCalendar(
         // oxlint-disable-next-line typescript/no-non-null-assertion
         element()!.native,
-        calendar,
+        getLast12MonthsCalendar(days, firstDayOfTheWeek),
       );
 
       if (!props.isAccountPage) {
@@ -129,7 +81,7 @@ export function ActivityCalendar(props: {
       getUserData()?.addedAt !== undefined
         ? new Date(getUserData()?.addedAt ?? 0).getFullYear()
         : 2020;
-    const currentYear = new Date().getFullYear();
+    const currentYear = getCurrentYear();
     const years: SlimSelectProps["options"] = [
       {
         text: "last 12 months",
@@ -170,7 +122,7 @@ export function ActivityCalendar(props: {
                       newVal[0]?.value as string,
                     );
                     // oxlint-disable-next-line typescript/no-non-null-assertion
-                    update(element()!.native, activity);
+                    updateActivityCalendar(element()!.native, activity);
                   },
                 }}
               />

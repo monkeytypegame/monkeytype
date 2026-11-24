@@ -1,6 +1,7 @@
 import { checkCompatibility } from "@monkeytype/funbox";
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { KnownFontName } from "@monkeytype/schemas/fonts";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { roundTo1 } from "@monkeytype/util/numbers";
 import { typedKeys } from "@monkeytype/util/objects";
 import { JSXElement } from "solid-js";
@@ -9,21 +10,22 @@ import { isAuthenticated } from "../auth/state";
 import { getDefaultConfig } from "../constants/default-config";
 import { Fonts } from "../constants/fonts";
 import { getCustomThemes } from "../queries/custom-themes";
+import { setPrefersArabicLazyMode } from "../states/lazy-mode";
 import { showNoticeNotification } from "../states/notifications";
-import { setRandomTheme } from "../states/theme";
+import { setRandomTheme } from "../theme/state";
 import { FaObject } from "../types/font-awesome";
 import { Validation } from "../types/validation";
-import { areUnsortedArraysEqual } from "../utils/arrays";
 import { isDevEnvironment } from "../utils/env";
 import { reloadAfter } from "../utils/misc";
 import { capitalizeFirstLetter } from "../utils/strings";
+import { DeepReadonly } from "../utils/types";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getOptions } from "../utils/zod";
 import {
   canSetFunboxWithConfig,
   getFunboxUnsupportedReason,
 } from "./funbox-validation";
-import { Config } from "./store";
+import { getConfig } from "./store";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -138,7 +140,9 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    * it to the configs where the setting matters (eg. only while a funbox is
    * active). Either way the key is a test setting.
    */
-  changeRequiresRestart: boolean | ((config: ConfigSchemas.Config) => boolean);
+  changeRequiresRestart:
+    | boolean
+    | ((config: DeepReadonly<ConfigSchemas.Config>) => boolean);
   /**
    * Optional function that checks if the config value is blocked from being set.
    * Returns true if setting the config value should be blocked.
@@ -146,7 +150,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   isBlocked?: (options: {
     value: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => boolean;
   /**
    * Optional function to override the value before setting it.
@@ -156,8 +160,8 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   overrideValue?: (options: {
     value: ConfigSchemas.Config[K];
-    currentValue: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentValue: DeepReadonly<ConfigSchemas.Config[K]>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => ConfigSchemas.Config[K];
   /**
    * Optional function to override other config values before this one is set.
@@ -166,7 +170,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   overrideConfig?: (options: {
     value: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => Partial<ConfigSchemas.Config>;
   /**
    * Optional function that is called after the config value is set.
@@ -175,7 +179,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   afterSet?: (options: {
     nosave: boolean;
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => void;
   /**
    * Commandline command generated for this config key. `null` when the key has no generated command (set elsewhere, or a hand-built list).
@@ -210,7 +214,7 @@ const caretOptionsMetadata = {
 // picking a theme by hand turns auto switch off. whole-config applies set
 // autoSwitchTheme last, so it is still the default (off) when this runs there
 function disableAutoSwitchTheme(
-  currentConfig: Readonly<ConfigSchemas.Config>,
+  currentConfig: DeepReadonly<ConfigSchemas.Config>,
 ): Partial<ConfigSchemas.Config> {
   if (!currentConfig.autoSwitchTheme) return {};
   showNoticeNotification("Auto switch theme disabled");
@@ -539,7 +543,7 @@ const configMetadataEntries = {
         secondKey: "minWpmCustomSpeed",
         inputValueConvert: (value) => {
           let newVal = Number(value);
-          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(newVal);
           return newVal;
         },
       },
@@ -689,7 +693,7 @@ const configMetadataEntries = {
     commandline: {
       input: {
         defaultValue: () => {
-          return Config.customLayoutfluid.join(" ");
+          return getConfig.customLayoutfluid.join(" ");
         },
         inputValueConvert: (val) =>
           val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
@@ -709,7 +713,7 @@ const configMetadataEntries = {
     commandline: {
       input: {
         defaultValue: () => {
-          return Config.customPolyglot.join(" ");
+          return getConfig.customPolyglot.join(" ");
         },
         inputValueConvert: (val) =>
           val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
@@ -902,6 +906,12 @@ const configMetadataEntries = {
     group: "input",
     description:
       "Replaces accents / diacritics / special characters with their normal letter equivalents.",
+    // remember the user's choice for arabic (writes that save are the user's)
+    afterSet: ({ nosave, currentConfig }) => {
+      if (!nosave && currentConfig.language.startsWith("arabic")) {
+        setPrefersArabicLazyMode(currentConfig.lazyMode);
+      }
+    },
     commandline: {
       subgroup: {
         options: "fromSchema",
@@ -912,7 +922,7 @@ const configMetadataEntries = {
     key: "layout",
     fa: { icon: "fa-keyboard" },
     displayString: "layout",
-    changeRequiresRestart: true,
+    changeRequiresRestart: false,
     group: "input",
     description:
       "With this setting you can emulate other layouts. This setting is best kept off, as it can break things like dead keys and alt layers.",
@@ -1116,7 +1126,7 @@ const configMetadataEntries = {
         configValue: "custom",
         inputValueConvert: (value) => {
           let newVal = Number(value);
-          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(newVal);
           return newVal;
         },
       },
@@ -1974,7 +1984,7 @@ export const configMetadata: ConfigMetadataObject = configMetadataEntries;
 /** Whether changing `key` restarts the test, given `config`. */
 export function changeRequiresRestart(
   key: keyof ConfigSchemas.Config,
-  config: ConfigSchemas.Config,
+  config: DeepReadonly<ConfigSchemas.Config>,
 ): boolean {
   const requires = configMetadata[key].changeRequiresRestart;
   return typeof requires === "function" ? requires(config) : requires;

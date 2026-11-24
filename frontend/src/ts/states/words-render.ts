@@ -28,6 +28,11 @@ export type RenderedWord = {
   /** undefined in zen: its letters come from the input and can mix directions */
   direction: Direction | undefined;
   input: string;
+  /**
+   * length of the input the test accepted. Shorter than `input` while stop on
+   * letter shows the blocked letter: the caret and tape stay before it
+   */
+  acceptedLength: number;
   /** in-progress IME composition, active word only */
   composition: string;
   /** typed past (committed) */
@@ -79,7 +84,10 @@ export function invalidateTypoHintsLayout(): void {
 type Buffer = {
   truncateTo: number | undefined;
   appended: WordToRender[];
-  inputs: Map<number, { input: string; composition: string }>;
+  inputs: Map<
+    number,
+    { input: string; composition: string; acceptedLength: number }
+  >;
   activeWordIndex: number | undefined;
   /** last write wins */
   wordChange: "forward" | "back" | undefined;
@@ -129,6 +137,7 @@ function createRenderedWord(index: number, word: WordToRender): RenderedWord {
     text,
     direction: word.direction,
     input: "",
+    acceptedLength: 0,
     composition: "",
     isTyped: false,
     // zen: from the input
@@ -154,18 +163,19 @@ function applyBuffer(b: Buffer): void {
       }),
     );
     // 2. letters
-    for (const [index, { input, composition }] of b.inputs) {
+    for (const [index, { input, composition, acceptedLength }] of b.inputs) {
       if (store.words[index] === undefined) continue;
       if (store.rendersLettersFromInput) {
         const inputEndsLine = input.includes("\n");
         endsLine ||= inputEndsLine;
         setStore("words", index, {
           input,
+          acceptedLength,
           composition,
           endsLine: inputEndsLine,
         });
       } else {
-        setStore("words", index, { input, composition });
+        setStore("words", index, { input, acceptedLength, composition });
       }
     }
     if (endsLine && !store.keepsLineBreaks) setStore("keepsLineBreaks", true);
@@ -200,8 +210,12 @@ export function setWordInput(
   index: number,
   input: string,
   composition = "",
+  /** stop on letter: `input` includes the blocked letter, this excludes it */
+  acceptedLength = input.length,
 ): void {
-  buffer.write((b) => b.inputs.set(index, { input, composition }));
+  buffer.write((b) =>
+    b.inputs.set(index, { input, composition, acceptedLength }),
+  );
 }
 
 export function setActiveWord(

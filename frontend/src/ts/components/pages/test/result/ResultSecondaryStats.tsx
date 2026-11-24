@@ -12,13 +12,13 @@ import {
 
 import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
-import QuotesController, {
-  Quote,
-} from "../../../../controllers/quotes-controller";
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getTags } from "../../../../queries/tags";
-import { setQuoteFavorite, getUserData } from "../../../../queries/user";
-import { getFormatting } from "../../../../states/core";
+import {
+  isQuoteFavorite,
+  setQuoteFavorite,
+  getUserData,
+} from "../../../../queries/user";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { addNotificationWithLevel } from "../../../../states/notifications";
@@ -31,8 +31,14 @@ import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
 import { getTimeTodayString } from "../../../../test/today-tracker";
+import { Quote } from "../../../../types/quotes";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
+import {
+  formatPercentage,
+  formatRank,
+  formatTypingSpeed,
+} from "../../../../utils/format";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
@@ -45,12 +51,11 @@ type Props = {
 };
 
 export function ResultSecondaryStats(props: Props): JSXElement {
-  const format = () => getFormatting();
   const decimals = () => getConfig.alwaysShowDecimalPlaces;
 
   const consistencyBalloon = (): string =>
     decimals()
-      ? format().percentage(props.result.keyConsistency, {
+      ? formatPercentage(props.result.keyConsistency, {
           showDecimalPlaces: true,
           suffix: " key",
         })
@@ -111,7 +116,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={speedBalloon(props.result.rawWpm)}
         >
-          {format().typingSpeed(props.result.rawWpm)}
+          {formatTypingSpeed(props.result.rawWpm)}
         </Balloon>
       </div>
       <div data-ui-element="resultStat">
@@ -133,7 +138,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={consistencyBalloon()}
         >
-          {format().percentage(props.result.consistency)}
+          {formatPercentage(props.result.consistency)}
         </Balloon>
       </div>
       <div data-ui-element="resultStat">
@@ -176,7 +181,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
               mobileBalloonClass,
             )}
           >
-            {format().rank(resultState.dailyLeaderboardRank, {
+            {formatRank(resultState.dailyLeaderboardRank, {
               fallback: "",
             })}
           </Balloon>
@@ -285,7 +290,7 @@ function QuoteButtons(props: { quote: Quote }): JSXElement {
   const [trackFavorites, refreshFavorites] = createTrigger();
   const isFavorite = (): boolean => {
     trackFavorites();
-    return QuotesController.isQuoteFavorite(props.quote);
+    return isQuoteFavorite(props.quote);
   };
   // fills quoteStats() in states/quote-rate, which the rate modal also updates
   // keyed on the details too, since restart clears stats and a repeated quote is the same object.

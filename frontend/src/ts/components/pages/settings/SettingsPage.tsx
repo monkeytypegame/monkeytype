@@ -1,19 +1,15 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
+import { playTimeWarning, previewClick, previewError } from "../../../audio";
 import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { getConfig } from "../../../config/store";
-import {
-  playTimeWarning,
-  previewClick,
-  previewError,
-} from "../../../controllers/sound-controller";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { isCustomBackgroundLoaded } from "../../../states/custom-background";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { isCustomBackgroundLoaded } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
