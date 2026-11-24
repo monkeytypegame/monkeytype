@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import * as CustomText from "../../../../src/ts/test/custom-text";
 import {
   cleanupTestPage,
   renderTestPage,
@@ -413,6 +414,35 @@ describe("TestPage", () => {
 
       expect(page.testSettings().mode).toBe("time");
       expect(page.phase()).toBe("ready");
+    });
+
+    it("generates the custom text in order when init's lazy mode fix supersedes the restart", async () => {
+      // english has no lazy mode, custom text does: init turns it back on,
+      // which requests a restart while init still runs
+      const page = await renderTestPage({
+        config: { mode: "time", language: "english", lazyMode: true },
+      });
+      const words = ["a", "b", "c", "d", "e", "f"];
+
+      // as the custom text modal from another mode
+      CustomText.setMode("repeat");
+      CustomText.setText(words);
+      CustomText.setLimitMode("word");
+      CustomText.setLimitValue(words.length);
+      page.setConfig("mode", "custom");
+      page.restart();
+      await page.advance(1000);
+
+      expect(page.phase()).toBe("ready");
+      expect(
+        words.map((_, i) =>
+          page
+            .word(i)
+            .letters()
+            .map((l) => l.char)
+            .join(""),
+        ),
+      ).toEqual(words);
     });
 
     it("keeps the result on screen until it has faded out", async () => {

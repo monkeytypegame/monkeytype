@@ -26,7 +26,10 @@ import {
   isFunboxActiveWithFunction,
   isFunboxActiveWithProperty,
 } from "./funbox/list";
-import { WordGenError } from "../utils/word-gen-error";
+import {
+  GenerationSupersededError,
+  WordGenError,
+} from "../utils/word-gen-error";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
@@ -516,6 +519,7 @@ export function getLimit(): number {
 
 async function getQuoteWordList(
   language: LanguageObject,
+  isCurrent: () => boolean,
   wordOrder?: FunboxWordOrder,
 ): Promise<string[]> {
   if (isRepeated()) {
@@ -536,6 +540,7 @@ async function getQuoteWordList(
   showLoaderBar();
   const languageQuotes = await getLanguageQuotes(language.name);
   hideLoaderBar();
+  assertCurrent(isCurrent);
 
   if (languageQuotes.quotes.length === 0) {
     setConfig("mode", "words");
@@ -654,8 +659,21 @@ export function getTestWordFacts(wordLists: string[][]): TestWordFacts {
 
 let previousRandomQuote: QuoteWithTextSplit | null = null;
 
+/**
+ * A superseded generation must stop before it touches the generator's state
+ * again: the newer one shares it (the wordset's order, the sections).
+ */
+function assertCurrent(isCurrent: () => boolean): void {
+  if (!isCurrent()) throw new GenerationSupersededError();
+}
+
+/**
+ * `isCurrent`: false once a newer generation took over. Throws
+ * GenerationSupersededError then, at the next step.
+ */
 export async function generateWords(
   language: LanguageObject,
+  isCurrent: () => boolean,
 ): Promise<GenerateWordsReturn> {
   if (!isRepeated()) {
     previousGetNextWordReturns = [];
@@ -686,7 +704,7 @@ export async function generateWords(
   if (getTestSettings().mode === "custom") {
     wordList = getTestSettings().customText.text;
   } else if (getTestSettings().mode === "quote") {
-    wordList = await getQuoteWordList(language, wordOrder);
+    wordList = await getQuoteWordList(language, isCurrent, wordOrder);
   } else if (getTestSettings().mode === "zen") {
     wordList = [];
   }
@@ -707,6 +725,7 @@ export async function generateWords(
   const funbox = findSingleActiveFunboxWithFunction("withWords");
   if (funbox) {
     const result = await funbox.functions.withWords(wordList);
+    assertCurrent(isCurrent);
     // PolyglotWordset if polyglot otherwise Wordset
     if (result instanceof PolyglotWordset) {
       const polyglotResult = result;
@@ -720,6 +739,7 @@ export async function generateWords(
     }
   } else {
     currentWordset = await withWords(wordList);
+    assertCurrent(isCurrent);
   }
 
   console.debug("Wordset", currentWordset);
@@ -736,6 +756,7 @@ export async function generateWords(
       limit,
       Arrays.nthElementFromArray(rawWordList, -1) ?? "",
       Arrays.nthElementFromArray(rawWordList, -2) ?? "",
+      isCurrent,
     );
     rawWordList.push(nextWord.wordRaw);
     ret.words.push(nextWord.word);
@@ -755,6 +776,7 @@ export async function generateWords(
     }
     i++;
   }
+  assertCurrent(isCurrent);
 
   const quote = getCurrentQuote();
 
@@ -792,7 +814,9 @@ export async function getNextWord(
   wordsBound: number,
   previousWord: string | undefined,
   previousWord2: string | undefined,
+  isCurrent: () => boolean = () => true,
 ): Promise<GetNextWordReturn> {
+  assertCurrent(isCurrent);
   console.debug("Getting next word", {
     isRepeated: isRepeated(),
     currentWordset,
@@ -865,6 +889,7 @@ export async function getNextWord(
 
   if (currentSection.length === 0) {
     const funboxSection = await getFunboxSection();
+    assertCurrent(isCurrent);
 
     if (getTestSettings().mode === "quote") {
       randomWord = currentWordset.nextWord();
@@ -999,9 +1024,11 @@ export async function getNextWord(
       wordIndex,
       wordsBound,
     );
+    assertCurrent(isCurrent);
   }
 
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
+  assertCurrent(isCurrent);
 
   if (getTestSettings().numbers) {
     if (random() < 0.1) {

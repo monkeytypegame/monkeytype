@@ -99,7 +99,10 @@ import {
 } from "./funbox/list";
 import { getFunbox } from "@monkeytype/funbox";
 import type { NormalizedLocalResult } from "../collections/results";
-import { WordGenError } from "../utils/word-gen-error";
+import {
+  GenerationSupersededError,
+  WordGenError,
+} from "../utils/word-gen-error";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { captureSentryException } from "../integrations/sentry";
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
@@ -530,6 +533,10 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
   setIsLanguageRightToLeft(language.rightToLeft ?? false);
   setIsDirectionReversed(isFunboxActiveWithProperty("reverseDirection"));
 
+  // the lazy mode fixes above are settings changes: they supersede this
+  // generation, and the restart they requested generates instead
+  if (!Engine.isCurrentRestart(token)) return "superseded";
+
   // the words are generated from the settings as they are now: a settings
   // change from here on supersedes this generation
   takeTestSettings(CustomText.getData());
@@ -545,7 +552,9 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
   let generatedWords: string[] = [];
   let generatedSectionIndexes: number[] = [];
   try {
-    const gen = await WordsGenerator.generateWords(language);
+    const gen = await WordsGenerator.generateWords(language, () =>
+      Engine.isCurrentRestart(token),
+    );
     if (!Engine.isCurrentRestart(token)) return "superseded";
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
@@ -556,6 +565,7 @@ async function init(token: number): Promise<"ok" | "failed" | "superseded"> {
     ({ allJoiningScript } = gen);
   } catch (e) {
     hideLoaderBar();
+    if (e instanceof GenerationSupersededError) return "superseded";
     if (e instanceof WordGenError || e instanceof Error) {
       lastInitError = e;
     }
