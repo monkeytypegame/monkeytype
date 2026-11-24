@@ -24,7 +24,7 @@ import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
 import { Section } from "./utils";
 
 export function ApeKeysTab() {

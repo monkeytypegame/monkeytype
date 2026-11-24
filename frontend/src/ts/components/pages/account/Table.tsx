@@ -20,7 +20,7 @@ import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {

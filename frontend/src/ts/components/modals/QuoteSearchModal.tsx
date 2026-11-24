@@ -47,8 +47,8 @@ import {
 import { highlightMatches } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-import { InputField } from "../ui/form/InputField";
-import SlimSelect from "../ui/SlimSelect";
+import { InputField } from "../common/form/InputField";
+import SlimSelect from "../common/SlimSelect";
 import { QuoteApproveModal } from "./QuoteApproveModal";
 import { QuoteSubmitModal } from "./QuoteSubmitModal";
 

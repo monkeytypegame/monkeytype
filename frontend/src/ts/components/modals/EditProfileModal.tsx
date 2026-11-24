@@ -17,12 +17,12 @@ import {
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Checkbox } from "../common/form/Checkbox";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
+import { fromSchema } from "../common/form/utils";
 import { UserBadge } from "../common/UserBadge";
-import { Checkbox } from "../ui/form/Checkbox";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import { fromSchema } from "../ui/form/utils";
 
 export function EditProfile() {
   const userData = getUserData();

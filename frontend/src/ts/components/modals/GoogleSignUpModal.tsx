@@ -22,10 +22,10 @@ import {
 } from "../../states/notifications";
 import { remoteValidationForm } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Captcha } from "../ui/form/Captcha";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
+import { Captcha } from "../common/form/Captcha";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { allFieldsMandatory, fromSchema } from "../common/form/utils";
 
 const modalId: ModalId = "GoogleSignup";
 

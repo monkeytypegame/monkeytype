@@ -2,7 +2,7 @@ import { AnyFieldApi } from "@tanstack/solid-form";
 import { Accessor, JSXElement } from "solid-js";
 
 import { cn } from "../../../utils/cn";
-import { Fa } from "../../common/Fa";
+import { Fa } from "../Fa";
 
 export function Checkbox(props: {
   field: Accessor<AnyFieldApi>;

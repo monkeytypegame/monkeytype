@@ -6,8 +6,8 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function MaxLineWidth(): JSXElement {

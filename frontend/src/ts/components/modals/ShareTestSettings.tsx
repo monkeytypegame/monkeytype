@@ -12,7 +12,7 @@ import { capitalizeFirstLetter } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
-import { Checkbox } from "../ui/form/Checkbox";
+import { Checkbox } from "../common/form/Checkbox";
 
 export function ShareTestSettings(): JSXElement {
   const form = createForm(() => ({

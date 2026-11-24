@@ -14,8 +14,8 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function PaceCaret(): JSXElement {

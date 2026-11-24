@@ -6,7 +6,7 @@ import {
   FormStateSlice,
   SubmitButton,
   SubscribableForm,
-} from "../../../../src/ts/components/ui/form/SubmitButton";
+} from "../../../../src/ts/components/common/form/SubmitButton";
 
 type FormState = FormStateSlice;
 

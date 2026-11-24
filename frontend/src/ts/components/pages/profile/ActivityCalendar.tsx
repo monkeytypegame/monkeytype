@@ -20,7 +20,7 @@ import {
 } from "../../../states/test-activity";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
 import { DeepReadonly } from "../../../utils/types";
-import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
+import SlimSelect, { SlimSelectProps } from "../../common/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 

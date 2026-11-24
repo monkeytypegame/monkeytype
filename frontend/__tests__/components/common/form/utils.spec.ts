@@ -7,7 +7,7 @@ import {
   allFieldsMandatory,
   fieldMandatory,
   type ValidationResult,
-} from "../../../../src/ts/components/ui/form/utils";
+} from "../../../../src/ts/components/common/form/utils";
 import { AnyFieldApi } from "@tanstack/solid-form";
 
 describe("fromSchema", () => {

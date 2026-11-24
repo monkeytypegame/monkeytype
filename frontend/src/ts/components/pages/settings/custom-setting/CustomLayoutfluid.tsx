@@ -6,7 +6,7 @@ import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
-import SlimSelect from "../../../ui/SlimSelect";
+import SlimSelect from "../../../common/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
 // built once - a new array on every read would make SlimSelect rebuild its options

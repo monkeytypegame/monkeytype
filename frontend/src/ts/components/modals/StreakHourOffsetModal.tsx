@@ -11,9 +11,9 @@ import {
 } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { allFieldsMandatory, fromSchema } from "../common/form/utils";
 
 export function StreakHourOffsetModal() {
   const form = createForm(() => ({

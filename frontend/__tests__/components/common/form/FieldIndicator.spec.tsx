@@ -2,7 +2,7 @@ import { render } from "@solidjs/testing-library";
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect } from "vitest";
 
-import { FieldIndicator } from "../../../../src/ts/components/ui/form/FieldIndicator";
+import { FieldIndicator } from "../../../../src/ts/components/common/form/FieldIndicator";
 
 function makeField(overrides: {
   isValidating?: boolean;

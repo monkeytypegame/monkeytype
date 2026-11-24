@@ -10,7 +10,7 @@ import {
   LanguageGroups,
 } from "../../../../constants/languages";
 import { getLanguageDisplayString } from "../../../../utils/strings";
-import SlimSelect from "../../../ui/SlimSelect";
+import SlimSelect from "../../../common/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
 // built once - a new array on every read would make SlimSelect rebuild its options

@@ -31,7 +31,7 @@ import { createEffectOn } from "../../../hooks/effects";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { cn } from "../../../utils/cn";
 import { qs } from "../../../utils/dom";
-import { Fa } from "../../common/Fa";
+import { Fa } from "../Fa";
 import {
   Table,
   TableBody,

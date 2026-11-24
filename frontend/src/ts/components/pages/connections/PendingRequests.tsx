@@ -13,12 +13,12 @@ import { formatAge } from "../../../utils/date-and-time";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
-import { User } from "../../common/User";
 import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
+import { User } from "../../common/User";
 
 export function PendingRequests() {
   const columns = createMemo(() => getColumns());

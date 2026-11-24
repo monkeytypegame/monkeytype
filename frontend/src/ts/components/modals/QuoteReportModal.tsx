@@ -15,13 +15,13 @@ import {
 import { quoteId } from "../../states/quote-report";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
+import { Captcha } from "../common/form/Captcha";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
+import { allFieldsMandatory, fieldMandatory } from "../common/form/utils";
 import { Separator } from "../common/Separator";
-import { Captcha } from "../ui/form/Captcha";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import { allFieldsMandatory, fieldMandatory } from "../ui/form/utils";
-import SlimSelect from "../ui/SlimSelect";
+import SlimSelect from "../common/SlimSelect";
 
 export function QuoteReportModal(): JSXElement {
   const [quoteText, setQuoteText] = createSignal("");

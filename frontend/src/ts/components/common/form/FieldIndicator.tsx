@@ -2,9 +2,9 @@ import type { AnyFieldApi } from "@tanstack/solid-form";
 
 import { Match, Switch } from "solid-js";
 
-import { Balloon } from "../../common/Balloon";
-import { Fa } from "../../common/Fa";
-import { LoadingCircle } from "../../common/LoadingCircle";
+import { Balloon } from "../Balloon";
+import { Fa } from "../Fa";
+import { LoadingCircle } from "../LoadingCircle";
 
 export type FieldIndicatorProps = {
   field: AnyFieldApi;

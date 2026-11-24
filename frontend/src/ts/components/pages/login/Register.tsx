@@ -15,16 +15,16 @@ import {
   showNoticeNotification,
 } from "../../../states/notifications";
 import { remoteValidationForm } from "../../../utils/remote-validation";
-import { H3 } from "../../common/Headers";
-import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
 import {
   allFieldsMandatory,
   fromSchema,
   handleResult,
   ValidationResult,
-} from "../../ui/form/utils";
+} from "../../common/form/utils";
+import { H3 } from "../../common/Headers";
+import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;

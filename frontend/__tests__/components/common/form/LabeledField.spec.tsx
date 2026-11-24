@@ -1,7 +1,7 @@
 import { render, screen } from "@solidjs/testing-library";
 import { describe, it, expect } from "vitest";
 
-import { LabeledField } from "../../../../src/ts/components/ui/form/LabeledField";
+import { LabeledField } from "../../../../src/ts/components/common/form/LabeledField";
 
 describe("LabeledField", () => {
   it("renders label text correctly", () => {
