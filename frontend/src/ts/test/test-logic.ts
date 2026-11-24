@@ -37,7 +37,7 @@ import * as Arrays from "../utils/arrays";
 import { getGlarsesMode } from "../states/glarses-mode";
 import { getSarcasticResultMessage } from "../states/sarcastic-result-message";
 import { getCustomTextIndicator } from "../states/core";
-import { isAuthenticated } from "../auth/state";
+import { getUserId, isAuthenticated } from "../auth/state";
 import {
   setIsDirectionReversed,
   setIsLanguageRightToLeft,
@@ -87,7 +87,6 @@ import { isTestPageMounted } from "./test-page-bridge";
 import { canStartTest } from "../states/router";
 import objectHash from "object-hash";
 import { logAnalyticsEvent } from "../integrations/analytics";
-import { getAuthenticatedUser } from "../firebase";
 import { Mode } from "@monkeytype/schemas/shared";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import {
@@ -840,8 +839,8 @@ function onResult({
     completedEvent.testDuration - completedEvent.afkDuration,
   );
 
-  const user = getAuthenticatedUser();
-  if (user !== null) {
+  const uid = getUserId();
+  if (uid !== null) {
     // logged in
     if (dontSave) {
       void logAnalyticsEvent("testCompletedInvalid");
@@ -853,7 +852,7 @@ function onResult({
         if (challenge !== null) completedEvent.challenge = challenge;
       }
 
-      completedEvent.uid = user.uid;
+      completedEvent.uid = uid;
 
       Engine.save(async (isRetrying) => {
         const outcome = await saveResult(completedEvent, isRetrying);

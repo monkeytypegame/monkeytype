@@ -9,7 +9,7 @@ import {
 import type { QueryClient } from "@tanstack/solid-query";
 
 import { queryClient } from "../../src/ts/queries/index";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 
 /**
  * The app drops every user-scoped query/collection when the auth state
@@ -33,7 +33,7 @@ describe("user queries on auth state change", () => {
   let reset: ResetSpy;
 
   beforeEach(async () => {
-    setUserId(null);
+    setTestUserId(null);
     await flush();
     reset = vi
       .spyOn(queryClient, "resetQueries")
@@ -42,22 +42,22 @@ describe("user queries on auth state change", () => {
   });
 
   it("resets the user queries on sign out", async () => {
-    setUserId("uid");
+    setTestUserId("uid");
     await flush();
     reset.mockClear();
 
-    setUserId(null);
+    setTestUserId(null);
     await flush();
 
     expect(reset).toHaveBeenCalledWith({ queryKey: ["user"] });
   });
 
   it("does not reset the user queries on sign in", async () => {
-    setUserId(null);
+    setTestUserId(null);
     await flush();
     reset.mockClear();
 
-    setUserId("uid");
+    setTestUserId("uid");
     await flush();
 
     expect(reset).not.toHaveBeenCalled();

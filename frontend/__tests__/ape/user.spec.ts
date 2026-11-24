@@ -6,11 +6,11 @@ vi.mock("../../src/ts/ape", () => ({
 
 import Ape from "../../src/ts/ape";
 import { clearUserResponse, fetchUserFromApi } from "../../src/ts/ape/user";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 
 describe("fetchUserFromApi", () => {
   beforeEach(() => {
-    setUserId("uid");
+    setTestUserId("uid");
     clearUserResponse();
     vi.mocked(Ape.users.get).mockReset();
     vi.mocked(Ape.users.get).mockResolvedValue({

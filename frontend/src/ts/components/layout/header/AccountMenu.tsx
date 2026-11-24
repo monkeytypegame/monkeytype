@@ -1,7 +1,7 @@
 import { JSXElement, Show } from "solid-js";
 
 import { get as getServerConfiguration } from "../../../ape/server-configuration";
-import { signOut } from "../../../auth";
+import { signOut } from "../../../auth/actions";
 import { getUserData } from "../../../queries/user";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";

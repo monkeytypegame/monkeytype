@@ -42,8 +42,9 @@
  *   result build wait for `releaseResult()`, as a slow one.
  *   Their states are semantic, not css classes, so specs survive markup
  *   changes.
- * - Mocked (also in setup-test-page.ts): firebase (signed out, so a finished test isn't saved), the theme
- *   controller (indexedDB), the chart and confetti (canvas). Stubbed in jsdom: matchMedia
+ * - Mocked (also in setup-test-page.ts): firebase (auth is never initialised,
+ *   so signed out and a finished test isn't saved), the theme controller
+ *   (indexedDB), the chart and confetti (canvas). Stubbed in jsdom: matchMedia
  *   (nothing matches), scrolling. The engine's debug logs are muted.
  * - The page mounts in a router with only the test page, so it reads as the
  *   test page (typing starts a test only there) and the result's links work.

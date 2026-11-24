@@ -6,12 +6,12 @@ import { createRoot, JSX } from "solid-js";
 import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
+import { getUserId } from "../../auth/state";
 import {
   saveLocalResult,
   SaveLocalResultData,
 } from "../../collections/results";
 import { getConfig } from "../../config/store";
-import { getAuthenticatedUser } from "../../firebase";
 import { createEffectOn } from "../../hooks/effects";
 import { getUserDataLoadState } from "../../session-data";
 import { hideModal, showModal } from "../../states/modals";
@@ -137,9 +137,9 @@ function formatTestType(r: CompletedEvent | null): (string | JSX.Element)[] {
 }
 
 async function syncLastSignedOutResult(): Promise<void> {
-  const user = getAuthenticatedUser();
+  const uid = getUserId();
   const lastResult = getLastSignedOutResult();
-  if (user === null) {
+  if (uid === null) {
     showNoticeNotification(
       "Failed to save last test result: user not authenticated",
     );
@@ -152,7 +152,7 @@ async function syncLastSignedOutResult(): Promise<void> {
     return;
   }
 
-  const updatedResult = updateUidAndHash(user.uid, lastResult);
+  const updatedResult = updateUidAndHash(uid, lastResult);
   const response = await Ape.results.add({ body: { result: updatedResult } });
 
   if (response.status !== 200) {

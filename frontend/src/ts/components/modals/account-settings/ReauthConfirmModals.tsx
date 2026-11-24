@@ -1,11 +1,7 @@
 import { z } from "zod";
 
 import Ape from "../../../ape";
-import {
-  getPasswordSchema,
-  isUsingPasswordAuthentication,
-  reauthenticate,
-} from "../../../auth";
+import { pickReauthMethod, reauthenticate } from "../../../auth/actions";
 import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { resetPersonalBests } from "../../../queries/user";
@@ -13,6 +9,7 @@ import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
 import FileStorage from "../../../utils/file-storage";
 import { reloadAfter } from "../../../utils/misc";
+import { getPasswordSchema } from "../../common/form/utils";
 
 export function showDeleteAccountModal(): void {
   showReauthConfirmModal({
@@ -154,10 +151,13 @@ function showReauthConfirmModal(options: {
   action: () => Promise<ExecReturn>;
 }): void {
   if (!isAuthenticated()) return;
+  const reauthMethod = pickReauthMethod();
+  if (reauthMethod === undefined) return;
+  const withPassword = reauthMethod === "password";
 
   showSimpleModal({
     title: options.title,
-    buttonText: isUsingPasswordAuthentication()
+    buttonText: withPassword
       ? options.buttonText
       : `reauthenticate to ${options.buttonText}`,
     schema: z.object({
@@ -168,7 +168,7 @@ function showReauthConfirmModal(options: {
       password: {
         placeholder: "password",
         type: "password",
-        hidden: !isUsingPasswordAuthentication(),
+        hidden: !withPassword,
       },
       confirm: {
         type: "checkbox",
@@ -177,12 +177,14 @@ function showReauthConfirmModal(options: {
     },
 
     execFn: async ({ password }) => {
-      const reauth = await reauthenticate({ password });
+      const reauth = await reauthenticate(
+        withPassword
+          ? { method: "password", password }
+          : { method: reauthMethod },
+      );
       if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
+        // reauthenticate already told the user
+        return { status: reauth.status, showNotification: false };
       }
 
       return options.action();

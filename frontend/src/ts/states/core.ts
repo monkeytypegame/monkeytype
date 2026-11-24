@@ -13,8 +13,6 @@ export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
 export const [isAppReady, setAppReady] = createSignal(false);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
 
-export const [isUserVerified, setUserVerified] = createSignal(false);
-
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);

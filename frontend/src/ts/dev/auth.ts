@@ -61,7 +61,7 @@ export async function quickLogin(): Promise<void> {
  */
 export async function signOut(): Promise<void> {
   // lazy: auth reads firebase on import, and the debug handle loads eagerly
-  const { signOut } = await import("../auth");
+  const { signOut } = await import("../auth/actions");
   signOut();
   const { getUserData } = await import("../queries/user");
   await waitFor(() => getUserData() === undefined, "the user to sign out");

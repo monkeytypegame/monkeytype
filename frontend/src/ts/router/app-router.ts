@@ -4,11 +4,10 @@
 
 import { createEffect, createRoot, on } from "solid-js";
 import { reinstateAds } from "../integrations/ads";
-import { signOut } from "../auth";
+import { signOut } from "../auth/actions";
 import { getUserDataLoadState, reloadUserData } from "../session-data";
-import { isAuthAvailable } from "../firebase";
+import { getAuthState, isAuthAvailable } from "../auth/state";
 import { queryClient } from "../queries";
-import { getAuthState } from "../auth/state";
 import { getRoutePage, getVisiblePage } from "../states/router";
 import { setFocusMode } from "../states/test";
 import type { PageName } from "./routes";

@@ -2,19 +2,15 @@ import { UserEmailSchema } from "@monkeytype/schemas/users";
 import { z } from "zod";
 
 import Ape from "../../../ape";
-import {
-  getPasswordSchema,
-  isUsingPasswordAuthentication,
-  reauthenticate,
-  signOut,
-} from "../../../auth";
-import { isAuthenticated } from "../../../auth/state";
+import { reauthenticate, signOut } from "../../../auth/actions";
+import { isAuthenticated, isUsingPasswordAuth } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
+import { getPasswordSchema } from "../../common/form/utils";
 
 export function showUpdateEmailModal(): void {
   if (!isAuthenticated()) return;
-  if (!isUsingPasswordAuthentication()) {
+  if (!isUsingPasswordAuth()) {
     showNoticeNotification("Password authentication is not enabled");
     return;
   }
@@ -50,12 +46,10 @@ export function showUpdateEmailModal(): void {
         };
       }
 
-      const reauth = await reauthenticate({ password });
+      const reauth = await reauthenticate({ method: "password", password });
       if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
+        // reauthenticate already told the user
+        return { status: reauth.status, showNotification: false };
       }
 
       const response = await Ape.users.updateEmail({

@@ -3,7 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
 import Ape from "../../../ape";
-import { getPasswordSchema, signUp } from "../../../auth";
+import { signUp } from "../../../auth/actions";
 import TypoList from "../../../constants/typo-list";
 import {
   disableLoginPageInputs,
@@ -18,10 +18,11 @@ import { remoteValidationForm } from "../../../utils/remote-validation";
 import { InputField } from "../../common/form/InputField";
 import { SubmitButton } from "../../common/form/SubmitButton";
 import {
+  ValidationResult,
   allFieldsMandatory,
   fromSchema,
+  getPasswordSchema,
   handleResult,
-  ValidationResult,
 } from "../../common/form/utils";
 import { H3 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
@@ -87,15 +88,8 @@ export function Register(): JSXElement {
         return;
       }
       try {
-        const data = await signUp(
-          value.username,
-          value.email,
-          value.password,
-          captchaToken,
-        );
-        if (!data.success) {
-          showErrorNotification(data.message);
-        }
+        // shows its own errors
+        await signUp(value.username, value.email, value.password, captchaToken);
       } finally {
         enableLoginPageInputs();
       }

@@ -10,7 +10,6 @@ import { CustomTextModal } from "./CustomTextModal";
 import { CustomWordAmountModal } from "./CustomWordAmountModal";
 import { EditResultTagsModal } from "./EditResultTagsModal";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
-import { GoogleSignupModal } from "./GoogleSignUpModal";
 import { LastSignedOutResultModal } from "./LastSignedOutResultModal";
 import { MobileTestConfigModal } from "./MobileTestConfigModal";
 import { PbTablesModal } from "./PbTablesModal";
@@ -26,6 +25,7 @@ import { SimpleModal } from "./SimpleModal";
 import { StreakHourOffsetModal } from "./StreakHourOffsetModal";
 import { SupportModal } from "./SupportModal";
 import { TheRestModal } from "./TheRestModal";
+import { ThirdPartySignUpModal } from "./ThirdPartySignUpModal";
 import { UserReportModal } from "./UserReportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
 
@@ -55,7 +55,7 @@ export function Modals(): JSXElement {
       <ViewApeKeyModal />
       <LastSignedOutResultModal />
       <StreakHourOffsetModal />
-      <GoogleSignupModal />
+      <ThirdPartySignUpModal />
       <ForgotPasswordModal />
       <UserReportModal />
       <EditResultTagsModal />

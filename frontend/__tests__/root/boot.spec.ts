@@ -8,9 +8,11 @@ const { config, auth } = vi.hoisted(() => ({
 vi.mock("../../src/ts/config/lifecycle", () => ({
   loadFromLocalStorage: vi.fn(async () => config.promise),
 }));
-vi.mock("../../src/ts/firebase", () => ({
-  authPromise: auth.promise,
-  initFirebase: vi.fn(async () => undefined),
+vi.mock("../../src/ts/auth/actions", () => ({
+  startAuth: vi.fn(async () => auth.promise),
+}));
+vi.mock("../../src/ts/auth/providers/firebase", () => ({
+  firebaseAuthProvider: {},
 }));
 vi.mock("../../src/ts/anim", () => ({ applyEngineSettings: vi.fn() }));
 vi.mock("../../src/ts/cookies", () => ({
@@ -34,21 +36,21 @@ vi.mock("../../src/ts/utils/env", () => ({ isDevEnvironment: () => false }));
 import * as ServerConfiguration from "../../src/ts/ape/server-configuration";
 import { boot } from "../../src/ts/boot";
 import { loadFromLocalStorage } from "../../src/ts/config/lifecycle";
-import { initFirebase } from "../../src/ts/firebase";
+import { startAuth } from "../../src/ts/auth/actions";
 import * as MerchBanner from "../../src/ts/elements/merch-banner";
 import * as Psa from "../../src/ts/elements/psa";
 import { initConnection } from "../../src/ts/states/connection";
 import { isAppReady } from "../../src/ts/states/core";
 
 describe("boot", () => {
-  it("starts the config load and Firebase, then waits for both before the app is ready", async () => {
+  it("starts the config load and auth, then waits for both before the app is ready", async () => {
     const booted = boot();
 
     // started before awaiting, so the first auth state change shows PSAs
     expect(initConnection).toHaveBeenCalledOnce();
     expect(Psa.init).toHaveBeenCalledOnce();
     expect(loadFromLocalStorage).toHaveBeenCalledOnce();
-    expect(initFirebase).toHaveBeenCalledOnce();
+    expect(startAuth).toHaveBeenCalledOnce();
 
     auth.resolve(undefined);
     await Promise.resolve();
