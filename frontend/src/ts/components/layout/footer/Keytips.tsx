@@ -3,8 +3,8 @@ import { JSXElement, Show } from "solid-js";
 import { getConfig } from "../../../config/store";
 import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
-import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
-import { QuickRestartHotkey } from "../../hotkeys/QuickRestartHotkey";
+import { CommandlineHotkey } from "../../core/hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../../core/hotkeys/QuickRestartHotkey";
 
 export function Keytips(): JSXElement {
   return (
