@@ -72,6 +72,7 @@ function Keyboard(props: { displayName: string; layoutData: LayoutObject }) {
       (wordsHaveNumbers() && getConfig.keymapMode === "next") ||
       getConfig.keymapKeys === "full" ||
       getConfig.keymapKeys === "minimal_numrow" ||
+      getKeymapLayout().isUpsideDown ||
       (getConfig.keymapKeys === "minimal" && props.layoutData.keymapShowTopRow),
   );
 

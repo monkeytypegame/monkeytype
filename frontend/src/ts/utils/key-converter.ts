@@ -90,3 +90,33 @@ export function mirrorLayoutKeys(layout: LayoutObject): LayoutObject {
   const layoutCopy = { ...layout, keys: mirror_keys };
   return layoutCopy;
 }
+
+/**
+ * Returns a copy of the given layout rotated 180 degrees (simulating your keyboard if it were upside down).
+ * @param layout Layout object from our JSON data (e.g., layouts["qwerty"])
+ * @returns layout Layout object from our JSON data (e.g., layouts["qwerty"])
+ */
+export function upsideDownLayout(layout: LayoutObject): LayoutObject {
+  const empty: string[] = [];
+  // digits 3-8 become the space bar
+  const newRow1 = Array.from({ length: 13 }, (_, i) =>
+    i >= 3 && i < 9 ? [" "] : [],
+  );
+  const isIso = layout.type === "iso";
+  const upside_down_keys: LayoutObject["keys"] = {
+    row1: newRow1,
+    row2: [...[...layout.keys.row4].reverse(), empty, empty, empty].slice(
+      0,
+      isIso ? 12 : 13,
+    ),
+    row3: [...layout.keys.row3].reverse(),
+    row4: [
+      ...(isIso ? [empty] : []),
+      ...[...layout.keys.row2.slice(0, 10)].reverse(),
+    ],
+    row5: [empty],
+  };
+
+  const layoutCopy = { ...layout, keys: upside_down_keys };
+  return layoutCopy;
+}

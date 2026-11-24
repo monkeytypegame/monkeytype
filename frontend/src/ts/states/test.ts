@@ -20,7 +20,7 @@ import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-fra
 import { QuoteWithTextSplit } from "../types/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";
-import { mirrorLayoutKeys } from "../utils/key-converter";
+import { mirrorLayoutKeys, upsideDownLayout } from "../utils/key-converter";
 import { replaceUnderscoresWithSpaces } from "../utils/strings";
 import { useResourceWithPromise } from "../hooks/useResourceWithPromise";
 import { clearTimeouts } from "../utils/misc";
@@ -207,6 +207,7 @@ export const getKeymapLayout = createRoot(() =>
     layout: string;
     layoutNameDisplayString: string;
     isMirrored: boolean;
+    isUpsideDown: boolean;
   }>(() => {
     const isOverride = getConfig.keymapLayout === "overrideSync";
     const raw = isOverride ? getConfig.layout : getConfig.keymapLayout;
@@ -214,8 +215,14 @@ export const getKeymapLayout = createRoot(() =>
     const layout = raw === "default" ? "qwerty" : raw;
     const layoutNameDisplayString = replaceUnderscoresWithSpaces(raw);
     const isMirrored = getConfig.funbox.includes("layout_mirror");
+    const isUpsideDown = getConfig.funbox.includes("upside_down_layout");
 
-    return { layout: layout, layoutNameDisplayString, isMirrored };
+    return {
+      layout,
+      layoutNameDisplayString,
+      isMirrored,
+      isUpsideDown,
+    };
   }),
 );
 
@@ -255,17 +262,22 @@ const getInputLayout = createRoot(() =>
   createMemo<{
     layout: string;
     isMirrored: boolean;
+    isUpsideDown: boolean;
   }>(() => {
     return {
       layout: getConfig.layout === "default" ? "qwerty" : getConfig.layout,
       isMirrored: getConfig.funbox.includes("layout_mirror"),
+      isUpsideDown: getConfig.funbox.includes("upside_down_layout"),
     };
   }),
 );
 
 const [inputLayoutObject, inputLayoutPromise] = createRoot(() =>
   useResourceWithPromise(getInputLayout, async (layout) => {
-    const result = await getLayout(layout.layout);
+    let result = await getLayout(layout.layout);
+    if (layout.isUpsideDown) {
+      result = upsideDownLayout(result);
+    }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);
     }
@@ -275,7 +287,10 @@ const [inputLayoutObject, inputLayoutPromise] = createRoot(() =>
 
 const [keymapLayoutObject, keymapLayoutPromise] = createRoot(() =>
   useResourceWithPromise(getKeymapLayout, async (layout) => {
-    const result = await getLayout(layout.layout);
+    let result = await getLayout(layout.layout);
+    if (layout.isUpsideDown) {
+      result = upsideDownLayout(result);
+    }
     if (layout.isMirrored) {
       return mirrorLayoutKeys(result);
     }
