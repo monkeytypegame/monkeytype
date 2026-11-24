@@ -239,13 +239,12 @@ function replaceLegacyValues(
 export function getConfigChanges(): Partial<ConfigSchema> {
   const configChanges: Partial<ConfigSchema> = {};
   const config = getConfigSnapshot();
-  typedKeys(config)
-    .filter((key) => {
-      return config[key] !== getDefaultConfig()[key];
-    })
-    .forEach((key) => {
+  const defaultConfig = getDefaultConfig();
+  for (const key of typedKeys(config)) {
+    if (config[key] !== defaultConfig[key]) {
       //@ts-expect-error this is fine
       configChanges[key] = config[key];
-    });
+    }
+  }
   return configChanges;
 }
