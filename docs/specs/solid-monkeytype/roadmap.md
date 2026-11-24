@@ -17,7 +17,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 - [x] 5. **T4** word registry private → **T4b** letter refs.
 - [x] 6. **T5** delete test-ui (needs EP1, EP2, L1, L2 from step 1).
 - [x] 7. **T6a** engine state (done) → **T6b** restart via flag (done) and **T6c** finish split (done).
-- [ ] 8. **T7** drop the page-mount workaround (needs L3, L4, L5). Alongside: **T8a → T8b → T8c → T8d** dissolve test-logic (U6 done with T6c). C4 done (it no longer needed T8d).
+- [ ] 8. **T7** drop the page-mount workaround (needs L3, L4, L5). Alongside: **T8a → T8a2 → T8b → T8c → T8d** dissolve test-logic (U6 done with T6c). C4 done (it no longer needed T8d).
 - [ ] 9. **CL1–CL4** final cleanup, including the announced removal of legacy theme selectors.
 - [ ] 10. **TR1** tribe.
 
@@ -98,7 +98,8 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [ ] | T7 | S · PR | Remove the page wrapper's **"mount only once attached" workaround**; check nothing measures before attach | T6, L3, L4, L5 | |
 | [ ] | T8 | split | **Dissolve test-logic**, in four steps (spec, "test-logic dissolves"). Can run beside T7 | T6 | The glue module between engine and UI |
 | [ ] | T8a | S · commit | Move the modules the engine needs into `test/engine/`: words generator, custom text, practise words, funbox functions, pace-caret timing (and tts if funbox needs it). The engine lint's "modules around it" group shrinks to what's left outside; no special cases. Move only, no logic change | T6 | |
-| [ ] | T8b | L · PR | **Restart and generation into the engine**: the restart request and its request-time steps (no_quit refusal, quick-restart block, incomplete test, repeat detection, practise-words revert) with their notifications, the `changeRequiresRestart` flag effect, `prepareRestart`/`init`/`addWord`; callers call the engine's restart command | T8a | |
+| [ ] | T8a2 | M · PR | **Custom text becomes a store**: the current custom text and the saved texts (with long-text progress) are reactive, persisted to localStorage as now. One batched setter replaces the `set*` sequence, so the limit no longer depends on the call order (`setText`/`setMode` reset it today); the custom text indicator (name, `isLong`) moves into it, so it can't drift from the text. The restart flag effect watches it: a change restarts like a flagged config key, without serialising the text (identity or a version). Callers stop restarting after writing it (custom text modal, saved texts, challenges, URL test settings, practise words, `__mt.setCustomText`); SavedTextsModal drops its manual refresh. Test: practise words' start and revert still restart once | T8a | |
+| [ ] | T8b | L · PR | **Restart and generation into the engine**: the restart request and its request-time steps (no_quit refusal, quick-restart block, incomplete test, repeat detection, practise-words revert) with their notifications, the `changeRequiresRestart` flag effect, `prepareRestart`/`init`/`addWord`; callers call the engine's restart command | T8a2 | |
 | [ ] | T8c | L · PR | **Finish and result into the engine**: `startTest`, `fail`'s notifications, the rest of `onResult` (incomplete tests, long custom text progress, today's seconds, tag PBs, notifications) and the full save (API request, local result, xp, crown, daily rank: `Engine.save` takes no `run`). UI parts (confetti, replay, result display state, crown shown) become TestResult/TestPage effects; test-start analytics an effect in the analytics integration (`integrations/analytics.ts`) | T8b | |
 | [ ] | T8d | M · PR | **Leftovers, then delete `test-logic.ts`**: the router calls `Engine.stop()` on leaving and WordsInput blurs itself on `isLeavingPage()`; restart/repeat handlers move into their button components; `test-page-bridge.ts` becomes final UI state in `states/test` (`isTestPageMounted`, owned by TestPage); the config effects move out (C4 prep made test-logic's config subscriber effects in place): arabic lazy mode to the config area (deviation: on any page, not only the test page), keymap "next" highlight to Keymap, zipf check to its funbox definition | T8c | test-logic |
 
@@ -177,7 +178,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 
 ## Suggested sequencing for 2–3 people
 
-- **Person 1 (critical path):** T0 → TH1 → T1 → T2 → T3 → T4 → T4b → T5 → T6a → T6b → T6c → T7 and T8a → T8b → T8c → T8d.
+- **Person 1 (critical path):** T0 → TH1 → T1 → T2 → T3 → T4 → T4b → T5 → T6a → T6b → T6c → T7 and T8a → T8a2 → T8b → T8c → T8d.
 - **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → U3a → C3 areas → U4 → U7 → U5a → U5b–U5d → C4 (done).
 - **Person 3 / agents (leaves):** EP1, EP2, L1, L2 first (they gate T5), then L8, L7, L9, L10, L4, L5, L6, C5, L11, EP4; L3 and L12 once T3 lands; EP3 after T1.
 - **Converge:** U6, then CL, then TR1 (C4 done).
