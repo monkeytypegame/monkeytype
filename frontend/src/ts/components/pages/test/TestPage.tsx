@@ -16,7 +16,6 @@ import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
 import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
-import { getCustomTextIndicator } from "../../../states/core";
 import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
@@ -36,7 +35,6 @@ import {
   setTestFadedOut,
 } from "../../../states/test";
 import { replaceWords, resetWordsRender } from "../../../states/words-render";
-import * as CustomText from "../../../test/custom-text";
 import {
   getActiveWordIndex,
   getRestartOptions,
@@ -46,7 +44,10 @@ import {
   isTestActive,
   isTestFinished,
 } from "../../../test/engine/state";
-import { getTestSettings } from "../../../test/engine/test-settings";
+import {
+  getTestSettings,
+  isLongTest,
+} from "../../../test/engine/test-settings";
 import * as TestWords from "../../../test/engine/test-words";
 import * as Funbox from "../../../test/funbox/funbox";
 import {
@@ -62,7 +63,6 @@ import {
 import { randomizeTheme } from "../../../theme";
 import { cn } from "../../../utils/cn";
 import * as Misc from "../../../utils/misc";
-import { canQuickRestart } from "../../../utils/quick-restart";
 import { Button } from "../../common/Button";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { CapsWarning } from "./CapsWarning";
@@ -130,15 +130,7 @@ export function TestPage(): JSXElement {
       "beforeunload",
       (event) => {
         if (!isTestActive()) return;
-        if (
-          canQuickRestart(
-            getConfig.mode,
-            getConfig.words,
-            getConfig.time,
-            CustomText.getData(),
-            getCustomTextIndicator()?.isLong ?? false,
-          )
-        ) {
+        if (!isLongTest()) {
           return;
         }
         event.preventDefault();
@@ -241,13 +233,7 @@ export function TestPage(): JSXElement {
     setFocusMode(false);
     if (
       getConfig.alwaysShowWordsHistory &&
-      canQuickRestart(
-        getTestSettings().mode,
-        getTestSettings().words,
-        getTestSettings().time,
-        getTestSettings().customText,
-        getCustomTextIndicator()?.isLong ?? false,
-      ) &&
+      !isLongTest() &&
       !getGlarsesMode()
     ) {
       toggleResultWords(true);
