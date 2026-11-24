@@ -602,7 +602,9 @@ export function getKeypressSpacing(eventLog: EventLog): number[] {
   for (const event of events) {
     if (event.type === "keydown") {
       if (lastKeydownTime !== undefined) {
-        const spacing = event.testMs - lastKeydownTime;
+        // round so float noise from the subtraction (62.73999999999998) does not
+        // bloat the result payload
+        const spacing = roundTo2(event.testMs - lastKeydownTime);
         spacings.push(spacing);
       }
       // clamp to 0 so a pre-start keydown matches getStartToFirstKeypressMs,
@@ -885,7 +887,7 @@ export function getKeypressDurations(eventLog: EventLog): number[] {
     } else if (event.type === "keyup") {
       const keydownTime = keydownTimes.get(event.data.code);
       if (keydownTime !== undefined) {
-        const duration = event.testMs - keydownTime.timestamp;
+        const duration = roundTo2(event.testMs - keydownTime.timestamp);
         durations[keydownTime.index] = duration;
         keydownTimes.delete(event.data.code);
       }

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 vi.mock("../../../../src/ts/test/test-stats", () => ({
   start: 1000,
@@ -207,6 +208,20 @@ function setupBasicTest(): void {
   logTestEvent("input", 3200, input({ charIndex: 5 }));
   logTestEvent("timer", 4000, timer("step", 3));
   logTestEvent("timer", 4000, timer("end", 3));
+}
+
+// keypresses on chrome's 0.1ms clock, where subtracting two timestamps
+// usually leaves float noise (taken from a real result payload)
+function logFractionalKeypresses(): void {
+  const keydowns = [
+    187.33, 250.07, 301.8, 340.5, 399.0, 516.3, 608.8, 637.5, 702.2, 758.7,
+  ];
+  const holds = [114.6, 53.5, 53.2, 69, 102.7, 87.3, 60.3, 89, 78.4, 86.5];
+  keydowns.forEach((ms, i) => {
+    const code: Keycode = i % 2 === 0 ? "KeyA" : "KeyS";
+    logTestEvent("keydown", ms, keyDown(code));
+    logTestEvent("keyup", ms + (holds[i] as number), keyUp(code));
+  });
 }
 
 // the mocked store is a plain object the tests write to
@@ -987,6 +1002,16 @@ describe("stats.ts", () => {
       expect(getKeypressSpacing(buildEventLog())).toEqual([]);
     });
 
+    it("has no float noise from subtracting timestamps", () => {
+      // regression: 250.07 - 187.33 is 62.73999999999998, and the noise
+      // roughly tripled the size of keySpacing in the result payload
+      logFractionalKeypresses();
+
+      for (const spacing of getKeypressSpacing(buildEventLog())) {
+        expect(spacing).toBe(roundTo2(spacing));
+      }
+    });
+
     it("clamps a pre-start first keydown so the timing invariant holds", () => {
       // A keydown can be recorded before timer:start (e.g. a stray Ctrl+H
       // pressed seconds before the user starts typing). cleanupData keeps the
@@ -1102,6 +1127,15 @@ describe("stats.ts", () => {
 
       const durations = getKeypressDurations(buildEventLog());
       expect(durations).toEqual([80, 100]);
+    });
+
+    it("has no float noise from subtracting timestamps", () => {
+      // regression: see the same test for getKeypressSpacing
+      logFractionalKeypresses();
+
+      for (const duration of getKeypressDurations(buildEventLog())) {
+        expect(duration).toBe(roundTo2(duration));
+      }
     });
 
     it("returns 0 for keys without keyup", () => {
