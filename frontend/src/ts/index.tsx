@@ -7,7 +7,8 @@ import "./dev/signal-tracker";
 //enable solidjs-devtools
 import "solid-devtools";
 
-import "./event-handlers/global";
+// dev notifications for unhandled errors and rejections
+import "./dev/unhandled-errors";
 
 // starts the user data load on sign in, before auth can report one
 import "./session-data";
