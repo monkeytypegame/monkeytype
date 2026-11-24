@@ -3,7 +3,7 @@ import { createMemo } from "solid-js";
 import { getConfig } from "../../../../config/store";
 import { getActiveTags } from "../../../../queries/tags";
 import { showCommandline } from "../../../../states/commandline";
-import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
+import { getCustomTextIndicator } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
 import {
   isFocusMode,
@@ -15,6 +15,7 @@ import {
 import { wordsHaveNewline, wordsHaveTab } from "../../../../test/engine/state";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
+import { formatAccuracy, formatTypingSpeed } from "../../../../utils/format";
 import {
   getLanguageDisplayString,
   replaceUnderscoresWithSpaces,
@@ -212,9 +213,7 @@ function PaceCaretNotice() {
     let type: string = getConfig.paceCaret;
     if (type === "off") type = "custom";
     else if (type === "tagPb") type = "tag pb";
-
-    const format = getFormatting();
-    const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
+    const speed = formatTypingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });
@@ -237,8 +236,7 @@ function PaceCaretNotice() {
 
 function MinSpeed() {
   const displaySpeed = createMemo(() => {
-    const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
+    const speed = formatTypingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });
@@ -258,8 +256,7 @@ function MinSpeed() {
 
 function MinAcc() {
   const displayAcc = createMemo(() => {
-    const format = getFormatting();
-    const acc = format.accuracy(getConfig.minAccCustom, {
+    const acc = formatAccuracy(getConfig.minAccCustom, {
       showDecimalPlaces: false,
       suffix: " acc",
     });
@@ -279,8 +276,7 @@ function MinAcc() {
 
 function MinBurst() {
   const displaySpeed = createMemo(() => {
-    const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
+    const speed = formatTypingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });

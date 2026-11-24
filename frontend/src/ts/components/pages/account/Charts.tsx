@@ -9,7 +9,6 @@ import {
 } from "../../../collections/results";
 import { getConfig } from "../../../config/store";
 import { getTags, type Tag } from "../../../queries/tags";
-import { getFormatting } from "../../../states/core";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import {
   capitalizeFirstLetter,
@@ -31,7 +30,6 @@ export function Charts(props: {
   const typingSpeedUnit = createMemo(() =>
     getTypingSpeedUnit(getConfig.typingSpeedUnit),
   );
-  const format = getFormatting;
 
   const resultsQuery = useLiveQuery((q) => {
     if (!isAuthenticated()) return undefined;
@@ -52,7 +50,6 @@ export function Charts(props: {
               results={resultsQueryData()}
               beginAtZero={beginAtZero()}
               typingSpeedUnit={typingSpeedUnit()}
-              format={format()}
               onClick={(index) => props.onHistoryChartClick?.(index)}
             />
           </div>
@@ -66,7 +63,6 @@ export function Charts(props: {
             queryState={props.queryState}
             beginAtZero={beginAtZero()}
             typingSpeedUnit={typingSpeedUnit()}
-            format={format()}
           />
         </div>
       )}

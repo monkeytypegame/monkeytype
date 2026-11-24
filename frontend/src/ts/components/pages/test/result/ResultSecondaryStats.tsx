@@ -19,7 +19,6 @@ import {
   setQuoteFavorite,
   getUserData,
 } from "../../../../queries/user";
-import { getFormatting } from "../../../../states/core";
 import { showEditResultTagsModal } from "../../../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../../../states/loader-bar";
 import { addNotificationWithLevel } from "../../../../states/notifications";
@@ -35,6 +34,11 @@ import { getTimeTodayString } from "../../../../test/today-tracker";
 import { Quote } from "../../../../types/quotes";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
+import {
+  formatPercentage,
+  formatRank,
+  formatTypingSpeed,
+} from "../../../../utils/format";
 import { getLanguageDisplayString } from "../../../../utils/strings";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
@@ -47,12 +51,11 @@ type Props = {
 };
 
 export function ResultSecondaryStats(props: Props): JSXElement {
-  const format = () => getFormatting();
   const decimals = () => getConfig.alwaysShowDecimalPlaces;
 
   const consistencyBalloon = (): string =>
     decimals()
-      ? format().percentage(props.result.keyConsistency, {
+      ? formatPercentage(props.result.keyConsistency, {
           showDecimalPlaces: true,
           suffix: " key",
         })
@@ -113,7 +116,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={speedBalloon(props.result.rawWpm)}
         >
-          {format().typingSpeed(props.result.rawWpm)}
+          {formatTypingSpeed(props.result.rawWpm)}
         </Balloon>
       </div>
       <div data-ui-element="resultStat">
@@ -135,7 +138,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
           class={cn("text-[2em] leading-[1em] text-main", mobileBalloonClass)}
           text={consistencyBalloon()}
         >
-          {format().percentage(props.result.consistency)}
+          {formatPercentage(props.result.consistency)}
         </Balloon>
       </div>
       <div data-ui-element="resultStat">
@@ -178,7 +181,7 @@ export function ResultSecondaryStats(props: Props): JSXElement {
               mobileBalloonClass,
             )}
           >
-            {format().rank(resultState.dailyLeaderboardRank, {
+            {formatRank(resultState.dailyLeaderboardRank, {
               fallback: "",
             })}
           </Balloon>

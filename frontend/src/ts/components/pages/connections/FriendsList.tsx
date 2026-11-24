@@ -1,3 +1,5 @@
+import type { TypingSpeedUnit } from "@monkeytype/schemas/configs";
+
 import { PersonalBest } from "@monkeytype/schemas/shared";
 import { Friend, UserNameSchema } from "@monkeytype/schemas/users";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -13,12 +15,12 @@ import {
   findConnectionToUser,
   rejectConnection,
 } from "../../../collections/connections";
+import { getConfig } from "../../../config/store";
 import { getFriendsListQuery } from "../../../queries/friends";
 import { getUserData } from "../../../queries/user";
-import { getFormatting } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { formatAge, secondsToString } from "../../../utils/date-and-time";
-import { Formatting } from "../../../utils/format";
+import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import { formatXp, getXpDetails } from "../../../utils/levels";
 import { formatTypingStatsRatio } from "../../../utils/misc";
 import { remoteValidation } from "../../../utils/remote-validation";
@@ -38,7 +40,7 @@ export function FriendsList() {
   const query = useQuery(() => getFriendsListQuery());
 
   const columns = createMemo(() => {
-    return getColumns({ format: getFormatting() });
+    return getColumns();
   });
 
   return (
@@ -124,11 +126,10 @@ export function FriendsList() {
   );
 }
 
-function getColumns({
-  format,
-}: {
-  format: Formatting;
-}): DataTableColumnDef<Friend>[] {
+function getColumns(): DataTableColumnDef<Friend>[] {
+  // read here, not in the cells: cell meta is untracked, so a unit change
+  // must rebuild the columns
+  const typingSpeedUnit = getConfig.typingSpeedUnit;
   const defineColumn = createColumnHelper<DataTableFeatures, Friend>().accessor;
   const cols = [
     defineColumn("name", {
@@ -226,7 +227,7 @@ function getColumns({
 
       enableSorting: true,
       cell: (info) => {
-        const pb = formatPb(info.row.original.top15, { format });
+        const pb = formatPb(info.row.original.top15, { typingSpeedUnit });
         return (
           <>
             {pb?.wpm ?? "-"}
@@ -240,7 +241,7 @@ function getColumns({
           class: "text-xs sm:text-xs md:text-xs xl:text-sm",
           "data-balloon-pos": "up",
           "data-balloon-break": "",
-          "aria-label": formatPb(row.top15 as PersonalBest, { format })
+          "aria-label": formatPb(row.top15 as PersonalBest, { typingSpeedUnit })
             ?.details,
         }),
       },
@@ -249,7 +250,7 @@ function getColumns({
       header: "time 60 pb",
       enableSorting: true,
       cell: (info) => {
-        const pb = formatPb(info.row.original.top60, { format });
+        const pb = formatPb(info.row.original.top60, { typingSpeedUnit });
         return (
           <>
             {pb?.wpm ?? "-"}
@@ -263,7 +264,7 @@ function getColumns({
           class: "text-xs sm:text-xs md:text-xs xl:text-sm",
           "data-balloon-pos": "up",
           "data-balloon-break": "",
-          "aria-label": formatPb(row.top60, { format })?.details,
+          "aria-label": formatPb(row.top60, { typingSpeedUnit })?.details,
         }),
       },
     }),
@@ -308,7 +309,7 @@ function formatStreak(length?: number, prefix?: string): string {
 
 function formatPb(
   entry: PersonalBest | undefined,
-  options: { format: Formatting },
+  options: { typingSpeedUnit: TypingSpeedUnit },
 ):
   | {
       wpm: string;
@@ -322,10 +323,10 @@ function formatPb(
     return undefined;
   }
   const result = {
-    wpm: options.format.typingSpeed(entry.wpm, { showDecimalPlaces: true }),
-    acc: options.format.percentage(entry.acc, { showDecimalPlaces: true }),
-    raw: options.format.typingSpeed(entry.raw, { showDecimalPlaces: true }),
-    con: options.format.percentage(entry.consistency, {
+    wpm: formatTypingSpeed(entry.wpm, { showDecimalPlaces: true }),
+    acc: formatPercentage(entry.acc, { showDecimalPlaces: true }),
+    raw: formatTypingSpeed(entry.raw, { showDecimalPlaces: true }),
+    con: formatPercentage(entry.consistency, {
       showDecimalPlaces: true,
     }),
     details: "",
@@ -333,7 +334,7 @@ function formatPb(
 
   const details = [
     `${getLanguageDisplayString(entry.language)}`,
-    `${result.wpm} ${options.format.typingSpeedUnit}`,
+    `${result.wpm} ${options.typingSpeedUnit}`,
   ];
 
   if (isSafeNumber(entry.acc)) {

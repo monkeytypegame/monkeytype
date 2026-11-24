@@ -13,7 +13,7 @@ import { Dynamic } from "solid-js/web";
 
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
-import { getFormatting, getIsScreenshotting } from "../../../../states/core";
+import { getIsScreenshotting } from "../../../../states/core";
 import { isErrorBorderDisabled } from "../../../../states/test";
 import { getWordBurstHistory } from "../../../../test/engine/events/stats";
 import { EventLog } from "../../../../test/engine/events/types";
@@ -30,6 +30,7 @@ import {
 import { getTheme } from "../../../../theme/state";
 import { cn } from "../../../../utils/cn";
 import { blendTwoHexColors } from "../../../../utils/colors";
+import { formatTypingSpeed } from "../../../../utils/format";
 import { get as getTypingSpeedUnit } from "../../../../utils/typing-speed-units";
 import { AnimeShow } from "../../../common/anime";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
@@ -255,7 +256,7 @@ function Word(props: {
     if (burst === undefined || isNaN(burst) || burst >= 1000) {
       return "Infinite";
     }
-    return getFormatting().typingSpeed(Math.trunc(burst), {
+    return formatTypingSpeed(Math.trunc(burst), {
       showDecimalPlaces: false,
     });
   };

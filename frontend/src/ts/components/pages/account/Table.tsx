@@ -6,13 +6,13 @@ import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../../collections/results";
 
+import { getConfig } from "../../../config/store";
 import { getTags, type Tag } from "../../../queries/tags";
-import { getFormatting } from "../../../states/core";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
-import { Formatting } from "../../../utils/format";
+import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
@@ -41,7 +41,6 @@ export function Table<M extends Mode>(props: {
 
   const columns = createMemo(() =>
     getColumns<M>({
-      format: getFormatting(),
       tags: getTags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
@@ -88,11 +87,9 @@ export function Table<M extends Mode>(props: {
 }
 
 function getColumns<M extends Mode>({
-  format,
   tags,
   onMiniResultChartSelected,
 }: {
-  format: Formatting;
   tags: readonly Tag[];
   onMiniResultChartSelected(val: string): void;
 }): DataTableColumnDef<NormalizedLocalResult<M>>[] {
@@ -117,14 +114,14 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("wpm", {
-      header: format.typingSpeedUnit,
+      header: getConfig.typingSpeedUnit,
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        formatTypingSpeed(info.getValue(), { showDecimalPlaces: true }),
     }),
     defineColumn("rawWpm", {
       header: "raw",
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        formatTypingSpeed(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },
@@ -132,7 +129,7 @@ function getColumns<M extends Mode>({
     defineColumn("acc", {
       header: "accuracy",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        formatPercentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },
@@ -140,7 +137,7 @@ function getColumns<M extends Mode>({
     defineColumn("consistency", {
       header: "consistency",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        formatPercentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },
