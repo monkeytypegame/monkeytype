@@ -10,7 +10,7 @@ import {
   setLayoutfluidTimerVisible,
 } from "../states/test";
 import { capitalizeFirstLetter } from "../utils/strings";
-import * as CustomText from "./custom-text";
+import { getTestSettings, getTestTimeLimit } from "./engine/test-settings";
 import { getCurrentInput } from "./engine/events/data";
 import { getTimerTick, isSlowTimer, isTimerRunning } from "./engine/test-timer";
 import * as TestWords from "./engine/test-words";
@@ -20,17 +20,9 @@ import * as TestWords from "./engine/test-words";
 // effects run synchronously on that write, so they fire on the correct
 // seconds, before the timer checks the time limit.
 
-function getMaxTime(): number | undefined {
-  if (getConfig.mode === "time") return getConfig.time;
-  if (getConfig.mode === "custom" && CustomText.getLimitMode() === "time") {
-    return CustomText.getLimitValue();
-  }
-  return undefined;
-}
-
 function timeWarning(testTime: number): void {
   if (getConfig.playTimeWarning === "off") return;
-  const maxTime = getMaxTime();
+  const maxTime = getTestTimeLimit();
   if (
     maxTime !== undefined &&
     testTime === maxTime - parseInt(getConfig.playTimeWarning, 10)
@@ -41,12 +33,13 @@ function timeWarning(testTime: number): void {
 
 // layoutfluid funbox: T6b+ turns it into an engine plugin timing hook
 function layoutfluid(time: number): void {
-  if (!getConfig.funbox.includes("layoutfluid") || getConfig.mode !== "time") {
+  const settings = getTestSettings();
+  if (!settings.funbox.includes("layoutfluid") || settings.mode !== "time") {
     return;
   }
 
-  const layouts = getConfig.customLayoutfluid;
-  const switchTime = getConfig.time / layouts.length;
+  const layouts = settings.customLayoutfluid;
+  const switchTime = settings.time / layouts.length;
   const index = Math.floor(time / switchTime);
   const layout = layouts[index];
   const flooredSwitchTimes: number[] = [];

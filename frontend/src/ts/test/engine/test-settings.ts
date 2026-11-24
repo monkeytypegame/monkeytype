@@ -87,6 +87,21 @@ export function getTestSettings(): Readonly<TestSettings> {
 }
 
 /**
+ * Seconds the current test counts down from: time mode, or a custom text
+ * limited by time. Undefined for a test limited by words. 0 means no limit.
+ */
+export function getTestTimeLimit(): number | undefined {
+  if (testSettings.mode === "time") return testSettings.time;
+  if (
+    testSettings.mode === "custom" &&
+    testSettings.customText.limit.mode === "time"
+  ) {
+    return testSettings.customText.limit.value;
+  }
+  return undefined;
+}
+
+/**
  * The restart's generation only (test-logic init): retakes the test settings
  * from config and the custom text, right before the words are generated.
  */
