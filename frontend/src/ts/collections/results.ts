@@ -798,6 +798,8 @@ createRoot(() =>
   createEffectOn(isAuthenticated, (hasUser) => {
     if (hasUser) {
       void resultsCollection.utils.refetch();
+    } else {
+      setLastResult(undefined);
     }
   }),
 );
