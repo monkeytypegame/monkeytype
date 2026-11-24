@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 
 import preview from "#.storybook/preview";
 
-import { Checkbox } from "../../src/ts/components/ui/form/Checkbox";
+import { Checkbox } from "../../src/ts/components/common/form/Checkbox";
 
 function createFieldMock(options: { name?: string; value?: boolean }) {
   const [value, setValue] = createSignal(options.value ?? false);
