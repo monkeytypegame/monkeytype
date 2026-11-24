@@ -25,7 +25,7 @@ import {
   canSetFunboxWithConfig,
   getFunboxUnsupportedReason,
 } from "./funbox-validation";
-import { Config } from "./store";
+import { getConfig } from "./store";
 // type SetBlock = {
 //   [K in keyof ConfigSchemas.Config]?: ConfigSchemas.Config[K][];
 // };
@@ -150,7 +150,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   isBlocked?: (options: {
     value: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => boolean;
   /**
    * Optional function to override the value before setting it.
@@ -160,8 +160,8 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   overrideValue?: (options: {
     value: ConfigSchemas.Config[K];
-    currentValue: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentValue: DeepReadonly<ConfigSchemas.Config[K]>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => ConfigSchemas.Config[K];
   /**
    * Optional function to override other config values before this one is set.
@@ -170,7 +170,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   overrideConfig?: (options: {
     value: ConfigSchemas.Config[K];
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => Partial<ConfigSchemas.Config>;
   /**
    * Optional function that is called after the config value is set.
@@ -179,7 +179,7 @@ export type ConfigMetadata<K extends keyof ConfigSchemas.Config> = {
    */
   afterSet?: (options: {
     nosave: boolean;
-    currentConfig: Readonly<ConfigSchemas.Config>;
+    currentConfig: DeepReadonly<ConfigSchemas.Config>;
   }) => void;
   /**
    * Commandline command generated for this config key. `null` when the key has no generated command (set elsewhere, or a hand-built list).
@@ -214,7 +214,7 @@ const caretOptionsMetadata = {
 // picking a theme by hand turns auto switch off. whole-config applies set
 // autoSwitchTheme last, so it is still the default (off) when this runs there
 function disableAutoSwitchTheme(
-  currentConfig: Readonly<ConfigSchemas.Config>,
+  currentConfig: DeepReadonly<ConfigSchemas.Config>,
 ): Partial<ConfigSchemas.Config> {
   if (!currentConfig.autoSwitchTheme) return {};
   showNoticeNotification("Auto switch theme disabled");
@@ -543,7 +543,7 @@ const configMetadataEntries = {
         secondKey: "minWpmCustomSpeed",
         inputValueConvert: (value) => {
           let newVal = Number(value);
-          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(newVal);
           return newVal;
         },
       },
@@ -693,7 +693,7 @@ const configMetadataEntries = {
     commandline: {
       input: {
         defaultValue: () => {
-          return Config.customLayoutfluid.join(" ");
+          return getConfig.customLayoutfluid.join(" ");
         },
         inputValueConvert: (val) =>
           val.trim().split(" ") as ConfigSchemas.CustomLayoutFluid,
@@ -713,7 +713,7 @@ const configMetadataEntries = {
     commandline: {
       input: {
         defaultValue: () => {
-          return Config.customPolyglot.join(" ");
+          return getConfig.customPolyglot.join(" ");
         },
         inputValueConvert: (val) =>
           val.trim().split(" ") as ConfigSchemas.CustomPolyglot,
@@ -1126,7 +1126,7 @@ const configMetadataEntries = {
         configValue: "custom",
         inputValueConvert: (value) => {
           let newVal = Number(value);
-          newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(newVal);
+          newVal = getTypingSpeedUnit(getConfig.typingSpeedUnit).toWpm(newVal);
           return newVal;
         },
       },

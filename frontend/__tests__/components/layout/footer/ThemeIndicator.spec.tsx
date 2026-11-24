@@ -10,14 +10,13 @@ vi.mock("../../../../src/ts/queries/custom-themes", () => ({
 }));
 
 import { ThemeIndicator } from "../../../../src/ts/components/layout/footer/ThemeIndicator";
-import { Config, setConfigStore } from "../../../../src/ts/config/store";
+import { getConfig, setConfigStore } from "../../../../src/ts/config/store";
 import { __testing } from "../../../../src/ts/config/testing";
 import { clearThemePreview, previewTheme } from "../../../../src/ts/theme";
 
 const { replaceConfig } = __testing;
 
 function set<K extends keyof ConfigType>(key: K, value: ConfigType[K]): void {
-  Config[key] = value;
   setConfigStore(key, value);
 }
 
@@ -63,7 +62,7 @@ describe("ThemeIndicator", () => {
 
   it("names the custom theme matching the configured colors", () => {
     getCustomThemesMock.mockReturnValue([
-      { name: "mine", colors: [...Config.customThemeColors] },
+      { name: "mine", colors: [...getConfig.customThemeColors] },
     ]);
     set("customTheme", true);
     const { text, hasStar } = renderIndicator();

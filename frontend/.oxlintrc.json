@@ -14,26 +14,7 @@
     {
       "files": ["src/**/*.ts", "src/**/*.tsx"],
       "rules": {
-        "monkeytype-rules/no-module-scope-dom-query": "error",
-        "no-restricted-imports": [
-          "error",
-          {
-            "patterns": [
-              {
-                "group": ["**/config/store"],
-                "importNames": ["Config"],
-                "message": "Read config through the getConfig store; the mutable Config object is config/'s own (deleted in C4)."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      // the mutable config object lives here until C4
-      "files": ["src/ts/config/**"],
-      "rules": {
-        "no-restricted-imports": "off"
+        "monkeytype-rules/no-module-scope-dom-query": "error"
       }
     },
     {
@@ -45,11 +26,6 @@
           "error",
           {
             "patterns": [
-              {
-                "group": ["**/config/store"],
-                "importNames": ["Config"],
-                "message": "Read config through the getConfig store; the mutable Config object is config/'s own (deleted in C4)."
-              },
               {
                 "group": ["**/components/**", "**/elements/**"],
                 "message": "The input layer never imports UI: write to states or the render buffer instead."
@@ -68,11 +44,6 @@
           "error",
           {
             "patterns": [
-              {
-                "group": ["**/config/store"],
-                "importNames": ["Config"],
-                "message": "Read config through the getConfig store; the mutable Config object is config/'s own (deleted in C4)."
-              },
               {
                 "group": [
                   "**/components/**",

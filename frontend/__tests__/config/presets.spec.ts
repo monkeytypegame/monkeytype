@@ -3,7 +3,7 @@ import { applyPreset } from "../../src/ts/config/presets";
 import { Preset } from "@monkeytype/schemas/presets";
 import * as UserState from "../../src/ts/queries/user";
 import { setConfig } from "../../src/ts/config/setters";
-import { Config } from "../../src/ts/config/store";
+import { getConfigSnapshot } from "../../src/ts/config/store";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
 import * as ConfigUtils from "../../src/ts/config/utils";
 import * as Persistence from "../../src/ts/config/persistence";
@@ -103,7 +103,7 @@ describe("applyPreset", () => {
       });
 
       setConfig("numbers", true);
-      const oldConfig = structuredClone(Config);
+      const oldConfig = getConfigSnapshot();
 
       //WHEN
       await applyPreset(preset._id);

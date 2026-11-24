@@ -17,7 +17,7 @@ Each step can start once the previous step's **bold** items are done. Everything
 - [x] 5. **T4** word registry private → **T4b** letter refs.
 - [x] 6. **T5** delete test-ui (needs EP1, EP2, L1, L2 from step 1).
 - [x] 7. **T6a** engine state (done) → **T6b** restart via flag (done) and **T6c** finish split (done).
-- [ ] 8. **T7** drop the page-mount workaround (needs L3, L4, L5). Alongside: **T8a → T8b → T8c → T8d** dissolve test-logic (U6 done with T6c). Then C4 (needs T8d).
+- [ ] 8. **T7** drop the page-mount workaround (needs L3, L4, L5). Alongside: **T8a → T8b → T8c → T8d** dissolve test-logic (U6 done with T6c). C4 done (it no longer needed T8d).
 - [ ] 9. **CL1–CL4** final cleanup, including the announced removal of legacy theme selectors.
 - [ ] 10. **TR1** tribe.
 
@@ -26,10 +26,10 @@ Each step can start once the previous step's **bold** items are done. Everything
 ```
  T: test page (CRITICAL PATH, serial)
    T0 #8507 ─► T1 words/letters data-ui-* ─► T2 joining dots ─► T3 caret boundary ─► T4 registry private ─► T4b letter refs ─► T5 delete test-ui ─► T6 engine split (T6a–c) ─► T7 drop page-mount workaround
-   T8a–d dissolve test-logic (after T6, beside T7) ─► needed by C4 and CL
+   T8a–d dissolve test-logic (after T6, beside T7) ─► needed by CL
    TH1 test-page harness (after T0, before T1)            ▲ needs EP1, EP2, L1, L2           ▲ needs L3, L4, L5
                                                           │
- C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent (needs T8d)
+ C: config            C1 ─► C2×5, C3 areas (parallel) ──────────────────────────► C4 delete Config + configEvent
  U: user data         U1 ─► U2, U3 ─► U3a ─► U8a ─► U8b, U8c, U8d, U4 (parallel);  U7 ─► U5a ─► U5b, U5c, U5d ────► U6 delete __nonReactive (needs T6a, T6c)
  EP: engine prep      EP1, EP2 (parallel, before T5);  EP3 after T1;  EP4 anytime
  L: leaves            L1 L2 before T5;  L3 after T3;  L12 after T1+T3;  L4–L11 anytime
@@ -49,7 +49,7 @@ Every track can start now. These are the only steps that wait on another track:
 | **T5** delete test-ui | EP1, EP2, L1, L2 | test-ui still calls the timer event and funbox; they need new homes first (focus mode is already a plain `setFocusMode` call) |
 | **T6b** restart via flag | C1 | Restart reacts to config changes, so the store must update before the event fires |
 | **T7** drop the page-mount workaround | L3, L4, L5 | Monkey power, result highlight and screenshot measure or query on mount today |
-| **C4** delete `Config` + `configEvent` | T8d, L2 | Pace caret, tts and practise words are the last subscribers (L2 removed funbox's, T8d test-logic's) |
+| **C4** delete `Config` + `configEvent` | L2 | Pace caret, tts and practise words were the last subscribers (L2 removed funbox's; test-logic's became effects in C4's prep, so it no longer waits on T8d) |
 | **U6** delete `__nonReactive` | T6a, T6c | Its last callers (test-logic, result PB, today tracker) are rewritten in T6c; T6a did the layout emulator and keydown |
 | **EP3** per-word facts | T1 | Builds on the new letter/word rendering |
 | **L3** monkey power | T3 | Needs the caret boundary for the caret position |
@@ -109,7 +109,7 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 | [x] | C1 | S · commit | Config setter writes the store **before** dispatching the config event (and before full-config-change finished) | none | Done in [bd2cae5](https://github.com/monkeytypegame/monkeytype/commit/bd2cae518): `setConfig`/`toggleFunbox` write store → persist → event; whole-config apply resets the store with `Config`, writes per key inside one `batch` (effects run once), all before finished. Leftover for C3: funbox `activate()` writes `Config.funbox` without the store |
 | [x] | C2 | S · commit each | Replace config-bus subscribers outside the test with effects on store keys: theme controller, sound controller, quotes controller, challenge controller, commandline theme list | C1 | Done in one PR, [#8526](https://github.com/monkeytypegame/monkeytype/pull/8526). Effects only run on a changed value: re-picking a setting no longer re-runs its reaction (challenge stays loaded, quote queue not reshuffled). The random theme is a signal in `states/theme`; `overrideConfig` on `theme` and `customTheme` clears it on a same-value write, the one case effects can't see. Theme reactions resolve one configured theme; picking a theme turns auto switch off via `overrideConfig`, so whole-config apply sets `autoSwitchTheme` last |
 | [x] | C3 | M · commit per area; PR for test modules | Move mutable `Config.x` reads to the store, by area: format singleton; commandline lists; controllers; input; test modules. Not a find-and-replace: reads inside components and effects become tracked, and manual refresh code they replace goes | C1 | Done in [#8617](https://github.com/monkeytypegame/monkeytype/pull/8617), commit per area: every read outside `config/` uses `getConfig` (whole-object reads pass the store); lint bans importing `Config` from `config/store` outside `config/`, whose own reads go with C4. Few reads ran tracked: the live speed/burst text now follows the speed unit at once, the funbox "react on" reads are gone, the commandline preview effect is keyed on the active command (`on`). The store is read-only: mutate-then-set code copies first (custom background filter). `Funbox.activate` writes the funbox through `setConfig` (C1 leftover). Typing profiled: no difference |
-| [ ] | C4 | L · PR | Delete the mutable config object, the config event bus and the full-config-change events; whole-config apply becomes one batched reconcile (the `batch` already exists since C1); convert remaining test subscribers (pace caret, tts, practise words; test-logic's goes in T8d) to effects | C2, C3, L2 | Last step of C. Prep done in a master commit: every config-bus subscriber is an effect (pace caret, tts, practise words, and test-logic's in place: T8d moves them out); the arabic lazy mode preference is saved by `lazyMode`'s `afterSet` (user writes only, as before); practise words resets on a mode change other than to custom, so its own write never resets it. Left: the bus and full-config-change events, the apply, the mutable object. Since C2 no subscriber outside the test listens for full-config-change; `autoSwitchTheme` sits last in `lastConfigsToApply` only because `overrideConfig` turns it off on a theme pick, and that entry can go once apply no longer runs overrides. Apply clears the random theme only through those overrides (the `customTheme` same-value write), so it must clear it explicitly once they stop running. Converted effects only fire on a changed value, not on re-picking the current one |
+| [x] | C4 | L · PR | Delete the mutable config object, the config event bus and the full-config-change events; convert remaining test subscribers (pace caret, tts, practise words; test-logic's goes in T8d) to effects | C2, C3, L2 | Done in [#8618](https://github.com/monkeytypegame/monkeytype/pull/8618): prep in a master commit made every config-bus subscriber an effect (test-logic's in place: T8d moves them out). The bus, the full-config-change events and the mutable object are gone; `config/` reads the store, code that keeps or sends the whole config takes a plain copy (`getConfigSnapshot`). Whole-config apply stays ordered `setConfig` per key in one `batch` (not a single reconcile): replaying the setters keeps today's cross-key fixes (`overrideConfig`, `overrideValue`, `isBlocked`, `afterSet`), and `lastConfigsToApply` keeps stored values winning over overrides. Converted effects only fire on a changed value, not on re-picking the current one. Next: rename `getConfig` → `config` (own PR) |
 | [x] | C5 | M · PR | Merge commandline metadata into config metadata; command icons become icon-component types | none | Done in [#8537](https://github.com/monkeytypegame/monkeytype/pull/8537): each config key's metadata has a required `commandline` (`null` with a reason for keys set elsewhere or with hand-built lists); `CommandlineConfigKey` is derived from it. Side effects (`afterExec` restarts, sound/font `hover` previews) moved to `commandline/config-actions.ts`, since the modules they call import the setters; its restarts go with T6b. Generated options use the settings labels (`optionLabel` from `optionsMetadata`), command names the settings `displayString`; renamed labels are in the spec's intended deviations (blind mode keeps on/off). `Command.icon`/`iconType` → `fa: FaObject`; the modal's text-icon branch was dead and is gone |
 
 ## Track U: user data (parallel with T and C)
@@ -178,9 +178,9 @@ Serial; each step needs the previous one. Verify each in the browser (`__mt.chec
 ## Suggested sequencing for 2–3 people
 
 - **Person 1 (critical path):** T0 → TH1 → T1 → T2 → T3 → T4 → T4b → T5 → T6a → T6b → T6c → T7 and T8a → T8b → T8c → T8d.
-- **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → U3a → C3 areas → U4 → U7 → U5a → U5b–U5d → then C4 once T8d lands.
+- **Person 2 (state):** C1 → C2 (×5) → U1 → U2 → U3 → U3a → C3 areas → U4 → U7 → U5a → U5b–U5d → C4 (done).
 - **Person 3 / agents (leaves):** EP1, EP2, L1, L2 first (they gate T5), then L8, L7, L9, L10, L4, L5, L6, C5, L11, EP4; L3 and L12 once T3 lands; EP3 after T1.
-- **Converge:** C4, U6, then CL, then TR1.
+- **Converge:** U6, then CL, then TR1 (C4 done).
 
 ## Per-step checklist
 
