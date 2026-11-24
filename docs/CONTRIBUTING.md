@@ -60,6 +60,7 @@ Before submitting a theme make sure...
 - the text color is either black or white (or very close to these colors)
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+- your theme is safe in blind mode: error display (borders, colors, animations) is hidden there — guard error-styling rules with `:not([data-ui-blind])` (see [THEMES.md](/docs/THEMES.md))
 
 If you want to contribute themes but don't know how, check [THEMES.md](/docs/THEMES.md)
 

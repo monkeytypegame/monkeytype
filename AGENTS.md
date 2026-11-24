@@ -3,6 +3,7 @@ Frontend is partially migrated from vanilla JS to SolidJS — new components use
 Single test file: `pnpm vitest run path/to/test.ts`
 When running oxc lint, always use `--format agent`.
 Format with `npx oxfmt <files>` (not prettier).
+For style linting, use `pnpm lint-styles` (stylelint, config at repo root).
 For typechecking, use `pnpm oxlint --type-aware --type-check` instead of `tsc`.
 Coding standards (styling, icons, refs, modals) for writing and reviewing code: `CODING_STANDARDS.md`.
 Before any browser testing, read `docs/AGENT_BROWSER.md` (dev server, `window.__mt` debug handle, gotchas).
