@@ -702,7 +702,9 @@ export async function generateWords(
 
   let wordList = language.words;
   if (getTestSettings().mode === "custom") {
-    wordList = getTestSettings().customText.text;
+    // a copy: the test settings store reconciles this array in place, so the
+    // cached Wordset (keyed by array identity) would keep a stale length
+    wordList = [...getTestSettings().customText.text];
   } else if (getTestSettings().mode === "quote") {
     wordList = await getQuoteWordList(language, isCurrent, wordOrder);
   } else if (getTestSettings().mode === "zen") {
@@ -719,7 +721,8 @@ export async function generateWords(
   );
 
   if (wordOrder === "reverse") {
-    wordList = wordList.reverse();
+    // not in place: wordList is the cached language's or the store's array
+    wordList = [...wordList].reverse();
   }
 
   const funbox = findSingleActiveFunboxWithFunction("withWords");
