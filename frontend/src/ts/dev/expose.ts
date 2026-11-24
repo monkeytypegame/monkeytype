@@ -13,6 +13,7 @@ import * as CustomText from "../test/custom-text";
 import { getCurrentInput } from "../test/engine/events/data";
 import { restartTest } from "../test/test-logic";
 import { quickLogin, signOut, whenUserDataLoaded } from "./auth";
+import { getUseTanstackCharts, setUseTanstackCharts } from "./chart-parity";
 import { trackedSignals } from "./signal-tracker";
 import { compose, typeText } from "./typing-driver";
 
@@ -308,6 +309,14 @@ const mt = {
    * after 10s. No-op without a session.
    */
   signOut,
+  /**
+   * Dev-only chart renderer parity flag: whether charts render with the new
+   * TanStack implementation rather than Chart.js (default false). Persists
+   * across reloads, and is always false in production builds.
+   */
+  getUseTanstackCharts,
+  /** Sets the chart renderer parity flag; dev only, persists across reloads. */
+  setUseTanstackCharts,
   /**
    * Modules hot-updated since the page loaded. Not empty: the page may hold
    * stale module state, reload before measuring.

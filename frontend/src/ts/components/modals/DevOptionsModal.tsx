@@ -5,6 +5,10 @@ import { z } from "zod";
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
 import {
+  getUseTanstackCharts,
+  setUseTanstackCharts,
+} from "../../dev/chart-parity";
+import {
   cycleUserDataLoadFail,
   getForcedUserDataLoadFail,
 } from "../../dev/fail-user-data-load";
@@ -146,6 +150,12 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         showModal("DevInboxPicker");
       },
+    },
+    {
+      icon: "fa-chart-area",
+      label: () =>
+        `Chart Renderer (${getUseTanstackCharts() ? "TanStack Charts" : "Chart.js"})`,
+      onClick: () => setUseTanstackCharts(!getUseTanstackCharts()),
     },
     {
       icon: "fa-chart-bar",

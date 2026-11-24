@@ -1,0 +1,22 @@
+// TanStack Charts theme tokens (docs/specs/tanstack-charts): the library
+// reads these off its chart host element (.ts-chart-host), so a theme change
+// repaints the charts without touching chart definitions.
+.ts-chart-host {
+  // foreground for ticks, labels, titles and default grid lines
+  color: var(--sub-color);
+
+  // default categorical palette for marks without an explicit paint
+  --ts-chart-1: var(--main-color);
+  --ts-chart-2: var(--sub-color);
+  --ts-chart-3: var(--error-color);
+  --ts-chart-4: var(--sub-alt-color);
+
+  // DOM tooltip chrome
+  --ts-chart-tooltip-background: var(--bg-color);
+  --ts-chart-tooltip-color: var(--text-color);
+  --ts-chart-tooltip-border: 1px solid var(--sub-alt-color);
+  --ts-chart-tooltip-border-radius: calc(var(--roundness) / 2);
+  --ts-chart-tooltip-shadow: 0 calc(var(--roundness) / 2)
+    calc(var(--roundness) * 1.5)
+    color-mix(in srgb, var(--sub-alt-color) 50%, transparent);
+}
