@@ -1011,20 +1011,24 @@ export function createWordsLayout(options: {
   );
 
   const resized = debounce(250, async () => {
-    if (isTestFinished()) return;
-    const generation = layoutGeneration;
-    if (getConfig.tapeMode !== "off") {
-      await scrollTape();
-    } else {
-      const centering = centerActiveLine();
-      invalidateTypoHintsLayout();
-      await centering;
+    // cleared on every exit: a leftover flag hides the next test's caret
+    try {
+      if (isTestFinished()) return;
+      const generation = layoutGeneration;
+      if (getConfig.tapeMode !== "off") {
+        await scrollTape();
+      } else {
+        const centering = centerActiveLine();
+        invalidateTypoHintsLayout();
+        await centering;
+      }
+      if (generation !== layoutGeneration) return;
+      positionWordsInput();
+      focusInputElement(true);
+      scrollWindowToActiveWord(true);
+    } finally {
+      setResizing(false);
     }
-    if (generation !== layoutGeneration) return;
-    positionWordsInput();
-    focusInputElement(true);
-    scrollWindowToActiveWord(true);
-    setResizing(false);
   });
   // the caret is hidden while resizing, shown once the words are laid out
   const [isResizing, setResizing] = createSignal(false);
