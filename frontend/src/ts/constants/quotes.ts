@@ -1,9 +1,17 @@
 import { Language } from "@monkeytype/schemas/languages";
-import { QuoteData } from "@monkeytype/schemas/quotes";
+import { QuoteData, QuoteDataQuote } from "@monkeytype/schemas/quotes";
 import { tryCatch } from "@monkeytype/util/trycatch";
-import { Quote } from "../types/quotes";
+import { RequiredProperties } from "../utils/misc";
 import { cachedFetchJson } from "../utils/json-data";
 import { removeLanguageSize } from "../utils/strings";
+
+export type Quote = QuoteDataQuote & {
+  group: number;
+  language: Language;
+  textSplit?: string[];
+};
+
+export type QuoteWithTextSplit = RequiredProperties<Quote, "textSplit">;
 
 export type LanguageQuotes = {
   quotes: Quote[];

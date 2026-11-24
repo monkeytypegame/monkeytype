@@ -1,7 +1,7 @@
 import { createStore } from "solid-js/store";
 import { z } from "zod";
 
-import type { Quote } from "../types/quotes";
+import type { Quote } from "../constants/quotes";
 import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 import { showSuccessNotification } from "./notifications";
 

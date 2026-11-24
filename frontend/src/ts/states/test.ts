@@ -17,7 +17,7 @@ import { createStore } from "solid-js/store";
 import { createTrigger } from "../hooks/createTrigger";
 import { createSignalWithSetters } from "../hooks/createSignalWithSetters";
 import { requestDebouncedAnimationFrame } from "../utils/debounced-animation-frame";
-import { QuoteWithTextSplit } from "../types/quotes";
+import { QuoteWithTextSplit } from "../constants/quotes";
 import { getLayout } from "../utils/json-data";
 import type { Direction } from "../utils/strings";
 import { mirrorLayoutKeys } from "../utils/key-converter";

@@ -1,6 +1,6 @@
 import { getConfig } from "../../config/store";
 import { isQuoteFavorite, setQuoteFavorite } from "../../queries/user";
-import { Quote } from "../../types/quotes";
+import { Quote } from "../../constants/quotes";
 import {
   showErrorNotification,
   showSuccessNotification,

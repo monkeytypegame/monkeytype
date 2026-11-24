@@ -12,6 +12,7 @@ import {
 
 import { isAuthenticated } from "../../../../auth/state";
 import { getConfig } from "../../../../config/store";
+import { Quote } from "../../../../constants/quotes";
 import { createTrigger } from "../../../../hooks/createTrigger";
 import { getTags } from "../../../../queries/tags";
 import {
@@ -31,7 +32,6 @@ import { showQuoteReportModal } from "../../../../states/quote-report";
 import { ResultDetails, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
 import { getTimeTodayString } from "../../../../test/today-tracker";
-import { Quote } from "../../../../types/quotes";
 import { cn } from "../../../../utils/cn";
 import { secondsToString } from "../../../../utils/date-and-time";
 import {

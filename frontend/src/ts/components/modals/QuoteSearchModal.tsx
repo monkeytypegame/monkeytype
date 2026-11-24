@@ -13,7 +13,7 @@ import Ape from "../../ape";
 import { isAuthenticated } from "../../auth/state";
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { getLanguageQuotes } from "../../constants/quotes";
+import { getLanguageQuotes, Quote } from "../../constants/quotes";
 import { createTrigger } from "../../hooks/createTrigger";
 import { createDebouncedEffectOn } from "../../hooks/effects";
 import {
@@ -35,7 +35,6 @@ import { showQuoteReportModal } from "../../states/quote-report";
 import { showSimpleModal } from "../../states/simple-modal";
 import { setSelectedQuoteId } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
-import { Quote } from "../../types/quotes";
 import { cn } from "../../utils/cn";
 import { getLanguage } from "../../utils/json-data";
 import * as Misc from "../../utils/misc";

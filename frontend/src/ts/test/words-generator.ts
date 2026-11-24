@@ -2,8 +2,12 @@ import { getTestSettings } from "./engine/test-settings";
 import { getConfig } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
-import { Quote, QuoteWithTextSplit } from "../types/quotes";
-import { getQuoteById, getLanguageQuotes } from "../constants/quotes";
+import {
+  Quote,
+  QuoteWithTextSplit,
+  getQuoteById,
+  getLanguageQuotes,
+} from "../constants/quotes";
 import { pickFavoriteQuote, pickQueuedQuote } from "./quote-picker";
 import { getFavoriteQuoteIds } from "../queries/user";
 import * as BritishEnglish from "./british-english";

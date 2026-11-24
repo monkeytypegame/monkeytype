@@ -1,6 +1,5 @@
-import { Quote } from "../types/quotes";
 import { randomElementFromArray, shuffle } from "../utils/arrays";
-import { getQuoteById, LanguageQuotes } from "../constants/quotes";
+import { Quote, getQuoteById, LanguageQuotes } from "../constants/quotes";
 
 // no-repeat queue: the quotes of the selected length groups, shuffled, taken
 // in order and reshuffled once used up. Rebuilt on the next pick when the

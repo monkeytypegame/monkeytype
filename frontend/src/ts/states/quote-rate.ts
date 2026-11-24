@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
-import { Quote } from "../types/quotes";
+import { Quote } from "../constants/quotes";
 import { showErrorNotification } from "./notifications";
 import { showModal } from "./modals";
 import { isSafeNumber } from "@monkeytype/util/numbers";
