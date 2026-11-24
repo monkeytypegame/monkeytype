@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@solidjs/testing-library";
 import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
 
-import { Checkbox } from "../../../../src/ts/components/ui/form/Checkbox";
+import { Checkbox } from "../../../../src/ts/components/common/form/Checkbox";
 
 function makeField(name: string, checked = false): AnyFieldApi {
   return {

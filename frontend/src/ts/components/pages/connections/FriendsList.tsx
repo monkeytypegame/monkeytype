@@ -29,12 +29,12 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H2 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
-import { User } from "../../common/User";
 import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
+import { User } from "../../common/User";
 
 export function FriendsList() {
   const query = useQuery(() => getFriendsListQuery());

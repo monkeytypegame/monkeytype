@@ -17,10 +17,10 @@ import {
 } from "../../../states/notifications";
 import { normalizeName } from "../../../utils/strings";
 import { AnimatedModal } from "../../common/AnimatedModal";
-import { Checkbox } from "../../ui/form/Checkbox";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { allFieldsMandatory, fromSchema } from "../../ui/form/utils";
+import { Checkbox } from "../../common/form/Checkbox";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { allFieldsMandatory, fromSchema } from "../../common/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,

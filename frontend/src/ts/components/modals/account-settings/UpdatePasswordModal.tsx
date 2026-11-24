@@ -5,7 +5,7 @@ import { reauthenticate, signOut } from "../../../auth/actions";
 import { isAuthenticated, isUsingPasswordAuth } from "../../../auth/state";
 import { showNoticeNotification } from "../../../states/notifications";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { getPasswordSchema } from "../../ui/form/utils";
+import { getPasswordSchema } from "../../common/form/utils";
 
 export function showUpdatePasswordModal(): void {
   if (!isAuthenticated()) return;

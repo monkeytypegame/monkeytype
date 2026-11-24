@@ -16,12 +16,12 @@ import { secondsToString } from "../../../utils/date-and-time";
 import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
 import { Fa } from "../../common/Fa";
-import { User } from "../../common/User";
 import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
+import { User } from "../../common/User";
 
 type SpeedEntry = LeaderboardEntry;
 type XpEntry = XpLeaderboardEntry;

@@ -31,7 +31,7 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
-import SlimSelect from "../../ui/SlimSelect";
+import SlimSelect from "../../common/SlimSelect";
 import { verifyResultFiltersStructure } from "./utils";
 
 export function Filters(props: {

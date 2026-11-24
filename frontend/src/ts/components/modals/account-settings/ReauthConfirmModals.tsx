@@ -9,7 +9,7 @@ import { showNoticeNotification } from "../../../states/notifications";
 import { ExecReturn, showSimpleModal } from "../../../states/simple-modal";
 import FileStorage from "../../../utils/file-storage";
 import { reloadAfter } from "../../../utils/misc";
-import { getPasswordSchema } from "../../ui/form/utils";
+import { getPasswordSchema } from "../../common/form/utils";
 
 export function showDeleteAccountModal(): void {
   showReauthConfirmModal({

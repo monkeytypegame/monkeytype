@@ -17,7 +17,7 @@ import { Advertisement } from "../../common/Advertisement";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
+import { CommandlineHotkey } from "../../core/hotkeys/CommandlineHotkey";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";

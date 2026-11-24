@@ -12,12 +12,12 @@ import {
 } from "../../states/notifications";
 import { getUserToReport, setUserToReport } from "../../states/user-report";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Captcha } from "../ui/form/Captcha";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
-import SlimSelect from "../ui/SlimSelect";
+import { Captcha } from "../common/form/Captcha";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
+import { allFieldsMandatory, fromSchema } from "../common/form/utils";
+import SlimSelect from "../common/SlimSelect";
 
 export function UserReportModal() {
   const form = createForm(() => ({

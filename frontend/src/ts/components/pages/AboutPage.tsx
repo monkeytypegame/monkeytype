@@ -15,8 +15,8 @@ import AsyncContent from "../common/AsyncContent";
 import { Button } from "../common/Button";
 import { ChartJs } from "../common/ChartJs";
 import { H2, H3 } from "../common/Headers";
-import { CommandlineHotkey } from "../hotkeys/CommandlineHotkey";
-import { QuickRestartHotkey } from "../hotkeys/QuickRestartHotkey";
+import { CommandlineHotkey } from "../core/hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../core/hotkeys/QuickRestartHotkey";
 
 export function AboutPage(): JSXElement {
   const contributors = useQuery(() => getContributorsQueryOptions());

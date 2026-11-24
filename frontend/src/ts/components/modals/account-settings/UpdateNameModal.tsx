@@ -7,7 +7,7 @@ import { isAuthenticated } from "../../../auth/state";
 import { updateName, getUserData } from "../../../queries/user";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
-import { getPasswordSchema } from "../../ui/form/utils";
+import { getPasswordSchema } from "../../common/form/utils";
 
 export function showUpdateNameModal(): void {
   const userData = getUserData();

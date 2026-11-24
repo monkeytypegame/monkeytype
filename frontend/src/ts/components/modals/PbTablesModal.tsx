@@ -19,7 +19,7 @@ import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../ui/table/DataTable";
+} from "../common/table/DataTable";
 
 type PBWithMode2 = PersonalBest & {
   mode2: Mode2<Mode>;

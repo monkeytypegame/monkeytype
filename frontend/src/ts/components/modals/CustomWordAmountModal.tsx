@@ -8,9 +8,9 @@ import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { restartTest } from "../../test/test-logic";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { fromSchema } from "../ui/form/utils";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { fromSchema } from "../common/form/utils";
 
 export function CustomWordAmountModal(): JSXElement {
   const form = createForm(() => ({

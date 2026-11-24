@@ -1,6 +1,6 @@
 import { JSXElement, splitProps } from "solid-js";
 
-import { Button, ButtonProps } from "../../common/Button";
+import { Button, ButtonProps } from "../Button";
 
 export type FormStateSlice = {
   canSubmit: boolean;

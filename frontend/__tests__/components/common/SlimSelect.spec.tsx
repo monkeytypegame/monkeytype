@@ -61,7 +61,7 @@ const { instances, MockSlimSelect } = vi.hoisted(() => {
 
 vi.mock("slim-select", () => ({ default: MockSlimSelect }));
 
-import SlimSelect from "../../../src/ts/components/ui/SlimSelect";
+import SlimSelect from "../../../src/ts/components/common/SlimSelect";
 
 const optionA = { value: "a", text: "A" };
 const optionB = { value: "b", text: "B" };

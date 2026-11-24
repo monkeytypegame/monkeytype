@@ -3,7 +3,7 @@ import { AnyFieldApi } from "@tanstack/solid-form";
 import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
 
-import { InputField } from "../../../../src/ts/components/ui/form/InputField";
+import { InputField } from "../../../../src/ts/components/common/form/InputField";
 
 function makeField(
   name: string,

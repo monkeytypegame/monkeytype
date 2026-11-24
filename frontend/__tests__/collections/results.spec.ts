@@ -9,7 +9,7 @@ import {
   getLastResult,
   waitForResultsReady,
 } from "../../src/ts/collections/results";
-import { setUserId } from "../../src/ts/auth/state";
+import { setTestUserId } from "../__harness__/auth-user";
 
 /** Lets a queued effect update run (a set signal flushes on the next turn). */
 async function flush(): Promise<void> {
@@ -49,7 +49,7 @@ function mockResults(ids: { _id: string; timestamp: number }[]): void {
 
 describe("results collection: last result", () => {
   beforeEach(async () => {
-    setUserId(null);
+    setTestUserId(null);
     await flush();
   });
 
@@ -58,18 +58,18 @@ describe("results collection: last result", () => {
       { _id: "a-old", timestamp: 1 },
       { _id: "a-new", timestamp: 2 },
     ]);
-    setUserId("userA");
+    setTestUserId("userA");
     // the account route's loader starts the download the same way
     await waitForResultsReady();
     await waitFor(() => getLastResult() !== undefined, "user A's results");
     expect(getLastResult()?._id).toBe("a-new");
 
-    setUserId(null);
+    setTestUserId(null);
     await flush();
     expect(getLastResult()).toBeUndefined();
 
     mockResults([{ _id: "b-only", timestamp: 3 }]);
-    setUserId("userB");
+    setTestUserId("userB");
     await waitForResultsReady();
     await waitFor(() => getLastResult() !== undefined, "user B's results");
     expect(getLastResult()?._id).toBe("b-only");

@@ -4,13 +4,13 @@ import { z } from "zod";
 
 import preview from "#.storybook/preview";
 
-import { Checkbox } from "../../src/ts/components/ui/form/Checkbox";
-import { InputField } from "../../src/ts/components/ui/form/InputField";
-import { SubmitButton } from "../../src/ts/components/ui/form/SubmitButton";
+import { Checkbox } from "../../src/ts/components/common/form/Checkbox";
+import { InputField } from "../../src/ts/components/common/form/InputField";
+import { SubmitButton } from "../../src/ts/components/common/form/SubmitButton";
 import {
   fieldMandatory,
   fromSchema,
-} from "../../src/ts/components/ui/form/utils";
+} from "../../src/ts/components/common/form/utils";
 import { showNoticeNotification } from "../../src/ts/states/notifications";
 import { sleep } from "../../src/ts/utils/misc";
 

@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   DataTable,
   DataTableColumnDef,
-} from "../../../../src/ts/components/ui/table/DataTable";
+} from "../../../../src/ts/components/common/table/DataTable";
 
 const [localStorage, setLocalStorage] = createSignal<
   { id: string; desc: boolean }[]

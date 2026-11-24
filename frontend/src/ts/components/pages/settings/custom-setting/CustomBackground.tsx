@@ -17,9 +17,9 @@ import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { Separator } from "../../../common/Separator";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomBackground(): JSXElement {

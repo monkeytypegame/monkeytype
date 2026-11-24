@@ -5,7 +5,7 @@ import { ZodDate, ZodFirstPartyTypeKind, ZodNumber, ZodTypeAny } from "zod";
 
 import { cn } from "../../../utils/cn";
 import { getZodType, unwrapSchema } from "../../../utils/zod";
-import { Button } from "../../common/Button";
+import { Button } from "../Button";
 import { FieldIndicator } from "./FieldIndicator";
 
 export function InputField(props: {

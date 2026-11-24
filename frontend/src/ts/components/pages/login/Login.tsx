@@ -11,12 +11,12 @@ import {
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { Button } from "../../common/Button";
+import { Checkbox } from "../../common/form/Checkbox";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { allFieldsMandatory } from "../../common/form/utils";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
-import { Checkbox } from "../../ui/form/Checkbox";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
   // the sign in action shows its own errors

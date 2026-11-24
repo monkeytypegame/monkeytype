@@ -10,12 +10,12 @@ import {
 import { showSimpleModal } from "../../../states/simple-modal";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
-import { User } from "../../common/User";
 import {
   DataTable,
   DataTableColumnDef,
   DataTableFeatures,
-} from "../../ui/table/DataTable";
+} from "../../common/table/DataTable";
+import { User } from "../../common/User";
 import { Section } from "./utils";
 
 export function BlockedUsersTab() {
