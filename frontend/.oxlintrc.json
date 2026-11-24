@@ -261,7 +261,8 @@
                   "**/integrations/ads/**",
                   "**/integrations/analytics",
                   "**/pages/**",
-                  "**/anim"
+                  // animation settings: the engine renders nothing
+                  "**/states/fps-limit"
                 ],
                 "message": "The engine never imports UI or input: expose a signal and react to it outside the engine."
               },

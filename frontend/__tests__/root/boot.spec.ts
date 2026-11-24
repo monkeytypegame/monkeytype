@@ -14,7 +14,6 @@ vi.mock("../../src/ts/auth/actions", () => ({
 vi.mock("../../src/ts/auth/providers/firebase", () => ({
   firebaseAuthProvider: {},
 }));
-vi.mock("../../src/ts/anim", () => ({ applyEngineSettings: vi.fn() }));
 vi.mock("../../src/ts/cookies", () => ({
   getAcceptedCookies: () => null,
   activateWhatsAccepted: vi.fn(),

@@ -6,7 +6,7 @@ import {
   getfpsLimit,
   resetFpsLimit,
   setfpsLimit,
-} from "../../anim";
+} from "../../states/fps-limit";
 import {
   getGlarsesMode,
   resetGlarsesMode,

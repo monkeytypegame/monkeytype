@@ -146,6 +146,8 @@ export function enableTimerDebug(): void {
 export function clear(logEnd = false, now = performance.now()): void {
   stopped = true;
   setTimerRunning(false);
+  clearSlowTimer();
+  slowTimerCount = 0;
   newTimer.reset();
   if (timer !== null) clearTimeout(timer);
   if (logEnd) {

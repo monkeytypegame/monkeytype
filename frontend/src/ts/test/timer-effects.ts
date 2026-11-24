@@ -1,6 +1,5 @@
 import { createEffect, createRoot, on } from "solid-js";
 import { KeymapLayout, Layout } from "@monkeytype/schemas/configs";
-import { clearLowFpsMode, setLowFpsMode } from "../anim";
 import { getConfig } from "../config/store";
 import { setConfig } from "../config/setters";
 import { playTimeWarning } from "../audio";
@@ -12,7 +11,7 @@ import {
 import { capitalizeFirstLetter } from "../utils/strings";
 import { getTestSettings, getTestTimeLimit } from "./engine/test-settings";
 import { getCurrentInput } from "./engine/events/data";
-import { getTimerTick, isSlowTimer, isTimerRunning } from "./engine/test-timer";
+import { getTimerTick } from "./engine/test-timer";
 import * as TestWords from "./engine/test-words";
 
 // The timer's side effects outside the engine, as effects on its signals.
@@ -86,18 +85,6 @@ createRoot(() => {
         if (tick === 0) return;
         timeWarning(tick);
         layoutfluid(tick);
-      },
-      { defer: true },
-    ),
-  );
-
-  // slow timer: animations off while the timer runs
-  createEffect(
-    on(
-      () => [isTimerRunning(), isSlowTimer()] as const,
-      ([running, slow]) => {
-        if (!running) clearLowFpsMode();
-        else if (slow) setLowFpsMode();
       },
       { defer: true },
     ),

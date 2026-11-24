@@ -1,4 +1,3 @@
-import { applyEngineSettings } from "./anim";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { loadFromLocalStorage } from "./config/lifecycle";
 import * as Cookies from "./cookies";
@@ -20,7 +19,6 @@ export async function boot(): Promise<void> {
   initConnection();
   Psa.init();
 
-  applyEngineSettings();
   const configLoaded = loadFromLocalStorage();
   void fetchLatestVersion().then((data) => {
     if (data === null) return;

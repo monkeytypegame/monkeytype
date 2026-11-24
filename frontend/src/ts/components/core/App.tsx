@@ -21,6 +21,7 @@ import { Header } from "../layout/header/Header";
 import { Overlays } from "../layout/overlays/Overlays";
 import { Modals } from "../modals/Modals";
 import { BarTimerProgress } from "../pages/test/live-stats/BarTimerProgress";
+import { AnimeEngine } from "./AnimeEngine";
 import { CustomBackground } from "./CustomBackground";
 import { Font } from "./Font";
 import { Funbox } from "./Funbox";
@@ -40,6 +41,7 @@ export function App(): JSXElement {
 
   return (
     <Providers>
+      <AnimeEngine />
       <Overlays />
       <FocusModeExit />
       <CustomBackground />
