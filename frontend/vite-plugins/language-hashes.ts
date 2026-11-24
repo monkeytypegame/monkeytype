@@ -23,9 +23,13 @@ function getHashes(): Record<string, string> {
   console.log("\nHashing languages...");
 
   const hashes = Object.fromEntries(
-    readdirSync("./static/languages").map((file) => {
-      return [file.slice(0, -5), calcHash(file)];
-    }),
+    readdirSync("./static/languages")
+      // only language files: stray folders (eg. tooling's .claude) and
+      // dotfiles would fail the read
+      .filter((file) => file.endsWith(".json"))
+      .map((file) => {
+        return [file.slice(0, -5), calcHash(file)];
+      }),
   );
 
   const end = performance.now();

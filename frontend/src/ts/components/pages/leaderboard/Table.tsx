@@ -9,11 +9,11 @@ import { Accessor, createMemo, JSXElement, Show } from "solid-js";
 
 import { getUserId } from "../../../auth/state";
 import { hasConnection } from "../../../collections/connections";
+import { getConfig } from "../../../config/store";
 import { bp, BreakpointKey } from "../../../states/breakpoints";
-import { getFormatting } from "../../../states/core";
 import { cn } from "../../../utils/cn";
 import { secondsToString } from "../../../utils/date-and-time";
-import { Formatting } from "../../../utils/format";
+import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import { abbreviateNumber } from "../../../utils/numbers";
 import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
@@ -74,7 +74,6 @@ export function Table(
   const speedColumns = createMemo(() => {
     return getSpeedColumns({
       friendsOnly: props.friendsOnly,
-      format: getFormatting(),
       userOverride: props.userOverride,
       addHeader: props.userOverride !== undefined && bp().xl,
     });
@@ -253,12 +252,10 @@ function defineResponsivePair<T extends RowData>() {
 
 function getSpeedColumns({
   friendsOnly,
-  format,
   userOverride,
   addHeader,
 }: {
   friendsOnly: boolean;
-  format: Formatting;
   userOverride?: Accessor<JSXElement>;
   addHeader?: boolean;
 }): DataTableColumnDef<SpeedEntry>[] {
@@ -272,13 +269,13 @@ function getSpeedColumns({
       columns: [
         {
           path: "wpm",
-          header: format.typingSpeedUnit,
-          format: (v) => format.typingSpeed(v, { showDecimalPlaces: true }),
+          header: getConfig.typingSpeedUnit,
+          format: (v) => formatTypingSpeed(v, { showDecimalPlaces: true }),
         },
         {
           path: "acc",
           header: "accuracy",
-          format: (v) => format.percentage(v, { showDecimalPlaces: true }),
+          format: (v) => formatPercentage(v, { showDecimalPlaces: true }),
         },
       ],
       switchBreakpoint: "xl",
@@ -289,12 +286,12 @@ function getSpeedColumns({
         {
           path: "raw",
           header: "raw",
-          format: (v) => format.typingSpeed(v, { showDecimalPlaces: true }),
+          format: (v) => formatTypingSpeed(v, { showDecimalPlaces: true }),
         },
         {
           path: "consistency",
           header: "consistency",
-          format: (v) => format.percentage(v, { showDecimalPlaces: true }),
+          format: (v) => formatPercentage(v, { showDecimalPlaces: true }),
         },
       ],
       switchBreakpoint: "xl",

@@ -5,6 +5,8 @@ import Ape from "../../src/ts/ape";
 import {
   __testing,
   addBadge,
+  getFavoriteQuoteIds,
+  isQuoteFavorite,
   addXp,
   getUserData,
   loadUserData,
@@ -34,7 +36,6 @@ vi.mock(
   }),
 );
 
-const DAY = 24 * 60 * 60 * 1000;
 const LAST_DAY = Date.UTC(2026, 9, 20, 12);
 
 function user(overrides: Partial<UserData> = {}): UserData {
@@ -199,7 +200,7 @@ describe("useUser", () => {
 });
 
 describe("direct writes", () => {
-  it("records a result: typing stats, activity and pb", () => {
+  it("records a result: typing stats and pb", () => {
     recordResult(result(), { isPb: true });
 
     const u = getUserData();
@@ -208,7 +209,6 @@ describe("direct writes", () => {
       startedTests: 4,
       completedTests: 1,
     });
-    expect(u?.testActivity?.testsByDays).toEqual([3, null, 3]);
     expect(u?.personalBests.time["15"]).toEqual([
       expect.objectContaining({ wpm: 100, raw: 105, language: "english" }),
     ]);
@@ -219,13 +219,9 @@ describe("direct writes", () => {
     ]);
   });
 
-  it("records a result on a later day, padding missed days", () => {
-    recordResult(result({ timestamp: LAST_DAY + 3 * DAY }), { isPb: false });
+  it("records a result without a pb", () => {
+    recordResult(result(), { isPb: false });
 
-    expect(getUserData()?.testActivity).toEqual({
-      testsByDays: [3, null, 2, null, null, 1],
-      lastDay: LAST_DAY + 3 * DAY,
-    });
     expect(getUserData()?.personalBests.time).toEqual({});
   });
 
@@ -431,5 +427,35 @@ describe("optimistic actions", () => {
       { id: 1, selected: false },
       { id: 2, selected: true },
     ]);
+  });
+});
+
+describe("favourite quotes", () => {
+  beforeEach(() => {
+    __testing.setUser(
+      user({
+        favoriteQuotes: {
+          english: ["1", "2"],
+          english_1k: ["3"],
+          german: ["4"],
+        },
+      }),
+    );
+  });
+
+  it("collects the ids across a language's size variants", () => {
+    expect(getFavoriteQuoteIds("english_10k")).toEqual(["1", "2", "3"]);
+    expect(getFavoriteQuoteIds("french")).toEqual([]);
+  });
+
+  it("tells whether a quote is a favourite", () => {
+    expect(isQuoteFavorite({ language: "english", id: 3 })).toBe(true);
+    expect(isQuoteFavorite({ language: "german", id: 1 })).toBe(false);
+  });
+
+  it("has no favourites when signed out", () => {
+    __testing.setUser(undefined);
+    expect(getFavoriteQuoteIds("english")).toEqual([]);
+    expect(isQuoteFavorite({ language: "english", id: 1 })).toBe(false);
   });
 });

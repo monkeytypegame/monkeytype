@@ -3,7 +3,7 @@ import { roundTo2 } from "@monkeytype/util/numbers";
 
 import { getActiveTags, getLocalTagPB, saveLocalTagPB } from "../queries/tags";
 import { getLocalPB } from "../queries/user";
-import Format from "../singletons/format";
+import { formatTypingSpeed } from "../utils/format";
 import { hideCrown, ResultTag, resultState, showCrown } from "../states/result";
 import { CompletedResult } from "../states/test";
 
@@ -59,7 +59,7 @@ export function updateCrown(
   );
   const pbDiff = result.wpm - (localPb?.wpm ?? 0);
   console.debug("Local PB", localPb, "diff", pbDiff);
-  const diffText = Format.typingSpeed(pbDiff, { showDecimalPlaces: true });
+  const diffText = formatTypingSpeed(pbDiff, { showDecimalPlaces: true });
 
   if (canGet.value) {
     if (pbDiff <= 0) {

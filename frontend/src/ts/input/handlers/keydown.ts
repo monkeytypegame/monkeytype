@@ -8,8 +8,7 @@ import {
 } from "../../states/notifications";
 import * as KeyConverter from "../../utils/key-converter";
 import * as ShiftTracker from "../../test/shift-tracker";
-import { canQuickRestart } from "../../utils/quick-restart";
-import * as CustomText from "../../test/custom-text";
+import { isLongTest } from "../../test/engine/test-settings";
 import {
   getLastBailoutAttempt,
   setCorrectShiftUsed,
@@ -20,7 +19,6 @@ import { Keycode } from "../../constants/keys";
 import { loadKeymapLayout } from "../../states/test";
 import { wordsHaveTab } from "../../test/engine/state";
 
-import { getCustomTextIndicator } from "../../states/core";
 import {
   getCurrentInput,
   getInputForWord,
@@ -44,15 +42,7 @@ export async function handleEnter(
     if (getConfig.mode === "zen") {
       TestLogic.finish();
       return;
-    } else if (
-      !canQuickRestart(
-        getConfig.mode,
-        getConfig.words,
-        getConfig.time,
-        CustomText.getData(),
-        getCustomTextIndicator()?.isLong ?? false,
-      )
-    ) {
+    } else if (isLongTest()) {
       const delay = Date.now() - getLastBailoutAttempt();
       if (getLastBailoutAttempt() === -1 || delay > 200) {
         setLastBailoutAttempt(Date.now());

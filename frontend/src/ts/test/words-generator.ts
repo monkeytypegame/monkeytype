@@ -2,10 +2,10 @@ import { getTestSettings } from "./engine/test-settings";
 import { getConfig } from "../config/store";
 import { setConfig, setQuoteLengthAll, toggleFunbox } from "../config/setters";
 import { Wordset, FunboxWordsFrequency, withWords } from "./wordset";
-import QuotesController, {
-  Quote,
-  QuoteWithTextSplit,
-} from "../controllers/quotes-controller";
+import { Quote, QuoteWithTextSplit } from "../types/quotes";
+import { getQuoteById, getLanguageQuotes } from "../constants/quotes";
+import { pickFavoriteQuote, pickQueuedQuote } from "./quote-picker";
+import { getFavoriteQuoteIds } from "../queries/user";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
@@ -529,18 +529,11 @@ async function getQuoteWordList(
       return currentWordset.words;
     }
   }
-  const languageToGet = language.name.startsWith("swiss_german")
-    ? "german"
-    : language.name;
-
   showLoaderBar();
-  const quotesCollection = await QuotesController.getQuotes(
-    languageToGet,
-    getTestSettings().quoteLength,
-  );
+  const languageQuotes = await getLanguageQuotes(language.name);
   hideLoaderBar();
 
-  if (quotesCollection.length === 0) {
+  if (languageQuotes.quotes.length === 0) {
     setConfig("mode", "words");
     throw new WordGenError(
       `No ${getTestSettings()
@@ -549,12 +542,13 @@ async function getQuoteWordList(
     );
   }
 
-  let rq: Quote;
+  let picked: Quote;
   if (
     getTestSettings().quoteLength.includes(-2) &&
     getTestSettings().quoteLength.length === 1
   ) {
-    const targetQuote = QuotesController.getQuoteById(
+    const targetQuote = getQuoteById(
+      languageQuotes,
       getTestSettings().selectedQuoteId,
     );
     if (targetQuote === undefined) {
@@ -563,42 +557,49 @@ async function getQuoteWordList(
         `Quote ${getTestSettings().selectedQuoteId} does not exist`,
       );
     }
-    rq = targetQuote;
+    picked = targetQuote;
   } else if (getTestSettings().quoteLength.includes(-3)) {
-    const randomQuote = QuotesController.getRandomFavoriteQuote(
-      getTestSettings().language,
+    const randomQuote = pickFavoriteQuote(
+      languageQuotes,
+      getFavoriteQuoteIds(getTestSettings().language),
     );
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No favorite quotes found");
     }
-    rq = randomQuote;
+    picked = randomQuote;
   } else {
-    const randomQuote = QuotesController.getRandomQuote();
+    const randomQuote = pickQueuedQuote(
+      languageQuotes,
+      getTestSettings().quoteLength,
+    );
     if (randomQuote === null) {
       setQuoteLengthAll();
       throw new WordGenError("No quotes found for selected quote length");
     }
-    rq = randomQuote;
+    picked = randomQuote;
   }
 
-  rq.language = Strings.removeLanguageSize(getTestSettings().language);
-  rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  rq.text = rq.text.replace(/…/g, "...");
-  rq.text = rq.text.trim();
-
-  if (
-    rq.britishText !== undefined &&
-    rq.britishText !== "" &&
+  // a copy: the loaded quotes stay unchanged
+  const text = picked.text
+    .replace(/ +/gm, " ")
+    .replace(/( *(\r\n|\r|\n) *)/g, "\n ")
+    .replace(/…/g, "...")
+    .trim();
+  const textSplit =
+    picked.britishText !== undefined &&
+    picked.britishText !== "" &&
     getTestSettings().britishEnglish
-  ) {
-    rq.textSplit = rq.britishText.split(" ");
-  } else {
-    rq.textSplit = rq.text.split(" ");
-  }
+      ? picked.britishText.split(" ")
+      : text.split(" ");
+  const rq: QuoteWithTextSplit = {
+    ...picked,
+    language: Strings.removeLanguageSize(getTestSettings().language),
+    text,
+    textSplit,
+  };
 
-  setCurrentQuote(rq as QuoteWithTextSplit);
+  setCurrentQuote(rq);
 
   const currentQuote = getCurrentQuote();
   if (currentQuote === null) {

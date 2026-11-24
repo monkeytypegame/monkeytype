@@ -1,12 +1,12 @@
 import { getConfig } from "../../../../config/store";
-import { getFormatting } from "../../../../states/core";
+import { formatTypingSpeed } from "../../../../utils/format";
 
 export function speedBalloon(wpm: number): string | undefined {
   const unit = getConfig.typingSpeedUnit;
   if (getConfig.alwaysShowDecimalPlaces) {
     return unit !== "wpm" ? `${wpm.toFixed(2)} wpm` : undefined;
   }
-  let text = getFormatting().typingSpeed(wpm, {
+  let text = formatTypingSpeed(wpm, {
     showDecimalPlaces: true,
     suffix: ` ${unit}`,
   });

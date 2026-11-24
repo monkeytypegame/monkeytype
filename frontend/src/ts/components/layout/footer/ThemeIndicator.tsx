@@ -1,4 +1,5 @@
 import { ThemeName } from "@monkeytype/schemas/configs";
+import { areSortedArraysEqual } from "@monkeytype/util/arrays";
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import { isAuthenticated } from "../../../auth/state";
@@ -8,7 +9,6 @@ import { getCustomThemes } from "../../../queries/custom-themes";
 import { showCommandline } from "../../../states/commandline";
 import { showNoticeNotification } from "../../../states/notifications";
 import { getRandomTheme, getThemePreview } from "../../../theme/state";
-import { areSortedArraysEqual } from "../../../utils/arrays";
 import { Fa } from "../../common/Fa";
 
 export function ThemeIndicator(): JSXElement {

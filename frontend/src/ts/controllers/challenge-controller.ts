@@ -18,7 +18,7 @@ import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
 import { TEST_SETTINGS_KEYS } from "../test/engine/test-settings";
-import { areUnsortedArraysEqual } from "../utils/arrays";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 
 let challengeLoading = false;
 

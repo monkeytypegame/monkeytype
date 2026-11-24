@@ -269,7 +269,8 @@ const mt = {
   restartTest,
   /**
    * Types through the real input handlers; `"\n"` is a line break, `"\b"` a
-   * backspace. Paced with `msPerChar`, else all in one task.
+   * backspace. Second arg `msPerChar` (a number, eg. `typeText(text, 40)`)
+   * paces it; else all in one task.
    */
   typeText,
   /**

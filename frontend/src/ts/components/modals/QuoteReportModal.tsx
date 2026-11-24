@@ -4,7 +4,7 @@ import { JSXElement, createSignal } from "solid-js";
 
 import Ape from "../../ape";
 import { getConfig } from "../../config/store";
-import QuotesController from "../../controllers/quotes-controller";
+import { getLanguageQuotes } from "../../constants/quotes";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
@@ -93,9 +93,7 @@ export function QuoteReportModal(): JSXElement {
     });
     form.reset();
 
-    const language =
-      getConfig.language === "swiss_german" ? "german" : getConfig.language;
-    const { quotes } = await QuotesController.getQuotes(language);
+    const { quotes } = await getLanguageQuotes(getConfig.language);
     const quote = quotes.find((q) => q.id === quoteId());
     setQuoteText(quote?.text ?? "");
   };
