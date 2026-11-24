@@ -1,6 +1,4 @@
-import { createMemo, createSignal, createRoot } from "solid-js";
-import { Formatting } from "../utils/format";
-import { getConfig } from "../config/store";
+import { createSignal } from "solid-js";
 
 export const [getVersion, setVersion] = createSignal<{
   text: string;
@@ -20,12 +18,3 @@ export const [isUserVerified, setUserVerified] = createSignal(false);
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);
-
-export const getFormatting = createRoot(() =>
-  createMemo(() => {
-    return new Formatting({
-      alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-      typingSpeedUnit: getConfig.typingSpeedUnit,
-    });
-  }),
-);

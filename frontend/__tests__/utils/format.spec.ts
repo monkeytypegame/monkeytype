@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { getDefaultConfig } from "../../src/ts/constants/default-config";
-import { Formatting } from "../../src/ts/utils/format";
+import { __testing as configTesting } from "../../src/ts/config/testing";
+import {
+  formatAccuracy,
+  formatDecimals,
+  formatPercentage,
+  formatRank,
+  formatTypingSpeed,
+} from "../../src/ts/utils/format";
 import { Config } from "@monkeytype/schemas/configs";
 
 describe("format.ts", () => {
@@ -274,7 +280,16 @@ describe("format.ts", () => {
   });
 });
 
-function getInstance(config?: Partial<Config>): Formatting {
-  const target: Config = { ...getDefaultConfig(), ...config };
-  return new Formatting(target);
+const formatters = {
+  typingSpeed: formatTypingSpeed,
+  percentage: formatPercentage,
+  accuracy: formatAccuracy,
+  decimals: formatDecimals,
+  rank: formatRank,
+};
+
+// sets the config store the formatters read
+function getInstance(config?: Partial<Config>): typeof formatters {
+  configTesting.replaceConfig(config ?? {});
+  return formatters;
 }

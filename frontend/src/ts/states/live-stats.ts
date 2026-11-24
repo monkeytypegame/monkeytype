@@ -2,7 +2,7 @@ import { getTestSettings } from "../test/engine/test-settings";
 import { createMemo, createRoot } from "solid-js";
 
 import { getConfig } from "../config/store";
-import Format from "../singletons/format";
+import { formatTypingSpeed } from "../utils/format";
 import * as TestWords from "../test/engine/test-words";
 import { secondsToString } from "../utils/date-and-time";
 import { getCurrentQuote, isFocusMode } from "./test";
@@ -97,7 +97,7 @@ export const showLiveStats = createRoot(() =>
 );
 export const getLiveSpeedText = createRoot(() =>
   createMemo(() =>
-    Format.typingSpeed(
+    formatTypingSpeed(
       (getConfig.blindMode ? liveStats.raw : liveStats.wpm) ?? 0,
       { showDecimalPlaces: false },
     ),
@@ -110,7 +110,7 @@ export const getLiveAccText = createRoot(() =>
 );
 export const getLiveBurstText = createRoot(() =>
   createMemo(() =>
-    Format.typingSpeed(liveStats.burst ?? 0, {
+    formatTypingSpeed(liveStats.burst ?? 0, {
       showDecimalPlaces: false,
     }),
   ),
