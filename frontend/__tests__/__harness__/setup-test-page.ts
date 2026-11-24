@@ -39,6 +39,7 @@ window.matchMedia = (query: string): MediaQueryList =>
 console.debug = () => undefined;
 
 vi.mock("../../src/ts/auth/providers/firebase", () => ({}));
+vi.mock("../../src/ts/integrations/firebase-app", () => ({}));
 // no canvas in jsdom; the result chart renders nothing
 vi.mock("../../src/ts/components/common/ChartJs", () => ({
   ChartJs: () => null,

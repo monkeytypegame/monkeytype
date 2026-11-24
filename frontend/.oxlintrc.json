@@ -19,13 +19,26 @@
     },
     {
       // auth layers: only auth/actions calls auth/system, and only auth/system
-      // calls the provider (docs/specs/solid-monkeytype/spec.md). Overrides
-      // below that set no-restricted-imports repeat these patterns.
+      // calls the provider (docs/specs/solid-monkeytype/spec.md); only
+      // integrations/firebase-app initialises the Firebase app, only
+      // integrations/analytics uses Firebase analytics. Overrides below that set
+      // no-restricted-imports repeat these paths and patterns.
       "files": ["src/ts/**"],
       "rules": {
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/auth/system"],
@@ -47,6 +60,17 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/auth/system"],
@@ -58,16 +82,54 @@
       }
     },
     {
-      // TODO(U8d): analytics leaves the Firebase auth provider
+      // analytics may use its SDK
       "files": ["src/ts/integrations/analytics.ts"],
       "rules": {
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/auth/system"],
                 "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // the one place the Firebase app is initialised
+      "files": ["src/ts/integrations/firebase-app.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
               }
             ]
           }
@@ -82,6 +144,17 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/auth/providers/*", "!**/auth/providers/types"],
@@ -93,9 +166,25 @@
       }
     },
     {
+      // the auth layer rules don't apply inside auth/; the Firebase ones do
       "files": ["src/ts/auth/**"],
       "rules": {
-        "no-restricted-imports": "off"
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -106,6 +195,17 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/components/**", "**/elements/**"],
@@ -132,6 +232,17 @@
         "no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
             "patterns": [
               {
                 "group": [

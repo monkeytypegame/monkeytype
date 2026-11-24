@@ -56,7 +56,7 @@ export async function initAuth(authProvider: AuthProvider): Promise<void> {
     if (isDevEnvironment()) {
       addBanner({
         level: "notice",
-        text: "Dev Info: Auth provider failed to initialize",
+        text: `Dev Info: Auth provider failed to initialize. Check console for details`,
         icon: "fas fa-exclamation-triangle",
       });
     }

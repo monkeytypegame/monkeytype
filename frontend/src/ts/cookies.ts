@@ -38,7 +38,7 @@ export function setAcceptedCookies(accepted: AcceptedCookies): void {
 export function activateWhatsAccepted(): void {
   const accepted = getAcceptedCookies();
   if (accepted?.analytics) {
-    activateAnalytics();
+    void activateAnalytics();
   }
   if (accepted?.sentry && !isProfilerMode()) {
     void activateSentry();

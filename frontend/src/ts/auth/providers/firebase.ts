@@ -1,11 +1,4 @@
-import {
-  FirebaseApp,
-  FirebaseError,
-  FirebaseOptions,
-  getApp,
-  getApps,
-  initializeApp,
-} from "firebase/app";
+import { FirebaseError } from "firebase/app";
 import {
   getAuth,
   Auth as AuthType,
@@ -32,11 +25,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { createErrorMessage } from "../../utils/error";
-
-import {
-  Analytics as AnalyticsType,
-  getAnalytics as firebaseGetAnalytics,
-} from "firebase/analytics";
+import { getFirebaseApp } from "../../integrations/firebase-app";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import {
   AuthError,
@@ -47,7 +36,6 @@ import {
   isPasswordMethod,
 } from "./types";
 
-let app: FirebaseApp | undefined;
 let Auth: AuthType | undefined;
 
 const thirdParties: (AuthMethodInfo & { firebase: FirebaseAuthProvider })[] = [
@@ -86,13 +74,7 @@ export const firebaseAuthProvider: AuthProvider = {
 
   async init(onUserChange) {
     try {
-      const { firebaseConfig } =
-        (await import("../../constants/firebase-config")) as {
-          firebaseConfig: FirebaseOptions;
-        };
-
-      app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-      Auth = getAuth(app);
+      Auth = getAuth(await getFirebaseApp());
 
       const rememberMe =
         window.localStorage.getItem("firebasePersistence") === "LOCAL";
@@ -102,7 +84,6 @@ export const firebaseAuthProvider: AuthProvider = {
         onUserChange(user === null ? null : toAuthUser(user));
       });
     } catch (e) {
-      app = undefined;
       Auth = undefined;
       throw e;
     }
@@ -200,10 +181,6 @@ export const firebaseAuthProvider: AuthProvider = {
     await wrapErrors(unlink(requireUser(), providerId));
   },
 };
-
-export function getAnalytics(): AnalyticsType {
-  return firebaseGetAnalytics(app);
-}
 
 function requireAuth(): AuthType {
   if (Auth === undefined) throw new Error("Authentication uninitialized");

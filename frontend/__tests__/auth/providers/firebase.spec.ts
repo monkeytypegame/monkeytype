@@ -1,7 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-// the real provider over a fake Firebase SDK (setup mocks firebase.ts itself)
+// the real provider over a fake Firebase SDK (setup mocks firebase.ts and the
+// Firebase app itself)
 vi.unmock("../../../src/ts/auth/providers/firebase");
+vi.unmock("../../../src/ts/integrations/firebase-app");
 
 const sdk = vi.hoisted(() => ({
   FirebaseError: class extends Error {
@@ -53,7 +55,6 @@ vi.mock("firebase/auth", () => ({
   getIdToken: vi.fn(),
   getAdditionalUserInfo: () => ({ isNewUser: sdk.isNewUser }),
 }));
-vi.mock("firebase/analytics", () => ({ getAnalytics: vi.fn() }));
 vi.mock("../../../src/ts/constants/firebase-config", () => ({
   firebaseConfig: {},
 }));
