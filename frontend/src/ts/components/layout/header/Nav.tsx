@@ -22,9 +22,10 @@ import { getRoutePage } from "../../../states/router";
 import { isFocusMode } from "../../../states/test";
 import { restartTest } from "../../../test/test-logic";
 import { cn } from "../../../utils/cn";
-import { getLevelFromTotalXp } from "../../../utils/levels";
+import { getLevelFromTotalXp, getXpDetails } from "../../../utils/levels";
 import { Anime } from "../../common/anime";
 import { AnimePresence } from "../../common/anime/AnimePresence";
+import { Bar } from "../../common/Bar";
 import { Button } from "../../common/Button";
 import { NotificationBubble } from "../../common/NotificationBubble";
 import { User } from "../../common/User";
@@ -228,6 +229,14 @@ export function Nav(): JSXElement {
                     fontClass="text-em-xs"
                   />
                 </Button>
+                <div class="mt-1 flex w-full items-center gap-2">
+                  <Bar
+                    percent={getXpDetails(snap().xp ?? 0).levelProgressPercent}
+                    fill="main"
+                    bg="bg"
+                    showPercentageOnHover
+                  />
+                </div>
                 <AccountMenu
                   class={cn(
                     // group variants: only the menu is tested against these
