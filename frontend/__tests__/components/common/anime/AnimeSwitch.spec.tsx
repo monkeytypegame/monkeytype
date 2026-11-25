@@ -16,12 +16,18 @@ vi.mock("animejs", () => ({
   animate: mockAnimate,
 }));
 
-vi.mock("../../../../src/ts/utils/misc", () => ({
+vi.mock("../../../../src/ts/utils/misc", async (importOriginal) => ({
+  ...(await importOriginal()),
   applyReducedMotion: vi.fn((duration: number) => duration),
 }));
 
 import { AnimeMatch } from "../../../../src/ts/components/common/anime/AnimeMatch";
 import { AnimeSwitch } from "../../../../src/ts/components/common/anime/AnimeSwitch";
+
+// Anime starts its enter animation on the next frame
+async function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
 
 describe("AnimeSwitch", () => {
   beforeEach(() => {
@@ -104,7 +110,7 @@ describe("AnimeSwitch", () => {
     expect(() => setView("b")).not.toThrow();
   });
 
-  it("passes animeProps down to all AnimeMatch children", () => {
+  it("passes animeProps down to all AnimeMatch children", async () => {
     render(() => (
       <AnimeSwitch
         animeProps={{
@@ -118,6 +124,7 @@ describe("AnimeSwitch", () => {
         </AnimeMatch>
       </AnimeSwitch>
     ));
+    await nextFrame();
 
     // Expect animate call with the shared animeProps
     expect(mockAnimate).toHaveBeenCalledWith(
@@ -158,7 +165,7 @@ describe("AnimeMatch", () => {
     expect(screen.queryByTestId("hidden")).not.toBeInTheDocument();
   });
 
-  it("per-match animate overrides the shared animeProps", () => {
+  it("per-match animate overrides the shared animeProps", async () => {
     render(() => (
       <AnimeSwitch
         animeProps={{
@@ -170,6 +177,7 @@ describe("AnimeMatch", () => {
         </AnimeMatch>
       </AnimeSwitch>
     ));
+    await nextFrame();
 
     // The per-match duration (500) should be used, not the shared one (200)
     expect(mockAnimate).toHaveBeenCalledWith(
@@ -182,7 +190,7 @@ describe("AnimeMatch", () => {
     expect(callsWithSharedDuration.length).toBe(0);
   });
 
-  it("falls back to context animeProps when no per-match props provided", () => {
+  it("falls back to context animeProps when no per-match props provided", async () => {
     render(() => (
       <AnimeSwitch
         animeProps={{
@@ -195,6 +203,7 @@ describe("AnimeMatch", () => {
         </AnimeMatch>
       </AnimeSwitch>
     ));
+    await nextFrame();
 
     // Should use context duration 250
     expect(mockAnimate).toHaveBeenCalledWith(

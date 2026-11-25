@@ -1,6 +1,7 @@
 {
   "ignorePatterns": ["node_modules", "dist", "coverage", ".firebase", ".turbo"],
   "extends": [
+    ".oxlintrc.core.json",
     "../packages/oxlint-config/index.jsonc",
     "../packages/oxlint-config/plugin.jsonc"
     // "@monkeytype/oxlint-config"
@@ -11,18 +12,289 @@
   },
   "overrides": [
     {
-      "files": ["**/*.ts"],
+      "files": ["src/**/*.ts", "src/**/*.tsx"],
       "rules": {
-        //
+        "monkeytype-rules/no-module-scope-dom-query": "error"
       }
     },
     {
-      "files": ["storybook/**/*.tsx"],
+      // auth layers: only auth/actions calls auth/system, and only auth/system
+      // calls the provider (docs/specs/solid-monkeytype/spec.md); only
+      // integrations/firebase-app initialises the Firebase app, only
+      // integrations/analytics uses Firebase analytics. Overrides below that set
+      // no-restricted-imports repeat these paths and patterns.
+      "files": ["src/ts/**"],
       "rules": {
-        "explicit-function-return-type": "off",
-        "no-explicit-any": "off",
-        "no-unsafe-assignment": "off",
-        "no-empty-function": "off"
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // boot picks the provider
+      "files": ["src/ts/boot.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // analytics may use its SDK
+      "files": ["src/ts/integrations/analytics.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // the one place the Firebase app is initialised
+      "files": ["src/ts/integrations/firebase-app.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // the API adapter needs the token; it can't use auth/actions, which
+      // imports the API
+      "files": ["src/ts/ape/adapters/ts-rest-adapter.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // the auth layer rules don't apply inside auth/; the Firebase ones do
+      "files": ["src/ts/auth/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // input layer: browser input → engine commands and render buffer
+      // writes, never UI (docs/specs/solid-monkeytype/spec.md)
+      "files": ["src/ts/input/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/components/**", "**/elements/**"],
+                "message": "The input layer never imports UI: write to states or the render buffer instead."
+              },
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // test engine: DOM-free, owns its state; may read the data layer
+      // (config, states, collections) (docs/specs/solid-monkeytype/spec.md)
+      "files": ["src/ts/test/engine/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "firebase/app",
+                "importNames": ["initializeApp", "getApp", "getApps"],
+                "message": "Only integrations/firebase-app initialises the Firebase app: call getFirebaseApp()."
+              },
+              {
+                "name": "firebase/analytics",
+                "message": "Only integrations/analytics uses Firebase analytics: call logAnalyticsEvent."
+              }
+            ],
+            "patterns": [
+              {
+                "group": [
+                  "**/components/**",
+                  "**/elements/**",
+                  "**/input/**",
+                  "**/controllers/**",
+                  "**/audio",
+                  "**/audio/**",
+                  "**/theme",
+                  "**/theme/**",
+                  // the theme state is data
+                  "!**/theme/state",
+                  // integrations, except Sentry: the engine may report errors
+                  "**/integrations/ads",
+                  "**/integrations/ads/**",
+                  "**/integrations/analytics",
+                  "**/pages/**",
+                  // animation settings: the engine renders nothing
+                  "**/states/fps-limit"
+                ],
+                "message": "The engine never imports UI or input: expose a signal and react to it outside the engine."
+              },
+              {
+                "group": [
+                  "**/test-logic",
+                  "**/test-page-bridge",
+                  "**/timer-effects",
+                  "**/pace-caret",
+                  "**/words-generator",
+                  "**/funbox/**",
+                  "**/custom-text"
+                ],
+                "message": "The engine never imports the test modules around it (test-logic, funbox, custom text): they call the engine."
+              },
+              {
+                "group": ["**/auth/system"],
+                "message": "Only auth/actions (and the API adapter, for the token) import auth/system: call an auth action, or read auth/state."
+              },
+              {
+                "group": ["**/auth/providers/*", "!**/auth/providers/types"],
+                "message": "Never call the auth provider directly: it bypasses auth/system's sign-up hold and auth signals. Call an auth action instead."
+              }
+            ]
+          }
+        ],
+        "no-restricted-globals": [
+          "error",
+          { "name": "document", "message": "The engine has no DOM access." },
+          { "name": "HTMLElement", "message": "The engine has no DOM access." },
+          { "name": "Element", "message": "The engine has no DOM access." }
+        ]
       }
     },
     {
@@ -42,7 +314,6 @@
         "solid/no-react-deps": "error",
         "solid/no-react-specific-props": "error",
         "solid/no-unknown-namespaces": "error",
-        "solid/prefer-classlist": "error",
         "solid/prefer-for": "error",
         "solid/prefer-show": "error",
         "solid/reactivity": "error",

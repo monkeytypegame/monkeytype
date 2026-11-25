@@ -6,8 +6,8 @@ import { PresetNameSchema, PresetType } from "@monkeytype/schemas/presets";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement } from "solid-js";
 
-import { addPreset } from "../../../collections/presets";
 import { createEffectOn } from "../../../hooks/effects";
+import { addPreset } from "../../../queries/presets";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { hideModal, isModalOpen } from "../../../states/modals";
 import {
@@ -17,15 +17,15 @@ import {
 } from "../../../states/notifications";
 import { normalizeName } from "../../../utils/strings";
 import { AnimatedModal } from "../../common/AnimatedModal";
-import { Checkbox } from "../../ui/form/Checkbox";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { allFieldsMandatory, fromSchema } from "../../ui/form/utils";
+import { Checkbox } from "../../common/form/Checkbox";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { allFieldsMandatory, fromSchema } from "../../common/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,
   getCheckboxes,
-  getConfigChanges,
+  buildPresetConfig,
 } from "./preset-modal-utils";
 
 export function AddPresetModal(): JSXElement {
@@ -75,24 +75,22 @@ export function AddPresetModal(): JSXElement {
         return;
       }
 
-      const configChanges = getConfigChanges(presetType(), checkboxes);
+      const configChanges = buildPresetConfig(presetType(), checkboxes);
       const activeSettingGroups = getActiveSettingGroups(checkboxes);
 
       hideModal("AddPresetModal");
       showLoaderBar();
 
-      try {
-        await addPreset({
-          name: parsedName.data,
-          config: configChanges,
-          settingGroups:
-            presetType() === "partial" ? activeSettingGroups : undefined,
-        });
+      const { error } = await addPreset({
+        name: parsedName.data,
+        config: configChanges,
+        settingGroups:
+          presetType() === "partial" ? activeSettingGroups : undefined,
+      });
+      if (error === null) {
         showSuccessNotification("Preset added", { durationMs: 2000 });
-      } catch (e) {
-        showErrorNotification(
-          e instanceof Error ? e.message : "Failed to add preset",
-        );
+      } else {
+        showErrorNotification("Failed to add preset", { error });
       }
 
       hideLoaderBar();
@@ -127,7 +125,11 @@ export function AddPresetModal(): JSXElement {
             onChange: fromSchema(PresetNameSchema, { convert: normalizeName }),
           }}
           children={(field) => (
-            <InputField field={field} placeholder="preset name" />
+            <InputField
+              field={field}
+              placeholder="preset name"
+              autocomplete="off"
+            />
           )}
         />
         <FullOrPartial

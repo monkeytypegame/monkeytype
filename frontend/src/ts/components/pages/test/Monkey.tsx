@@ -2,7 +2,7 @@ import { mapRange } from "@monkeytype/util/numbers";
 
 import { getConfig } from "../../../config/store";
 import { getMonkeyState } from "../../../states/monkey";
-import { currentLiveStats, isTestActive } from "../../../states/test";
+import { isTestActive, liveStats } from "../../../test/engine/state";
 import { AnimeShow } from "../../common/anime";
 
 const MIN_WPM = 130;
@@ -10,7 +10,7 @@ const MAX_WPM = 180;
 
 export function Monkey() {
   const speed = () =>
-    (getConfig.blindMode ? currentLiveStats.raw : currentLiveStats.wpm) ?? 0;
+    (getConfig.blindMode ? liveStats.raw : liveStats.wpm) ?? 0;
 
   const fastOpacity = () => mapRange(speed(), MIN_WPM, MAX_WPM, 0, 1);
 

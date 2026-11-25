@@ -4,13 +4,13 @@ import { z } from "zod";
 
 import { setConfig } from "../../config/setters";
 import { getConfig } from "../../config/store";
-import { restartTestEvent } from "../../events/test";
 import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
+import { restartTest } from "../../test/test-logic";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { fromSchema } from "../ui/form/utils";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { fromSchema } from "../common/form/utils";
 
 export function CustomWordAmountModal(): JSXElement {
   const form = createForm(() => ({
@@ -20,7 +20,7 @@ export function CustomWordAmountModal(): JSXElement {
     onSubmit: ({ value }) => {
       const val = value.words;
       setConfig("words", val);
-      restartTestEvent.dispatch();
+      void restartTest();
 
       if (val > 2000) {
         showNoticeNotification("Stay safe and take breaks!");

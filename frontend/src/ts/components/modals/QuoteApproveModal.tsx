@@ -13,7 +13,7 @@ import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
-import { InputField } from "../ui/form/InputField";
+import { InputField } from "../common/form/InputField";
 
 function QuoteApproveItem(props: {
   quote: Quote;
@@ -123,6 +123,7 @@ function QuoteApproveItem(props: {
             placeholder="Source"
             field={field}
             disabled={disabled()}
+            autocomplete="off"
           />
         )}
       />

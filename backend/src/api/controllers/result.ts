@@ -84,6 +84,8 @@ try {
   }
 }
 
+const FIRST_RESULT_GRACE_MS = 10 * 60 * 1000;
+
 const autoRoleChallengeNames = new Set(
   getChallenges()
     .filter((it) => it.settings?.autoRole)
@@ -160,14 +162,6 @@ export async function getLastResult(
   const { uid } = req.ctx.decodedToken;
   const result = await ResultDAL.getLastResult(uid);
   return new MonkeyResponse("Result retrieved", replaceObjectId(result));
-}
-
-export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ResultDAL.deleteAll(uid);
-  void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted", null);
 }
 
 export async function updateTags(
@@ -329,23 +323,37 @@ export async function addResult(
     ResultDAL.getLastResultTimestamp(uid),
   );
 
+  // Abandoned-test time (incompleteTestSeconds/incompleteTests) is client
+  // supplied. When a previous result exists it is bounded to real elapsed time
+  // by the result-spacing check below. When it does not (new account, or all
+  // results deleted) there is nothing to bound it against, so it must not be
+  // credited toward timeTyping / XP / leaderboard eligibility.
+  if (!isSafeNumber(lastResultTimestamp)) {
+    completedEvent.incompleteTestSeconds = 0;
+    completedEvent.incompleteTests = [];
+  }
+
   //convert result test duration to miliseconds
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
+
+  // Without a previous result, bound the test by account age instead. The
+  // grace covers a test finished signed out and saved right after signing up.
+  const spacingBase = isSafeNumber(lastResultTimestamp)
+    ? lastResultTimestamp
+    : user.addedAt - FIRST_RESULT_GRACE_MS;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
   const testDurationMilis = completedEvent.testDuration * 1000;
   const incompleteTestsMilis = completedEvent.incompleteTestSeconds * 1000;
   const earliestPossible =
-    (lastResultTimestamp ?? 0) + testDurationMilis + incompleteTestsMilis;
+    spacingBase + testDurationMilis + incompleteTestsMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
-  if (
-    isSafeNumber(lastResultTimestamp) &&
-    nowNoMilis < earliestPossible - 1000
-  ) {
+  if (isSafeNumber(spacingBase) && nowNoMilis < earliestPossible - 1000) {
     void addLog(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
+        addedAt: user.addedAt,
         earliestPossible,
         now: nowNoMilis,
         testDuration: testDurationMilis,

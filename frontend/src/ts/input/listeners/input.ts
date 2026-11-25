@@ -1,27 +1,25 @@
 import { onDelete } from "../handlers/delete";
 import { onInsertText } from "../handlers/insert-text";
-import { isSupportedInputType } from "../helpers/input-type";
+import { isSupportedInputType } from "../../test/engine/input-type";
 import { getInputElement } from "../input-element";
 import {
   getLastInsertCompositionTextData,
   setLastInsertCompositionTextData,
 } from "../state";
-import * as TestUI from "../../test/test-ui";
+import { afterTestCompositionUpdate } from "../helpers/after-input";
 import { onBeforeInsertText } from "../handlers/before-insert-text";
 import { onBeforeDelete } from "../handlers/before-delete";
-import * as TestWords from "../../test/test-words";
-import * as CompositionState from "../../legacy-states/composition";
+import * as TestWords from "../../test/engine/test-words";
+import { isRestartAnimating, getCompositionData } from "../../states/test";
 import {
-  isTestRestarting,
   getActiveWordIndex,
-  isResultCalculating,
-} from "../../states/test";
-import { getCurrentInput } from "../../test/events/data";
+  isTestRestarting,
+  isTestFinished,
+} from "../../test/engine/state";
+import { getCurrentInput } from "../../test/engine/events/data";
 import { areAllWordsGenerated } from "../../test/words-generator";
 
-const inputEl = getInputElement();
-
-inputEl.addEventListener("beforeinput", async (event) => {
+export async function onBeforeInput(event: InputEvent): Promise<void> {
   if (!(event instanceof InputEvent)) {
     //beforeinput is typed as inputevent but input is not?
     //@ts-expect-error just doing this as a sanity check
@@ -73,9 +71,9 @@ inputEl.addEventListener("beforeinput", async (event) => {
   } else {
     throw new Error(`Unhandled beforeinput type: ${inputType}`);
   }
-});
+}
 
-inputEl.addEventListener("input", async (event) => {
+export async function onInput(event: InputEvent): Promise<void> {
   if (!(event instanceof InputEvent)) {
     //since the listener is on an input element, this should never trigger
     //but its here to narrow the type of "event"
@@ -99,7 +97,9 @@ inputEl.addEventListener("input", async (event) => {
   }
 
   // just in case before input doesn't catch this
-  if (isResultCalculating() || isTestRestarting()) return;
+  if (isTestFinished() || isTestRestarting() || isRestartAnimating()) {
+    return;
+  }
 
   const now = performance.now();
 
@@ -130,7 +130,7 @@ inputEl.addEventListener("input", async (event) => {
   ) {
     const allWordsTyped = getActiveWordIndex() >= TestWords.words.length - 1;
     const inputPlusComposition =
-      getCurrentInput() + (CompositionState.getData() ?? "");
+      getCurrentInput() + (getCompositionData() ?? "");
     const inputPlusCompositionIsCorrect =
       TestWords.words.getCurrent()?.textWithCommit === inputPlusComposition;
 
@@ -151,9 +151,9 @@ inputEl.addEventListener("input", async (event) => {
     // in case the data is the same as the last one, just ignore it
     if (getLastInsertCompositionTextData() !== event.data) {
       setLastInsertCompositionTextData(event.data ?? "");
-      TestUI.afterTestCompositionUpdate();
+      afterTestCompositionUpdate();
     }
   } else {
     throw new Error(`Unhandled input type: ${inputType}`);
   }
-});
+}

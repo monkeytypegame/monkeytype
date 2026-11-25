@@ -87,6 +87,23 @@ export class LocalStorageWithSchema<T> {
     return structuredClone(this.cache);
   }
 
+  /**
+   * Drops the cached value, so the next read comes from localStorage: for
+   * changes made elsewhere (another tab).
+   */
+  public clearCache(): void {
+    this.cache = undefined;
+  }
+
+  /**
+   * Deletes the entry, making subsequent reads return the fallback value.
+   */
+  public remove(): void {
+    console.debug(`LS ${this.key} Removing from localStorage`);
+    window.localStorage.removeItem(this.key);
+    this.cache = undefined;
+  }
+
   public set(data: T): boolean {
     try {
       console.debug(`LS ${this.key} Parsing to set in localStorage`);

@@ -1,7 +1,6 @@
 import { JSXElement } from "solid-js";
 
-import { setCommandlineSubgroup } from "../../states/core";
-import { showModal } from "../../states/modals";
+import { showCommandline } from "../../states/commandline";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
@@ -26,8 +25,7 @@ export function SupportModal(): JSXElement {
         <Button
           variant="button"
           onClick={() => {
-            setCommandlineSubgroup("ads");
-            showModal("Commandline");
+            showCommandline({ subgroupOverride: "ads" });
           }}
           fa={{
             icon: "fa-ad",

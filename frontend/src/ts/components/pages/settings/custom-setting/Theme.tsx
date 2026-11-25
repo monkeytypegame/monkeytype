@@ -1,14 +1,9 @@
-import { CustomTheme, CustomThemeNameSchema } from "@monkeytype/schemas/users";
+import { CustomThemeNameSchema } from "@monkeytype/schemas/users";
 import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
 import { z } from "zod";
 
-import {
-  addCustomTheme,
-  deleteCustomTheme,
-  editCustomTheme,
-  useCustomThemesLiveQuery,
-} from "../../../../collections/custom-themes";
+import { isAuthenticated } from "../../../../auth/state";
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
@@ -17,21 +12,32 @@ import {
   ThemesList,
   ThemeWithName,
 } from "../../../../constants/themes";
-import {
-  convertCustomColorsToTheme,
-  convertThemeToCustomColors,
-} from "../../../../controllers/theme-controller";
 import { createEffectOn } from "../../../../hooks/effects";
-import { isAuthenticated } from "../../../../states/core";
+import {
+  addCustomTheme,
+  CustomTheme,
+  deleteCustomTheme,
+  editCustomTheme,
+  getCustomThemes,
+} from "../../../../queries/custom-themes";
 import {
   showErrorNotification,
   showNoticeNotification,
   showSuccessNotification,
 } from "../../../../states/notifications";
 import { showSimpleModal } from "../../../../states/simple-modal";
-import { getTheme, setTheme, updateThemeColor } from "../../../../states/theme";
+import {
+  getTheme,
+  setCustomThemeDraft,
+  updateCustomThemeDraftColor,
+} from "../../../../theme/state";
+import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
-import { hexToHSL } from "../../../../utils/colors";
+import {
+  convertCustomColorsToTheme,
+  convertThemeToCustomColors,
+  hexToHSL,
+} from "../../../../utils/colors";
 import {
   normalizeName,
   replaceUnderscoresWithSpaces,
@@ -41,6 +47,7 @@ import { AnimeMatch } from "../../../common/anime/AnimeMatch";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
 import { Separator } from "../../../common/Separator";
+import { ThemeBubbles } from "../../../common/ThemeBubbles";
 import { SearchableSetting } from "../SearchableSetting";
 
 export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
@@ -50,8 +57,6 @@ export const sortedThemes: ThemeWithName[] = [...ThemesList].sort((a, b) => {
 });
 
 export function Theme(): JSXElement {
-  const customThemes = useCustomThemesLiveQuery();
-
   const Presets = () => (
     <div class="grid gap-4">
       <Show when={getConfig.favThemes.length > 0}>
@@ -84,7 +89,7 @@ export function Theme(): JSXElement {
     <div class="grid gap-4">
       <Show when={isAuthenticated()}>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-2">
-          <For each={customThemes()}>
+          <For each={getCustomThemes()}>
             {(theme) => <CustomThemeButton theme={theme} />}
           </For>
         </div>
@@ -112,7 +117,7 @@ export function Theme(): JSXElement {
               (t) => t.name === getConfig.theme,
             );
             if (presetTheme) {
-              setTheme({ ...presetTheme, name: "custom" });
+              setCustomThemeDraft(presetTheme);
             } else {
               showErrorNotification(
                 "Current preset theme not found. How is this possible?",
@@ -135,24 +140,16 @@ export function Theme(): JSXElement {
               buttonText: "copy link to clipboard",
               buttonAlwaysEnabled: true,
               execFn: async ({ includeBackground }) => {
-                const newTheme: {
-                  c: string[]; //colors
-                  i?: string; //image
-                  s?: string; //size
-                  f?: object; //filter
-                } = {
-                  c: convertThemeToCustomColors(getTheme()),
-                };
-
-                if (includeBackground) {
-                  newTheme.i = getConfig.customBackground;
-                  newTheme.s = getConfig.customBackgroundSize;
-                  newTheme.f = getConfig.customBackgroundFilter;
-                }
-
-                const link = `${window.location.origin}?customTheme=${btoa(
-                  JSON.stringify(newTheme),
-                )}`;
+                const link = buildCustomThemeLink({
+                  colors: convertThemeToCustomColors(getTheme()),
+                  background: includeBackground
+                    ? {
+                        image: getConfig.customBackground,
+                        size: getConfig.customBackgroundSize,
+                        filter: [...getConfig.customBackgroundFilter],
+                      }
+                    : undefined,
+                });
 
                 try {
                   await navigator.clipboard.writeText(link);
@@ -203,7 +200,7 @@ export function Theme(): JSXElement {
           <Button
             text="save as new"
             onClick={() => {
-              if (customThemes().length >= 20) {
+              if (getCustomThemes().length >= 20) {
                 showNoticeNotification("Custom themes limit reached");
                 return;
               }
@@ -211,17 +208,15 @@ export function Theme(): JSXElement {
               void addCustomTheme({
                 name: "custom",
                 colors: convertThemeToCustomColors(getTheme()),
-              })
-                .then(() => {
-                  showSuccessNotification("Custom theme saved");
-                })
-                .catch((e: unknown) => {
-                  showErrorNotification(
-                    e instanceof Error
-                      ? e.message
-                      : "Failed to save custom theme",
-                  );
-                });
+              }).then(({ error }) => {
+                if (error !== null) {
+                  showErrorNotification("Failed to save custom theme", {
+                    error,
+                  });
+                  return;
+                }
+                showSuccessNotification("Custom theme saved");
+              });
             }}
           />
         </Show>
@@ -244,12 +239,8 @@ export function Theme(): JSXElement {
   createEffectOn(
     () => getConfig.customTheme,
     (custom) => {
-      if (custom) {
-        const colorsObj = convertCustomColorsToTheme(
-          getConfig.customThemeColors,
-        );
-        setTheme({ ...colorsObj, name: "custom" });
-      }
+      // the editor opens on the saved colors
+      if (custom) setCustomThemeDraft(null);
     },
   );
 
@@ -331,7 +322,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         "transition-[opacity,color,background,box-shadow] duration-125",
       )}
       onClick={() => {
-        setConfig("customThemeColors", props.theme.colors);
+        setConfig("customThemeColors", [...props.theme.colors]);
       }}
       data-theme-id={props.theme._id}
     >
@@ -362,6 +353,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               },
               updateColors: {
                 type: "checkbox",
+                initVal: false,
                 label: "Update custom theme to current colors",
               },
             },
@@ -373,23 +365,21 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
                   message: "Name is required",
                 };
               }
-              editCustomTheme({
+              void editCustomTheme({
                 themeId: props.theme._id,
                 name,
                 colors: updateColors
                   ? convertThemeToCustomColors(untrack(() => getTheme()))
-                  : untrack(() => props.theme.colors),
-              })
-                .then(() => {
-                  showSuccessNotification("Updated");
-                })
-                .catch(() => {
-                  showErrorNotification(
-                    e instanceof Error
-                      ? e.message
-                      : "Failed to update custom theme",
-                  );
-                });
+                  : [...untrack(() => props.theme.colors)],
+              }).then(({ error }) => {
+                if (error !== null) {
+                  showErrorNotification("Failed to update custom theme", {
+                    error,
+                  });
+                  return;
+                }
+                showSuccessNotification("Updated");
+              });
 
               return {
                 status: "success",
@@ -418,9 +408,16 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
             text: `Are you sure you want to delete the custom theme "${replaceUnderscoresWithSpaces(props.theme.name)}"? This action cannot be undone.`,
             buttonText: "delete",
             execFn: async () => {
-              void deleteCustomTheme({
+              const { error } = await deleteCustomTheme({
                 themeId: props.theme._id,
               });
+              if (error !== null) {
+                return {
+                  status: "error",
+                  message: "Failed to delete custom theme",
+                  notificationOptions: { error },
+                };
+              }
               return {
                 status: "success",
                 message: "Custom theme deleted",
@@ -433,6 +430,8 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
   );
 }
 
+// rendered ~200 times on the settings page - kept to as few elements and
+// reactive bindings as possible
 function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
   const isActive = () => getConfig.theme === props.theme.name;
   const isFav = () => getConfig.favThemes.includes(props.theme.name);
@@ -461,54 +460,32 @@ function ThemeButton(props: { theme: ThemeWithName }): JSXElement {
     >
       <div
         class={cn(
-          "align-center place-self-start opacity-0 transition-[opacity,color,background] duration-125 group-hover/theme:opacity-100",
+          "grid place-self-start rounded-full bg-(--bg) p-1 opacity-0 transition-[opacity,color] duration-125 group-hover/theme:opacity-100 hover:text-(--text)",
           isFav() && "opacity-100",
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (isFav()) {
+            setConfig(
+              "favThemes",
+              getConfig.favThemes.filter((t) => t !== props.theme.name),
+            );
+          } else {
+            setConfig("favThemes", [...getConfig.favThemes, props.theme.name]);
+          }
+        }}
       >
-        <div
-          class={cn(
-            "grid justify-center",
-            "rounded-full bg-(--bg) p-1",
-            // "group-hover/theme:text-(--text)",
-            "transition-[opacity,color,background] duration-125",
-            "hover:text-(--text)",
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (isFav()) {
-              setConfig(
-                "favThemes",
-                getConfig.favThemes.filter((t) => t !== props.theme.name),
-              );
-            } else {
-              setConfig("favThemes", [
-                ...getConfig.favThemes,
-                props.theme.name,
-              ]);
-            }
-          }}
-        >
-          <Fa
-            icon="fa-star"
-            variant={isFav() ? "solid" : "regular"}
-            fixedWidth
-            class="transition-[opacity,color,background] duration-125"
-          />
-        </div>
+        <Fa icon="fa-star" variant={isFav() ? "solid" : "regular"} fixedWidth />
       </div>
       <div>{replaceUnderscoresWithSpaces(props.theme.name)}</div>
-      <div
+      <ThemeBubbles
+        inset={false}
+        colors={props.theme}
         class={cn(
-          "place-self-end self-center opacity-0 transition-opacity duration-125 group-hover/theme:opacity-100",
+          "mr-1 place-self-end self-center opacity-0 transition-opacity duration-125 group-hover/theme:opacity-100",
           isActive() && "opacity-100",
         )}
-      >
-        <div class="grid grid-cols-3 gap-2 rounded-full bg-(--bg) p-1.5">
-          <div class="h-4 w-4 rounded-full bg-(--main)"></div>
-          <div class="h-4 w-4 rounded-full bg-(--sub)"></div>
-          <div class="h-4 w-4 rounded-full bg-(--text)"></div>
-        </div>
-      </div>
+      />
     </button>
   );
 }
@@ -549,7 +526,7 @@ function Picker(props: { color: ColorName }): JSXElement {
     const color = target.value;
     const key = props.color;
 
-    updateThemeColor(key, color);
+    updateCustomThemeDraftColor(key, color);
   });
 
   return (
@@ -572,6 +549,7 @@ function Picker(props: { color: ColorName }): JSXElement {
       <input
         class="w-full"
         type="text"
+        autocomplete="off"
         value={getTheme()[props.color]}
         onChange={(e) => {
           const value = e.currentTarget.value;
@@ -580,7 +558,7 @@ function Picker(props: { color: ColorName }): JSXElement {
             e.currentTarget.value = getTheme()[props.color];
             return;
           }
-          updateThemeColor(props.color, value);
+          updateCustomThemeDraftColor(props.color, value);
         }}
       />
       <div class="grid">

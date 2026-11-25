@@ -4,7 +4,7 @@ import { JSXElement } from "solid-js";
 import { hideModal, showModal } from "../../states/modals";
 import { promiseWithResolvers } from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Captcha } from "../ui/form/Captcha";
+import { Captcha } from "../common/form/Captcha";
 
 const {
   promise: captchaPromise,

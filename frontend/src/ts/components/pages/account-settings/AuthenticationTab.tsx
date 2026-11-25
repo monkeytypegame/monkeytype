@@ -1,13 +1,15 @@
-import { Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 
+import type { AuthMethodInfo } from "../../../auth/providers/types";
+
+import { addAuthMethod } from "../../../auth/actions";
 import {
-  addAuthProvider,
-  getAuthMethodDisplay,
-  getAuthMethodIcon,
-  hasAdditionalAuthMethodsReactive,
-  isUsingAuthenticationReactive,
-  ProviderAuthMethod,
-} from "../../../auth";
+  getAuthMethodEmail,
+  getThirdParties,
+  hasOtherAuthMethods,
+  isUsingAuthMethod,
+  supportsPassword,
+} from "../../../auth/state";
 import { Button } from "../../common/Button";
 import { showAddPasswordAuthModal } from "../../modals/account-settings/AddPasswordAuthModal";
 import { showRevokeAllTokensModal } from "../../modals/account-settings/ReauthConfirmModals";
@@ -19,9 +21,12 @@ import { Section } from "./utils";
 export function AuthenticationTab() {
   return (
     <>
-      <PasswordAuthentication />
-      <ProviderAuthentication authMethod="google" />
-      <ProviderAuthentication authMethod="github" />
+      <Show when={supportsPassword()}>
+        <PasswordAuthentication />
+      </Show>
+      <For each={getThirdParties()}>
+        {(thirdParty) => <ThirdPartyAuthentication thirdParty={thirdParty} />}
+      </For>
       <RevokeAllTokens />
     </>
   );
@@ -31,13 +36,13 @@ function PasswordAuthentication() {
   return (
     <Section
       title="password authentication settings"
-      fa={getAuthMethodIcon("password")}
+      fa={{ icon: "fa-lock" }}
       description=<>
         Add password authentication, update your password or email.
       </>
     >
       <Show
-        when={isUsingAuthenticationReactive("password")}
+        when={isUsingAuthMethod("password")}
         fallback=<Button
           text="add password authentication"
           class="w-full"
@@ -45,6 +50,7 @@ function PasswordAuthentication() {
         />
       >
         <div class="flex flex-col gap-2">
+          <AuthEmail authMethod="password" />
           <Button
             class="w-full"
             text="update email"
@@ -55,7 +61,7 @@ function PasswordAuthentication() {
             text="update password"
             onClick={() => showUpdatePasswordModal()}
           />
-          <Show when={hasAdditionalAuthMethodsReactive("password")}>
+          <Show when={hasOtherAuthMethods("password")}>
             <Button
               class="w-full"
               text="remove password authentication"
@@ -70,30 +76,76 @@ function PasswordAuthentication() {
   );
 }
 
-function ProviderAuthentication(props: { authMethod: ProviderAuthMethod }) {
+function ThirdPartyAuthentication(props: { thirdParty: AuthMethodInfo }) {
   return (
     <Section
-      title={`${getAuthMethodDisplay(props.authMethod)}`}
-      fa={getAuthMethodIcon(props.authMethod)}
-      description=<>
-        Add or remove {getAuthMethodDisplay(props.authMethod)} authentication.
-      </>
-      button={
-        isUsingAuthenticationReactive(props.authMethod)
-          ? {
-              text: `remove ${getAuthMethodDisplay(props.authMethod)} authentication`,
-              disabled: !hasAdditionalAuthMethodsReactive(props.authMethod),
-              onClick: () =>
-                showRemoveAuthMethodModal({ authMethod: props.authMethod }),
+      title={props.thirdParty.display}
+      fa={props.thirdParty.fa}
+      description=<>Add or remove {props.thirdParty.display} authentication.</>
+    >
+      <div class="flex flex-col gap-2">
+        <AuthEmail authMethod={props.thirdParty.id} />
+        <Show
+          when={isUsingAuthMethod(props.thirdParty.id)}
+          fallback=<Button
+            class="w-full"
+            text={`add ${props.thirdParty.display} authentication`}
+            onClick={() => void addAuthMethod({ method: props.thirdParty.id })}
+          />
+        >
+          <Button
+            class="w-full"
+            text={`remove ${props.thirdParty.display} authentication`}
+            disabled={!hasOtherAuthMethods(props.thirdParty.id)}
+            onClick={() =>
+              showRemoveAuthMethodModal({ authMethod: props.thirdParty.id })
             }
-          : {
-              text: `add ${getAuthMethodDisplay(props.authMethod)} authentication`,
-              onClick: () =>
-                void addAuthProvider({ authMethod: props.authMethod }),
-            }
-      }
-    />
+          />
+        </Show>
+      </div>
+    </Section>
   );
+}
+
+function AuthEmail(props: { authMethod: string }) {
+  const [isRevealed, setIsRevealed] = createSignal(false);
+  const email = () => getAuthMethodEmail(props.authMethod);
+
+  return (
+    <Show when={email()}>
+      {(value) => (
+        <Button
+          variant="text"
+          class="w-full p-1 font-mono"
+          fa={{ icon: isRevealed() ? "fa-eye-slash" : "fa-eye" }}
+          text={isRevealed() ? value() : obfuscateEmail(value())}
+          balloon={{
+            text: isRevealed() ? "click to hide" : "click to reveal",
+          }}
+          onClick={() => setIsRevealed(!isRevealed())}
+        />
+      )}
+    </Show>
+  );
+}
+
+function obfuscateEmail(email: string): string {
+  const atIndex = email.lastIndexOf("@");
+  if (atIndex < 1) return maskAfterFirstCharacter(email);
+
+  const domain = email.slice(atIndex + 1);
+  const dotIndex = domain.lastIndexOf(".");
+  const maskedDomain =
+    dotIndex < 1
+      ? maskAfterFirstCharacter(domain)
+      : `${maskAfterFirstCharacter(domain.slice(0, dotIndex))}${domain.slice(dotIndex)}`;
+
+  return `${maskAfterFirstCharacter(email.slice(0, atIndex))}@${maskedDomain}`;
+}
+
+function maskAfterFirstCharacter(value: string): string {
+  if (value.length <= 1) return "\u2022".repeat(3);
+  return `${value.slice(0, 1)}${"\u2022".repeat(value.length - 1)}`;
 }
 
 function RevokeAllTokens() {

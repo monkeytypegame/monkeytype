@@ -6,7 +6,7 @@ import { safeNumber } from "@monkeytype/util/numbers";
 
 export function checkForcedConfig(
   key: string,
-  value: ConfigValue,
+  value: Readonly<ConfigValue>,
   funboxes: FunboxMetadata[],
 ): {
   result: boolean;
@@ -62,7 +62,8 @@ export function checkForcedConfig(
         throw new Error("No intersection of forced configs");
       }
       return {
-        result: (forcedConfigs[key] ?? []).includes(value),
+        // a value comparison: the readonly value is never written
+        result: (forcedConfigs[key] ?? []).includes(value as ConfigValue),
         forcedConfigs: forcedConfigs[key],
       };
     }
@@ -70,7 +71,7 @@ export function checkForcedConfig(
 }
 
 export function checkCompatibility(
-  funboxNames: FunboxName[],
+  funboxNames: readonly FunboxName[],
   withFunbox?: FunboxName,
 ): boolean {
   if (funboxNames.length === 0) return true;
@@ -178,9 +179,6 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("getEmulatedChar"),
     ).length <= 1;
-  const oneCharReplacerMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
-      .length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation"),
@@ -236,7 +234,6 @@ export function checkCompatibility(
     oneToPushOrPullSectionMax &&
     onePunctuateWordMax &&
     oneGetEmulatedCharMax &&
-    oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
     oneCssModificationPerElement &&
     noConfigConflicts &&

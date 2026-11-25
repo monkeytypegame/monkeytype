@@ -11,10 +11,10 @@ import {
 } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Checkbox } from "../ui/form/Checkbox";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { fromSchema } from "../ui/form/utils";
+import { Checkbox } from "../common/form/Checkbox";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { fromSchema } from "../common/form/utils";
 
 const nameSchema = z
   .string()
@@ -26,7 +26,10 @@ const nameSchema = z
   );
 
 export function SaveCustomTextModal(props: {
-  textToSave: Accessor<string[]>;
+  textToSave: Accessor<{
+    words: string[];
+    isPipeDelimiter: boolean;
+  }>;
 }): JSXElement {
   const form = createForm(() => ({
     defaultValues: {
@@ -34,13 +37,18 @@ export function SaveCustomTextModal(props: {
       isLong: false,
     },
     onSubmit: ({ value }) => {
-      const text = props.textToSave();
-      if (text.length === 0) {
+      const { words, isPipeDelimiter } = props.textToSave();
+      if (words.length === 0) {
         showNoticeNotification("Custom text can't be empty");
         return;
       }
 
-      const saved = CustomText.setCustomText(value.name, text, value.isLong);
+      const saved = CustomText.setCustomText(
+        value.name,
+        words,
+        value.isLong,
+        isPipeDelimiter,
+      );
       if (saved) {
         setCustomTextIndicator(value);
         showSuccessNotification("Custom text saved");

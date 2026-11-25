@@ -8,8 +8,8 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 // import { showSuccessNotification } from "../../../../states/notifications";
 import { Button } from "../../../common/Button";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function MinBurst(): JSXElement {
@@ -51,14 +51,12 @@ export function MinBurst(): JSXElement {
               name="minBurstCustomSpeed"
               validators={{
                 onChange: fromSchema(MinimumBurstCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={MinimumBurstCustomSpeedSchema}
                     placeholder={
                       configMetadata.minBurst.displayString ?? "min burst"

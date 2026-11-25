@@ -1,11 +1,5 @@
-import { createMemo, createSignal } from "solid-js";
-import { CommandlineSubgroupKey } from "../commandline/types";
-import { PageName } from "../pages/page";
-import { showModal } from "./modals";
-import { Formatting } from "../utils/format";
-import { getConfig } from "../config/store";
+import { createSignal } from "solid-js";
 
-export const [getActivePage, setActivePage] = createSignal<PageName>("loading");
 export const [getVersion, setVersion] = createSignal<{
   text: string;
   isNew: boolean;
@@ -14,47 +8,11 @@ export const [getVersion, setVersion] = createSignal<{
   isNew: false,
 });
 
-export const [getThemeIndicator, setThemeIndicator] = createSignal<{
-  /**
-   * human readable display name, this is not the ThemeName.
-   * e.g. the display is `serika dark` for the ThemeName `serika_dark`
-   */
-  text: string;
-  isFavorite: boolean;
-}>({
-  text: "serika dark",
-  isFavorite: false,
-});
-
-export const [getCommandlineSubgroup, setCommandlineSubgroup] = createSignal<
-  string | null
->(null);
-
 export const [getGlobalOffsetTop, setGlobalOffsetTop] = createSignal(0);
+// #app stays hidden until the config and auth are loaded (see boot.ts)
+export const [isAppReady, setAppReady] = createSignal(false);
 export const [getIsScreenshotting, setIsScreenshotting] = createSignal(false);
-
-export const [getUserId, setUserId] = createSignal<string | null>(null);
-export const isAuthenticated = (): boolean => getUserId() !== null;
-export const [isUserVerified, setUserVerified] = createSignal(false);
-
-export const [getSelectedProfileName, setSelectedProfileName] = createSignal<
-  string | undefined
->(undefined);
-
-export function showCommandLineForConfig(
-  selector: CommandlineSubgroupKey,
-): void {
-  setCommandlineSubgroup(selector);
-  showModal("Commandline");
-}
 
 export const [getCustomTextIndicator, setCustomTextIndicator] = createSignal<
   { name: string; isLong: boolean } | undefined
 >(undefined);
-
-export const getFormatting = createMemo(() => {
-  return new Formatting({
-    alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-    typingSpeedUnit: getConfig.typingSpeedUnit,
-  });
-});

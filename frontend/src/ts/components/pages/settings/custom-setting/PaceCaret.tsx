@@ -14,8 +14,8 @@ import { getConfig } from "../../../../config/store";
 import { useSavedIndicator } from "../../../../hooks/useSavedIndicator";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function PaceCaret(): JSXElement {
@@ -58,14 +58,12 @@ export function PaceCaret(): JSXElement {
               name="paceCaretCustomSpeed"
               validators={{
                 onChange: fromSchema(PaceCaretCustomSpeedSchema),
-                onBlur: () => {
-                  void form.handleSubmit();
-                },
               }}
               children={(field) => (
                 <div class="relative">
                   <InputField
                     field={field}
+                    submitOnBlur
                     schema={PaceCaretCustomSpeedSchema}
                     placeholder={"pace caret speed"}
                     type="number"

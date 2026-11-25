@@ -5,17 +5,17 @@ import {
   ResultStats,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
-import { getFormatting } from "../../../states/core";
+import { getConfig } from "../../../config/store";
 import { secondsToString } from "../../../utils/date-and-time";
+import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import AsyncContent from "../../common/AsyncContent";
 import { Fa } from "../../common/Fa";
 
 export function TestStats(props: {
   queryState: Accessor<ResultsQueryState | undefined>;
 }): JSXElement {
-  const format = getFormatting;
-  const formatWpm = (val: number): string => format().typingSpeed(val);
-  const formatPercentage = (val: number): string => format().percentage(val);
+  const formatWpm = (val: number): string => formatTypingSpeed(val);
+  const formatPercent = (val: number): string => formatPercentage(val);
 
   const statsQuery = useResultStatsLiveQuery(() => props.queryState());
   const last10StatsQuery = useResultStatsLiveQuery(() => props.queryState(), {
@@ -91,33 +91,33 @@ export function TestStats(props: {
                   />
 
                   <Stat
-                    header={`highest ${format().typingSpeedUnit}`}
+                    header={`highest ${getConfig.typingSpeedUnit}`}
                     value={stats.maxWpm}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average ${format().typingSpeedUnit}`}
+                    header={`average ${getConfig.typingSpeedUnit}`}
                     value={stats.avgWpm}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`average ${getConfig.typingSpeedUnit} (last 10 tests)`}
                     value={last10.avgWpm}
                     formatter={formatWpm}
                   />
 
                   <Stat
-                    header={`highest raw ${format().typingSpeedUnit}`}
+                    header={`highest raw ${getConfig.typingSpeedUnit}`}
                     value={stats.maxRaw}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average raw ${format().typingSpeedUnit}`}
+                    header={`average raw ${getConfig.typingSpeedUnit}`}
                     value={stats.avgRaw}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average raw ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`average raw ${getConfig.typingSpeedUnit} (last 10 tests)`}
                     value={last10.avgRaw}
                     formatter={formatWpm}
                   />
@@ -125,33 +125,33 @@ export function TestStats(props: {
                   <Stat
                     header={`highest acc`}
                     value={stats.maxAcc}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
                   <Stat
                     header={`average acc`}
                     value={stats.avgAcc}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
                   <Stat
                     header={`average acc (last 10 tests)`}
                     value={last10.avgAcc}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
 
                   <Stat
                     header={`highest consistency`}
                     value={stats.maxConsistency}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
                   <Stat
                     header={`average consistency`}
                     value={stats.avgConsistency}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
                   <Stat
                     header={`average consistency (last 10 tests)`}
                     value={last10.avgConsistency}
-                    formatter={formatPercentage}
+                    formatter={formatPercent}
                   />
                 </div>
               </>

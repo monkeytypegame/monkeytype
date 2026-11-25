@@ -1,6 +1,6 @@
 import { IsValidResponse } from "../types/validation";
 import { AnyFieldApi } from "@tanstack/solid-form";
-import { handleResult } from "../components/ui/form/utils";
+import { handleResult } from "../components/common/form/utils";
 
 type IsValidResponseOrFunction =
   | ((message: string) => IsValidResponse)

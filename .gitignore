@@ -47,7 +47,9 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
+node_modules
+# vite cache of worktrees linked by scripts/setup-worktree.sh
+.vite-worktree/
 node_modules_bak/
 
 # Optional npm cache directory
@@ -88,6 +90,8 @@ frontend/src/ts/constants/firebase-config-live.ts
 
 #generated files
 dist/
+# profiling builds, docs/PROFILING.md
+dist-*/
 frontend/public/
 backend/globalConfig.json
 backend/server.version
@@ -134,3 +138,6 @@ frontend/.env.sentry-build-plugin
 .claude/worktrees
 1024MiB
 .pnpm-store
+keylogs
+frontend/scripts/keylog-report.ts
+.scratch/

@@ -1,8 +1,9 @@
 import { createMemo, JSXElement } from "solid-js";
 
+import { isAuthenticated } from "../../../../auth/state";
 import { useUserAverage10LiveQuery } from "../../../../collections/results";
 import { getConfig } from "../../../../config/store";
-import { getFormatting, isAuthenticated } from "../../../../states/core";
+import { formatAccuracy, formatTypingSpeed } from "../../../../utils/format";
 import { Notice } from "./Notice";
 
 export function AverageNotice(): JSXElement {
@@ -12,19 +13,17 @@ export function AverageNotice(): JSXElement {
 
   const displayText = createMemo(() => {
     if (last10() === undefined) return "no average";
-
-    const format = getFormatting();
     let speed = undefined;
     let acc = undefined;
 
     if (getConfig.showAverage === "both" || getConfig.showAverage === "speed") {
-      speed = format.typingSpeed(last10()?.wpm ?? 0, {
+      speed = formatTypingSpeed(last10()?.wpm ?? 0, {
         suffix: ` ${getConfig.typingSpeedUnit}`,
       });
     }
 
     if (getConfig.showAverage === "both" || getConfig.showAverage === "acc") {
-      acc = format.accuracy(last10()?.acc ?? 0, {
+      acc = formatAccuracy(last10()?.acc ?? 0, {
         suffix: " acc",
       });
     }

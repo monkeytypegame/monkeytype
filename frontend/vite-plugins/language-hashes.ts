@@ -23,9 +23,13 @@ function getHashes(): Record<string, string> {
   console.log("\nHashing languages...");
 
   const hashes = Object.fromEntries(
-    readdirSync("./static/languages").map((file) => {
-      return [file.slice(0, -5), calcHash(file)];
-    }),
+    readdirSync("./static/languages")
+      // only language files: stray folders (eg. tooling's .claude) and
+      // dotfiles would fail the read
+      .filter((file) => file.endsWith(".json"))
+      .map((file) => {
+        return [file.slice(0, -5), calcHash(file)];
+      }),
   );
 
   const end = performance.now();
@@ -40,7 +44,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
     name: "virtual-language-hashes",
     resolveId(id) {
       if (id === virtualModuleId) return resolvedVirtualModuleId;
-      return;
+      return undefined;
     },
     load(id) {
       if (id === resolvedVirtualModuleId) {
@@ -53,7 +57,7 @@ export function languageHashes(options?: { skip: boolean }): Plugin {
           export const languageHashes = ${JSON.stringify(hashes)};
         `;
       }
-      return;
+      return undefined;
     },
   };
 }

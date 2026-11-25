@@ -1,13 +1,19 @@
 import { CustomLayoutFluid } from "@monkeytype/schemas/configs";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { JSXElement } from "solid-js";
 
 import { configMetadata } from "../../../../config/metadata";
 import { setConfig } from "../../../../config/setters";
 import { getConfig } from "../../../../config/store";
 import { LayoutsList } from "../../../../constants/layouts";
-import { areUnsortedArraysEqual } from "../../../../utils/arrays";
-import SlimSelect from "../../../ui/SlimSelect";
+import SlimSelect from "../../../common/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
+
+// built once - a new array on every read would make SlimSelect rebuild its options
+const layoutOptions = LayoutsList.map((layout) => ({
+  text: layout.replace(/_/g, " "),
+  value: layout,
+}));
 
 export function CustomLayoutfluid(): JSXElement {
   return (
@@ -24,10 +30,7 @@ export function CustomLayoutfluid(): JSXElement {
             allowDeselect: true,
             minSelected: 2,
           }}
-          options={LayoutsList.map((layout) => ({
-            text: layout.replace(/_/g, " "),
-            value: layout,
-          }))}
+          options={layoutOptions}
           selected={getConfig.customLayoutfluid}
           onChange={(val) => {
             if (

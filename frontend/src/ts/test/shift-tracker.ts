@@ -1,4 +1,4 @@
-import { Config } from "../config/store";
+import { getConfig } from "../config/store";
 import { Keycode } from "../constants/keys";
 import { getModifierState } from "../states/modifiers";
 import * as KeyConverter from "../utils/key-converter";
@@ -9,7 +9,7 @@ export function isUsingOppositeShift(keycode: Keycode): boolean {
     return true;
   }
 
-  if (Config.oppositeShiftMode === "off") {
+  if (getConfig.oppositeShiftMode === "off") {
     return true;
   }
 

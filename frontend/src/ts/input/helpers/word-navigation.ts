@@ -1,13 +1,13 @@
-import { Config } from "../../config/store";
-import * as TestUI from "../../test/test-ui";
+import { getConfig } from "../../config/store";
+import { afterTestWordChange, beforeTestWordChange } from "./after-input";
 import * as PaceCaret from "../../test/pace-caret";
 import {
-  decreaseActiveWordIndex,
   getActiveWordIndex,
-  increaseActiveWordIndex,
-} from "../../states/test";
+  incrementActiveWordIndex,
+  decrementActiveWordIndex,
+} from "../../test/engine/state";
 import * as TestLogic from "../../test/test-logic";
-import * as TestWords from "../../test/test-words";
+import * as TestWords from "../../test/engine/test-words";
 import {
   getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
@@ -16,9 +16,12 @@ import * as Funbox from "../../test/funbox/funbox";
 import { showLoaderBar, hideLoaderBar } from "../../states/loader-bar";
 import { setInputElementValue } from "../input-element";
 import { setAwaitingNextWord } from "../state";
-import { DeleteInputType } from "./input-type";
-import { getWordBurst } from "../../test/events/stats";
-import { buildEventLog, getInputForWord } from "../../test/events/data";
+import { DeleteInputType } from "../../test/engine/input-type";
+import { measureWordBurst } from "../../test/engine/commands";
+import {
+  getCurrentInput,
+  getInputForWord,
+} from "../../test/engine/events/data";
 
 type GoToNextWordParams = {
   correctInsert: boolean;
@@ -39,24 +42,24 @@ export async function goToNextWord({
     lastBurst: null,
   };
 
-  TestUI.beforeTestWordChange("forward", correctInsert);
+  beforeTestWordChange("forward");
 
   for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
-    fb.functions.handleSpace();
+    fb.functions.handleSpace({
+      current: getCurrentInput,
+      forWord: getInputForWord,
+    });
   }
 
-  if (Config.minBurst !== "off" || Config.liveBurstStyle !== "off") {
-    const burst = getWordBurst(buildEventLog(), getActiveWordIndex(), now);
-    ret.lastBurst = burst;
-  }
+  ret.lastBurst = measureWordBurst(now);
 
   PaceCaret.handleSpace(
     correctInsert,
     TestWords.words.getCurrent()?.textWithCommit ?? "",
   );
 
-  const nextWord = TestWords.words.get(getActiveWordIndex() + 1)?.text;
-  if (nextWord !== undefined) Funbox.toggleScript(nextWord);
+  const nextWordText = TestWords.words.get(getActiveWordIndex() + 1)?.text;
+  if (nextWordText !== undefined) Funbox.toggleScript(nextWordText);
 
   const lastWord = getActiveWordIndex() >= TestWords.words.length - 1;
   if (lastWord) {
@@ -71,14 +74,14 @@ export async function goToNextWord({
 
   if (
     getActiveWordIndex() < TestWords.words.length - 1 ||
-    Config.mode === "zen"
+    getConfig.mode === "zen"
   ) {
     ret.increasedWordIndex = true;
-    increaseActiveWordIndex();
+    incrementActiveWordIndex();
   }
 
   setInputElementValue("");
-  void TestUI.afterTestWordChange("forward", ret.lastBurst);
+  afterTestWordChange("forward");
 
   return ret;
 }
@@ -89,9 +92,9 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
     return;
   }
 
-  TestUI.beforeTestWordChange("back", null);
+  beforeTestWordChange("back");
 
-  decreaseActiveWordIndex();
+  decrementActiveWordIndex();
 
   const word = TestWords.words.get(getActiveWordIndex())?.text;
   if (word !== undefined) Funbox.toggleScript(word);
@@ -113,5 +116,5 @@ export function goToPreviousWord(inputType: DeleteInputType): void {
       setInputElementValue(word);
     }
   }
-  void TestUI.afterTestWordChange("back");
+  afterTestWordChange("back");
 }

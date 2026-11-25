@@ -1,6 +1,6 @@
 import { getChallenges } from "@monkeytype/challenges";
 import * as ChallengeController from "../../controllers/challenge-controller";
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../router/navigate";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
@@ -13,9 +13,9 @@ const subgroup: CommandsSubgroup = {
       id: `loadChallenge${capitalizeFirstLetterOfEachWord(challenge.name)}`,
       display: challenge.display,
       exec: async (): Promise<void> => {
-        await navigate("/");
+        await navigate({ to: "/" });
         await ChallengeController.setup(challenge.name);
-        void TestLogic.restart({
+        void TestLogic.restartTest({
           nosave: true,
         });
       },
@@ -26,7 +26,7 @@ const commands: Command[] = [
   {
     id: "loadChallenge",
     display: "Load challenge...",
-    icon: "fa-award",
+    fa: { icon: "fa-award" },
     subgroup,
   },
 ];

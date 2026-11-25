@@ -14,9 +14,9 @@ import {
   insertResultFilterPreset,
   useResultFilterPresetsLiveQuery,
 } from "../../../collections/result-filter-presets";
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
 import { getConfig } from "../../../config/store";
 import defaultResultFilters from "../../../constants/default-result-filters";
+import { getTags, isTagActive, type Tag } from "../../../queries/tags";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
@@ -31,7 +31,7 @@ import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
-import SlimSelect from "../../ui/SlimSelect";
+import SlimSelect from "../../common/SlimSelect";
 import { verifyResultFiltersStructure } from "./utils";
 
 export function Filters(props: {
@@ -96,14 +96,11 @@ export function Filters(props: {
     );
   };
 
-  const Dropdown = <
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
+  const Dropdown = <T extends ResultFiltersKeys>(options: {
     icon: FaSolidIcon;
     text: string;
     group: T;
-    format?: (value: K) => string;
+    format?: (value: keyof ResultFilters[T]) => string;
     class?: string;
   }): JSXElement => {
     // Isolate this group's data to prevent unnecessary updates
@@ -112,7 +109,7 @@ export function Filters(props: {
     const dropdownOptions = createMemo(() =>
       Object.keys(groupData()).map((k) => ({
         value: k,
-        text: options.format?.(k as K) ?? k,
+        text: options.format?.(k as keyof ResultFilters[T]) ?? k,
       })),
     );
 
@@ -154,22 +151,21 @@ export function Filters(props: {
     );
   };
 
-  const ButtonGroup = <
-    T extends ResultFiltersKeys,
-    K extends keyof ResultFilters[T],
-  >(options: {
+  const ButtonGroup = <T extends ResultFiltersKeys>(options: {
     icon?: FaSolidIcon;
     text?: string;
     group: T;
-    format?: (value: K) => string;
+    format?: (value: keyof ResultFilters[T]) => string;
     classOverride?: string;
     singleSelect?: true;
   }): JSXElement => {
-    const items = (): { id: K; text: string }[] =>
+    const items = (): { id: keyof ResultFilters[T]; text: string }[] =>
       Object.keys(props.filters[options.group]).map((id) => ({
         id,
-        text: options.format?.(id as K) ?? new String(id).toString(),
-      })) as { id: K; text: string }[];
+        text:
+          options.format?.(id as keyof ResultFilters[T]) ??
+          new String(id).toString(),
+      })) as { id: keyof ResultFilters[T]; text: string }[];
 
     return (
       <div>
@@ -217,7 +213,6 @@ export function Filters(props: {
     );
   };
 
-  const tags = useTagsLiveQuery();
   const [isShowAdvanced, setShowAdvanced] = createSignal(false);
 
   const setFilter = (
@@ -244,11 +239,15 @@ export function Filters(props: {
         <div class="mb-4 grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
           <Button
             text="all"
-            onClick={() => props.onChangeFilters(fromDefaultSettings(tags()))}
+            onClick={() =>
+              props.onChangeFilters(fromDefaultSettings(getTags()))
+            }
           />
           <Button
             text="current settings"
-            onClick={() => props.onChangeFilters(fromCurrentSettings(tags()))}
+            onClick={() =>
+              props.onChangeFilters(fromCurrentSettings(getTags()))
+            }
           />
           <Button
             text="advanced"
@@ -328,7 +327,7 @@ export function Filters(props: {
             <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
             <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
 
-            <Show when={tags().length > 0}>
+            <Show when={getTags().length > 0}>
               <Dropdown
                 icon="fa-tag"
                 text="tags"
@@ -336,7 +335,7 @@ export function Filters(props: {
                 format={(tag) =>
                   tag === "none"
                     ? "no tag"
-                    : (tags().find((it) => it._id === tag)?.name ?? tag)
+                    : (getTags().find((it) => it._id === tag)?.name ?? tag)
                 }
               />
             </Show>
@@ -345,7 +344,7 @@ export function Filters(props: {
               text="funbox"
               group="funbox"
               class={cn("", {
-                "col-span-2": tags().length === 0,
+                "col-span-2": getTags().length === 0,
               })}
               format={(val) =>
                 val === "none" ? "no funbox" : replaceUnderscoresWithSpaces(val)
@@ -377,7 +376,7 @@ function noFilters(): ResultFilters {
   return filters;
 }
 
-function fromCurrentSettings(tags: TagItem[]): ResultFilters {
+function fromCurrentSettings(tags: readonly Tag[]): ResultFilters {
   const filters = noFilters();
 
   filters.pb.no = true;
@@ -441,7 +440,7 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   filters.tags["none"] = true;
 
   tags.forEach((tag) => {
-    if (tag.active) {
+    if (isTagActive(tag._id)) {
       filters.tags["none"] = false;
       filters.tags[tag._id] = true;
     }
@@ -452,7 +451,7 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   return filters;
 }
 
-function fromDefaultSettings(tags: TagItem[]): ResultFilters {
+function fromDefaultSettings(tags: readonly Tag[]): ResultFilters {
   const tagFilters: Record<string, boolean> = {};
   tagFilters["none"] = true;
   tags.forEach((tag) => {

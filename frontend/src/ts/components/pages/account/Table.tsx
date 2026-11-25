@@ -4,40 +4,44 @@ import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
-import { type TagItem, useTagsLiveQuery } from "../../../collections/tags";
-import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getFormatting } from "../../../states/core";
+import type { NormalizedLocalResult } from "../../../collections/results";
+
+import { getConfig } from "../../../config/store";
+import { getTags, type Tag } from "../../../queries/tags";
 import { showEditResultTagsModal } from "../../../states/edit-result-tags";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
-import { Formatting } from "../../../utils/format";
+import { formatPercentage, formatTypingSpeed } from "../../../utils/format";
 import { replaceUnderscoresWithSpaces } from "../../../utils/strings";
 import { Button } from "../../common/Button";
 import { Fa, FaProps } from "../../common/Fa";
-import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import {
+  DataTable,
+  DataTableColumnDef,
+  DataTableFeatures,
+} from "../../common/table/DataTable";
 import { MiniResultChart } from "./MiniResultChart";
 
 type Sorting = {
-  field: keyof SnapshotResult<Mode>;
+  field: keyof NormalizedLocalResult<Mode>;
   direction: "asc" | "desc";
 };
 
 export function Table<M extends Mode>(props: {
-  data: SnapshotResult<M>[];
+  data: NormalizedLocalResult<M>[];
   onSortingChange: (sorting: Sorting) => void;
   selectedRowId: Accessor<string | null>;
+  /** Tracked: each change scrolls the selected row into view */
+  scrollToSelectedRow: () => void;
 }): JSXElement {
   const [selectedResult, setSelectedResult] = createSignal<string | undefined>(
     undefined,
   );
 
-  const tags = useTagsLiveQuery();
-
   const columns = createMemo(() =>
     getColumns<M>({
-      format: getFormatting(),
-      tags: tags(),
+      tags: getTags(),
       onMiniResultChartSelected: (id) => {
         setSelectedResult(id);
         if (id !== undefined) showModal("MiniResultChartModal");
@@ -57,7 +61,7 @@ export function Table<M extends Mode>(props: {
             props.onSortingChange({ field: "timestamp", direction: "desc" });
           } else {
             props.onSortingChange({
-              field: val[0]?.id as keyof SnapshotResult<Mode>,
+              field: val[0]?.id as keyof NormalizedLocalResult<Mode>,
               direction: val[0]?.desc ? "desc" : "asc",
             });
           }
@@ -71,9 +75,10 @@ export function Table<M extends Mode>(props: {
         rowSelection={{
           getRowId: (row) => row._id,
           activeRow: props.selectedRowId,
+          scrollToActiveRow: props.scrollToSelectedRow,
           class: cn(
             "text-main [&>td>div]:text-main [&>td>div>a]:text-main",
-            "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
+            "[&_[data-ui-element=button]]:[--themable-button-text:var(--text-main)]",
           ),
         }}
       />
@@ -82,15 +87,16 @@ export function Table<M extends Mode>(props: {
 }
 
 function getColumns<M extends Mode>({
-  format,
   tags,
   onMiniResultChartSelected,
 }: {
-  format: Formatting;
-  tags: TagItem[];
+  tags: readonly Tag[];
   onMiniResultChartSelected(val: string): void;
-}): DataTableColumnDef<SnapshotResult<M>>[] {
-  const defineColumn = createColumnHelper<SnapshotResult<M>>().accessor;
+}): DataTableColumnDef<NormalizedLocalResult<M>>[] {
+  const defineColumn = createColumnHelper<
+    DataTableFeatures,
+    NormalizedLocalResult<M>
+  >().accessor;
   const columns = [
     defineColumn("isPb", {
       header: "",
@@ -108,14 +114,14 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("wpm", {
-      header: format.typingSpeedUnit,
+      header: getConfig.typingSpeedUnit,
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        formatTypingSpeed(info.getValue(), { showDecimalPlaces: true }),
     }),
     defineColumn("rawWpm", {
       header: "raw",
       cell: (info) =>
-        format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
+        formatTypingSpeed(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },
@@ -123,7 +129,7 @@ function getColumns<M extends Mode>({
     defineColumn("acc", {
       header: "accuracy",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        formatPercentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },
@@ -131,7 +137,7 @@ function getColumns<M extends Mode>({
     defineColumn("consistency", {
       header: "consistency",
       cell: (info) =>
-        format.percentage(info.getValue(), { showDecimalPlaces: true }),
+        formatPercentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
         breakpoint: "xs",
       },

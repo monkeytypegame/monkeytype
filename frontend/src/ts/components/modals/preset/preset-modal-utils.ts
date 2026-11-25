@@ -6,9 +6,9 @@ import {
 } from "@monkeytype/schemas/configs";
 import { PresetType } from "@monkeytype/schemas/presets";
 
-import { __nonReactive as __nonReactiveTags } from "../../../collections/tags";
+import { getActiveTags } from "../../../queries/tags";
 import { configMetadata } from "../../../config/metadata";
-import { getConfigChanges as getConfigChangesFromConfig } from "../../../config/utils";
+import { getConfigChanges } from "../../../config/utils";
 import { getDefaultConfig } from "../../../constants/default-config";
 
 function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
@@ -40,17 +40,15 @@ export function getActiveSettingGroups(
     .map(([key]) => key);
 }
 
-export function getConfigChanges(
+export function buildPresetConfig(
   presetType: PresetType,
   checkboxes: Record<ConfigGroupName, boolean>,
 ): Partial<ConfigType> {
   const activeConfigChanges =
     presetType === "partial"
-      ? getPartialConfigChanges(getConfigChangesFromConfig(), checkboxes)
-      : getConfigChangesFromConfig();
-  const activeTagIds: string[] = __nonReactiveTags
-    .getActiveTags()
-    .map((tag) => tag._id);
+      ? getPartialConfigChanges(getConfigChanges(), checkboxes)
+      : getConfigChanges();
+  const activeTagIds: string[] = getActiveTags().map((tag) => tag._id);
 
   const setTags = presetType === "full" || checkboxes.behavior;
   return {

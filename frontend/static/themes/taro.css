@@ -1,4 +1,6 @@
-.word.error {
+/* blind mode must not reveal errors, so keep the error underline off there */
+[data-ui-element="words"]:not([data-ui-blind])
+  [data-ui-element="word"][data-ui-state="typedIncorrectly"] {
   border-bottom: dotted 2px var(--text-color);
 }
 

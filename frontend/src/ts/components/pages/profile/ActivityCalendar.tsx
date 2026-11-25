@@ -2,56 +2,70 @@ import { TestActivity } from "@monkeytype/schemas/users";
 import { createEffect, createSignal, JSXElement, Show } from "solid-js";
 
 import { get as getSeverConfiguration } from "../../../ape/server-configuration";
-import { getSnapshot, getTestActivityCalendar } from "../../../db";
 import {
-  clear as clearTestActivity,
-  init as initTestActivity,
-  update,
+  clearActivityCalendar,
+  initActivityCalendar,
+  updateActivityCalendar,
 } from "../../../elements/test-activity";
-import { TestActivityCalendar } from "../../../elements/test-activity-calendar";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
+import { getUserData } from "../../../queries/user";
+import {
+  getCurrentYear,
+  getLast12MonthsCalendar,
+  getTestActivity,
+  getYearCalendar,
+  loadAllYearsTestActivity,
+  TestActivityCalendar,
+  toTestActivityDays,
+} from "../../../states/test-activity";
 import { getFirstDayOfTheWeek } from "../../../utils/date-and-time";
-import SlimSelect, { SlimSelectProps } from "../../ui/SlimSelect";
+import { DeepReadonly } from "../../../utils/types";
+import SlimSelect, { SlimSelectProps } from "../../common/SlimSelect";
 
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
 
+async function getTestActivityCalendar(
+  yearString: string,
+): Promise<TestActivityCalendar | undefined> {
+  const days = getTestActivity();
+  if (days === undefined) return undefined;
+  if (yearString === "current") {
+    return getLast12MonthsCalendar(days, firstDayOfTheWeek);
+  }
+
+  const year = parseInt(yearString);
+  if (year === getCurrentYear()) {
+    return getYearCalendar(days, year, firstDayOfTheWeek);
+  }
+  if (!(await loadAllYearsTestActivity())) return undefined;
+  // past years were merged into the activity
+  return getYearCalendar(getTestActivity() ?? [], year, firstDayOfTheWeek);
+}
+
 export function ActivityCalendar(props: {
   isAccountPage?: true;
-  testActivity?: TestActivity;
+  testActivity?: DeepReadonly<TestActivity>;
 }): JSXElement {
   // Refs are assigned by SolidJS via the ref attribute
   const [elementRef, element] = useRefWithUtils<HTMLElement>();
 
-  let calendar: TestActivityCalendar | undefined;
-
+  // Stepping stone: replaced by a Solid activity calendar component in U2
   createEffect(() =>
     (() => {
-      if (
-        (!props.isAccountPage && props.testActivity === undefined) ||
-        (props.isAccountPage && getSnapshot()?.testActivity === undefined) ||
-        element() === undefined
-      ) {
-        calendar = undefined;
-        clearTestActivity(element()?.native);
+      const days = props.isAccountPage
+        ? getTestActivity()
+        : props.testActivity !== undefined
+          ? toTestActivityDays(props.testActivity)
+          : undefined;
+      if (days === undefined || element() === undefined) {
+        clearActivityCalendar(element()?.native);
         return;
       }
 
-      if (props.isAccountPage) {
-        //signals cannot store classes, use the testActivity from the snapshot for now
-        calendar = getSnapshot()?.testActivity;
-      } else {
-        const testActivity = props.testActivity as TestActivity;
-        calendar = new TestActivityCalendar(
-          testActivity.testsByDays,
-          new Date(testActivity.lastDay),
-          firstDayOfTheWeek,
-        );
-      }
-
-      initTestActivity(
+      initActivityCalendar(
         // oxlint-disable-next-line typescript/no-non-null-assertion
         element()!.native,
-        calendar,
+        getLast12MonthsCalendar(days, firstDayOfTheWeek),
       );
 
       if (!props.isAccountPage) {
@@ -64,10 +78,10 @@ export function ActivityCalendar(props: {
 
   const yearOptions = () => {
     const startYear =
-      getSnapshot()?.addedAt !== undefined
-        ? new Date(getSnapshot()?.addedAt ?? 0).getFullYear()
+      getUserData()?.addedAt !== undefined
+        ? new Date(getUserData()?.addedAt ?? 0).getFullYear()
         : 2020;
-    const currentYear = new Date().getFullYear();
+    const currentYear = getCurrentYear();
     const years: SlimSelectProps["options"] = [
       {
         text: "last 12 months",
@@ -78,7 +92,7 @@ export function ActivityCalendar(props: {
       if (
         years.length < 2 ||
         (getSeverConfiguration()?.users.premium.enabled &&
-          getSnapshot()?.isPremium)
+          getUserData()?.isPremium)
       ) {
         years.push({
           text: year.toString(),
@@ -108,7 +122,7 @@ export function ActivityCalendar(props: {
                       newVal[0]?.value as string,
                     );
                     // oxlint-disable-next-line typescript/no-non-null-assertion
-                    update(element()!.native, activity);
+                    updateActivityCalendar(element()!.native, activity);
                   },
                 }}
               />

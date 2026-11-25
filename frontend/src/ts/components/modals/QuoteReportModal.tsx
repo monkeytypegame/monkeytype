@@ -3,8 +3,8 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement, createSignal } from "solid-js";
 
 import Ape from "../../ape";
-import { Config } from "../../config/store";
-import QuotesController from "../../controllers/quotes-controller";
+import { getConfig } from "../../config/store";
+import { getLanguageQuotes } from "../../constants/quotes";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
 import {
@@ -15,13 +15,13 @@ import {
 import { quoteId } from "../../states/quote-report";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
+import { Captcha } from "../common/form/Captcha";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
+import { allFieldsMandatory, fieldMandatory } from "../common/form/utils";
 import { Separator } from "../common/Separator";
-import { Captcha } from "../ui/form/Captcha";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import { allFieldsMandatory, fieldMandatory } from "../ui/form/utils";
-import SlimSelect from "../ui/SlimSelect";
+import SlimSelect from "../common/SlimSelect";
 
 export function QuoteReportModal(): JSXElement {
   const [quoteText, setQuoteText] = createSignal("");
@@ -34,7 +34,7 @@ export function QuoteReportModal(): JSXElement {
     },
     onSubmit: async ({ value }) => {
       const id = quoteId().toString();
-      const quoteLanguage = removeLanguageSize(Config.language);
+      const quoteLanguage = removeLanguageSize(getConfig.language);
 
       if (value.captcha === "") {
         showNoticeNotification("Please complete the captcha");
@@ -93,9 +93,7 @@ export function QuoteReportModal(): JSXElement {
     });
     form.reset();
 
-    const language =
-      Config.language === "swiss_german" ? "german" : Config.language;
-    const { quotes } = await QuotesController.getQuotes(language);
+    const { quotes } = await getLanguageQuotes(getConfig.language);
     const quote = quotes.find((q) => q.id === quoteId());
     setQuoteText(quote?.text ?? "");
   };

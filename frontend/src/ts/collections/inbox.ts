@@ -12,14 +12,15 @@ import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
+import { isAuthenticated } from "../auth/state";
 import { flushDebounceStrategy } from "./utils/flushDebounceStrategy";
 import {
   showErrorNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import * as BadgeController from "../controllers/badge-controller";
-import { addBadge, addXp } from "../db";
+import { getBadge } from "../constants/badges";
+import { addBadge, addXp } from "../queries/user";
+import { keepForever } from "./utils/misc";
 
 const flushStrategy = flushDebounceStrategy({ maxWait: 1000 * 60 * 5 });
 export function applyPendingInboxActions(): void {
@@ -36,8 +37,9 @@ export { maxMailboxSize };
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
-const inboxCollection = createCollection(
-  queryCollectionOptions({
+const inboxCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     staleTime: 1000 * 60 * 5,
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
@@ -65,7 +67,8 @@ const inboxCollection = createCollection(
     queryClient,
     getKey: (it) => it.id,
   }),
-);
+  ...keepForever,
+});
 
 export async function refetchInboxCollection(): Promise<void> {
   await inboxCollection.utils.refetch();
@@ -106,7 +109,7 @@ function claimRewards(pendingRewards: AllRewards[]): void {
     if (reward.type === "xp") {
       totalXp += reward.item;
     } else if (reward.type === "badge") {
-      const badge = BadgeController.getById(reward.item.id);
+      const badge = getBadge(reward.item.id);
       if (badge) {
         badgeNames.push(badge.name);
         addBadge(reward.item);
@@ -163,12 +166,12 @@ async function flushPendingChanges({
     throw new Error(`Error updating user inbox: ${response.body.message}`);
   }
 
-  inboxCollection.utils.writeBatch(() => {
-    updatedStatus.deleted?.forEach((deleted) =>
-      inboxCollection.utils.writeDelete(deleted.id),
+  await inboxCollection.utils.writeBatch(() => {
+    updatedStatus.deleted?.forEach(
+      (deleted) => void inboxCollection.utils.writeDelete(deleted.id),
     );
     updatedStatus.read?.forEach((read) => {
-      inboxCollection.utils.writeUpdate(read);
+      void inboxCollection.utils.writeUpdate(read);
     });
   });
 

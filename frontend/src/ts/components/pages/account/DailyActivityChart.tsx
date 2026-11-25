@@ -7,9 +7,14 @@ import {
   ResultsQueryState,
   useResultStatsLiveQuery,
 } from "../../../collections/results";
-import { getTheme } from "../../../states/theme";
+import { getConfig } from "../../../config/store";
+import { getTheme } from "../../../theme/state";
 import { secondsToString } from "../../../utils/date-and-time";
-import { Formatting } from "../../../utils/format";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatTypingSpeed,
+} from "../../../utils/format";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";
 import AsyncContent from "../../common/AsyncContent";
 import { ChartJs } from "../../common/ChartJs";
@@ -18,14 +23,13 @@ export function DailyActivityChart(props: {
   queryState: Accessor<ResultsQueryState | undefined>;
   beginAtZero: boolean;
   typingSpeedUnit: TypingSpeedUnitSettings;
-  format: Formatting;
 }): JSXElement {
   const dataQuery = useResultStatsLiveQuery(() => props.queryState(), {
     groupByDay: true,
   });
 
   const formatSpeed = (wpm: number): string =>
-    props.format.typingSpeed(wpm, { showDecimalPlaces: true });
+    formatTypingSpeed(wpm, { showDecimalPlaces: true });
 
   return (
     <AsyncContent collections={{ dataQuery }}>
@@ -121,7 +125,7 @@ export function DailyActivityChart(props: {
                   position: "right",
                   title: {
                     display: true,
-                    text: `Average ${props.format.typingSpeedUnit.toUpperCase()}`,
+                    text: `Average ${getConfig.typingSpeedUnit.toUpperCase()}`,
                   },
                   grid: {
                     display: false,
@@ -162,10 +166,10 @@ export function DailyActivityChart(props: {
 Time Typing: ${secondsToString(Math.round(item.timeTyping), true, true)}
 Tests Completed: ${item.completed}
 Restarts per test: ${roundTo2(item.restarted / item.completed)}
-Highest  ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.maxWpm)}
-Average ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.avgWpm)}
-Average Accuracy: ${props.format.accuracy(item.avgAcc, { showDecimalPlaces: true })}
-Average Consistency: ${props.format.percentage(item.avgConsistency, { showDecimalPlaces: true })}
+Highest  ${getConfig.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.maxWpm)}
+Average ${getConfig.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.avgWpm)}
+Average Accuracy: ${formatAccuracy(item.avgAcc, { showDecimalPlaces: true })}
+Average Consistency: ${formatPercentage(item.avgConsistency, { showDecimalPlaces: true })}
                       `;
                     },
                     label: function (): string {

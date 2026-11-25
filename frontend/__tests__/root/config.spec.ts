@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import * as Config from "../../src/ts/config/setters";
 import * as Lifecycle from "../../src/ts/config/lifecycle";
+import * as Persistence from "../../src/ts/config/persistence";
+import * as RemoteConfig from "../../src/ts/config/remote";
 import * as ConfigUtils from "../../src/ts/config/utils";
 import { __testing } from "../../src/ts/config/testing";
 import * as Misc from "../../src/ts/utils/misc";
@@ -12,10 +14,12 @@ import {
 } from "@monkeytype/schemas/configs";
 import * as FunboxValidation from "../../src/ts/config/funbox-validation";
 import * as ConfigValidation from "../../src/ts/config/validation";
-import { configEvent } from "../../src/ts/events/config";
 import * as ApeConfig from "../../src/ts/ape/config";
 import * as Notifications from "../../src/ts/states/notifications";
-import * as TestState from "../../src/ts/states/test";
+import * as EngineState from "../../src/ts/test/engine/state";
+import { getConfig as getConfigStore } from "../../src/ts/config/store";
+import { unwrap } from "solid-js/store";
+import { createEffect, createRoot } from "solid-js";
 
 const { replaceConfig, getConfig } = __testing;
 
@@ -35,7 +39,6 @@ describe("Config", () => {
       ConfigValidation,
       "isConfigValueValid",
     );
-    const dispatchConfigEventMock = vi.spyOn(configEvent, "dispatch");
     const dbSaveConfigMock = vi.spyOn(ApeConfig, "saveConfig");
     const notificationAddMock = vi.spyOn(
       Notifications,
@@ -43,17 +46,16 @@ describe("Config", () => {
     );
     const miscReloadAfterMock = vi.spyOn(Misc, "reloadAfter");
     const miscTriggerResizeMock = vi.spyOn(Misc, "triggerResize");
-    const stateIsTestActiveMock = vi.spyOn(TestState, "isTestActive");
+    const isTestActiveMock = vi.spyOn(EngineState, "isTestActive");
 
     const mocks = [
       canSetConfigWithCurrentFunboxesMock,
       isConfigValueValidMock,
-      dispatchConfigEventMock,
       dbSaveConfigMock,
       notificationAddMock,
       miscReloadAfterMock,
       miscTriggerResizeMock,
-      stateIsTestActiveMock,
+      isTestActiveMock,
     ];
 
     beforeEach(async () => {
@@ -63,7 +65,7 @@ describe("Config", () => {
       isConfigValueValidMock.mockReturnValue(true);
       canSetConfigWithCurrentFunboxesMock.mockReturnValue(true);
       dbSaveConfigMock.mockResolvedValue();
-      stateIsTestActiveMock.mockReturnValue(true);
+      isTestActiveMock.mockReturnValue(true);
 
       replaceConfig({});
     });
@@ -195,25 +197,10 @@ describe("Config", () => {
       Config.setConfig("confidenceMode", "max");
 
       //THEN
-      expect(dispatchConfigEventMock).not.toHaveBeenCalledWith({
-        key: "freedomMode",
-        newValue: false,
-        nosave: true,
-        previousValue: true,
-      });
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "stopOnError",
-        newValue: "off",
-        nosave: false,
-        previousValue: "letter",
-      });
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "confidenceMode",
-        newValue: "max",
-        nosave: false,
-        previousValue: "off",
+      expect(getConfig()).toMatchObject({
+        confidenceMode: "max",
+        freedomMode: false,
+        stopOnError: "off",
       });
     });
 
@@ -267,25 +254,6 @@ describe("Config", () => {
       expect(dbSaveConfigMock).not.toHaveBeenCalled();
     });
 
-    it("dispatches event on set", () => {
-      //GIVEN
-      replaceConfig({ numbers: false });
-
-      //WHEN
-      Config.setConfig("numbers", true, {
-        nosave: true,
-      });
-
-      //THEN
-
-      expect(dispatchConfigEventMock).toHaveBeenCalledWith({
-        key: "numbers",
-        newValue: true,
-        nosave: true,
-        previousValue: false,
-      });
-    });
-
     it("triggers resize if property is set", () => {
       ///WHEN
       Config.setConfig("maxLineWidth", 50);
@@ -320,6 +288,35 @@ describe("Config", () => {
         "Ad settings changed. Refreshing...",
       );
       expect(miscReloadAfterMock).toHaveBeenCalledWith(3);
+    });
+
+    it("notifies once when a theme pick turns off custom theme and auto switch", () => {
+      //GIVEN
+      replaceConfig({ customTheme: true, autoSwitchTheme: true });
+
+      //WHEN
+      Config.setConfig("theme", "8008");
+
+      //THEN
+      expect(getConfig()).toMatchObject({
+        customTheme: false,
+        autoSwitchTheme: false,
+      });
+      expect(notificationAddMock).toHaveBeenCalledExactlyOnceWith(
+        "Auto switch theme disabled",
+      );
+    });
+
+    it("keeps auto switch on when an internal write leaves custom theme off", () => {
+      //GIVEN
+      replaceConfig({ customTheme: false, autoSwitchTheme: true });
+
+      //WHEN (randomizeTheme)
+      Config.setConfig("customTheme", false, { nosave: true });
+
+      //THEN
+      expect(getConfig().autoSwitchTheme).toBe(true);
+      expect(notificationAddMock).not.toHaveBeenCalled();
     });
   });
 
@@ -467,6 +464,130 @@ describe("Config", () => {
       const config = getConfig();
       expect(config.keymapLayout).toEqual("qwerty");
       expect(config.keymapMode).toEqual("off");
+    });
+  });
+  describe("store writes", () => {
+    it("setConfig, including keys set by overrideConfig", () => {
+      replaceConfig({ monkey: false, liveSpeedStyle: "text" });
+
+      expect(Config.setConfig("monkey", true)).toBe(true);
+
+      expect(getConfigStore).toMatchObject({
+        monkey: true,
+        liveSpeedStyle: "mini",
+      });
+    });
+
+    it("toggleFunbox", () => {
+      replaceConfig({ funbox: [] });
+
+      expect(Config.toggleFunbox("mirror")).toBe(true);
+
+      expect(unwrap(getConfigStore).funbox).toEqual(["mirror"]);
+    });
+
+    it("applyConfig, including keys reset after a failed set", async () => {
+      replaceConfig({ funbox: ["mirror"], mode: "time" });
+
+      await Lifecycle.applyConfig({ mode: "quote", funbox: ["58008"] });
+
+      expect(getConfigStore.mode).toBe("quote");
+      expect(unwrap(getConfigStore).funbox).toEqual([]);
+    });
+
+    it("applyConfig keeps auto switch theme next to a theme", async () => {
+      await Lifecycle.applyConfig({
+        theme: "8008",
+        customTheme: true,
+        autoSwitchTheme: true,
+      });
+      expect(getConfig().autoSwitchTheme).toBe(true);
+    });
+
+    it("setConfig and toggleFunbox don't subscribe the calling effect", () => {
+      replaceConfig({ funbox: [], numbers: false });
+      let runs = 0;
+      const dispose = createRoot((dispose) => {
+        createEffect(() => {
+          runs++;
+          Config.setConfig("numbers", true, { nosave: true });
+          Config.toggleFunbox("mirror", true);
+        });
+        return dispose;
+      });
+      runs = 0;
+
+      Config.setConfig("fontSize", 3, { nosave: true });
+      Config.setConfig("mode", "words", { nosave: true });
+
+      expect(runs).toBe(0);
+      dispose();
+    });
+
+    it("applyConfig runs store effects once", async () => {
+      replaceConfig({ mode: "time", punctuation: false, numbers: false });
+      const runs: unknown[] = [];
+      const dispose = createRoot((dispose) => {
+        createEffect(() =>
+          runs.push([
+            getConfigStore.mode,
+            getConfigStore.punctuation,
+            getConfigStore.numbers,
+          ]),
+        );
+        return dispose;
+      });
+      runs.length = 0;
+
+      await Lifecycle.applyConfig({
+        mode: "words",
+        punctuation: true,
+        numbers: true,
+      });
+
+      expect(runs).toEqual([["words", true, true]]);
+      dispose();
+    });
+  });
+
+  describe("whole-config reads", () => {
+    it("saves a copy, not the live store", () => {
+      const saveConfigMock = vi
+        .spyOn(ApeConfig, "saveConfig")
+        .mockResolvedValue();
+      replaceConfig({ funbox: ["mirror"] });
+
+      Persistence.saveFullConfigToLocalStorage();
+      Config.setConfig("funbox", [], { nosave: true });
+
+      const sent = saveConfigMock.mock.calls[0]?.[0] as Partial<ConfigType>;
+      expect(sent.funbox).toEqual(["mirror"]);
+      saveConfigMock.mockRestore();
+    });
+
+    it("applyFromServer applies only a different config", async () => {
+      const applyConfigMock = vi.spyOn(Lifecycle, "applyConfig");
+      replaceConfig({ fontSize: 2 });
+
+      await RemoteConfig.applyFromServer(getConfig());
+      expect(applyConfigMock).not.toHaveBeenCalled();
+
+      await RemoteConfig.applyFromServer({ ...getConfig(), fontSize: 3 });
+      expect(applyConfigMock).toHaveBeenCalledOnce();
+      expect(getConfigStore.fontSize).toBe(3);
+      applyConfigMock.mockRestore();
+    });
+
+    it("getConfigChanges returns the store's changed values", () => {
+      replaceConfig({ fontSize: 3, funbox: ["mirror"] });
+
+      const changes = ConfigUtils.getConfigChanges();
+
+      expect(changes).toMatchObject({ fontSize: 3, funbox: ["mirror"] });
+      // scalars at their default are left out (arrays always count as
+      // changed: compared by reference)
+      expect(changes).not.toHaveProperty("mode");
+      expect(changes).not.toHaveProperty("punctuation");
     });
   });
 });

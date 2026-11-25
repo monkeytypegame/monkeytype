@@ -1,28 +1,101 @@
 import {
+  getCells,
+  getMonths,
+  getTotalTests,
   TestActivityCalendar,
   TestActivityMonth,
-} from "./test-activity-calendar";
+} from "../states/test-activity";
 
-export function init(
+// Stepping stone: replaced by a Solid activity calendar component in U2
+
+const tooltipViewportPadding = 8;
+
+function getTooltipHorizontalOffset(
+  triggerLeft: number,
+  triggerWidth: number,
+  tooltipWidth: number,
+  viewportWidth: number,
+): number {
+  const availableWidth = Math.max(
+    0,
+    viewportWidth - tooltipViewportPadding * 2,
+  );
+  const renderedTooltipWidth = Math.min(tooltipWidth, availableWidth);
+  const triggerCenter = triggerLeft + triggerWidth / 2;
+  const tooltipLeft = triggerCenter - renderedTooltipWidth / 2;
+  const tooltipRight = triggerCenter + renderedTooltipWidth / 2;
+
+  if (tooltipLeft < tooltipViewportPadding) {
+    return tooltipViewportPadding - tooltipLeft;
+  }
+
+  if (tooltipRight > viewportWidth - tooltipViewportPadding) {
+    return viewportWidth - tooltipViewportPadding - tooltipRight;
+  }
+
+  return 0;
+}
+
+function measureTooltipWidth(element: HTMLElement): number {
+  const label = element.getAttribute("aria-label");
+  if (label === null) {
+    return 0;
+  }
+
+  const tooltipStyle = window.getComputedStyle(element, "::after");
+  const measure = document.createElement("span");
+  measure.textContent = label;
+  Object.assign(measure.style, {
+    fontFamily: tooltipStyle.fontFamily,
+    fontSize: tooltipStyle.fontSize,
+    fontStyle: tooltipStyle.fontStyle,
+    fontWeight: tooltipStyle.fontWeight,
+    letterSpacing: tooltipStyle.letterSpacing,
+    paddingLeft: tooltipStyle.paddingLeft,
+    paddingRight: tooltipStyle.paddingRight,
+    position: "fixed",
+    visibility: "hidden",
+    whiteSpace: "nowrap",
+  });
+  document.body.appendChild(measure);
+  const width = measure.getBoundingClientRect().width;
+  measure.remove();
+
+  return width;
+}
+
+function positionTooltip(element: HTMLElement): void {
+  const triggerRect = element.getBoundingClientRect();
+  const offset = getTooltipHorizontalOffset(
+    triggerRect.left,
+    triggerRect.width,
+    measureTooltipWidth(element),
+    document.documentElement.clientWidth,
+  );
+
+  element.style.setProperty("--activity-tooltip-offset", `${offset}px`);
+}
+
+export function initActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
   if (calendar === undefined) {
-    clear(element);
+    clearActivityCalendar(element);
     return;
   }
   element.classList.remove("hidden");
 
   updateLabels(element, calendar.firstDayOfWeek);
-  update(element, calendar);
+  updateActivityCalendar(element, calendar);
 }
 
-export function clear(element?: HTMLElement): void {
+export function clearActivityCalendar(element?: HTMLElement): void {
   element?.classList.add("hidden");
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-export function update(
+export function updateActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
@@ -41,22 +114,23 @@ export function update(
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  updateMonths(getMonths(calendar));
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
   {
     if (title !== null) {
-      title.innerHTML = `${calendar.getTotalTests()} tests`;
+      title.innerHTML = `${getTotalTests(calendar)} tests`;
     }
   }
 
-  for (const day of calendar.getDays()) {
+  for (const day of getCells(calendar)) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {
       elem.setAttribute("aria-label", day.label);
       elem.setAttribute("data-balloon-pos", "up");
+      elem.addEventListener("pointerenter", () => positionTooltip(elem));
     }
     container.appendChild(elem);
   }

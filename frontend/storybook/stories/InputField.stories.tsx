@@ -2,7 +2,7 @@ import { AnyFieldApi } from "@tanstack/solid-form";
 
 import preview from "#.storybook/preview";
 
-import { InputField } from "../../src/ts/components/ui/form/InputField";
+import { InputField } from "../../src/ts/components/common/form/InputField";
 
 type MetaState = {
   isTouched?: boolean;
@@ -24,7 +24,7 @@ function createFieldMock(options: {
     isValid: true,
     isValidating: false,
     errors: [],
-    ...(options.meta ?? {}),
+    ...options.meta,
   };
   return {
     name: options.name ?? "test",
