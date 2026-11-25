@@ -121,8 +121,12 @@ export function SpeedHistogram(props: {
       <Chart
         definition={definition()}
         ariaLabel="Distribution of time 60 leaderboard results"
-        // the host defaults to a fixed 320 px; follow the section like the canvas does
-        style={{ height: "100%" }}
+        // responsive per the TanStack guide: no width (the host follows the
+        // container; initialWidth seeds the first frame until the measured
+        // width is available) and a fixed height, like the h-48 section and
+        // the canvas it replaces
+        height={192}
+        initialWidth={640}
       />
     </Show>
   );
@@ -140,18 +144,20 @@ export function buildSpeedHistogramDefinition(
 ) {
   const counts = rows.map((it) => it.count);
   const max = Math.max(1, ...counts);
-  // chart.js minBarLength: 2 keeps the tiny tail buckets visible; the library
+  // chart.js minBarLength: 2 kept the tiny tail buckets visible; the library
   // has no minimum bar size, so clamp in count space. Calibrated against the
   // ~120 px painted plot (192 px section minus the rotated-label margin): the
   // nice'd domain max sits above the raw max, so the divisor is smaller than
-  // the plot height to land at 2 px. The tooltip reads datum.count, unclamped.
+  // the plot height to land at 2 px. Zero buckets stay zero (accepted
+  // deviation: chart.js painted them at 2 px). The tooltip reads datum.count,
+  // unclamped.
   const minVisibleCount = (2 / 92) * max;
 
   return defineChart({
     marks: [
       barY(rows, {
         x: "label",
-        y: (it) => Math.max(it.count, minVisibleCount),
+        y: (it) => Math.max(it.count, it.count === 0 ? 0 : minVisibleCount),
         fill: theme().main,
       }),
     ],

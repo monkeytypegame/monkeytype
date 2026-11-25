@@ -59,12 +59,13 @@ const theme = (): Theme =>
   }) as Theme;
 
 const data: SpeedHistogramData = {
-  labels: ["80 - 89", "90 - 99", "100 - 109", "110 - 119"],
+  labels: ["80 - 89", "90 - 99", "100 - 109", "110 - 119", "120 - 129"],
   data: [
     { x: 80, y: 4, topPercentage: "top 99.50%" },
     { x: 90, y: 12, topPercentage: "top 97.00%" },
     { x: 100, y: 148, topPercentage: "top 85.00%" },
-    { x: 110, y: 0 },
+    { x: 110, y: 1 },
+    { x: 120, y: 0 },
   ],
 };
 
@@ -88,13 +89,14 @@ describe("buildSpeedHistogramDefinition", () => {
       "90 - 99",
       "100 - 109",
       "110 - 119",
+      "120 - 129",
     ]);
     const yDomain = scene.scales["y"]?.domain as [number, number] | undefined;
     expect(yDomain?.[0]).toBe(0);
     expect(yDomain?.[1]).toBe(150);
   });
 
-  it("keeps one bar per row with the theme's main color and a 2px minimum", () => {
+  it("keeps one bar per row; tiny buckets get a 2px minimum, zero stays zero", () => {
     const definition = buildSpeedHistogramDefinition(rows, theme);
 
     const scene = createChartScene(definition as never, {
@@ -102,12 +104,14 @@ describe("buildSpeedHistogramDefinition", () => {
       height: 200,
     });
 
-    // the zero bucket is clamped to chart.js's minBarLength: 2 (in count space)
+    // the tiny bucket is clamped to chart.js's minBarLength: 2 (in count space);
+    // the zero bucket stays zero (accepted deviation: no minBarLength)
     expect(scene.points.map((point) => point.yValue)).toEqual([
       4,
       12,
       148,
       (2 / 92) * 148,
+      0,
     ]);
     expect(scene.points[0]?.xValue).toBe("80 - 89");
     expect(scene.points[0]?.color).toBe("#222222");
