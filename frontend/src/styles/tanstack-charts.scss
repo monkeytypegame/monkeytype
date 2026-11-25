@@ -22,4 +22,12 @@
   --ts-chart-tooltip-shadow: none;
   --ts-chart-tooltip-font: 400 12px / 1.3 var(--font);
   --ts-chart-tooltip-max-width: 200px;
+
+  // the library gives the chart's <svg> tabindex 0 (for keyboard focus), and
+  // Chrome paints the UA focus ring on mouse click even though :focus-visible
+  // does not match; the old Chart.js canvas wasn't focusable, so suppress the
+  // ring for pointer focus. The keyboard ring stays (:focus-visible).
+  svg:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
