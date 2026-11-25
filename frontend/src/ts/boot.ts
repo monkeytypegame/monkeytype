@@ -2,6 +2,7 @@ import * as ServerConfiguration from "./ape/server-configuration";
 import { loadFromLocalStorage } from "./config/lifecycle";
 import * as Cookies from "./cookies";
 import * as MerchBanner from "./elements/merch-banner";
+import * as PwaInstallBanner from "./elements/pwa-install-banner";
 import * as Psa from "./elements/psa";
 import { startAuth } from "./auth/actions";
 import { firebaseAuthProvider } from "./auth/providers/firebase";
@@ -18,6 +19,7 @@ export async function boot(): Promise<void> {
   // before awaiting: PSAs show on the first auth state change
   initConnection();
   Psa.init();
+  PwaInstallBanner.init();
 
   const configLoaded = loadFromLocalStorage();
   void fetchLatestVersion().then((data) => {
@@ -39,6 +41,7 @@ export async function boot(): Promise<void> {
   }
 
   MerchBanner.showIfNotClosedBefore();
+  PwaInstallBanner.showIfNotClosedBefore();
 
   setAppReady(true);
 
