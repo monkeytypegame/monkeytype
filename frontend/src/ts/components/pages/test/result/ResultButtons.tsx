@@ -2,9 +2,12 @@ import { createKeyHold } from "@tanstack/solid-hotkeys";
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { navigate } from "../../../../router/navigate";
 import { getIsScreenshotting } from "../../../../states/core";
+import { showEventLogInViewer } from "../../../../states/event-log-viewer";
 import { showModal } from "../../../../states/modals";
 import { showNoticeNotification } from "../../../../states/notifications";
+import { getResultData } from "../../../../test/engine/state";
 import {
   captureAndCopyToClipboard,
   captureAndDownload,
@@ -80,6 +83,18 @@ export function ResultButtons(props: { glarses: boolean }): JSXElement {
             } else {
               void captureAndCopyToClipboard();
             }
+          }}
+        />
+      </Show>
+      <Show when={import.meta.env.DEV}>
+        <ResultButton
+          text="View in event log viewer (dev)"
+          fa={{ icon: "fa-vials" }}
+          onClick={() => {
+            const log = getResultData()?.eventLog;
+            if (log === undefined) return;
+            showEventLogInViewer(log);
+            void navigate({ to: "/event-log-viewer" });
           }}
         />
       </Show>

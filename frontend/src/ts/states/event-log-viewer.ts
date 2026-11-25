@@ -67,6 +67,14 @@ export function setEventLog(log: EventLog): void {
   setCurrentMs(getEventLogMaxMs(log));
 }
 
+/** Opens `log` in the viewer's preview, as its "Load latest data" does. */
+export function showEventLogInViewer(log: EventLog): void {
+  setRaw(JSON.stringify(log));
+  setEventLog(log);
+  setError(null);
+  setStage("preview");
+}
+
 /**
  * Owns the object url rather than the component, so it survives a hot reload.
  * Only revoked when it is replaced or cleared.
