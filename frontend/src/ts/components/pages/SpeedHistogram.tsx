@@ -1,5 +1,4 @@
-import { barY, defineChart } from "@tanstack/charts";
-import { focusGroupX } from "@tanstack/charts/focus";
+import { barY, type ChartTooltipRow, defineChart } from "@tanstack/charts";
 import { scaleBand } from "@tanstack/charts/scales/band";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { Chart } from "@tanstack/charts/solid";
@@ -122,6 +121,8 @@ export function SpeedHistogram(props: {
       <Chart
         definition={definition()}
         ariaLabel="Distribution of time 60 leaderboard results"
+        // the host defaults to a fixed 320 px; follow the section like the canvas does
+        style={{ height: "100%" }}
       />
     </Show>
   );
@@ -139,12 +140,18 @@ export function buildSpeedHistogramDefinition(
 ) {
   const counts = rows.map((it) => it.count);
   const max = Math.max(1, ...counts);
+  // chart.js minBarLength: 2 keeps the tiny tail buckets visible; the library
+  // has no minimum bar size, so clamp in count space. Calibrated against the
+  // ~120 px painted plot (192 px section minus the rotated-label margin): the
+  // nice'd domain max sits above the raw max, so the divisor is smaller than
+  // the plot height to land at 2 px. The tooltip reads datum.count, unclamped.
+  const minVisibleCount = (2 / 92) * max;
 
   return defineChart({
     marks: [
       barY(rows, {
         x: "label",
-        y: "count",
+        y: (it) => Math.max(it.count, minVisibleCount),
         fill: theme().main,
       }),
     ],
@@ -154,30 +161,44 @@ export function buildSpeedHistogramDefinition(
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        // Chart.js painted these with subAlt
-        grid: { stroke: "var(--sub-alt-color)" },
+        grid: { stroke: theme().sub },
+        axis: { tickLabels: { rotate: -45 } },
       },
       y: {
-        scale: () => scaleLinear().domain([0, max]),
-        // Chart.js beginAtZero + stepSize 10: nice ticks from zero
+        scale: () => scaleLinear(),
         nice: true,
-        grid: { stroke: "var(--sub-alt-color)" },
+        grid: { stroke: theme().sub },
         axis: { label: "Users" },
       },
     },
-    // Chart.js `mode: "index"`: the whole bucket column responds, anywhere in it
-    focus: focusGroupX,
-    maxFocusDistance: Number.POSITIVE_INFINITY,
     tooltip: {
       use: tooltip,
-      items: [
-        { channel: "y", label: "Users" },
-        // the old afterLabel line, omitted for buckets without one
-        {
-          id: "topPercentage",
-          text: (point) => point.datum.topPercentage ?? null,
-        },
-      ],
+      // the old tooltip animated 250 ms between bars
+      motion: { type: "tween", duration: 250, easing: "ease-out" },
+      // the old tooltip: bucket title, a user-count row, and the cumulative
+      // top percentage when the bucket has one
+      content: (points) => {
+        const point = points[0];
+        if (!point) return { rows: [] };
+        // the y channel is clamped for the minimum bar size; the true count
+        // lives on the datum
+        // Chart.js painted "Users: 7" as one left-aligned line; the built-in
+        // row is a swatch | label | value grid, so the whole line goes in the label
+        const tooltipRows: ChartTooltipRow[] = [
+          {
+            label: `Users: ${point.datum.count}`,
+            value: "",
+            color: point.color,
+          },
+        ];
+        if (point.datum.topPercentage !== undefined) {
+          tooltipRows.push({ label: point.datum.topPercentage, value: "" });
+        }
+        return {
+          title: point.datum.label,
+          rows: tooltipRows,
+        };
+      },
     },
   });
 }

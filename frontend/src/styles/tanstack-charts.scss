@@ -11,12 +11,15 @@
   --ts-chart-4: var(--sub-alt-color);
   --ts-chart-3: var(--error-color);
 
-  // DOM tooltip chrome
-  --ts-chart-tooltip-background: var(--bg-color);
-  --ts-chart-tooltip-color: var(--text-color);
-  --ts-chart-tooltip-border: 1px solid var(--sub-alt-color);
-  --ts-chart-tooltip-border-radius: calc(var(--roundness) / 2);
-  --ts-chart-tooltip-shadow: 0 calc(var(--roundness) / 2)
-    calc(var(--roundness) * 1.5)
-    color-mix(in srgb, var(--sub-alt-color) 50%, transparent);
+  // DOM tooltip chrome: the old Chart.js tooltip was a fixed dark bubble in
+  // every theme (the values below are its defaults), so parity means fixed
+  // values here, not theme variables
+  --ts-chart-tooltip-background: rgba(0, 0, 0, 0.8);
+  --ts-chart-tooltip-color: #fff;
+  --ts-chart-tooltip-border: 1px solid rgba(0, 0, 0, 0);
+  --ts-chart-tooltip-border-radius: 6px;
+  --ts-chart-tooltip-padding: 6px;
+  --ts-chart-tooltip-shadow: none;
+  --ts-chart-tooltip-font: 400 12px / 1.3 var(--font);
+  --ts-chart-tooltip-max-width: 200px;
 }
