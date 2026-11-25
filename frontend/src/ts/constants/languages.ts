@@ -388,6 +388,7 @@ export const LanguageGroups: Record<string, Language[]> = {
   kokanu: ["kokanu", "likanu"],
   lao: ["lao"],
   sindhi: ["sindhi"],
+  punjabi: ["punjabi_gurmukhi"],
 };
 
 export type LanguageGroupName = keyof typeof LanguageGroups;
