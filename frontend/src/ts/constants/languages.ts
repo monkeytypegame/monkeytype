@@ -344,6 +344,7 @@ export const LanguageGroups: Record<string, Language[]> = {
     "code_r",
     "code_r_2k",
     "code_swift",
+    "code_swift_api",
     "code_scala",
     "code_bash",
     "code_powershell",
