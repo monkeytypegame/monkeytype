@@ -162,7 +162,7 @@ export const leaderboardsContract = c.router(
         404: MonkeyClientError,
       },
       metadata: meta({
-        authenticationOptions: { isPublic: true },
+        authenticationOptions: { isPublic: "optionalUser" },
       }),
     },
     getRank: {
@@ -189,7 +189,7 @@ export const leaderboardsContract = c.router(
         200: GetDailyLeaderboardResponseSchema,
       },
       metadata: meta({
-        authenticationOptions: { isPublic: true },
+        authenticationOptions: { isPublic: "optionalUser" },
         requireConfiguration: {
           path: "dailyLeaderboards.enabled",
           invalidMessage: "Daily leaderboards are not available at this time.",
@@ -222,7 +222,7 @@ export const leaderboardsContract = c.router(
         200: GetWeeklyXpLeaderboardResponseSchema,
       },
       metadata: meta({
-        authenticationOptions: { isPublic: true },
+        authenticationOptions: { isPublic: "optionalUser" },
         requireConfiguration: {
           path: "leaderboards.weeklyXp.enabled",
           invalidMessage:

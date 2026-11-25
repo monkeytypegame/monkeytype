@@ -38,6 +38,12 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
 /**
  * Authenticate request based on the auth settings of the route.
  * By default a Bearer token with user authentication is required.
+ * Public endpoints (isPublic: true) always skip authentication: any
+ * authentication header is ignored, so a broken or expired token can't
+ * fail the request.
+ * `isPublic: "optionalUser"` endpoints skip authentication only if no
+ * authentication header is provided, otherwise the token is verified and
+ * the user is used for user-specific data.
  * @returns
  */
 export function authenticateTsRestRequest<
@@ -57,17 +63,20 @@ export function authenticateTsRestRequest<
     let token: DecodedToken;
     let authType = "None";
 
-    const isPublic =
-      options.isPublic === true ||
-      (options.isPublicOnDev && isDevEnvironment());
-
     const {
       authorization: authHeader,
       "x-hub-signature-256": githubWebhookHeader,
     } = req.headers;
 
     try {
-      if (options.isGithubWebhook) {
+      if (options.isPublic === true) {
+        // skip authentication for public endpoints without optional user, even if an auth header is provided
+        token = {
+          type: "None",
+          uid: "",
+          email: "",
+        };
+      } else if (options.isGithubWebhook) {
         token = authenticateGithubWebhook(req, githubWebhookHeader);
       } else if (authHeader !== undefined && authHeader !== "") {
         token = await authenticateWithAuthHeader(
@@ -75,7 +84,11 @@ export function authenticateTsRestRequest<
           req.ctx.configuration,
           options,
         );
-      } else if (isPublic === true) {
+      } else if (
+        options.isPublic === "optionalUser" ||
+        (options.isPublicOnDev && isDevEnvironment())
+      ) {
+        //`optionalUser` or `isPublicOnDev` in dev, without authentication header
         token = {
           type: "None",
           uid: "",
@@ -240,7 +253,9 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
   const isPublic =
-    options.isPublic === true || (options.isPublicOnDev && isDevEnvironment());
+    options.isPublic === true ||
+    options.isPublic === "optionalUser" ||
+    (options.isPublicOnDev && isDevEnvironment());
 
   if (!isPublic) {
     if (!configuration.apeKeys.acceptKeys) {

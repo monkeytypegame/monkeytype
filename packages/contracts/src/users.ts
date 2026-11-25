@@ -376,7 +376,7 @@ export const usersContract = c.router(
         200: CheckNameResponseSchema,
       },
       metadata: meta({
-        authenticationOptions: { isPublic: true },
+        authenticationOptions: { isPublic: "optionalUser" },
         rateLimit: "userCheckName",
       }),
     },
