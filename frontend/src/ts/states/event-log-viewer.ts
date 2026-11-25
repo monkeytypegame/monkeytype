@@ -4,7 +4,7 @@ import type { EventLog, TestEventType } from "../test/engine/events/types";
 
 /**
  * State for the dev event log viewer, deliberately kept outside the component.
- * The modal gets edited constantly while working on it and vite hot reload
+ * The page gets edited constantly while working on it and vite hot reload
  * remounts the component on every save - holding the loaded log out here means
  * a save no longer throws away whatever was being inspected. This module is
  * only re-executed if this file itself changes.

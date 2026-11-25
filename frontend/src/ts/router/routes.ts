@@ -1,6 +1,7 @@
 // The route tree: every page with its guards and loaders
 
 import { noop, type QueryClient } from "@tanstack/solid-query";
+import { lazy } from "solid-js";
 import {
   createRootRouteWithContext,
   createRoute,
@@ -71,7 +72,8 @@ export type PageName =
   | "404"
   | "accountSettings"
   | "friends"
-  | "leaderboards";
+  | "leaderboards"
+  | "eventLogViewer";
 
 declare module "@tanstack/solid-router" {
   // oxlint-disable-next-line typescript/consistent-type-definitions -- module augmentation needs an interface
@@ -409,6 +411,26 @@ const friends = createRoute({
   },
 });
 
+// dev only: the import sits behind import.meta.env.DEV so a production build
+// drops the page (and its chart code) entirely
+const EventLogViewerPage = import.meta.env.DEV
+  ? lazy(async () =>
+      import("../components/pages/event-log-viewer/EventLogViewerPage").then(
+        (m) => ({ default: m.EventLogViewerPage }),
+      ),
+    )
+  : () => null;
+
+const eventLogViewer = createRoute({
+  getParentRoute: () => userDataRoute,
+  path: "/event-log-viewer",
+  staticData: { page: "eventLogViewer" },
+  component: createRouterPage(EventLogViewerPage),
+  beforeLoad: () => {
+    if (!import.meta.env.DEV) redirect({ to: "/", throw: true });
+  },
+});
+
 export const routeTree = root.addChildren([
   userDataRoute.addChildren([
     test,
@@ -421,5 +443,6 @@ export const routeTree = root.addChildren([
     profileSearch,
     profile,
     friends,
+    eventLogViewer,
   ]),
 ]);

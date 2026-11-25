@@ -7,7 +7,6 @@ export type ModalId =
   | "Commandline"
   | "DevOptions"
   | "DevInboxPicker"
-  | "EventLogViewer"
   | "RegisterCaptcha"
   | "Alerts"
   | "SimpleModal"

@@ -11,6 +11,7 @@ import {
 import { quickLogin } from "../../dev/quick-login";
 import { useBodyClasses } from "../../hooks/useBodyClasses";
 import { addXp } from "../../queries/user";
+import { navigate } from "../../router/navigate";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -165,7 +166,10 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-vials",
       label: () => "Event Log Viewer",
-      onClick: () => showModal("EventLogViewer"),
+      onClick: () => {
+        hideModal("DevOptions");
+        void navigate({ to: "/event-log-viewer" });
+      },
     },
     {
       icon: "fa-stopwatch",

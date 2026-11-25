@@ -29,7 +29,7 @@ import type {
   InputEventNoMs,
   TestEventNoMs,
   TestEventType,
-} from "../../test/engine/events/types";
+} from "../../../test/engine/events/types";
 
 import {
   EVENT_TYPES,
@@ -63,14 +63,13 @@ import {
   setVideoFile,
   setVisibleTypes,
   type SyncKind,
-} from "../../states/event-log-viewer";
-import { hideModal } from "../../states/modals";
-import { getInputFromDom } from "../../test/engine/events/helpers";
+} from "../../../states/event-log-viewer";
+import { getInputFromDom } from "../../../test/engine/events/helpers";
 import {
   getKeypressDurations,
   getKeypressSpacing,
   getResultStats,
-} from "../../test/engine/events/stats";
+} from "../../../test/engine/events/stats";
 import {
   computeBellness,
   computeCrossStats,
@@ -78,15 +77,14 @@ import {
   probit,
   type QuantumFit,
   type Significant,
-} from "../../test/engine/events/timing-stats";
-import { EVENT_LOG_VERSION } from "../../test/engine/events/types";
-import { getResultData } from "../../test/engine/state";
-import { getTheme } from "../../theme/state";
-import { cn } from "../../utils/cn";
-import { AnimatedModal } from "../common/AnimatedModal";
-import { Balloon } from "../common/Balloon";
-import { Button } from "../common/Button";
-import { ChartJs } from "../common/ChartJs";
+} from "../../../test/engine/events/timing-stats";
+import { EVENT_LOG_VERSION } from "../../../test/engine/events/types";
+import { getResultData } from "../../../test/engine/state";
+import { getTheme } from "../../../theme/state";
+import { cn } from "../../../utils/cn";
+import { Balloon } from "../../common/Balloon";
+import { Button } from "../../common/Button";
+import { ChartJs } from "../../common/ChartJs";
 
 // this modal is lazy loaded on its own, so it cannot rely on whatever else
 // happens to have registered these. register is idempotent
@@ -302,7 +300,7 @@ function inputsPerWord(events: TestEventNoMs[], wordCount: number): string[] {
   );
 }
 
-export function EventLogViewerModal(): JSXElement {
+export function EventLogViewerPage(): JSXElement {
   const stage = getStage;
   const raw = getRaw;
   const ctx = getEventLog;
@@ -333,16 +331,10 @@ export function EventLogViewerModal(): JSXElement {
   };
 
   return (
-    <AnimatedModal
-      id="EventLogViewer"
-      title="Event Log Viewer"
-      modalClass="max-w-full h-full flex flex-col overflow-hidden"
-      // deliberately no beforeShow reset. AnimatedModal re-runs its visibility
-      // effect whenever it mounts, and a hot reload remounts it while the modal
-      // store still says open - so a reset hook here wipes the loaded log on
-      // every save, which is the exact thing the separate state module exists
-      // to prevent. clearing is an explicit button instead
-    >
+    // no reset on mount: a hot reload remounts the page, and the loaded log
+    // lives in the state module so it survives that. clearing is a button
+    <div class="full-width flex min-w-0 flex-col gap-4 px-8">
+      <div class="text-2xl text-sub">Event Log Viewer</div>
       <Show when={stage() === "input"}>
         <div class="flex flex-col gap-4">
           <textarea
@@ -369,13 +361,8 @@ export function EventLogViewerModal(): JSXElement {
               fa={{ icon: "fa-trash" }}
               text="Clear"
               balloon={{
-                text: "Throw away the loaded log, marks and video. State is kept across closing the modal and across hot reloads, so this is the only thing that clears it.",
+                text: "Throw away the loaded log, marks and video. State is kept across leaving the page and across hot reloads, so this is the only thing that clears it.",
               }}
-            />
-            <Button
-              variant="button"
-              onClick={() => hideModal("EventLogViewer")}
-              text="Cancel"
             />
             <Button variant="button" onClick={onShow} text="Show" />
           </div>
@@ -387,7 +374,7 @@ export function EventLogViewerModal(): JSXElement {
           onBack={() => setStage("input")}
         />
       </Show>
-    </AnimatedModal>
+    </div>
   );
 }
 
@@ -916,7 +903,7 @@ function PreviewContent(props: {
   };
 
   return (
-    <div class="flex min-h-0 flex-1 flex-col gap-3">
+    <div class="flex flex-col gap-3">
       {/* HEADER */}
       <div class="flex shrink-0 items-center justify-between gap-2">
         <Button
@@ -935,8 +922,91 @@ function PreviewContent(props: {
         </Show>
       </div>
 
+      {/* TIMELINE PANEL */}
+      <div class="bg-bg-secondary flex shrink-0 flex-col gap-2 rounded-lg p-3">
+        <div class="flex items-center justify-between">
+          <div class="text-xs tracking-wider text-sub uppercase">Timeline</div>
+          <div class="font-mono text-xs text-sub">
+            {currentMs().toFixed(2)} / {maxMs} ms
+          </div>
+        </div>
+        <div class="flex items-center justify-center gap-1">
+          <Button
+            variant="text"
+            balloon={{ text: "Go to start" }}
+            fa={{ icon: "fa-fast-backward" }}
+            onClick={goToStart}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "-10ms" }}
+            fa={{ icon: "fa-backward" }}
+            onClick={() => step(-10)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "-1ms" }}
+            fa={{ icon: "fa-chevron-left" }}
+            onClick={() => step(-1)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Previous event" }}
+            fa={{ icon: "fa-step-backward" }}
+            onClick={goPrevEvent}
+          />
+          <Button
+            variant="button"
+            balloon={{ text: playing() ? "Pause" : "Play" }}
+            fa={{ icon: playing() ? "fa-pause" : "fa-play" }}
+            onClick={togglePlay}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Next event" }}
+            fa={{ icon: "fa-step-forward" }}
+            onClick={goNextEvent}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "+1ms" }}
+            fa={{ icon: "fa-chevron-right" }}
+            onClick={() => step(1)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "+10ms" }}
+            fa={{ icon: "fa-forward" }}
+            onClick={() => step(10)}
+          />
+          <Button
+            variant="text"
+            balloon={{ text: "Go to end" }}
+            fa={{ icon: "fa-fast-forward" }}
+            onClick={goToEnd}
+          />
+        </div>
+        <Show when={driftData().length > 0}>
+          <DriftChart
+            data={driftData()}
+            minMs={timelineMinMs()}
+            maxMs={timelineMaxMs()}
+          />
+        </Show>
+        <Timeline
+          segments={timelineLanes().segments}
+          totalHeight={timelineLanes().totalHeight}
+          minMs={timelineMinMs()}
+          maxMs={timelineMaxMs()}
+          currentMs={currentMs()}
+          onSeek={setCurrentMs}
+          videoBar={videoBarRange()}
+          marks={timelineMarks()}
+        />
+      </div>
+
       {/* SIDE-BY-SIDE: video | words | events */}
-      <div class="flex min-h-0 flex-1 gap-3">
+      <div class="flex h-[70vh] min-h-0 gap-3">
         {/* VIDEO VIEWER PANEL */}
         <div class="bg-bg-secondary flex min-h-0 w-0 flex-1 flex-col gap-2 overflow-auto rounded-lg p-3">
           <div class="flex items-center justify-between gap-2">
@@ -1298,89 +1368,6 @@ function PreviewContent(props: {
 
       {/* KEY TIMING SCATTER PANEL */}
       <ScatterPanel ctx={statsLog()} fullCtx={props.ctx} />
-
-      {/* TIMELINE PANEL */}
-      <div class="bg-bg-secondary flex shrink-0 flex-col gap-2 rounded-lg p-3">
-        <div class="flex items-center justify-between">
-          <div class="text-xs tracking-wider text-sub uppercase">Timeline</div>
-          <div class="font-mono text-xs text-sub">
-            {currentMs().toFixed(2)} / {maxMs} ms
-          </div>
-        </div>
-        <div class="flex items-center justify-center gap-1">
-          <Button
-            variant="text"
-            balloon={{ text: "Go to start" }}
-            fa={{ icon: "fa-fast-backward" }}
-            onClick={goToStart}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "-10ms" }}
-            fa={{ icon: "fa-backward" }}
-            onClick={() => step(-10)}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "-1ms" }}
-            fa={{ icon: "fa-chevron-left" }}
-            onClick={() => step(-1)}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "Previous event" }}
-            fa={{ icon: "fa-step-backward" }}
-            onClick={goPrevEvent}
-          />
-          <Button
-            variant="button"
-            balloon={{ text: playing() ? "Pause" : "Play" }}
-            fa={{ icon: playing() ? "fa-pause" : "fa-play" }}
-            onClick={togglePlay}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "Next event" }}
-            fa={{ icon: "fa-step-forward" }}
-            onClick={goNextEvent}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "+1ms" }}
-            fa={{ icon: "fa-chevron-right" }}
-            onClick={() => step(1)}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "+10ms" }}
-            fa={{ icon: "fa-forward" }}
-            onClick={() => step(10)}
-          />
-          <Button
-            variant="text"
-            balloon={{ text: "Go to end" }}
-            fa={{ icon: "fa-fast-forward" }}
-            onClick={goToEnd}
-          />
-        </div>
-        <Show when={driftData().length > 0}>
-          <DriftChart
-            data={driftData()}
-            minMs={timelineMinMs()}
-            maxMs={timelineMaxMs()}
-          />
-        </Show>
-        <Timeline
-          segments={timelineLanes().segments}
-          totalHeight={timelineLanes().totalHeight}
-          minMs={timelineMinMs()}
-          maxMs={timelineMaxMs()}
-          currentMs={currentMs()}
-          onSeek={setCurrentMs}
-          videoBar={videoBarRange()}
-          marks={timelineMarks()}
-        />
-      </div>
     </div>
   );
 }
