@@ -249,7 +249,7 @@ function timerStep(now: number, catchingUp: boolean): void {
     setTimerLiveStats({
       wpm: wpmAndRaw.wpm,
       raw: wpmAndRaw.raw,
-      seconds: getLiveCachedTestSeconds(now),
+      seconds: testTime,
     });
 
     //logic
