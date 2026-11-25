@@ -23,6 +23,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getActiveFunboxesWithFunction,
+  isFunboxActive,
   isFunboxActiveWithFunction,
   isFunboxActiveWithProperty,
 } from "./funbox/list";
@@ -33,6 +34,7 @@ import {
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import { PolyglotWordset } from "./funbox/funbox-functions";
+import { isVowelOnlyWord, removeVowelOnlyWords } from "./funbox/vowelless";
 import { LanguageObject } from "@monkeytype/schemas/languages";
 import { getCurrentQuote, isRepeated, setCurrentQuote } from "../states/test";
 import * as TestWords from "./engine/test-words";
@@ -743,6 +745,21 @@ export async function generateWords(
   } else {
     currentWordset = await withWords(wordList);
     assertCurrent(isCurrent);
+  }
+
+  if (isFunboxActive("vowelless")) {
+    currentWordset.words = removeVowelOnlyWords(currentWordset.words);
+    currentWordset.length = currentWordset.words.length;
+    currentWordset.resetIndexes();
+
+    if (currentWordset instanceof PolyglotWordset) {
+      // Remove filtered words from the language map too so that both lists match
+      for (const word of currentWordset.wordsWithLanguage.keys()) {
+        if (isVowelOnlyWord(word)) {
+          currentWordset.wordsWithLanguage.delete(word);
+        }
+      }
+    }
   }
 
   console.debug("Wordset", currentWordset);
