@@ -16,6 +16,7 @@ export type ModalId =
   | "WordFilter"
   | "CustomGenerator"
   | "QuoteSearch"
+  | "LyricsSearch"
   | "QuoteRate"
   | "QuoteReport"
   | "QuoteSubmit"
