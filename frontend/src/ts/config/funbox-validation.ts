@@ -84,6 +84,9 @@ export function getFunboxUnsupportedReason(
   if (funbox === "crt" && isOldSafari(userAgent)) {
     return "CRT is not available on Safari 16.5 or earlier.";
   }
+  if (funbox === "ai_slop" && isOldSafari(userAgent)) {
+    return "AI slop is not available on Safari 16.5 or earlier.";
+  }
   return undefined;
 }
 
