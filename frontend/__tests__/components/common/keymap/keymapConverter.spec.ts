@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convertLayoutToKeymap } from "../../../../src/ts/components/pages/test/keymapConverter";
+import { convertLayoutToKeymap } from "../../../../src/ts/components/common/keymap/keymapConverter";
 
 import qwertyLayout from "../../../../static/layouts/qwerty.json";
 import qwertzLayout from "../../../../static/layouts/qwertz.json";
@@ -14,7 +14,7 @@ import {
   HyperShort,
   Meta,
   Shift,
-} from "../../../../src/ts/components/pages/test/keymapLayouts";
+} from "../../../../src/ts/components/common/keymap/keymapLayouts";
 
 function expectLegend(...legends: string[]): { legends: string[] } {
   if (legends.length === 1) {
@@ -27,11 +27,58 @@ function expectLegend(...legends: string[]): { legends: string[] } {
   return { legends };
 }
 
+// the layout tests below check legends and geometry; codes have their own test
+function convertWithoutCodes(
+  ...args: Parameters<typeof convertLayoutToKeymap>
+): ReturnType<typeof convertLayoutToKeymap> {
+  return convertLayoutToKeymap(...args).map((row) =>
+    row.map(({ code: _code, ...key }) => key),
+  );
+}
+
 describe("keymap converter", () => {
+  describe("key codes", () => {
+    it("gives each key its physical code (ansi)", () => {
+      const rows = convertLayoutToKeymap(qwertyLayout as LayoutObject, {
+        keymapStyle: "staggered",
+        showAllKeys: true,
+      });
+      const codes = rows.map((row) => row.map((key) => key.code));
+      expect(codes[0]?.slice(0, 3)).toEqual(["Backquote", "Digit1", "Digit2"]);
+      expect(codes[0]?.at(-1)).toEqual("Backspace");
+      expect(codes[1]?.slice(0, 3)).toEqual(["Tab", "KeyQ", "KeyW"]);
+      expect(codes[1]?.at(-1)).toEqual("Backslash");
+      expect(codes[2]?.slice(1, 3)).toEqual(["KeyA", "KeyS"]);
+      expect(codes[2]?.at(-1)).toEqual("Enter");
+      expect(codes[3]?.slice(1, 3)).toEqual(["KeyZ", "KeyX"]);
+      expect(codes[4]).toContain("Space");
+    });
+
+    it("follows the iso rows", () => {
+      const rows = convertLayoutToKeymap(qwertzLayout as LayoutObject, {
+        keymapStyle: "staggered",
+        showAllKeys: false,
+      });
+      const codes = rows.map((row) => row.map((key) => key.code));
+      expect(codes[2]?.at(-1)).toEqual("Backslash");
+      expect(codes[3]?.slice(0, 2)).toEqual(["IntlBackslash", "KeyZ"]);
+    });
+
+    it("maps by position, not legend", () => {
+      const [, row2] = convertLayoutToKeymap(qwertzLayout as LayoutObject, {
+        keymapStyle: "staggered",
+        showAllKeys: false,
+      });
+      // qwertz has z where qwerty has y
+      const keyY = row2?.find((key) => key.code === "KeyY");
+      expect(keyY?.legends[0]).toEqual("z");
+    });
+  });
+
   describe("convertLayoutToKeymap", () => {
     describe("staggered", () => {
       it("converts qwerty staggered", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "staggered",
@@ -107,7 +154,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwerty staggered all keys", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "staggered",
@@ -194,7 +241,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz staggered", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "staggered",
@@ -272,7 +319,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz staggered all keys", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "staggered",
@@ -364,7 +411,7 @@ describe("keymap converter", () => {
 
     describe("split", () => {
       it("converts qwerty split", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "split",
@@ -415,7 +462,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwerty split all keys", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
+        const [_row1, _row2, _row3, _row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "split",
@@ -436,7 +483,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz split", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "split",
@@ -486,7 +533,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz split all keys", () => {
-        const [_row1, _row2, _row3, _row4, row5] = convertLayoutToKeymap(
+        const [_row1, _row2, _row3, _row4, row5] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "split",
@@ -509,7 +556,7 @@ describe("keymap converter", () => {
 
     describe("matrix", () => {
       it("converts qwerty matrix", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "matrix",
@@ -580,7 +627,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwerty matrix all keys", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "matrix",
@@ -664,7 +711,7 @@ describe("keymap converter", () => {
 
     describe("split matrix", () => {
       it("converts qwerty split  matrix", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "split_matrix",
@@ -714,7 +761,7 @@ describe("keymap converter", () => {
 
     describe("steno", () => {
       it("converts steno", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           { type: "ansi" } as LayoutObject,
           {
             keymapStyle: "steno",
@@ -755,7 +802,7 @@ describe("keymap converter", () => {
       });
 
       it("converts steno matrix", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           { type: "ansi" } as LayoutObject,
           {
             keymapStyle: "steno_matrix",
@@ -800,7 +847,7 @@ describe("keymap converter", () => {
 
     describe("alice", () => {
       it("converts qwerty alice", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "alice",
@@ -886,7 +933,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwerty alice all keys", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertyLayout as LayoutObject,
           {
             keymapStyle: "alice",
@@ -997,7 +1044,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz alice", () => {
-        const [row1, row2, row3, row4, row5] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4, row5] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "alice",
@@ -1084,7 +1131,7 @@ describe("keymap converter", () => {
       });
 
       it("converts qwertz alice all keys", () => {
-        const [row1, row2, row3, row4] = convertLayoutToKeymap(
+        const [row1, row2, row3, row4] = convertWithoutCodes(
           qwertzLayout as LayoutObject,
           {
             keymapStyle: "alice",

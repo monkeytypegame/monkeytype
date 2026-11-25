@@ -21,6 +21,8 @@ export const EnterShort = formatForDisplay("Enter", { platform: "mac" });
 
 export type KeyDefinition = {
   legends: string[];
+  /** the physical key (KeyboardEvent.code), when it has one */
+  code?: string;
   /** width in u  */
   width?: number;
   /** height in u  */

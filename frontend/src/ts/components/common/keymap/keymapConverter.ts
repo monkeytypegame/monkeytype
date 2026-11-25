@@ -1,7 +1,12 @@
 import { KeymapStyle } from "@monkeytype/schemas/configs";
 import { KeyLegends, LayoutObject } from "@monkeytype/schemas/layouts";
 
+import { LAYOUT_KEY_CODES } from "../../../utils/layout-key-codes";
 import {
+  Backspace,
+  BackspaceShort,
+  Enter,
+  EnterShort,
   KeyboardDefinition,
   KeyDefinition,
   KeymapLayout,
@@ -27,6 +32,7 @@ export function convertLayoutToKeymap(
 
   return convert({
     legends: layout.keys,
+    codes: LAYOUT_KEY_CODES[layout.type],
     keymap: keymapLayout,
     convertOptions: options,
   });
@@ -34,6 +40,7 @@ export function convertLayoutToKeymap(
 
 function convert(options: {
   legends: LayoutObject["keys"];
+  codes: (typeof LAYOUT_KEY_CODES)[LayoutObject["type"]];
   keymap: KeymapLayout;
   convertOptions: ConvertOptions;
 }): KeyboardDefinition {
@@ -56,6 +63,12 @@ function convert(options: {
           return undefined;
         }
 
+        const code = keyDef.layoutPosition?.row
+          ? options.codes[keyDef.layoutPosition.row][keyDef.layoutPosition.col]
+          : keyDef.isLayoutIndicator === true
+            ? "Space"
+            : FIXED_LEGEND_CODES[String(keyDef.legend)];
+
         const final = {
           ...keyDef,
           ...(isShowAllKeys ? keyDef.extraKeysOverride : {}),
@@ -63,6 +76,7 @@ function convert(options: {
 
         return {
           legends,
+          ...(code !== undefined ? { code } : {}),
           ...(final.height !== undefined ? { height: final.height } : {}),
           ...(final.width !== undefined ? { width: final.width } : {}),
           ...(final.x !== undefined ? { x: final.x } : {}),
@@ -79,6 +93,16 @@ function convert(options: {
       .filter((it) => it !== undefined),
   );
 }
+
+/** codes of the keys drawn with a fixed legend */
+const FIXED_LEGEND_CODES: Record<string, string | undefined> = {
+  " ": "Space",
+  Tab: "Tab",
+  [Enter]: "Enter",
+  [EnterShort]: "Enter",
+  [Backspace]: "Backspace",
+  [BackspaceShort]: "Backspace",
+};
 
 const emptyLegends = ["", "", "", ""];
 function buildLegends(legends: string | KeyLegends | undefined): KeyLegends {

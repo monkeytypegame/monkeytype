@@ -69,7 +69,6 @@ import { CapsWarning } from "./CapsWarning";
 import { CompositionDisplay } from "./CompositionDisplay";
 import { focusWordsEvent } from "./focus-words";
 import { FunboxTimer } from "./FunboxTimer";
-import { Keymap } from "./Keymap";
 import { LiveStatsMini } from "./live-stats/LiveStatsMini";
 import { LiveStatsTextBottom } from "./live-stats/LiveStatsTextBottom";
 import { LiveStatsTextTop } from "./live-stats/LiveStatsTextTop";
@@ -83,6 +82,7 @@ import * as ResultWordHighlight from "./result/result-word-highlight";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
+import { TestKeymap } from "./TestKeymap";
 import { Words, wordsModeClasses } from "./Words";
 import { WordsInput } from "./WordsInput";
 
@@ -450,7 +450,7 @@ export function TestPage(): JSXElement {
           <CompositionDisplay />
         </div>
         <div>
-          <Keymap />
+          <TestKeymap />
         </div>
         <div>
           <Monkey />

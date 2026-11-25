@@ -231,7 +231,7 @@ const [getKeymapFlashState, setKeymapFlashState] = createStore<
   Record<string, FlashEntry | undefined>
 >({});
 
-export { getKeymapFlashState, setKeymapFlashState };
+export { getKeymapFlashState };
 
 /** Highlights the next key to press on the keymap. */
 export function highlightKeymapKey(key: string): void {
