@@ -768,6 +768,18 @@ function PreviewContent(props: {
     }
   });
 
+  // timeupdate only fires about 4 times a second, so a playing synced video
+  // drives the playhead from rAF instead
+  createEffect(() => {
+    const el = videoEl();
+    if (el === undefined || !isSynced() || !videoPlayState()) return;
+    let frame = requestAnimationFrame(function follow(): void {
+      setCurrentMs(videoMsToTestMs(el.currentTime * 1000));
+      frame = requestAnimationFrame(follow);
+    });
+    onCleanup(() => cancelAnimationFrame(frame));
+  });
+
   const addMark = (sync?: SyncKind): void => {
     const el = videoEl();
     if (el === undefined) return;
