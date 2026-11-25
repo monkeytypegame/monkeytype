@@ -56,7 +56,7 @@ export async function add(
   language: string,
   uid: string,
 ): Promise<AddQuoteReturn | undefined> {
-  if (git === undefined) throw new MonkeyError(500, "Git not available.");
+  if (git === null) throw new MonkeyError(500, "Git not available.");
   const quote = {
     _id: new ObjectId(),
     text: text,
@@ -114,7 +114,7 @@ export async function add(
 }
 
 export async function get(language: Language | "all"): Promise<DBNewQuote[]> {
-  if (git === undefined) throw new MonkeyError(500, "Git not available.");
+  if (git === null) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
     language?: Language;
@@ -232,6 +232,6 @@ export async function approve(
 }
 
 export async function refuse(quoteId: string): Promise<void> {
-  if (git === undefined) throw new MonkeyError(500, "Git not available.");
+  if (git === null) throw new MonkeyError(500, "Git not available.");
   await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
 }
