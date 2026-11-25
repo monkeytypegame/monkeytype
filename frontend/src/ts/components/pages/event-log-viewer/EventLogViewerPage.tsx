@@ -19,6 +19,7 @@ import {
   createSignal,
   For,
   JSXElement,
+  on,
   onCleanup,
   Show,
   untrack,
@@ -85,6 +86,8 @@ import { cn } from "../../../utils/cn";
 import { Balloon } from "../../common/Balloon";
 import { Button } from "../../common/Button";
 import { ChartJs } from "../../common/ChartJs";
+import { type KeyFlash, Keymap } from "../../common/keymap/Keymap";
+import { getKeymapLookFromConfig } from "../test/keymap-look";
 
 // this modal is lazy loaded on its own, so it cannot rely on whatever else
 // happens to have registered these. register is idempotent
@@ -542,6 +545,43 @@ function PreviewContent(props: {
     events: visibleEvents(),
   }));
   const statsLog = createDeferred(visibleLog, { timeoutMs: 250 });
+
+  // keys held at the playhead: keydown adds, keyup removes
+  const pressedCodes = createMemo((): ReadonlySet<string> => {
+    const held = new Set<string>();
+    for (const e of visibleEvents()) {
+      if (e.type === "keydown") held.add(e.data.code);
+      else if (e.type === "keyup") held.delete(e.data.code);
+    }
+    return held;
+  });
+
+  // backspace flashes in the error colour each time the playhead moves
+  // forward past a deleteContentBackward input. scrubbing back doesn't flash
+  const backspaceCount = createMemo(
+    () =>
+      visibleEvents().filter(
+        (e) =>
+          e.type === "input" && e.data.inputType === "deleteContentBackward",
+      ).length,
+  );
+  const [backspaceFlash, setBackspaceFlash] = createSignal<
+    KeyFlash | undefined
+  >(undefined);
+  createEffect(
+    on(
+      backspaceCount,
+      (count, prev) => {
+        if (prev !== undefined && count > prev) {
+          setBackspaceFlash((flash) => ({
+            tick: (flash?.tick ?? 0) + 1,
+            correct: false,
+          }));
+        }
+      },
+      { defer: true },
+    ),
+  );
 
   const finalInputs = untrack(() =>
     inputsPerWord(props.ctx.events, props.ctx.context.targetWords.length),
@@ -1015,6 +1055,35 @@ function PreviewContent(props: {
           videoBar={videoBarRange()}
           marks={timelineMarks()}
         />
+      </div>
+
+      {/* KEYMAP PANEL */}
+      <div class="bg-bg-secondary flex shrink-0 flex-col gap-2 rounded-lg p-3">
+        <Balloon
+          class="cursor-help self-start text-xs tracking-wider text-sub uppercase"
+          text="Keys held at the playhead, by physical key (backspace flashes red on each deleteContentBackward input as the playhead moves forward) (the logged code) on the configured keymap layout and style. Keys logged without a code (NoCode: android, synthetic input) can't be placed."
+          position="up"
+          length="large"
+          break
+        >
+          Keymap
+        </Balloon>
+        <Show
+          when={getKeymapLookFromConfig()}
+          fallback={<div class="text-xs text-sub">Loading layout...</div>}
+        >
+          {(look) => (
+            <Keymap
+              {...look()}
+              // modifiers and tab can be held, so always the whole keyboard
+              shownKeys="full"
+              scale={1}
+              highlightAnimationMs={75}
+              codeHighlights={pressedCodes()}
+              codeFlashes={{ Backspace: backspaceFlash() }}
+            />
+          )}
+        </Show>
       </div>
 
       {/* SIDE-BY-SIDE: video | words | events */}
