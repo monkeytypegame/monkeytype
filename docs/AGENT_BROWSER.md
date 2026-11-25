@@ -42,6 +42,8 @@ If throttled, ask the user to bring the browser to the front (built-in pane: Cmd
 
 `javascript_tool` calls time out at 45s and the result is lost. Keep each call under ~40s; split long measurements (eg. one variant per call).
 
+Reload with the `navigate` tool (same url). A `location.reload()` from `javascript_tool` has dropped the extension's connection.
+
 ## Verifying what's on screen
 
 Claims about what the user sees ("never two pages at once", "no flash", "loader shows") need what's painted: screenshots, or `gif_creator` frames. Computed styles and DOM queries miss painted-but-not-in-DOM content, eg. View Transition snapshots drawn over the live page, and content a `Suspense` fallback swapped out. Use DOM sampling for timings, screenshots to confirm the visual claim.
@@ -55,6 +57,8 @@ for (let i = 0; i < 30 && !window.__mt; i++) await new Promise((r) => setTimeout
 ```
 
 Members and their usage: the JSDoc in `expose.ts` (the `mt` object and the functions it lists). Read it before scripting.
+
+Reach app state through `__mt.getSignal` / `setSignal`. An `import()` of an app module from page code loads a second copy (Vite serves the app's modules with `?t=` versions), and its signals replace the real ones in `__mt.signals` (newest registration wins, for hot reload), so every later `getSignal` reads the empty copy. If that happened, navigate to reload.
 
 Older globals: `frontend/src/ts/console-globals.ts` (all envs).
 
