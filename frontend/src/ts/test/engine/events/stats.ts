@@ -1,7 +1,7 @@
 import { CharCounts, countChars, isSpace } from "../../../utils/strings";
 import { getEventsForWord, getEventsPerWord, getInputFromDom } from "./helpers";
 import { calculateWpm } from "../../../utils/numbers";
-import { roundTo2 } from "@monkeytype/util/numbers";
+import { kogasa, mean, roundTo2, stdDev } from "@monkeytype/util/numbers";
 import { EventLog, TestEventNoMs } from "./types";
 import Hangul from "hangul-js";
 
@@ -963,6 +963,58 @@ export function getCorrectedWordsHistory(eventLog: EventLog): string[] {
   }
 
   return correctedWords;
+}
+
+/** kogasa of the coefficient of variation, 0 when it is not a number */
+function consistencyOf(values: number[]): number {
+  const c = roundTo2(kogasa(stdDev(values) / mean(values)));
+  return isNaN(c) ? 0 : c;
+}
+
+export type ResultStats = {
+  wpm: number;
+  rawWpm: number;
+  acc: number;
+  /** seconds */
+  testDuration: number;
+  /** [correctWord, incorrect, extra, missed] */
+  charStats: [number, number, number, number];
+  charTotal: number;
+  consistency: number;
+  wpmConsistency: number;
+  keyConsistency: number;
+  afkDuration: number;
+  startToFirstKey: number;
+  lastKeyToEnd: number;
+  keyOverlap: number;
+};
+
+/**
+ * The result's stats that come from the log alone, so a stored log (the event
+ * log viewer, a future replay) gets the same numbers the result was saved with.
+ */
+export function getResultStats(eventLog: EventLog): ResultStats {
+  const chars = getChars(eventLog);
+  const duration = getTestDurationMs(eventLog) / 1000;
+  // the last spacing is dropped: it is the gap to the test end, not a key
+  const keySpacing = getKeypressSpacing(eventLog).slice(0, -1);
+  return {
+    wpm: roundTo2(calculateWpm(chars.correctWord, duration)),
+    rawWpm: roundTo2(
+      calculateWpm(chars.allCorrect + chars.incorrect + chars.extra, duration),
+    ),
+    acc: roundTo2(getAccuracy(eventLog).percentage ?? 0),
+    testDuration: duration,
+    charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
+    charTotal: chars.allCorrect + chars.incorrect + chars.extra,
+    consistency: consistencyOf(getBurstHistory(eventLog)),
+    wpmConsistency: consistencyOf(getWpmHistory(eventLog)),
+    keyConsistency: consistencyOf(keySpacing),
+    afkDuration: getAfkDuration(eventLog),
+    startToFirstKey: getStartToFirstKeypressMs(eventLog),
+    lastKeyToEnd: getLastKeypressToEndMs(eventLog),
+    keyOverlap: getKeypressOverlap(eventLog),
+  };
 }
 
 export const __testing = {

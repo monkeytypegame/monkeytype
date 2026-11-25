@@ -69,6 +69,7 @@ import { getInputFromDom } from "../../test/engine/events/helpers";
 import {
   getKeypressDurations,
   getKeypressSpacing,
+  getResultStats,
 } from "../../test/engine/events/stats";
 import {
   computeBellness,
@@ -1289,6 +1290,9 @@ function PreviewContent(props: {
         </div>
       </div>
 
+      {/* FINAL RESULT PANEL */}
+      <ResultPanel ctx={props.ctx} />
+
       {/* KEY TIMING DISTRIBUTION PANEL */}
       <DistributionPanel ctx={statsLog()} fullCtx={props.ctx} />
 
@@ -1789,6 +1793,94 @@ function categoryPosition(spec: BucketSpec, value: number): number {
   if (upper === undefined) return index;
   const fraction = upper > lower ? (value - lower) / (upper - lower) : 0.5;
   return index - 0.5 + fraction;
+}
+
+function ResultPanel(props: { ctx: EventLog }): JSXElement {
+  // always the whole log, not the playback cut: these are the numbers the
+  // result was saved with
+  const stats = createMemo(() => getResultStats(props.ctx));
+  const context = (): EventLog["context"] => props.ctx.context;
+
+  return (
+    <div class="bg-bg-secondary flex shrink-0 flex-col gap-2 rounded-lg p-3">
+      <Balloon
+        class="cursor-help self-start text-xs tracking-wider text-sub uppercase"
+        text="Recomputed from the whole log with the same code that builds the saved result, so it ignores the playhead."
+        position="up"
+        length="large"
+        break
+      >
+        Final result
+      </Balloon>
+      <div class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
+        <Stat
+          label="mode"
+          value={`${context().mode} ${context().mode2}${context().bailedOut ? " (bailed out)" : ""}`}
+          balloon="Mode and mode2 from the log context."
+        />
+        <Stat
+          label="wpm"
+          value={stats().wpm.toFixed(2)}
+          balloon="Correct characters of fully correct words (plus spaces), per 5, per minute."
+        />
+        <Stat
+          label="raw"
+          value={stats().rawWpm.toFixed(2)}
+          balloon="Every typed character - correct, incorrect and extra - per 5, per minute."
+        />
+        <Stat
+          label="acc"
+          value={`${stats().acc.toFixed(2)}%`}
+          balloon="Correct inputs over all inputs, counting ones later deleted."
+        />
+        <Stat
+          label="time"
+          value={`${stats().testDuration.toFixed(2)}s`}
+          balloon="Test duration."
+        />
+        <Stat
+          label="chars"
+          value={stats().charStats.join("/")}
+          balloon="correct / incorrect / extra / missed"
+        />
+        <Stat
+          label="consistency"
+          value={`${stats().consistency}%`}
+          balloon="Consistency of raw wpm per second (kogasa of the coefficient of variation)."
+        />
+        <Stat
+          label="wpm cons"
+          value={`${stats().wpmConsistency}%`}
+          balloon="Consistency of the wpm chart."
+        />
+        <Stat
+          label="key cons"
+          value={`${stats().keyConsistency}%`}
+          balloon="Consistency of key spacing, last gap dropped."
+        />
+        <Stat
+          label="afk"
+          value={`${stats().afkDuration}s`}
+          balloon="Seconds with no keypresses."
+        />
+        <Stat
+          label="first key"
+          value={`${stats().startToFirstKey.toFixed(0)}ms`}
+          balloon="Test start to first keypress."
+        />
+        <Stat
+          label="last key"
+          value={`${stats().lastKeyToEnd.toFixed(0)}ms`}
+          balloon="Last keypress to test end."
+        />
+        <Stat
+          label="overlap"
+          value={`${stats().keyOverlap.toFixed(0)}ms`}
+          balloon="Total time two or more keys were held at once."
+        />
+      </div>
+    </div>
+  );
 }
 
 function DistributionPanel(props: {

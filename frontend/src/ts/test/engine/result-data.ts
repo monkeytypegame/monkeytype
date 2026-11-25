@@ -12,22 +12,15 @@ import {
   isRepeated,
 } from "../../states/test";
 import * as Misc from "../../utils/misc";
-import { calculateWpm } from "../../utils/numbers";
 import * as Strings from "../../utils/strings";
 import {
-  getAccuracy,
-  getAfkDuration,
   getBurstHistory,
-  getChars,
   getDateBasedTestDurationMs,
   getErrorCountHistory,
   getKeypressDurations,
   getKeypressesPerSecond,
-  getKeypressOverlap,
   getKeypressSpacing,
-  getLastKeypressToEndMs,
-  getStartToFirstKeypressMs,
-  getTestDurationMs,
+  getResultStats,
   getWpmHistory,
 } from "./events/stats";
 import { EventLog } from "./events/types";
@@ -165,8 +158,6 @@ function checkResult(
 }
 
 function buildCompletedEvent(eventLog: EventLog): CompletedResult {
-  const chars = getChars(eventLog);
-
   //tags
   const activeTagsIds: string[] = getActiveTags().map((tag) => tag._id);
 
@@ -186,59 +177,27 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     };
   }
 
-  let duration = getTestDurationMs(eventLog) / 1000;
-
-  const rawPerSecond = getBurstHistory(eventLog);
-  const afkDuration = getAfkDuration(eventLog);
-  const stddev = Numbers.stdDev(rawPerSecond);
-  const avg = Numbers.mean(rawPerSecond);
-  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
-  if (!consistency || isNaN(consistency)) {
-    consistency = 0;
-  }
-
+  const stats = getResultStats(eventLog);
   const keypressSpacing = getKeypressSpacing(eventLog);
 
-  let keyConsistencyArray = [...keypressSpacing];
-  if (keypressSpacing.length > 0) {
-    keyConsistencyArray = keyConsistencyArray.slice(
-      0,
-      keyConsistencyArray.length - 1,
-    );
-  }
-  const keyStddev = Numbers.stdDev(keyConsistencyArray);
-  const keyAvg = Numbers.mean(keyConsistencyArray);
-  let keyConsistency = Numbers.roundTo2(Numbers.kogasa(keyStddev / keyAvg));
-  if (!keyConsistency || isNaN(keyConsistency)) {
-    keyConsistency = 0;
-  }
-
-  const wpmHistory = getWpmHistory(eventLog);
-  const wpmCons = Numbers.roundTo2(
-    Numbers.kogasa(Numbers.stdDev(wpmHistory) / Numbers.mean(wpmHistory)),
-  );
-  const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
-
   const chartData = {
-    wpm: wpmHistory,
-    burst: rawPerSecond,
+    wpm: getWpmHistory(eventLog),
+    burst: getBurstHistory(eventLog),
     err: getErrorCountHistory(eventLog),
   };
 
   const currentQuote = getCurrentQuote();
   const completedEvent: CompletedResult = {
-    wpm: Numbers.roundTo2(calculateWpm(chars.correctWord, duration)),
-    rawWpm: Numbers.roundTo2(
-      calculateWpm(chars.allCorrect + chars.incorrect + chars.extra, duration),
-    ),
-    charStats: [chars.correctWord, chars.incorrect, chars.extra, chars.missed],
-    charTotal: chars.allCorrect + chars.incorrect + chars.extra,
-    acc: Numbers.roundTo2(getAccuracy(eventLog).percentage ?? 0),
+    wpm: stats.wpm,
+    rawWpm: stats.rawWpm,
+    charStats: stats.charStats,
+    charTotal: stats.charTotal,
+    acc: stats.acc,
     language: language,
-    testDuration: duration,
-    lastKeyToEnd: getLastKeypressToEndMs(eventLog),
-    startToFirstKey: getStartToFirstKeypressMs(eventLog),
-    afkDuration: afkDuration,
+    testDuration: stats.testDuration,
+    lastKeyToEnd: stats.lastKeyToEnd,
+    startToFirstKey: stats.startToFirstKey,
+    afkDuration: stats.afkDuration,
     quoteLength: currentQuote?.group ?? -1,
     customText: customText,
     tags: activeTagsIds,
@@ -258,14 +217,14 @@ function buildCompletedEvent(eventLog: EventLog): CompletedResult {
     incompleteTestSeconds:
       getIncompleteSeconds() < 0 ? 0 : Numbers.roundTo2(getIncompleteSeconds()),
 
-    consistency: consistency,
-    wpmConsistency: wpmConsistency,
-    keyConsistency: keyConsistency,
+    consistency: stats.consistency,
+    wpmConsistency: stats.wpmConsistency,
+    keyConsistency: stats.keyConsistency,
     chartData: chartData,
 
     keySpacing: keypressSpacing,
     keyDuration: getKeypressDurations(eventLog),
-    keyOverlap: getKeypressOverlap(eventLog),
+    keyOverlap: stats.keyOverlap,
   };
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
