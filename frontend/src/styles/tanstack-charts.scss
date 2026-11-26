@@ -30,4 +30,17 @@
   svg:focus:not(:focus-visible) {
     outline: none;
   }
+
+  // chart.js parity: the library defaults its axis labels to 11px / weight 600
+  // at 0.76 opacity and its tick labels to 11px at 0.68 opacity, while the
+  // chart.js half renders scale titles and ticks at 12px / weight 400 / full
+  // opacity (its font defaults; the wrapper only overrides the family). These
+  // emit as SVG presentation attributes, which a stylesheet rule beats, so the
+  // host pins the chart.js metrics for every chart. The family inherits from
+  // the body (the site font) via the library's `inherit`, like chart.js.
+  svg text {
+    font-size: 12px;
+    font-weight: 400;
+    fill-opacity: 1;
+  }
 }
