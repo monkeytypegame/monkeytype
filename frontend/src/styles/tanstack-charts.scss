@@ -1,0 +1,43 @@
+// TanStack Charts theme tokens (docs/specs/tanstack-charts): the library
+// reads these off its chart host element (.ts-chart-host), so a theme change
+// repaints the charts without touching chart definitions.
+.ts-chart-host {
+  // foreground for ticks, labels, titles and default grid lines
+  color: var(--sub-color);
+
+  // default categorical palette for marks without an explicit paint
+  --ts-chart-1: var(--main-color);
+  --ts-chart-2: var(--sub-color);
+  --ts-chart-4: var(--sub-alt-color);
+  --ts-chart-3: var(--error-color);
+
+  // DOM tooltip chrome: fixed values (the library's defaults), not theme variables
+  --ts-chart-tooltip-background: rgba(0, 0, 0, 0.8);
+  --ts-chart-tooltip-color: #fff;
+  --ts-chart-tooltip-border: 1px solid rgba(0, 0, 0, 0);
+  --ts-chart-tooltip-border-radius: 6px;
+  --ts-chart-tooltip-padding: 6px;
+  --ts-chart-tooltip-shadow: none;
+  --ts-chart-tooltip-font: 400 12px / 1.3 var(--font);
+  --ts-chart-tooltip-max-width: 200px;
+
+  // suppress the pointer-focus ring; the keyboard ring stays (:focus-visible)
+  svg:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  // pin the axis/tick text metrics (size, weight, opacity) to the site font
+  svg text {
+    font-size: 12px;
+    font-weight: 400;
+    fill-opacity: 1;
+  }
+
+  // pin grid/axis line opacity to full; scoped to grid/axis groups so marks
+  // keep their own paint and opacity
+  .ts-chart__grid line,
+  .ts-chart__axes line {
+    stroke-opacity: 1;
+    color: var(--sub-alt-color);
+  }
+}

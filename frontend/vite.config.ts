@@ -253,16 +253,19 @@ function getBuildOptions({
               test: /node_modules\/@firebase\//,
             },
             {
+              // ahead of vendor-tanstack (first match wins): the TanStack
+              // chart package + its d3 deps stay in the chart chunk until the
+              // removal step (docs/specs/tanstack-charts, S12)
+              name: "vendor-chart",
+              test: /node_modules\/(chart|@tanstack\/charts|d3-)/,
+            },
+            {
               name: "vendor-tanstack",
               test: /node_modules\/@tanstack\//,
             },
             {
               name: "monkeytype-packages",
               test: /monkeytype\/packages\//,
-            },
-            {
-              name: "vendor-chart",
-              test: /node_modules\/chart/,
             },
             {
               name: "monkeytype-utils",
