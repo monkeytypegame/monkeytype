@@ -353,8 +353,12 @@ export function buildDailyActivityChartDefinition(
         side: "right",
         scale: () => scaleLinear(),
         nice: true,
-        // the old scale: from zero when configured, else fitted to the line
-        ...(beginAtZero ? { viewport: { domain: [0, maxSpeed] } } : {}),
+        // the old scale: from zero when configured, else fitted to the line;
+        // the viewport only when the max is positive - the library rejects a
+        // [0, 0] domain, which all-zero days would produce
+        ...(beginAtZero && maxSpeed > 0
+          ? { viewport: { domain: [0, maxSpeed] } }
+          : {}),
         grid: false,
         axis: {
           label: `Average ${UNIT}`,
