@@ -178,6 +178,47 @@ describe("buildDailyActivityChartDefinition", () => {
     expect(free[1]).toBeGreaterThanOrEqual(74.5);
   });
 
+  it("renders all-zero days without crashing (the zero viewport is skipped)", () => {
+    const zeroDays = [
+      {
+        dayTimestamp: Date.parse("2025-12-01"),
+        timeTyping: 0,
+        completed: 0,
+        restarted: 0,
+        maxWpm: 0,
+        avgWpm: 0,
+        avgAcc: 0,
+        avgConsistency: 0,
+      },
+      {
+        dayTimestamp: Date.parse("2025-12-02"),
+        timeTyping: 0,
+        completed: 0,
+        restarted: 0,
+        maxWpm: 0,
+        avgWpm: 0,
+        avgAcc: 0,
+        avgConsistency: 0,
+      },
+    ];
+
+    // the library rejects a [0, 0] viewport domain; the fitted scale handles
+    // the zero content instead
+    const scene = createChartScene(
+      buildDailyActivityChartDefinition(
+        zeroDays,
+        theme,
+        true,
+        "wpm",
+        getTypingSpeedUnit("wpm"),
+      ),
+      { width: 800, height: 200 },
+    );
+    const domain = scene.scales["avgWpm"]?.domain as [number, number];
+    expect(domain[0]).toBe(0);
+    expect(domain[1]).toBeGreaterThanOrEqual(1);
+  });
+
   it("fits a trendline over the minutes, without a confidence band", () => {
     const { nodes } = scene(false);
 
