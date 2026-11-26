@@ -38,5 +38,6 @@
   .ts-chart__grid line,
   .ts-chart__axes line {
     stroke-opacity: 1;
+    color: var(--sub-alt-color);
   }
 }

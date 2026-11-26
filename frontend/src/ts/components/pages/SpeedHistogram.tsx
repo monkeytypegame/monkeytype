@@ -5,7 +5,6 @@ import { Chart } from "@tanstack/charts/solid";
 import { tooltip } from "@tanstack/charts/tooltip";
 import { createMemo, JSXElement, Show } from "solid-js";
 
-import { Theme } from "../../constants/themes";
 import { getUseTanstackCharts } from "../../dev/chart-parity";
 import { getTheme } from "../../theme/state";
 import { ChartJs } from "../common/ChartJs";
@@ -32,9 +31,7 @@ export function SpeedHistogram(props: {
     })),
   );
 
-  const definition = createMemo(() =>
-    buildSpeedHistogramDefinition(rows(), getTheme),
-  );
+  const definition = createMemo(() => buildSpeedHistogramDefinition(rows()));
 
   return (
     <Show
@@ -132,10 +129,7 @@ export function SpeedHistogram(props: {
  * bucket label, the user count and the cumulative top percentage.
  * Pure: asserted in __tests__/components/pages/SpeedHistogram.spec.tsx.
  */
-export function buildSpeedHistogramDefinition(
-  rows: SpeedHistogramRow[],
-  theme: () => Theme,
-) {
+export function buildSpeedHistogramDefinition(rows: SpeedHistogramRow[]) {
   const counts = rows.map((it) => it.count);
   const max = Math.max(1, ...counts);
   // no library minimum bar size: clamp tiny bars to a 2px minimum; zero stays zero
@@ -146,7 +140,6 @@ export function buildSpeedHistogramDefinition(
       barY(rows, {
         x: "label",
         y: (it) => Math.max(it.count, it.count === 0 ? 0 : minVisibleCount),
-        fill: theme().main,
       }),
     ],
     scales: {
@@ -155,24 +148,20 @@ export function buildSpeedHistogramDefinition(
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        grid: { stroke: theme().subAlt },
+        grid: true,
         axis: { tickLabels: { rotate: -45 } },
       },
       y: {
         scale: () => scaleLinear(),
         nice: true,
-        grid: { stroke: theme().subAlt },
+        grid: true,
         axis: {
           label: "Users",
-          line: { stroke: theme().subAlt },
         },
       },
     },
     tooltip: {
       use: tooltip,
-      // tween animation between bars
-      motion: { type: "tween", duration: 250, easing: "ease-out" },
-      // bucket title, user count, cumulative top percentage when present
       content: (points) => {
         const point = points[0];
         if (!point) return { rows: [] };

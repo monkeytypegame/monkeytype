@@ -37,26 +37,10 @@ import {
   SpeedHistogram,
   type SpeedHistogramData,
 } from "../../../src/ts/components/pages/SpeedHistogram";
-import { Theme } from "../../../src/ts/constants/themes";
 import {
   getUseTanstackCharts,
   setUseTanstackCharts,
 } from "../../../src/ts/dev/chart-parity";
-
-const theme = (): Theme =>
-  ({
-    name: "default",
-    bg: "#111111",
-    main: "#222222",
-    caret: "#333333",
-    sub: "#444444",
-    subAlt: "#555555",
-    text: "#666666",
-    error: "#777777",
-    errorExtra: "#888888",
-    colorfulError: "#777777",
-    colorfulErrorExtra: "#888888",
-  }) as Theme;
 
 const data: SpeedHistogramData = {
   labels: ["80 - 89", "90 - 99", "100 - 109", "110 - 119", "120 - 129"],
@@ -77,7 +61,7 @@ const rows = data.data.map((it, i) => ({
 
 describe("buildSpeedHistogramDefinition", () => {
   it("places every bucket on the x scale and counts on a zero-based y scale", () => {
-    const definition = buildSpeedHistogramDefinition(rows, theme);
+    const definition = buildSpeedHistogramDefinition(rows);
 
     const scene = createChartScene(definition as never, {
       width: 800,
@@ -97,7 +81,7 @@ describe("buildSpeedHistogramDefinition", () => {
   });
 
   it("keeps one bar per row; tiny buckets get a 2px minimum, zero stays zero", () => {
-    const definition = buildSpeedHistogramDefinition(rows, theme);
+    const definition = buildSpeedHistogramDefinition(rows);
 
     const scene = createChartScene(definition as never, {
       width: 800,
@@ -113,7 +97,6 @@ describe("buildSpeedHistogramDefinition", () => {
       0,
     ]);
     expect(scene.points[0]?.xValue).toBe("80 - 89");
-    expect(scene.points[0]?.color).toBe("#222222");
   });
 });
 

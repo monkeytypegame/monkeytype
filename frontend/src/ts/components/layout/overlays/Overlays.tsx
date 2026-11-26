@@ -1,6 +1,10 @@
 import { JSXElement, Show } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
+import {
+  getUseTanstackCharts,
+  setUseTanstackCharts,
+} from "../../../dev/chart-parity";
 import { showCommandline } from "../../../states/commandline";
 import { getIsScreenshotting } from "../../../states/core";
 import { showModal } from "../../../states/modals";
@@ -72,6 +76,18 @@ function DevButtons(): JSXElement {
         fa={{
           icon: "fa-flask",
         }}
+        class="rounded-tl-none rounded-bl-none p-2"
+      />
+      <Button
+        balloon={{
+          text: "Chart implementation",
+          position: "right",
+        }}
+        onClick={() => setUseTanstackCharts(!getUseTanstackCharts())}
+        fa={{
+          icon: "fa-chart-bar",
+        }}
+        text={getUseTanstackCharts() ? "TS Charts" : "Chart.js"}
         class="rounded-tl-none rounded-bl-none p-2"
       />
     </div>
