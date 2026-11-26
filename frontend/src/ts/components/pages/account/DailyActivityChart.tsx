@@ -333,8 +333,11 @@ export function buildDailyActivityChartDefinition(
         axis: {
           line: { stroke: theme().subAlt },
           ticks: {
-            // the old autoSkip + padding 20 with rotated labels
-            spacing: 55,
+            // the old autoSkip + padding 20 with rotated labels. Chart.js' `maxTicksLimit: 20`
+            // packs the axis to ~20 ticks; the utc scale derives its interval from a
+            // *preferred* count, so a count of 8 resolves to the same ~3-month interval
+            // on a dense multi-month history (a raw limit would over-pack it to monthly).
+            count: 8,
             format: (value: Date) => formatDay(value),
           },
         },
