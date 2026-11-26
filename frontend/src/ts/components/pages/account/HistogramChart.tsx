@@ -146,12 +146,12 @@ export function buildHistogramChartDefinition(
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        grid: { stroke: theme().subAlt, strokeOpacity: 1 },
+        grid: { stroke: theme().subAlt },
       },
       y: {
         scale: () => scaleLinear(),
         nice: true,
-        grid: { stroke: theme().subAlt, strokeOpacity: 1 },
+        grid: { stroke: theme().subAlt },
         axis: { label: "Tests" },
       },
     },
