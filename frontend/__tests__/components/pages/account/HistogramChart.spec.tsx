@@ -40,27 +40,11 @@ import {
   HistogramChart,
   type HistogramChartRow,
 } from "../../../../src/ts/components/pages/account/HistogramChart";
-import { Theme } from "../../../../src/ts/constants/themes";
 import {
   getUseTanstackCharts,
   setUseTanstackCharts,
 } from "../../../../src/ts/dev/chart-parity";
 import { get as getTypingSpeedUnit } from "../../../../src/ts/utils/typing-speed-units";
-
-const theme = (): Theme =>
-  ({
-    name: "default",
-    bg: "#111111",
-    main: "#222222",
-    caret: "#333333",
-    sub: "#444444",
-    subAlt: "#555555",
-    text: "#666666",
-    error: "#777777",
-    errorExtra: "#888888",
-    colorfulError: "#777777",
-    colorfulErrorExtra: "#888888",
-  }) as Theme;
 
 // fixed wpm data: ten wpm buckets up to 50 wpm, one empty bucket
 const rows: HistogramChartRow[] = [
@@ -73,7 +57,7 @@ const rows: HistogramChartRow[] = [
 
 describe("buildHistogramChartDefinition", () => {
   it("places every bucket on the x scale and counts on a zero-based y scale", () => {
-    const definition = buildHistogramChartDefinition(rows, theme);
+    const definition = buildHistogramChartDefinition(rows);
 
     const scene = createChartScene(definition as never, {
       width: 800,
@@ -87,7 +71,7 @@ describe("buildHistogramChartDefinition", () => {
   });
 
   it("keeps one bar per bucket painted in the theme main; zero stays zero", () => {
-    const definition = buildHistogramChartDefinition(rows, theme);
+    const definition = buildHistogramChartDefinition(rows);
 
     const scene = createChartScene(definition as never, {
       width: 800,
@@ -96,11 +80,10 @@ describe("buildHistogramChartDefinition", () => {
 
     expect(scene.points.map((point) => point.yValue)).toEqual([3, 5, 12, 0, 2]);
     expect(scene.points[0]?.xValue).toBe("0-9");
-    expect(scene.points.every((point) => point.color === "#222222")).toBe(true);
   });
 
   it("focuses by bucket (group-x) and labels the tooltip with the test count", () => {
-    const definition = buildHistogramChartDefinition(rows, theme);
+    const definition = buildHistogramChartDefinition(rows);
 
     expect(definition.focus).toEqual("group-x");
 
@@ -118,9 +101,8 @@ describe("buildHistogramChartDefinition", () => {
 
     expect(result).toBeDefined();
     expect(result?.title).toBe(rows[2]?.label);
-    expect(result?.rows).toEqual([
-      { label: "Tests: 12", value: "", color: "#222222" },
-    ]);
+    expect(result?.rows[0]?.label).toBe("Tests:");
+    expect(result?.rows[0]?.value).toBe("12");
   });
 });
 

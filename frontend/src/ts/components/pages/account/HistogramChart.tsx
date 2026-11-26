@@ -7,7 +7,6 @@ import { tooltip } from "@tanstack/charts/tooltip";
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import type { NormalizedLocalResult } from "../../../collections/results";
-import type { Theme } from "../../../constants/themes";
 
 import { getUseTanstackCharts } from "../../../dev/chart-parity";
 import { getTheme } from "../../../theme/state";
@@ -35,9 +34,7 @@ export function HistogramChart(props: {
     ),
   );
 
-  const definition = createMemo(() =>
-    buildHistogramChartDefinition(buckets(), getTheme),
-  );
+  const definition = createMemo(() => buildHistogramChartDefinition(buckets()));
 
   return (
     <div class="h-50">
@@ -128,16 +125,12 @@ export function HistogramChart(props: {
  * bucket label and the test count. Pure: asserted in
  * __tests__/components/pages/account/HistogramChart.spec.tsx.
  */
-export function buildHistogramChartDefinition(
-  rows: HistogramChartRow[],
-  theme: () => Theme,
-) {
+export function buildHistogramChartDefinition(rows: HistogramChartRow[]) {
   return defineChart({
     marks: [
       barY(rows, {
         x: "label",
         y: "count",
-        fill: theme().main,
       }),
     ],
     scales: {
@@ -146,20 +139,17 @@ export function buildHistogramChartDefinition(
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        grid: { stroke: theme().subAlt },
+        grid: true,
       },
       y: {
         scale: () => scaleLinear(),
         nice: true,
-        grid: { stroke: theme().subAlt },
+        grid: true,
         axis: { label: "Tests" },
       },
     },
-    // the old tooltip: bucket title, one "Tests: N" row
     tooltip: {
       use: tooltip,
-      // the old tooltip animated 250 ms between bars
-      motion: { type: "tween", duration: 250, easing: "ease-out" },
       content: (
         points,
       ): {
@@ -168,16 +158,15 @@ export function buildHistogramChartDefinition(
       } => {
         const point = points[0];
         if (!point) return { rows: [] };
-        const tooltipRows: ChartTooltipRow[] = [
-          {
-            label: `Tests: ${point.datum.count}`,
-            value: "",
-            color: point.color,
-          },
-        ];
         return {
           title: point.datum.label,
-          rows: tooltipRows,
+          rows: [
+            {
+              label: `Tests:`,
+              value: point.datum.count.toString(),
+              color: point.color,
+            },
+          ],
         };
       },
     },
