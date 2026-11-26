@@ -204,6 +204,27 @@ describe("buildMiniResultChartDefinition", () => {
     expect(errorPoints.length).toBe(5);
   });
 
+  it("curves the speed lines with cardinal tension 0.5, like chart.js's global tension", () => {
+    const { nodes } = scene(true);
+
+    const flatten = (node: SceneNode): SceneNode[] => [
+      node,
+      ...(node.kind === "group" ? node.children : []).flatMap(flatten),
+    ];
+    const all = nodes.flatMap(flatten);
+
+    for (const markId of ["wpm", "burst"]) {
+      const line = all.find(
+        (it) => it.kind === "polyline" && it.key.startsWith(`${markId}:`),
+      );
+      expect(line).toBeDefined();
+      // the cardinal curve renders cubic bezier segments, not straight lines
+      expect(line?.kind === "polyline" ? line.path : undefined).toContain("C");
+      // the segment still spans every data point (interaction unchanged)
+      expect(line?.kind === "polyline" ? line.points.length : 0).toBe(5);
+    }
+  });
+
   it("tooltips per second over all three series, like the chart.js index mode", () => {
     const definition = buildMiniResultChartDefinition(
       mockChart,

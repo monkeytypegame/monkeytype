@@ -5,10 +5,12 @@ import {
   lineY,
   type ChartTooltipRow,
 } from "@tanstack/charts";
+import { d3Curve } from "@tanstack/charts/d3/shape";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { Chart } from "@tanstack/charts/solid";
 import { tooltip } from "@tanstack/charts/tooltip";
 import { useQuery } from "@tanstack/solid-query";
+import { curveCardinal } from "d3-shape";
 import { createMemo, JSXElement, Show } from "solid-js";
 
 import { getSingleResultQueryOptions } from "../../../collections/results";
@@ -25,6 +27,11 @@ import { errorCross } from "../../charts/error-cross";
 import { AnimatedModal } from "../../common/AnimatedModal";
 import AsyncContent from "../../common/AsyncContent";
 import { ChartJs } from "../../common/ChartJs";
+
+// chart.js curves every line with the global `tension: 0.5` default; the
+// spec settles the TanStack equivalent as cardinal at tension 0.5 (monotone
+// is the fallback if the comparison looks off)
+const speedCurve = d3Curve(curveCardinal.tension(0.5));
 
 /**
  * One second of the mini result chart: the per-second speeds, preconverted
@@ -245,6 +252,7 @@ export function buildMiniResultChartDefinition(
         y: (it) => it.burst,
         stroke: theme().sub,
         strokeWidth: 3,
+        curve: speedCurve,
       }),
       dot(rows, {
         id: "burst-points",
@@ -259,6 +267,7 @@ export function buildMiniResultChartDefinition(
         y: (it) => it.wpm,
         stroke: theme().main,
         strokeWidth: 3,
+        curve: speedCurve,
       }),
       dot(rows, {
         id: "wpm-points",

@@ -375,6 +375,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      d3-shape:
+        specifier: 3.2.0
+        version: 3.2.0
       damerau-levenshtein:
         specifier: 1.0.8
         version: 1.0.8
@@ -472,6 +475,9 @@ importers:
       '@types/chartjs-plugin-trendline':
         specifier: 1.0.4
         version: 1.0.4
+      '@types/d3-shape':
+        specifier: 3.2.0
+        version: 3.2.0
       '@types/damerau-levenshtein':
         specifier: 1.0.2
         version: 1.0.2
