@@ -270,13 +270,22 @@ describe("buildDailyActivityChartDefinition", () => {
       format(new Date(day.dayTimestamp), "dd MMM yyyy"),
     );
     expect(result?.rows.map((row) => row.label)).toEqual([
-      `Time Typing: ${secondsToString(Math.round(day.timeTyping), true, true)}`,
-      `Tests Completed: ${day.completed}`,
-      `Restarts per test: ${roundTo2(day.restarted / day.completed)}`,
-      `Highest  WPM: ${formatTypingSpeed(day.maxWpm, { showDecimalPlaces: true })}`,
-      `Average WPM: ${formatTypingSpeed(day.avgWpm, { showDecimalPlaces: true })}`,
-      `Average Accuracy: ${formatAccuracy(day.avgAcc, { showDecimalPlaces: true })}`,
-      `Average Consistency: ${formatPercentage(day.avgConsistency, { showDecimalPlaces: true })}`,
+      "Time Typing",
+      "Tests Completed",
+      "Restarts per test",
+      "Highest WPM",
+      "Average WPM",
+      "Average Accuracy",
+      "Average Consistency",
+    ]);
+    expect(result?.rows.map((row) => row.value)).toEqual([
+      secondsToString(Math.round(day.timeTyping), true, true),
+      day.completed.toString(),
+      roundTo2(day.restarted / day.completed).toString(),
+      formatTypingSpeed(day.maxWpm, { showDecimalPlaces: true }),
+      formatTypingSpeed(day.avgWpm, { showDecimalPlaces: true }),
+      formatAccuracy(day.avgAcc, { showDecimalPlaces: true }),
+      formatPercentage(day.avgConsistency, { showDecimalPlaces: true }),
     ]);
     // the bar swatch on the first line only, like the old filtered index tooltip
     expect(result?.rows[0]?.color).toBe("#222222");

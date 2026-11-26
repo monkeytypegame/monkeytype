@@ -390,31 +390,38 @@ export function buildDailyActivityChartDefinition(
         const it = point.datum as DailyActivityDay;
         const formatSpeed = (wpm: number): string =>
           formatTypingSpeed(wpm, { showDecimalPlaces: true });
-        const tooltipRows: ChartTooltipRow[] = [
-          {
-            label: `Time Typing: ${secondsToString(Math.round(it.timeTyping), true, true)}`,
-            value: "",
-            color: point.color,
-          },
-          { label: `Tests Completed: ${it.completed}`, value: "" },
-          {
-            label: `Restarts per test: ${roundTo2(it.restarted / it.completed)}`,
-            value: "",
-          },
-          { label: `Highest  ${UNIT}: ${formatSpeed(it.maxWpm)}`, value: "" },
-          { label: `Average ${UNIT}: ${formatSpeed(it.avgWpm)}`, value: "" },
-          {
-            label: `Average Accuracy: ${formatAccuracy(it.avgAcc, { showDecimalPlaces: true })}`,
-            value: "",
-          },
-          {
-            label: `Average Consistency: ${formatPercentage(it.avgConsistency, { showDecimalPlaces: true })}`,
-            value: "",
-          },
-        ];
         return {
           title: dateFormat(new Date(it.dayTimestamp), "dd MMM yyyy"),
-          rows: tooltipRows,
+          rows: [
+            {
+              label: "Time Typing",
+              value: secondsToString(Math.round(it.timeTyping), true, true),
+              color: point.color,
+            },
+            { label: "Tests Completed", value: it.completed.toString() },
+            {
+              label: "Restarts per test",
+              value: roundTo2(it.restarted / it.completed).toString(),
+            },
+            {
+              label: `Highest ${UNIT}`,
+              value: formatSpeed(it.maxWpm),
+            },
+            {
+              label: `Average ${UNIT}`,
+              value: formatSpeed(it.avgWpm),
+            },
+            {
+              label: "Average Accuracy",
+              value: formatAccuracy(it.avgAcc, { showDecimalPlaces: true }),
+            },
+            {
+              label: "Average Consistency",
+              value: formatPercentage(it.avgConsistency, {
+                showDecimalPlaces: true,
+              }),
+            },
+          ],
         };
       },
     },
