@@ -154,7 +154,7 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-chart-area",
       label: () =>
-        `Chart Renderer (${getUseTanstackCharts() ? "TanStack Charts" : "Chart.js"})`,
+        `Chart Renderer (${getUseTanstackCharts() ? "TanStack Charts" : "Fallback"})`,
       onClick: () => setUseTanstackCharts(!getUseTanstackCharts()),
     },
     {

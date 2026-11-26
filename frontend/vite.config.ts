@@ -253,10 +253,9 @@ function getBuildOptions({
               test: /node_modules\/@firebase\//,
             },
             {
-              // ahead of vendor-tanstack (first match wins): the chart
-              // library's own @tanstack/charts package + its d3 deps stay in
-              // the chart chunk alongside the legacy Chart.js packages until
-              // the removal step (docs/specs/tanstack-charts, S12)
+              // ahead of vendor-tanstack (first match wins): the TanStack
+              // chart package + its d3 deps stay in the chart chunk until the
+              // removal step (docs/specs/tanstack-charts, S12)
               name: "vendor-chart",
               test: /node_modules\/(chart|@tanstack\/charts|d3-)/,
             },

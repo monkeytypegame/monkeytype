@@ -11,9 +11,7 @@
   --ts-chart-4: var(--sub-alt-color);
   --ts-chart-3: var(--error-color);
 
-  // DOM tooltip chrome: the old Chart.js tooltip was a fixed dark bubble in
-  // every theme (the values below are its defaults), so parity means fixed
-  // values here, not theme variables
+  // DOM tooltip chrome: fixed values (the library's defaults), not theme variables
   --ts-chart-tooltip-background: rgba(0, 0, 0, 0.8);
   --ts-chart-tooltip-color: #fff;
   --ts-chart-tooltip-border: 1px solid rgba(0, 0, 0, 0);
@@ -23,34 +21,20 @@
   --ts-chart-tooltip-font: 400 12px / 1.3 var(--font);
   --ts-chart-tooltip-max-width: 200px;
 
-  // the library gives the chart's <svg> tabindex 0 (for keyboard focus), and
-  // Chrome paints the UA focus ring on mouse click even though :focus-visible
-  // does not match; the old Chart.js canvas wasn't focusable, so suppress the
-  // ring for pointer focus. The keyboard ring stays (:focus-visible).
+  // suppress the pointer-focus ring; the keyboard ring stays (:focus-visible)
   svg:focus:not(:focus-visible) {
     outline: none;
   }
 
-  // chart.js parity: the library defaults its axis labels to 11px / weight 600
-  // at 0.76 opacity and its tick labels to 11px at 0.68 opacity, while the
-  // chart.js half renders scale titles and ticks at 12px / weight 400 / full
-  // opacity (its font defaults; the wrapper only overrides the family). These
-  // emit as SVG presentation attributes, which a stylesheet rule beats, so the
-  // host pins the chart.js metrics for every chart. The family inherits from
-  // the body (the site font) via the library's `inherit`, like chart.js.
+  // pin the axis/tick text metrics (size, weight, opacity) to the site font
   svg text {
     font-size: 12px;
     font-weight: 400;
     fill-opacity: 1;
   }
 
-  // chart.js parity for the scale chrome: the library paints grid lines at
-  // 0.11 opacity and axis/tick lines at 0.28, while chart.js paints them at
-  // full opacity. These emit stroke-opacity as SVG presentation attributes,
-  // which a stylesheet rule beats, so the host pins it for every chart.
-  // Scoped to the grid/axis groups so chart marks (rules, areas, …) keep
-  // their own paint and opacity; stroke colors stay with each chart's scale
-  // options.
+  // pin grid/axis line opacity to full; scoped to grid/axis groups so marks
+  // keep their own paint and opacity
   .ts-chart__grid line,
   .ts-chart__axes line {
     stroke-opacity: 1;

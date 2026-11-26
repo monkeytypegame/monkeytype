@@ -21,11 +21,6 @@ type SpeedHistogramRow = {
   topPercentage?: string;
 };
 
-/**
- * The about page speed histogram: leaderboard users per 10 wpm bucket.
- * Renders the Chart.js half by default; the dev-only parity flag
- * (dev/chart-parity) switches to the TanStack implementation.
- */
 export function SpeedHistogram(props: {
   data: SpeedHistogramData | undefined;
 }): JSXElement {
@@ -45,7 +40,7 @@ export function SpeedHistogram(props: {
     <Show
       when={getUseTanstackCharts()}
       fallback={
-        // Stepping stone: replaced by the TanStack implementation; removed in S12
+        // TanStack renderer is the default; the fallback renders when the flag is off
         <ChartJs
           name="SpeedHistogram"
           type="bar"
@@ -123,8 +118,7 @@ export function SpeedHistogram(props: {
         ariaLabel="Distribution of time 60 leaderboard results"
         // responsive per the TanStack guide: no width (the host follows the
         // container; initialWidth seeds the first frame until the measured
-        // width is available) and a fixed height, like the h-48 section and
-        // the canvas it replaces
+        // width is available) and a fixed height, like the h-48 section
         height={192}
         initialWidth={640}
       />
@@ -144,13 +138,7 @@ export function buildSpeedHistogramDefinition(
 ) {
   const counts = rows.map((it) => it.count);
   const max = Math.max(1, ...counts);
-  // chart.js minBarLength: 2 kept the tiny tail buckets visible; the library
-  // has no minimum bar size, so clamp in count space. Calibrated against the
-  // ~120 px painted plot (192 px section minus the rotated-label margin): the
-  // nice'd domain max sits above the raw max, so the divisor is smaller than
-  // the plot height to land at 2 px. Zero buckets stay zero (accepted
-  // deviation: chart.js painted them at 2 px). The tooltip reads datum.count,
-  // unclamped.
+  // no library minimum bar size: clamp tiny bars to a 2px minimum; zero stays zero
   const minVisibleCount = (2 / 92) * max;
 
   return defineChart({
@@ -182,17 +170,14 @@ export function buildSpeedHistogramDefinition(
     },
     tooltip: {
       use: tooltip,
-      // the old tooltip animated 250 ms between bars
+      // tween animation between bars
       motion: { type: "tween", duration: 250, easing: "ease-out" },
-      // the old tooltip: bucket title, a user-count row, and the cumulative
-      // top percentage when the bucket has one
+      // bucket title, user count, cumulative top percentage when present
       content: (points) => {
         const point = points[0];
         if (!point) return { rows: [] };
-        // the y channel is clamped for the minimum bar size; the true count
-        // lives on the datum
-        // Chart.js painted "Users: 7" as one left-aligned line; the built-in
-        // row is a swatch | label | value grid, so the whole line goes in the label
+        // y channel is clamped for the min bar size; the true count lives on the datum
+        // swatch | label | value grid: the whole line goes in the label
         const tooltipRows: ChartTooltipRow[] = [
           {
             label: `Users: ${point.datum.count}`,

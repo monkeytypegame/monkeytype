@@ -22,7 +22,7 @@ vi.mock("@tanstack/charts/scene", async (importOriginal) => {
       }),
   };
 });
-// no canvas in jsdom - the chart halves render test markers
+// no canvas in jsdom - render test markers via the mocks
 vi.mock("../../../src/ts/components/common/ChartJs", () => ({
   ChartJs: () => <div data-testid="chartjs" />,
 }));
@@ -104,8 +104,7 @@ describe("buildSpeedHistogramDefinition", () => {
       height: 200,
     });
 
-    // the tiny bucket is clamped to chart.js's minBarLength: 2 (in count space);
-    // the zero bucket stays zero (accepted deviation: no minBarLength)
+    // tiny bucket clamped to a 2px minimum; zero bucket stays zero
     expect(scene.points.map((point) => point.yValue)).toEqual([
       4,
       12,
@@ -123,7 +122,7 @@ describe("SpeedHistogram", () => {
     setUseTanstackCharts(false);
   });
 
-  it("renders the Chart.js half by default", () => {
+  it("renders the fallback renderer when the parity flag is off", () => {
     const { getByTestId, queryByTestId } = render(() => (
       <SpeedHistogram data={data} />
     ));
@@ -133,7 +132,7 @@ describe("SpeedHistogram", () => {
     expect(queryByTestId("tanstack-chart")).toBeNull();
   });
 
-  it("renders the TanStack half when the parity flag is on", () => {
+  it("renders the TanStack chart when the parity flag is on", () => {
     setUseTanstackCharts(true);
 
     const { getByTestId, queryByTestId } = render(() => (

@@ -310,9 +310,8 @@ const mt = {
    */
   signOut,
   /**
-   * Dev-only chart renderer parity flag: whether charts render with the new
-   * TanStack implementation rather than Chart.js (default false). Persists
-   * across reloads, and is always false in production builds.
+   * Dev-only flag: whether charts render with TanStack Charts. Off by default;
+   * always off in production builds.
    */
   getUseTanstackCharts,
   /** Sets the chart renderer parity flag; dev only, persists across reloads. */

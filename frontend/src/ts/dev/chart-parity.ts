@@ -4,7 +4,7 @@ import { z } from "zod";
 import { isDevEnvironment } from "../utils/env";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-// kept across reloads: comparing the two renderers spans page loads
+// kept across reloads: the flag survives page loads
 const useTanstackChartsLS = new LocalStorageWithSchema({
   key: "devUseTanstackCharts",
   schema: z.boolean(),
@@ -16,10 +16,8 @@ const [get, set] = createSignal<boolean>(
 );
 
 /**
- * Dev-only chart renderer parity flag: whether charts render with the new
- * TanStack implementation rather than Chart.js. False (Chart.js) by default,
- * so an unverified chart on the integration branch behaves as on master;
- * always false in production builds.
+ * Dev-only flag: whether charts render with TanStack Charts. Off by default;
+ * always off in production builds.
  */
 export function getUseTanstackCharts(): boolean {
   return get();
