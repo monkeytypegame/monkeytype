@@ -310,8 +310,8 @@ export function buildDailyActivityChartDefinition(
         fill: theme().main,
       }),
       // the plugin fits one line over the data and draws nothing under two
-      // days; the old lineStyle "dotted" is not a style it maps, so parity
-      // is the default solid line at the dataset's 3 px border width
+      // days; its "dotted" lineStyle is setLineDash([2, 2]) at the dataset's
+      // 3 px border width, and ci: 0 keeps the old no-band look
       ...(days.length > 1
         ? [
             linearRegressionY(days, {
@@ -320,6 +320,7 @@ export function buildDailyActivityChartDefinition(
               y: minutes,
               stroke: theme().sub,
               strokeWidth: 3,
+              strokeDasharray: "2 2",
               ci: 0,
             }),
           ]
@@ -332,6 +333,8 @@ export function buildDailyActivityChartDefinition(
         axis: {
           line: { stroke: theme().subAlt },
           ticks: {
+            // the old autoSkip + padding 20 with rotated labels
+            spacing: 55,
             format: (value: Date) => formatDay(value),
           },
         },

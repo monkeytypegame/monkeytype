@@ -235,9 +235,9 @@ describe("buildDailyActivityChartDefinition", () => {
     ) as
       | { style?: { strokeDasharray?: string; strokeWidth?: number } }
       | undefined;
-    // the plugin maps the unknown "dotted" lineStyle to its default (solid)
-    // and reads the dataset borderWidth (3), so parity is a solid 3 px line
-    expect(line?.style?.strokeDasharray).toBeUndefined();
+    // the plugin's "dotted" lineStyle is setLineDash([2, 2]) and it reads
+    // the dataset borderWidth (3)
+    expect(line?.style?.strokeDasharray).toBe("2 2");
     expect(line?.style?.strokeWidth).toBe(3);
     // ci: 0 hides the band area the plugin never drew
     expect(
