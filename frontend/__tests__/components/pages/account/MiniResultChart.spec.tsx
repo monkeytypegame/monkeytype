@@ -169,6 +169,22 @@ describe("buildMiniResultChartDefinition", () => {
     expect(freeError[1]).toBeGreaterThanOrEqual(5);
   });
 
+  it("renders all-zero chart data without crashing (the zero viewports are skipped)", () => {
+    const zeroChart: ChartData = { wpm: [0, 0], burst: [0, 0], err: [0, 0] };
+
+    // the library rejects a [0, 0] viewport domain; the fitted scales handle
+    // the zero content instead
+    const scene = createChartScene(
+      buildMiniResultChartDefinition(zeroChart, theme, true, wpm),
+      { width: 800, height: 240 },
+    );
+    const y = scene.scales["y"]?.domain as [number, number];
+    const error = scene.scales["error"]?.domain as [number, number];
+    expect(y[0]).toBe(0);
+    expect(y[1]).toBeGreaterThanOrEqual(1);
+    expect(error[1]).toBeGreaterThanOrEqual(1);
+  });
+
   it("draws a constant-size cross per positive error and keeps zero-error points", () => {
     const { nodes, points } = scene(true);
 

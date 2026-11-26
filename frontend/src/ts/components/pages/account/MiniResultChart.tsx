@@ -289,8 +289,12 @@ export function buildMiniResultChartDefinition(
         side: "left",
         scale: () => scaleLinear(),
         nice: true,
-        // the old scale: from zero when configured, else fitted to the lines
-        ...(beginAtZero ? { viewport: { domain: [0, maxSpeed] } } : {}),
+        // the old scale: from zero when configured, else fitted to the lines;
+        // the viewport only when the max is positive - the library rejects a
+        // [0, 0] domain
+        ...(beginAtZero && maxSpeed > 0
+          ? { viewport: { domain: [0, maxSpeed] } }
+          : {}),
         grid: { stroke: theme().subAlt },
         axis: {
           label: unit.fullUnitString,
@@ -302,7 +306,9 @@ export function buildMiniResultChartDefinition(
         side: "right",
         scale: () => scaleLinear(),
         nice: true,
-        ...(beginAtZero ? { viewport: { domain: [0, maxErr] } } : {}),
+        ...(beginAtZero && maxErr > 0
+          ? { viewport: { domain: [0, maxErr] } }
+          : {}),
         // the old scale drew no grid
         grid: false,
         axis: {
