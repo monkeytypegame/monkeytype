@@ -167,14 +167,17 @@ export function buildSpeedHistogramDefinition(
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        grid: { stroke: theme().sub },
+        grid: { stroke: theme().subAlt },
         axis: { tickLabels: { rotate: -45 } },
       },
       y: {
         scale: () => scaleLinear(),
         nice: true,
-        grid: { stroke: theme().sub },
-        axis: { label: "Users" },
+        grid: { stroke: theme().subAlt },
+        axis: {
+          label: "Users",
+          line: { stroke: theme().subAlt },
+        },
       },
     },
     tooltip: {

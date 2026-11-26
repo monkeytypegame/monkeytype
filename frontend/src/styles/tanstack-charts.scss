@@ -43,4 +43,16 @@
     font-weight: 400;
     fill-opacity: 1;
   }
+
+  // chart.js parity for the scale chrome: the library paints grid lines at
+  // 0.11 opacity and axis/tick lines at 0.28, while chart.js paints them at
+  // full opacity. These emit stroke-opacity as SVG presentation attributes,
+  // which a stylesheet rule beats, so the host pins it for every chart.
+  // Scoped to the grid/axis groups so chart marks (rules, areas, …) keep
+  // their own paint and opacity; stroke colors stay with each chart's scale
+  // options.
+  .ts-chart__grid line,
+  .ts-chart__axes line {
+    stroke-opacity: 1;
+  }
 }
