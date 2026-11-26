@@ -1,13 +1,13 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import request, { Test as SuperTest } from "supertest";
-import app from "../../../src/app";
+import { Test as SuperTest } from "supertest";
+import { createMockApp } from "../../__testData__/controller-test";
 import { mockBearerAuthentication } from "../../__testData__/auth";
 import * as Configuration from "../../../src/init/configuration";
 import { ObjectId } from "mongodb";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import * as UserDal from "../../../src/dal/user";
 
-const mockApp = request(app);
+const mockApp = createMockApp();
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
 const mockAuth = mockBearerAuthentication(uid);

@@ -1,26 +1,18 @@
-import * as TestWords from "./test-words";
-import { Config } from "../config/store";
-import * as DB from "../db";
-import { getActiveTagsPB } from "../collections/tags";
+import { getTestSettings } from "./engine/test-settings";
+import * as TestWords from "./engine/test-words";
+import { getConfig } from "../config/store";
+import { getLocalPB } from "../queries/user";
+import { getActiveTagsPB } from "../queries/tags";
 import * as Misc from "../utils/misc";
-import { configEvent } from "../events/config";
+import { createEffectOn } from "../hooks/effects";
 import { getActiveFunboxes } from "./funbox/list";
-import { Caret } from "../elements/caret";
-import { ElementWithUtils } from "../utils/dom";
+import { createRoot, createSignal } from "solid-js";
 import {
   getUserAverage10Once,
   getUserDailyBestOnce,
 } from "../collections/results";
-import {
-  isDirectionReversed,
-  isLanguageRightToLeft,
-  getActiveWordIndex,
-  getCurrentQuote,
-  isTestFinished,
-  isPaceRepeat,
-  isTestActive,
-  setPaceCaretWpm,
-} from "../states/test";
+import { getCurrentQuote, isPaceRepeat, setPaceCaretWpm } from "../states/test";
+import { getActiveWordIndex, isTestActive } from "./engine/state";
 
 type Settings = {
   wpm: number;
@@ -37,23 +29,23 @@ let startTimestamp = 0;
 
 let settings: Settings | null = null;
 
-// #paceCaret is rendered by TestPage, set via initElement() on every mount
-export let caret: Caret | undefined;
+/** Where the pace caret heads during a step. */
+export type PaceCaretTarget = {
+  wordIndex: number;
+  letterIndex: number;
+  /** when it gets there, performance.now() time: it moves at a linear pace */
+  stepEnd: number;
+};
 
-export function initElement(
-  refs: {
-    caret: ElementWithUtils;
-    wordsWrapper: ElementWithUtils;
-  },
-  signal: AbortSignal,
-): void {
-  const created = new Caret(refs.caret, Config.paceCaretStyle, refs);
-  caret = created;
-  signal.addEventListener("abort", () => {
-    // a remount may have created a new caret already
-    if (caret === created) caret = undefined;
-  });
-}
+const [paceCaretTarget, setPaceCaretTarget] = createSignal<
+  PaceCaretTarget | undefined
+>(undefined);
+
+/**
+ * The letter the pace caret is heading for, undefined while it's hidden
+ * (no pace, test not started, out of words). Words draws it there.
+ */
+export { paceCaretTarget };
 
 let lastTestWpm = 0;
 
@@ -63,56 +55,39 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-export function resetCaretPosition(): void {
-  if (Config.paceCaret === "off" && !isPaceRepeat()) return;
-  if (Config.mode === "zen") return;
-
-  caret?.hide();
-  caret?.stopAllAnimations();
-  caret?.clearMargins();
-
-  caret?.goTo({
-    wordIndex: 0,
-    letterIndex: 0,
-    isLanguageRightToLeft: isLanguageRightToLeft(),
-    isDirectionReversed: isDirectionReversed(),
-    animate: false,
-  });
-}
-
 export async function init(): Promise<void> {
-  caret?.hide();
-  const mode2 = Misc.getMode2(Config, getCurrentQuote());
+  setPaceCaretTarget(undefined);
+  const mode2 = Misc.getMode2(getTestSettings(), getCurrentQuote());
   let wpm = 0;
-  if (Config.paceCaret === "pb") {
+  if (getConfig.paceCaret === "pb") {
     wpm =
-      DB.getLocalPB(
-        Config.mode,
+      getLocalPB(
+        getTestSettings().mode,
         mode2,
-        Config.punctuation,
-        Config.numbers,
-        Config.language,
-        Config.difficulty,
-        Config.lazyMode,
+        getTestSettings().punctuation,
+        getTestSettings().numbers,
+        getTestSettings().language,
+        getTestSettings().difficulty,
+        getTestSettings().lazyMode,
         getActiveFunboxes(),
       )?.wpm ?? 0;
-  } else if (Config.paceCaret === "tagPb") {
+  } else if (getConfig.paceCaret === "tagPb") {
     wpm = getActiveTagsPB(
-      Config.mode,
+      getTestSettings().mode,
       mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
+      getTestSettings().punctuation,
+      getTestSettings().numbers,
+      getTestSettings().language,
+      getTestSettings().difficulty,
+      getTestSettings().lazyMode,
     );
-  } else if (Config.paceCaret === "average") {
-    wpm = Math.round((await getUserAverage10Once({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "daily") {
-    wpm = Math.round((await getUserDailyBestOnce({ ...Config, mode2 })).wpm);
-  } else if (Config.paceCaret === "custom") {
-    wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || isPaceRepeat()) {
+  } else if (getConfig.paceCaret === "average") {
+    wpm = Math.round((await getUserAverage10Once({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "daily") {
+    wpm = Math.round((await getUserDailyBestOnce({ ...getConfig, mode2 })).wpm);
+  } else if (getConfig.paceCaret === "custom") {
+    wpm = getConfig.paceCaretCustomSpeed;
+  } else if (getConfig.paceCaret === "last" || isPaceRepeat()) {
     wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
@@ -140,49 +115,32 @@ export async function init(): Promise<void> {
 
 export async function update(expectedStepEnd: number): Promise<void> {
   const currentSettings = settings;
-  if (currentSettings === null || !isTestActive() || isTestFinished()) {
+  if (currentSettings === null || !isTestActive()) {
     return;
-  }
-
-  if (caret?.isHidden()) {
-    caret?.show();
   }
 
   incrementLetterIndex();
+  // out of words
+  if (settings !== currentSettings) return;
 
-  try {
-    const now = performance.now();
-    const absoluteStepEnd = startTimestamp + expectedStepEnd;
-    const duration = absoluteStepEnd - now;
+  const absoluteStepEnd = startTimestamp + expectedStepEnd;
+  const duration = absoluteStepEnd - performance.now();
 
-    caret?.goTo({
-      wordIndex: currentSettings.currentWordIndex,
-      letterIndex: currentSettings.currentLetterIndex,
-      isLanguageRightToLeft: isLanguageRightToLeft(),
-      isDirectionReversed: isDirectionReversed(),
-      animate: true,
-      animationOptions: {
-        duration,
-        easing: "linear",
-      },
-    });
+  setPaceCaretTarget({
+    wordIndex: currentSettings.currentWordIndex,
+    letterIndex: currentSettings.currentLetterIndex,
+    stepEnd: absoluteStepEnd,
+  });
 
-    currentSettings.timeout = setTimeout(
-      () => {
-        if (settings !== currentSettings) return;
-        update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(
-          () => {
-            if (settings === currentSettings) settings = null;
-          },
-        );
-      },
-      Math.max(0, duration),
-    );
-  } catch (e) {
-    console.error(e);
-    caret?.hide();
-    return;
-  }
+  currentSettings.timeout = setTimeout(
+    () => {
+      if (settings !== currentSettings) return;
+      update(expectedStepEnd + (currentSettings.spc ?? 0) * 1000).catch(() => {
+        if (settings === currentSettings) settings = null;
+      });
+    },
+    Math.max(0, duration),
+  );
 }
 
 export function reset(): void {
@@ -191,6 +149,7 @@ export function reset(): void {
   }
   settings = null;
   startTimestamp = 0;
+  setPaceCaretTarget(undefined);
 }
 
 function incrementLetterIndex(): void {
@@ -208,7 +167,7 @@ function incrementLetterIndex(): void {
     }
     settings.currentLetterIndex++;
 
-    if (!Config.blindMode) {
+    if (!getConfig.blindMode) {
       if (settings.correction < 0) {
         while (settings.correction < 0) {
           settings.currentLetterIndex--;
@@ -241,7 +200,7 @@ function incrementLetterIndex(): void {
     //out of words
     settings = null;
     console.log("pace caret out of words");
-    caret?.hide();
+    setPaceCaretTarget(undefined);
     return;
   }
 }
@@ -250,7 +209,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings?.wordsStatus[getActiveWordIndex()] === true &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = undefined;
       settings.correction -= currentWord.length;
@@ -259,7 +218,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
     if (
       settings !== null &&
       settings.wordsStatus[getActiveWordIndex()] === undefined &&
-      !Config.blindMode
+      !getConfig.blindMode
     ) {
       settings.wordsStatus[getActiveWordIndex()] = true;
       settings.correction += currentWord.length;
@@ -273,9 +232,11 @@ export function start(): void {
   void update((settings?.spc ?? 0) * 1000);
 }
 
-configEvent.subscribe(({ key }) => {
-  if (key === "paceCaret") void init();
-  if (key === "paceCaretStyle") {
-    caret?.setStyle(Config.paceCaretStyle);
-  }
+// a root so the effect is owned, it lives as long as the page
+createRoot(() => {
+  createEffectOn(
+    () => getConfig.paceCaret,
+    () => void init(),
+    { defer: true },
+  );
 });

@@ -5,7 +5,7 @@ import preview from "#.storybook/preview";
 import {
   DataTable,
   DataTableColumnDef,
-} from "../../src/ts/components/ui/table/DataTable";
+} from "../../src/ts/components/common/table/DataTable";
 
 type Person = {
   name: string;

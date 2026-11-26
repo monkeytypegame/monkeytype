@@ -9,11 +9,9 @@ import {
   saveToLocalStorage,
   saveFullConfigToLocalStorage,
 } from "./persistence";
-import { Config, setFullConfigStore } from "./store";
+import { setFullConfigStore } from "./store";
 import { getDefaultConfig } from "../constants/default-config";
-import { configEvent } from "../events/config";
 import { migrateConfig } from "./utils";
-import { promiseWithResolvers } from "../utils/misc";
 import { setConfig } from "./setters";
 import { deleteConfig } from "../ape/config";
 import { typedKeys } from "@monkeytype/util/objects";
@@ -51,7 +49,6 @@ export async function loadFromLocalStorage(): Promise<void> {
     await applyConfig(newConfig);
     saveFullConfigToLocalStorage(true);
   }
-  loadDone();
 }
 
 const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
@@ -67,6 +64,7 @@ const lastConfigsToApply: Set<keyof ConfigSchemas.Config> = new Set([
   "numbers",
   "punctuation",
   "funbox",
+  "autoSwitchTheme", // theme, customTheme and customThemeColors disable it
 ]);
 
 export async function applyConfig(
@@ -77,18 +75,11 @@ export async function applyConfig(
   //migrate old values if needed, remove additional keys and merge with default config
   const fullConfig: ConfigSchemas.Config = migrateConfig(partialConfig);
 
-  configEvent.dispatch({ key: "fullConfigChange" });
-
   const configKeysToReset: (keyof ConfigSchemas.Config)[] = [];
 
   // batch so store effects run once, after the whole config is applied
   batch(() => {
-    const defaultConfig = getDefaultConfig();
-    for (const key of typedKeys(fullConfig)) {
-      //@ts-expect-error this is fine, both are of type config
-      Config[key] = defaultConfig[key];
-    }
-    setFullConfigStore(defaultConfig);
+    setFullConfigStore(getDefaultConfig());
 
     const firstKeys = typedKeys(fullConfig).filter(
       (key) => !lastConfigsToApply.has(key),
@@ -108,8 +99,6 @@ export async function applyConfig(
   for (const key of configKeysToReset) {
     saveToLocalStorage(key);
   }
-
-  configEvent.dispatch({ key: "fullConfigChangeFinished" });
 }
 
 export async function resetConfig(): Promise<void> {
@@ -117,8 +106,3 @@ export async function resetConfig(): Promise<void> {
   await deleteConfig();
   saveFullConfigToLocalStorage(true);
 }
-
-const { promise: configLoadPromise, resolve: loadDone } =
-  promiseWithResolvers();
-
-export { configLoadPromise };

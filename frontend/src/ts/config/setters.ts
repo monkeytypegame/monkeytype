@@ -1,22 +1,35 @@
 import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { ZodType as ZodSchema } from "zod";
 import { saveToLocalStorage } from "../config/persistence";
-import { configEvent } from "../events/config";
 import { showNoticeNotification } from "../states/notifications";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
+  getFunboxUnsupportedReason,
 } from "./funbox-validation";
 import { triggerResize, escapeHTML } from "../utils/misc";
 import { camelCaseToWords, capitalizeFirstLetter } from "../utils/strings";
-import { configMetadata } from "./metadata";
-import { Config, setConfigStore } from "./store";
+import { changeRequiresRestart, configMetadata } from "./metadata";
+import { getConfig, setConfigStore } from "./store";
 import { isConfigValueValid } from "./validation";
 import { FunboxName } from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
-import { isTestActive } from "../states/test";
+import { isTestActive } from "../test/engine/state";
+import { untrack } from "solid-js";
 
+// Writes read the store to validate: untracked, so a write from inside an
+// effect or memo doesn't subscribe it to the keys the checks read
 export function setConfig<T extends keyof ConfigSchemas.Config>(
+  key: T,
+  value: ConfigSchemas.Config[T],
+  options?: {
+    nosave?: boolean;
+  },
+): boolean {
+  return untrack(() => setConfigUntracked(key, value, options));
+}
+
+function setConfigUntracked<T extends keyof ConfigSchemas.Config>(
   key: T,
   value: ConfigSchemas.Config[T],
   options?: {
@@ -31,17 +44,15 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   if (metadata.overrideValue) {
     value = metadata.overrideValue({
       value,
-      currentValue: Config[key],
-      currentConfig: Config,
+      currentValue: getConfig[key],
+      currentConfig: getConfig,
     });
   }
 
-  const previousValue = Config[key];
-
   if (
-    metadata.changeRequiresRestart &&
+    changeRequiresRestart(key, getConfig) &&
     isTestActive() &&
-    Config.funbox.includes("no_quit")
+    getConfig.funbox.includes("no_quit")
   ) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
@@ -57,7 +68,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
-  if (metadata.isBlocked?.({ value, currentConfig: Config })) {
+  if (metadata.isBlocked?.({ value, currentConfig: getConfig })) {
     console.warn(
       `Could not set config key "${key}" with value "${JSON.stringify(
         value,
@@ -77,7 +88,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     return false;
   }
 
-  if (!canSetConfigWithCurrentFunboxes(key, value, Config.funbox)) {
+  if (!canSetConfigWithCurrentFunboxes(key, value, getConfig.funbox)) {
     if (key === "words" || key === "time") {
       showNoticeNotification("Active funboxes do not support infinite tests");
     } else {
@@ -99,7 +110,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
   if (metadata.overrideConfig) {
     const targetConfig = metadata.overrideConfig({
       value,
-      currentConfig: Config,
+      currentConfig: getConfig,
     });
 
     for (const targetKey of typedKeys(targetConfig)) {
@@ -107,7 +118,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
         targetKey
       ] as ConfigSchemas.Config[keyof typeof configMetadata];
 
-      if (Config[targetKey] === targetValue) {
+      if (getConfig[targetKey] === targetValue) {
         continue; // no need to set if the value is already the same
       }
 
@@ -120,17 +131,8 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
     }
   }
 
-  Config[key] = value;
   setConfigStore(key, value);
   if (!options?.nosave) saveToLocalStorage(key, options?.nosave);
-
-  // @ts-expect-error i can't figure this out
-  configEvent.dispatch({
-    key: key,
-    newValue: value,
-    nosave: options?.nosave ?? false,
-    previousValue: previousValue,
-  });
 
   if (metadata.triggerResize && !options?.nosave) {
     triggerResize();
@@ -138,7 +140,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   metadata.afterSet?.({
     nosave: options?.nosave ?? false,
-    currentConfig: Config,
+    currentConfig: getConfig,
   });
   return true;
 }
@@ -150,7 +152,11 @@ export function setQuoteLengthAll(nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
-  if (isTestActive() && Config.funbox.includes("no_quit")) {
+  return untrack(() => toggleFunboxUntracked(funbox, nosave));
+}
+
+function toggleFunboxUntracked(funbox: FunboxName, nosave?: boolean): boolean {
+  if (isTestActive() && getConfig.funbox.includes("no_quit")) {
     showNoticeNotification(
       "No quit funbox is active. Please finish the test.",
       {
@@ -160,7 +166,15 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
-  const funboxCheck = canSetFunboxWithConfig(funbox, Config);
+  const unsupportedReason = getConfig.funbox.includes(funbox)
+    ? undefined
+    : getFunboxUnsupportedReason(funbox);
+  if (unsupportedReason !== undefined) {
+    showNoticeNotification(unsupportedReason, { durationMs: 5000 });
+    return false;
+  }
+
+  const funboxCheck = canSetFunboxWithConfig(funbox, getConfig);
   if (!funboxCheck.ok) {
     const errorStrings = funboxCheck.errors.map(
       (e) =>
@@ -175,29 +189,17 @@ export function toggleFunbox(funbox: FunboxName, nosave?: boolean): boolean {
     return false;
   }
 
-  const previousValue = Config.funbox;
-
-  let newConfig: FunboxName[] = Config.funbox;
-
-  if (newConfig.includes(funbox)) {
-    newConfig = newConfig.filter((it) => it !== funbox);
-  } else {
-    newConfig = [...newConfig, funbox].sort();
-  }
+  const current = getConfig.funbox;
+  const newConfig: FunboxName[] = current.includes(funbox)
+    ? current.filter((it) => it !== funbox)
+    : [...current, funbox].sort();
 
   if (!isConfigValueValid("funbox", newConfig, ConfigSchemas.FunboxSchema)) {
     return false;
   }
 
-  Config.funbox = newConfig;
   setConfigStore("funbox", newConfig);
   saveToLocalStorage("funbox", nosave);
-  configEvent.dispatch({
-    key: "funbox",
-    newValue: Config.funbox,
-    nosave,
-    previousValue,
-  });
 
   return true;
 }

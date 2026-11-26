@@ -1,7 +1,8 @@
 import { isCapsLockOn } from "@leonabcd123/modern-caps-lock";
 import { showErrorNotification } from "../states/notifications";
 
-import { __nonReactive } from "../states/test";
+import { loadInputLayout } from "../states/test";
+import { getLayoutKeyCodesInOrder } from "../utils/layout-key-codes";
 
 let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
@@ -31,169 +32,13 @@ export async function getCharFromEvent(
 
   let layout;
   try {
-    layout = await __nonReactive.getInputLayout();
+    layout = await loadInputLayout();
   } catch (e) {
     showErrorNotification("Failed to emulate event", { error: e });
     return null;
   }
 
-  let keyEventCodes: string[] = [];
-
-  if (layout.type === "ansi") {
-    keyEventCodes = [
-      "Backquote",
-      "Digit1",
-      "Digit2",
-      "Digit3",
-      "Digit4",
-      "Digit5",
-      "Digit6",
-      "Digit7",
-      "Digit8",
-      "Digit9",
-      "Digit0",
-      "Minus",
-      "Equal",
-      "KeyQ",
-      "KeyW",
-      "KeyE",
-      "KeyR",
-      "KeyT",
-      "KeyY",
-      "KeyU",
-      "KeyI",
-      "KeyO",
-      "KeyP",
-      "BracketLeft",
-      "BracketRight",
-      "Backslash",
-      "KeyA",
-      "KeyS",
-      "KeyD",
-      "KeyF",
-      "KeyG",
-      "KeyH",
-      "KeyJ",
-      "KeyK",
-      "KeyL",
-      "Semicolon",
-      "Quote",
-      "KeyZ",
-      "KeyX",
-      "KeyC",
-      "KeyV",
-      "KeyB",
-      "KeyN",
-      "KeyM",
-      "Comma",
-      "Period",
-      "Slash",
-      "Space",
-    ];
-  } else if (layout.type === "iso") {
-    keyEventCodes = [
-      "Backquote",
-      "Digit1",
-      "Digit2",
-      "Digit3",
-      "Digit4",
-      "Digit5",
-      "Digit6",
-      "Digit7",
-      "Digit8",
-      "Digit9",
-      "Digit0",
-      "Minus",
-      "Equal",
-      "KeyQ",
-      "KeyW",
-      "KeyE",
-      "KeyR",
-      "KeyT",
-      "KeyY",
-      "KeyU",
-      "KeyI",
-      "KeyO",
-      "KeyP",
-      "BracketLeft",
-      "BracketRight",
-      "KeyA",
-      "KeyS",
-      "KeyD",
-      "KeyF",
-      "KeyG",
-      "KeyH",
-      "KeyJ",
-      "KeyK",
-      "KeyL",
-      "Semicolon",
-      "Quote",
-      "Backslash",
-      "IntlBackslash",
-      "KeyZ",
-      "KeyX",
-      "KeyC",
-      "KeyV",
-      "KeyB",
-      "KeyN",
-      "KeyM",
-      "Comma",
-      "Period",
-      "Slash",
-      "Space",
-    ];
-  } else if (layout.type === "matrix") {
-    keyEventCodes = [
-      "Backquote",
-      "Digit1",
-      "Digit2",
-      "Digit3",
-      "Digit4",
-      "Digit5",
-      "Digit6",
-      "Digit7",
-      "Digit8",
-      "Digit9",
-      "Digit0",
-      "Minus",
-      "Equal",
-      "KeyQ",
-      "KeyW",
-      "KeyE",
-      "KeyR",
-      "KeyT",
-      "KeyY",
-      "KeyU",
-      "KeyI",
-      "KeyO",
-      "KeyP",
-      "BracketLeft",
-      "BracketRight",
-      "Backslash",
-      "KeyA",
-      "KeyS",
-      "KeyD",
-      "KeyF",
-      "KeyG",
-      "KeyH",
-      "KeyJ",
-      "KeyK",
-      "KeyL",
-      "Semicolon",
-      "Quote",
-      "KeyZ",
-      "KeyX",
-      "KeyC",
-      "KeyV",
-      "KeyB",
-      "KeyN",
-      "KeyM",
-      "Comma",
-      "Period",
-      "Slash",
-      "Space",
-    ];
-  }
+  const keyEventCodes: string[] = getLayoutKeyCodesInOrder(layout.type);
 
   if (!keyEventCodes.includes(event.code)) {
     return null;

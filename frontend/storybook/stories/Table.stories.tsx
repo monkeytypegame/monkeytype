@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../src/ts/components/ui/table/Table";
+} from "../../src/ts/components/common/table/Table";
 
 const meta = preview.meta({
   title: "UI/Table",

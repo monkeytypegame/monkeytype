@@ -139,7 +139,7 @@ export async function swapElements(
   middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   },
-): Promise<boolean | undefined> {
+): Promise<void> {
   if (el1 === null || el2 === null) {
     return;
   }
@@ -153,7 +153,7 @@ export async function swapElements(
     if (el1.hasClass("hidden")) {
       await middleCallback();
       await callback();
-      return false;
+      return;
     }
 
     el1.show();
@@ -184,12 +184,10 @@ export async function swapElements(
     await middleCallback();
     await callback();
   }
-
-  return;
 }
 
 export function getMode2<M extends keyof PersonalBests>(
-  config: Config,
+  config: Pick<Config, "mode" | "time" | "words">,
   randomQuote: { id: number } | null,
 ): Mode2<M> {
   const mode = config.mode;
@@ -673,13 +671,6 @@ export function formatTypingStatsRatio(stats: {
       stats.completedTests
     ).toFixed(1),
   };
-}
-
-export function addToGlobal(items: Record<string, unknown>): void {
-  for (const [name, item] of Object.entries(items)) {
-    //@ts-expect-error dev
-    window[name] = item;
-  }
 }
 
 export function getTotalInlineMargin(element: HTMLElement): number {

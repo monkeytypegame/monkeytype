@@ -1,5 +1,4 @@
 import { vi } from "vitest";
-vi.mock("../../src/ts/firebase", () => ({
-  app: undefined,
-  Auth: undefined,
-}));
+// the Firebase SDK never loads; auth stays uninitialised (signed out)
+vi.mock("../../src/ts/auth/providers/firebase", () => ({}));
+vi.mock("../../src/ts/integrations/firebase-app", () => ({}));

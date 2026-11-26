@@ -1,26 +1,27 @@
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { getCustomTextIndicator } from "../../states/core";
 import * as CustomText from "../../test/custom-text";
-import { setBailedOut } from "../../states/test";
 import * as TestLogic from "../../test/test-logic";
 import { Command, CommandsSubgroup } from "../types";
 
 function canBailOut(): boolean {
   return (
-    (Config.mode === "custom" && getCustomTextIndicator()?.isLong === true) ||
-    (Config.mode === "custom" &&
+    (getConfig.mode === "custom" &&
+      getCustomTextIndicator()?.isLong === true) ||
+    (getConfig.mode === "custom" &&
       (CustomText.getLimitMode() === "word" ||
         CustomText.getLimitMode() === "section") &&
       (CustomText.getLimit().value >= 5000 ||
         CustomText.getLimit().value === 0)) ||
-    (Config.mode === "custom" &&
+    (getConfig.mode === "custom" &&
       CustomText.getLimitMode() === "time" &&
       (CustomText.getLimitValue() >= 3600 ||
         CustomText.getLimitValue() === 0)) ||
-    (Config.mode === "words" && Config.words >= 5000) ||
-    Config.words === 0 ||
-    (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
-    Config.mode === "zen"
+    (getConfig.mode === "words" && getConfig.words >= 5000) ||
+    getConfig.words === 0 ||
+    (getConfig.mode === "time" &&
+      (getConfig.time >= 3600 || getConfig.time === 0)) ||
+    getConfig.mode === "zen"
   );
 }
 
@@ -38,8 +39,7 @@ const subgroup: CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        setBailedOut(true);
-        void TestLogic.finish();
+        TestLogic.finish({ type: "bailedOut" });
       },
       available: (): boolean => {
         return canBailOut();
@@ -52,7 +52,7 @@ const commands: Command[] = [
   {
     id: "bailOut",
     display: "Bail out...",
-    icon: "fa-running",
+    fa: { icon: "fa-running" },
     subgroup,
     visible: false,
     available: (): boolean => {

@@ -2,9 +2,8 @@ import { Ads } from "@monkeytype/schemas/configs";
 import { JSXElement, onCleanup, Show } from "solid-js";
 
 import { getConfig } from "../../config/store";
-import { isResultShown } from "../../states/result";
-import { getRoutePage } from "../../states/router";
-import { getFocus } from "../../states/test";
+import { isTestPageHidingAds } from "../../states/ads";
+import { isFocusMode } from "../../states/test";
 import { cn } from "../../utils/cn";
 import { AdIcon } from "./AdIcon";
 
@@ -19,7 +18,7 @@ export const adSlotMediaQueries = [
 
 const adSlotWrappers = new Map<string, HTMLElement>();
 
-/** Callback ref for an ad slot's wrapper, so the ad controllers can find it */
+/** Callback ref for an ad slot's wrapper, so the ads integration can find it */
 export function adSlotRef(id: string): (el: HTMLElement) => void {
   return (el) => {
     adSlotWrappers.set(id, el);
@@ -75,9 +74,9 @@ export function Advertisement(props: {
 
   const slotClass = (size: AdSize): string =>
     cn(adSlotClass(size), {
-      "opacity-0": getFocus(),
-      // hidden while testing, shown again on the result
-      "hidden!": getRoutePage() === "test" && !isResultShown(),
+      "opacity-0": isFocusMode(),
+      // hidden while the test page shows a test, shown again on the result
+      "hidden!": isTestPageHidingAds(),
     });
 
   const horizontal = () => (

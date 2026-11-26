@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { Language } from "@monkeytype/schemas/languages";
 import Ape from "../ape";
-import { Quote } from "../controllers/quotes-controller";
+import { Quote } from "../constants/quotes";
 import { showErrorNotification } from "./notifications";
 import { showModal } from "./modals";
 import { isSafeNumber } from "@monkeytype/util/numbers";
@@ -40,7 +40,7 @@ export function getRatingAverage(stats: QuoteStats): number {
 export async function getQuoteStats(
   quote?: Quote,
 ): Promise<QuoteStats | undefined> {
-  if (!quote) return;
+  if (!quote) return undefined;
 
   setSelectedQuote(quote);
   const response = await Ape.quotes.getRating({
@@ -48,11 +48,11 @@ export async function getQuoteStats(
   });
 
   // a newer request replaced this one
-  if (selectedQuote() !== quote) return;
+  if (selectedQuote() !== quote) return undefined;
 
   if (response.status !== 200) {
     showErrorNotification("Failed to get quote ratings", { response });
-    return;
+    return undefined;
   }
 
   if (response.body.data === null) {

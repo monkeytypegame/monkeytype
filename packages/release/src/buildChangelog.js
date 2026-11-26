@@ -119,11 +119,20 @@ function buildItems(items, mergeTypeAndScope = false) {
   return ret;
 }
 
+/**
+ * Not visible to users, so listed under nerd stuff: marked with !nuf in the
+ * body, or scoped to dev tooling.
+ */
+function isNerdStuff(item) {
+  if (item.body.includes("!nuf")) return true;
+  return item.scope === "dev";
+}
+
 function buildSection(type, allItems) {
   let ret = `### ${titles[type]}\n\n`;
 
   const items = allItems.filter(
-    (item) => item.type === type && !item.body.includes("!nuf"),
+    (item) => item.type === type && !isNerdStuff(item),
   );
 
   if (items.length === 0) {
@@ -138,13 +147,13 @@ function buildFooter(logs) {
     "\n### Nerd stuff\n\nThese changes will not be visible to users, but are included for completeness and to credit contributors.\n\n";
 
   const featLogs = logs.filter(
-    (item) => item.type === "feat" && item.body.includes("!nuf"),
+    (item) => item.type === "feat" && isNerdStuff(item),
   );
   const imprLogs = logs.filter(
-    (item) => item.type === "impr" && item.body.includes("!nuf"),
+    (item) => item.type === "impr" && isNerdStuff(item),
   );
   const fixLogs = logs.filter(
-    (item) => item.type === "fix" && item.body.includes("!nuf"),
+    (item) => item.type === "fix" && isNerdStuff(item),
   );
   const styleLogs = logs.filter((item) => item.type === "style");
   const docLogs = logs.filter((item) => item.type === "docs");

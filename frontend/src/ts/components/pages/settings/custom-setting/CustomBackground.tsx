@@ -17,9 +17,9 @@ import FileStorage from "../../../../utils/file-storage";
 import { getOptions } from "../../../../utils/zod";
 import { Button } from "../../../common/Button";
 import { Fa } from "../../../common/Fa";
+import { InputField } from "../../../common/form/InputField";
+import { fromSchema } from "../../../common/form/utils";
 import { Separator } from "../../../common/Separator";
-import { InputField } from "../../../ui/form/InputField";
-import { fromSchema } from "../../../ui/form/utils";
 import { SearchableSetting } from "../SearchableSetting";
 
 export function CustomBackground(): JSXElement {
@@ -138,14 +138,12 @@ export function CustomBackground(): JSXElement {
                   name="customBackground"
                   validators={{
                     onChange: fromSchema(CustomBackgroundSchema),
-                    onBlur: () => {
-                      void form.handleSubmit();
-                    },
                   }}
                   children={(field) => (
                     <div class="relative">
                       <InputField
                         field={field}
+                        submitOnBlur
                         placeholder={"image url"}
                         type="text"
                       />

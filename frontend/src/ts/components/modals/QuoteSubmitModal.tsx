@@ -4,7 +4,7 @@ import { createForm } from "@tanstack/solid-form";
 import { JSXElement } from "solid-js";
 
 import Ape from "../../ape";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import { LanguageGroupNames } from "../../constants/languages";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModalAndClearChain } from "../../states/modals";
@@ -15,17 +15,17 @@ import {
 } from "../../states/notifications";
 import { removeLanguageSize } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Captcha } from "../ui/form/Captcha";
-import { InputField } from "../ui/form/InputField";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
+import { Captcha } from "../common/form/Captcha";
+import { InputField } from "../common/form/InputField";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
 import {
   allFieldsMandatory,
   fieldMandatory,
   fromSchema,
-} from "../ui/form/utils";
-import SlimSelect from "../ui/SlimSelect";
+} from "../common/form/utils";
+import SlimSelect from "../common/SlimSelect";
 
 export function QuoteSubmitModal(): JSXElement {
   const languageOptions = LanguageGroupNames.filter(
@@ -35,7 +35,7 @@ export function QuoteSubmitModal(): JSXElement {
     text: g.replace(/_/g, " "),
   }));
 
-  const language = removeLanguageSize(Config.language) as string;
+  const language = removeLanguageSize(getConfig.language) as string;
 
   const form = createForm(() => ({
     defaultValues: {
@@ -78,7 +78,7 @@ export function QuoteSubmitModal(): JSXElement {
       defaultValues: {
         text: "",
         source: "",
-        language: removeLanguageSize(Config.language),
+        language: removeLanguageSize(getConfig.language),
         captcha: "",
       },
     });

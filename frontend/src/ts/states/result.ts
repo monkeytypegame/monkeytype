@@ -1,13 +1,12 @@
-import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { z } from "zod";
 
-import type { Quote } from "../controllers/quotes-controller";
-import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import type { Quote } from "../constants/quotes";
+import { createLocalStorageSignal } from "../hooks/createLocalStorageSignal";
 import { showSuccessNotification } from "./notifications";
 
 /**
- * State of the result screen that can't be derived from getLastResult() / getLastEventLog().
+ * State of the result screen that can't be derived from getResultData().
  * The test engine (test/test-logic) is still vanilla and writes here.
  */
 
@@ -45,8 +44,6 @@ type ResultState = {
   // id of the saved result, empty until the server accepts it
   resultId: string;
   dailyLeaderboardRank?: number;
-  canRetrySaving: boolean;
-  timeToday: string;
   crown: {
     visible: boolean;
     type: CrownType;
@@ -59,8 +56,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
   details: null,
   tags: [],
   resultId: "",
-  canRetrySaving: false,
-  timeToday: "",
   crown: {
     visible: false,
     type: "normal",
@@ -68,10 +63,6 @@ export const [resultState, setResultState] = createStore<ResultState>({
     wide: false,
   },
 });
-
-// visibility of the #result element, set once the result is built. Fade in/out
-// is still animated imperatively. Whether the test has ended: isTestFinished()
-export const [isResultShown, setResultShown] = createSignal(false);
 
 export function showCrown(type: CrownType, text = "", wide = false): void {
   setResultState("crown", { visible: true, type, text, wide });
@@ -104,28 +95,12 @@ export function setResultTagsAfterEdit(
 // smoothed burst (chart)
 
 // not part of the config schema on purpose - this is a local only preference
-const smoothedBurstLS = new LocalStorageWithSchema({
-  key: "smoothedBurst",
-  schema: z.boolean(),
-  fallback: true,
-});
-
-const [smoothedBurst, setSignal] = createSignal(smoothedBurstLS.get());
-
-export function getSmoothedBurst(): boolean {
-  return smoothedBurst();
-}
-
-export function setSmoothedBurst(value: boolean): void {
-  if (smoothedBurstLS.set(value)) {
-    setSignal(value);
-  }
-}
-
-export function resetSmoothedBurst(): void {
-  smoothedBurstLS.remove();
-  setSignal(smoothedBurstLS.get());
-}
+export const [getSmoothedBurst, setSmoothedBurst, resetSmoothedBurst] =
+  createLocalStorageSignal({
+    key: "smoothedBurst",
+    schema: z.boolean(),
+    fallback: true,
+  });
 
 // dev helper, exposed on window
 export function toggleSmoothedBurst(): void {

@@ -12,7 +12,7 @@ import { capitalizeFirstLetter } from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
-import { Checkbox } from "../ui/form/Checkbox";
+import { Checkbox } from "../common/form/Checkbox";
 
 export function ShareTestSettings(): JSXElement {
   const form = createForm(() => ({
@@ -28,7 +28,7 @@ export function ShareTestSettings(): JSXElement {
     },
   }));
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   const url = () => {
     const values = formValues();
@@ -40,7 +40,7 @@ export function ShareTestSettings(): JSXElement {
       numbers: values.numbers ? getConfig.numbers : undefined,
       language: values.language ? getConfig.language : undefined,
       difficulty: values.difficulty ? getConfig.difficulty : undefined,
-      funbox: values.funbox ? getConfig.funbox : undefined,
+      funbox: values.funbox ? [...getConfig.funbox] : undefined,
     });
   };
 

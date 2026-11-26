@@ -24,12 +24,12 @@ import * as JSONData from "../../utils/json-data";
 import * as Misc from "../../utils/misc";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { Checkbox } from "../common/form/Checkbox";
+import { InputField } from "../common/form/InputField";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
 import { Separator } from "../common/Separator";
-import { Checkbox } from "../ui/form/Checkbox";
-import { InputField } from "../ui/form/InputField";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import SlimSelect from "../ui/SlimSelect";
+import SlimSelect from "../common/SlimSelect";
 
 type CustomTextIncomingData =
   | ({ set?: boolean; long?: boolean } & (
@@ -226,14 +226,14 @@ export function WordFilterModal(props: {
     },
   }));
 
-  const isExactMatch = form.useStore((s) => s.values.exactMatch);
+  const isExactMatch = form.useSelector((s) => s.values.exactMatch);
 
   const [languageWords] = createResource(language, async (lang) => {
     const { data } = await tryCatch(JSONData.getLanguage(lang as Language));
     return data?.words ?? null;
   });
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   // debounce the preview so it doesn't refilter the whole word list on every keystroke
   const debouncedValues = createDebouncedSignal(formValues, 250);
@@ -321,14 +321,18 @@ export function WordFilterModal(props: {
               <LabeledField label="regex">
                 <form.Field name="regex">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>
 
               <LabeledField label="include">
                 <form.Field name="include">
-                  {(field) => <InputField field={field} />}
+                  {(field) => <InputField field={field} autocomplete="off" />}
                 </form.Field>
                 <form.Field
                   name="exactMatch"
@@ -354,7 +358,11 @@ export function WordFilterModal(props: {
               <LabeledField label="exclude">
                 <form.Field name="exclude">
                   {(field) => (
-                    <InputField field={field} disabled={isExactMatch()} />
+                    <InputField
+                      field={field}
+                      disabled={isExactMatch()}
+                      autocomplete="off"
+                    />
                   )}
                 </form.Field>
               </LabeledField>

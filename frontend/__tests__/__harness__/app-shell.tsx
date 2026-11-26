@@ -87,10 +87,13 @@ import {
 import { createSignal, For, JSXElement } from "solid-js";
 import { vi } from "vitest";
 
+import type { AuthState } from "../../src/ts/auth/state";
+import type { UserDataLoadState } from "../../src/ts/session-data";
+
 import { blockingDownloadOptions } from "../../src/ts/collections/utils/blocking-download";
 import { __testing as configTesting } from "../../src/ts/config/testing";
-import { getDefaultSnapshot } from "../../src/ts/constants/default-snapshot";
-import { setSnapshot } from "../../src/ts/db";
+import { getDefaultUserData } from "../../src/ts/constants/user-data";
+import { __testing as userTesting } from "../../src/ts/queries/user";
 import {
   AppRouter,
   createAppRouter,
@@ -99,18 +102,16 @@ import {
 import {
   createRouterAuth,
   type RouterAuth,
-  type UserDataDownload,
 } from "../../src/ts/router/create-router-auth";
 import { setRouter } from "../../src/ts/router/instance";
 import { resetLoadingBar } from "../../src/ts/router/loading-bar";
 import { isLoadingBarShown } from "../../src/ts/states/loading-page";
+import { canStartTest } from "../../src/ts/states/router";
 import {
   isTestActive,
-  setIsTestRestarting,
-  setResultCalculating,
-  setTestActive,
-} from "../../src/ts/states/test";
-import { canStartTest } from "../../src/ts/test/test-page-state";
+  setResultData,
+  setTestPhase,
+} from "../../src/ts/test/engine/state";
 
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
@@ -306,9 +307,9 @@ vi.mock("../../src/ts/components/pages/test/TestPage", stubPage("TestPage"));
 // Leaving the test page just ends the test here: tests start a test (app.test),
 // then check whether it is still running
 vi.mock("../../src/ts/test/test-logic", async () => {
-  const { setTestActive } = await import("../../src/ts/states/test");
+  const { setTestPhase } = await import("../../src/ts/test/engine/state");
   return {
-    leaveTestPage: () => setTestActive(false),
+    leaveTestPage: () => setTestPhase("idle"),
     // the debug handle exposes it
     restartTest: () => undefined,
   };
@@ -332,33 +333,63 @@ export function createFakeAuth(
   initial: FakeAuthState,
   options: { available?: boolean } = {},
 ): FakeAuth {
-  let isSignedIn = initial === "signedIn";
+  const [authState, setAuthState] = createSignal<AuthState>(
+    initial === "pending" ? "unknown" : initial,
+  );
+  const [loadState, setLoadState] = createSignal<UserDataLoadState>({
+    status: "idle",
+  });
+  let download: (() => Promise<void>) | undefined;
+  let lastLoad = 0;
+
+  // like the app's load: a load a newer one (or signing out) overtook doesn't set the state
+  async function load(): Promise<void> {
+    if (download === undefined) return;
+    const id = ++lastLoad;
+    setLoadState({ status: "loading" });
+    try {
+      await download();
+      if (id === lastLoad) setLoadState({ status: "loaded" });
+    } catch (error) {
+      if (id === lastLoad) setLoadState({ status: "failed", error });
+    }
+  }
+
   const auth = createRouterAuth({
     isAvailable: () => options.available ?? true,
-    isSignedIn: () => isSignedIn,
+    authState,
+    userDataLoadState: loadState,
+    reloadUserData: load,
+    signOut: () => setSignedIn(false),
   });
-  if (initial !== "pending") auth.stateChanged();
 
-  function setSignedIn(signedIn: boolean, userData?: UserDataDownload): void {
-    isSignedIn = signedIn;
+  function setSignedIn(
+    signedIn: boolean,
+    userData?: () => Promise<void>,
+  ): void {
     // the account route checks the user data downloaded
-    setSnapshot(signedIn ? getDefaultSnapshot() : undefined, {
-      dispatchEvent: false,
-    });
-    auth.stateChanged(userData);
+    userTesting.setUser(signedIn ? getDefaultUserData() : undefined);
+    download = userData;
+    if (userData === undefined) {
+      lastLoad++;
+      setLoadState({ status: "idle" });
+    } else {
+      void load();
+    }
+    setAuthState(signedIn ? "signedIn" : "signedOut");
   }
 
   return {
     ...auth,
     signIn: (signInOptions) => {
-      const download = signInOptions?.userData;
+      const userData = signInOptions?.userData;
       setSignedIn(
         true,
-        download === undefined
+        userData === undefined
           ? undefined
-          : typeof download === "function"
-            ? { download: download(), redownload: download }
-            : { download, redownload: async () => download },
+          : typeof userData === "function"
+            ? userData
+            : async () => userData,
       );
     },
     signOut: () => setSignedIn(false),
@@ -520,25 +551,31 @@ export type TestControls = {
   type: () => void;
   isRunning: () => boolean;
   setRestarting: (restarting: boolean) => void;
-  setResultCalculating: (calculating: boolean) => void;
+  /** Finished, the result not built yet. */
+  setResultPending: (pending: boolean) => void;
   /** Activates the no quit funbox. */
   enableNoQuit: () => void;
 };
 
 const testControls: TestControls = {
-  start: () => setTestActive(true),
+  start: () => setTestPhase("active"),
   // like the test's startTest
   type: () => {
-    if (canStartTest()) setTestActive(true);
+    if (canStartTest()) setTestPhase("active");
   },
   isRunning: () => isTestActive(),
-  setRestarting: (restarting) => setIsTestRestarting(restarting),
-  setResultCalculating: (calculating) => setResultCalculating(calculating),
+  setRestarting: (restarting) =>
+    setTestPhase(restarting ? "restarting" : "idle"),
+  setResultPending: (pending) => {
+    setResultData(null);
+    setTestPhase(pending ? "finished" : "idle");
+  },
   enableNoQuit: () => configTesting.replaceConfig({ funbox: ["no_quit"] }),
 };
 
-// stops the browser history listening to window popstate (see cleanupApp)
-let destroyHistory: (() => void) | undefined;
+// stops the browser history listening to window popstate, and the router's
+// listeners (see cleanupApp)
+let destroyRouter: (() => void) | undefined;
 
 function createHistory(options: RenderAppOptions): RouterHistory {
   const url = options.url ?? "/";
@@ -568,9 +605,9 @@ export function renderApp(options: RenderAppOptions = {}): App {
   blockingData.friends.collection = createDownloadCollection("friends");
   blockingData.friendsRefresh.set(options.friendsRefresh !== "pending");
   // the account route checks the user data downloaded
-  setSnapshot(options.auth === "signedIn" ? getDefaultSnapshot() : undefined, {
-    dispatchEvent: false,
-  });
+  userTesting.setUser(
+    options.auth === "signedIn" ? getDefaultUserData() : undefined,
+  );
   for (const [name, content] of Object.entries(options.pageContent ?? {})) {
     pageContent.set(name, content);
   }
@@ -581,7 +618,12 @@ export function renderApp(options: RenderAppOptions = {}): App {
     { auth, queryClient },
     { history: createHistory(options) },
   );
-  destroyHistory = () => router.history.destroy();
+  destroyRouter = () => {
+    router.history.destroy();
+    // a load still running fires onLoad later, and finishing the loading bar
+    // (module state) would hide the next test's bar
+    router.subscribers.clear();
+  };
   // vanilla modules and router state memos read the router through this holder
   setRouter(router);
 
@@ -683,8 +725,10 @@ export function renderApp(options: RenderAppOptions = {}): App {
       const page = container.querySelector("#pageLoading");
       const fill = page?.querySelector<HTMLElement>(".bg-main");
       const bar = fill?.parentElement;
-      if (page === null || fill === null || fill === undefined) return;
-      if (bar === null || bar === undefined) return;
+      if (page === null || fill === null || fill === undefined) {
+        return undefined;
+      }
+      if (bar === null || bar === undefined) return undefined;
       if (bar.classList.contains("hidden")) return undefined;
       return {
         width: fill.style.width,
@@ -695,10 +739,11 @@ export function renderApp(options: RenderAppOptions = {}): App {
       const page = container.querySelector("#pageLoading");
       if (page === null) return undefined;
       // the spinner, error icon and bar are toggled, never removed
-      const isShown = (icon: string): boolean =>
-        page.querySelector(icon)?.closest(".hidden") === null;
+      const isShown = (selector: string): boolean =>
+        page.querySelector(selector)?.closest(".hidden") === null;
       if (isShown(".fa-circle-notch")) return "spinner";
-      if (isShown(".fa-times")) return "error";
+      // its icon varies (a step can set its own)
+      if (isShown(".text-error i")) return "error";
       return "bar";
     },
     test: testControls,
@@ -712,18 +757,16 @@ export function renderApp(options: RenderAppOptions = {}): App {
 /** Unmounts the app and resets shared state. Call in afterEach. */
 export function cleanupApp(): void {
   cleanup();
-  destroyHistory?.();
-  destroyHistory = undefined;
+  destroyRouter?.();
+  destroyRouter = undefined;
   pageMounts.length = 0;
   pageContent.clear();
   setRouter(undefined);
   setPreloading(true);
   resetLoadingBar();
-  setTestActive(false);
-  setIsTestRestarting(false);
-  setResultCalculating(false);
+  setTestPhase("idle");
   configTesting.replaceConfig({});
-  setSnapshot(undefined, { dispatchEvent: false });
+  userTesting.setUser(undefined);
   for (const name of ["results", "friends"] as const) {
     void blockingData[name].collection?.cleanup();
     blockingData[name].collection = undefined;

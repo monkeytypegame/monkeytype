@@ -5,12 +5,12 @@ import { hideModal } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { InputField } from "../common/form/InputField";
+import { LabeledField } from "../common/form/LabeledField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
 import { Separator } from "../common/Separator";
-import { InputField } from "../ui/form/InputField";
-import { LabeledField } from "../ui/form/LabeledField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import SlimSelect from "../ui/SlimSelect";
+import SlimSelect from "../common/SlimSelect";
 
 type CustomTextIncomingData =
   | ({ set?: boolean; long?: boolean } & (

@@ -1,5 +1,5 @@
 import type { RegisteredRouter } from "@tanstack/solid-router";
-import { createMemo, createRoot } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 
 import { getRouter } from "../router/instance";
 import type { PageName } from "../router/routes";
@@ -26,19 +26,26 @@ export const getRoutePage = createRoot(() =>
 );
 
 /**
+ * The page whose element is in the document (one at a time, see
+ * PageSwitcher), set by the page wrapper once it is attached. Unlike the
+ * route page it stays while the page fades out, after the page unmounted.
+ * Starts on the loading page, the first page shown.
+ */
+export const [getVisiblePage, setVisiblePage] =
+  createSignal<PageName>("loading");
+
+/**
  * Whether the router shows a pending route: on first load, and once a
  * navigation took longer than its pendingMs. Not for an unknown url, whose
- * routes stay pending behind the 404 page.
+ * routes stay pending behind the 404 page, nor for a failed route, whose
+ * child routes stay pending behind its error (eg. the test page behind a
+ * failed user data load on first load).
  */
 export function isPendingShown(): boolean {
   const matches = getMatches();
   if (isNotFound(matches)) return false;
+  if (matches.some((match) => match.status === "error")) return false;
   return matches.some((match) => match.status === "pending");
-}
-
-/** Whether the first route has not resolved yet. Reactive. */
-export function isInitialLoad(): boolean {
-  return getRouter()?.state.resolvedLocation === undefined;
 }
 
 /**
@@ -59,4 +66,13 @@ export function isLeavingPage(): boolean {
   const state = getRouter()?.state;
   if (state?.status !== "pending") return false;
   return state.location.pathname !== state.resolvedLocation?.pathname;
+}
+
+/**
+ * Whether typing may start a test: the test page is shown, and no
+ * navigation is leaving it (eg. typing while it fades out). A reload in
+ * place (eg. signing in) doesn't stop it.
+ */
+export function canStartTest(): boolean {
+  return getRoutePage() === "test" && !isLeavingPage();
 }

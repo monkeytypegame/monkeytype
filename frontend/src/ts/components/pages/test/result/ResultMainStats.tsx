@@ -1,12 +1,16 @@
 import { createMemo, JSXElement } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
-import { getFormatting } from "../../../../states/core";
 import { CrownType, resultState } from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
-import { getAccuracy } from "../../../../test/events/stats";
-import { EventLog } from "../../../../test/events/types";
+import { getAccuracy } from "../../../../test/engine/events/stats";
+import { EventLog } from "../../../../test/engine/events/types";
 import { cn } from "../../../../utils/cn";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatTypingSpeed,
+} from "../../../../utils/format";
 import { AnimeShow } from "../../../common/anime";
 import { Balloon } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
@@ -18,12 +22,11 @@ type Props = {
 };
 
 export function ResultMainStats(props: Props): JSXElement {
-  const format = () => getFormatting();
   const decimals = () => getConfig.alwaysShowDecimalPlaces;
   const unit = () => getConfig.typingSpeedUnit;
 
   const speedText = (wpm: number): string =>
-    wpm >= 1000 ? "Infinite" : format().typingSpeed(wpm);
+    wpm >= 1000 ? "Infinite" : formatTypingSpeed(wpm);
 
   const accCounts = createMemo(() => getAccuracy(props.eventLog));
 
@@ -34,7 +37,7 @@ export function ResultMainStats(props: Props): JSXElement {
     const acc =
       props.result.acc === 100
         ? "100%"
-        : format().percentage(props.result.acc, { showDecimalPlaces: true });
+        : formatPercentage(props.result.acc, { showDecimalPlaces: true });
     return `${acc}\n${countsText}`;
   };
 
@@ -67,9 +70,7 @@ export function ResultMainStats(props: Props): JSXElement {
           text={accBalloon()}
           break
         >
-          {props.result.acc === 100
-            ? "100%"
-            : format().accuracy(props.result.acc)}
+          {props.result.acc === 100 ? "100%" : formatAccuracy(props.result.acc)}
         </Balloon>
       </div>
     </div>

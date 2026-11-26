@@ -1,9 +1,7 @@
 import { StreakHourOffsetSchema } from "@monkeytype/schemas/users";
 import { createForm } from "@tanstack/solid-form";
 
-import Ape from "../../ape";
-import { Snapshot } from "../../constants/default-snapshot";
-import { getSnapshot, setSnapshot } from "../../db";
+import { setStreakHourOffset } from "../../queries/user";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
 import {
@@ -13,9 +11,9 @@ import {
 } from "../../states/notifications";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { allFieldsMandatory, fromSchema } from "../ui/form/utils";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { allFieldsMandatory, fromSchema } from "../common/form/utils";
 
 export function StreakHourOffsetModal() {
   const form = createForm(() => ({
@@ -34,21 +32,14 @@ export function StreakHourOffsetModal() {
 
       showLoaderBar();
 
-      const response = await Ape.users.setStreakHourOffset({
-        body: { hourOffset },
-      });
+      const { error } = await setStreakHourOffset(hourOffset);
       hideLoaderBar();
-
-      if (response.status !== 200) {
-        showErrorNotification("Failed to set streak hour offset", { response });
+      if (error !== null) {
+        showErrorNotification("Failed to set streak hour offset", { error });
         hideModal("StreakHourOffset");
         return;
       }
       showSuccessNotification("Streak hour offset set");
-      const snap = getSnapshot() as Snapshot;
-
-      snap.streakHourOffset = hourOffset;
-      setSnapshot(snap);
       hideModal("StreakHourOffset");
     },
   }));

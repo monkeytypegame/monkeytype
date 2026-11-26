@@ -1,7 +1,8 @@
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { createEffect, createSignal, For } from "solid-js";
 
 import { updateTags } from "../../collections/results";
-import { useTagsLiveQuery } from "../../collections/tags";
+import { getTags } from "../../queries/tags";
 import { getSelectedResult } from "../../states/edit-result-tags";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
 import { hideModal } from "../../states/modals";
@@ -10,7 +11,6 @@ import {
   showSuccessNotification,
 } from "../../states/notifications";
 import { setResultTagsAfterEdit } from "../../states/result";
-import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { createErrorMessage } from "../../utils/error";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
@@ -20,11 +20,9 @@ export function EditResultTagsModal() {
     new Set([]),
   );
 
-  const tags = useTagsLiveQuery();
-
   createEffect(() => {
     const resultTags = getSelectedResult()?.tags ?? [];
-    const knownTagIds = new Set(tags().map((tag) => tag._id));
+    const knownTagIds = new Set(getTags().map((tag) => tag._id));
     const filtered = resultTags.filter((id) => knownTagIds.has(id));
     setSelectedTagIds(new Set(filtered));
   });
@@ -36,7 +34,7 @@ export function EditResultTagsModal() {
       modalClass="max-w-xl"
     >
       <div class="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-2">
-        <For each={tags()}>
+        <For each={getTags()}>
           {(tag) => (
             <Button
               text={tag.name}

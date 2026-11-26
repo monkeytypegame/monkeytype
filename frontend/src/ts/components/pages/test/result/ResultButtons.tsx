@@ -1,10 +1,13 @@
 import { createKeyHold } from "@tanstack/solid-hotkeys";
-import { JSXElement, onMount, Show } from "solid-js";
+import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../../config/store";
+import { navigate } from "../../../../router/navigate";
 import { getIsScreenshotting } from "../../../../states/core";
+import { showEventLogInViewer } from "../../../../states/event-log-viewer";
 import { showModal } from "../../../../states/modals";
 import { showNoticeNotification } from "../../../../states/notifications";
+import { getResultData } from "../../../../test/engine/state";
 import {
   captureAndCopyToClipboard,
   captureAndDownload,
@@ -19,83 +22,83 @@ import { toggleReplayDisplay } from "./replay";
 
 export function ResultButtons(props: { glarses: boolean }): JSXElement {
   const isShiftHeld = createKeyHold("Shift");
-  let prefocusRef: HTMLDivElement | undefined;
-
-  onMount(() => prefocusRef?.focus({ preventScroll: true }));
 
   return (
-    <>
-      <div
-        ref={(el) => (prefocusRef = el)}
-        class="focus:outline-none focus-visible:outline-none"
-        tabIndex="-1"
-      ></div>
-      <div
-        class={cn(
-          "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
-          getIsScreenshotting() && "hidden",
-        )}
-      >
+    <div
+      class={cn(
+        "grid grid-flow-col justify-center gap-4 max-sm:grid-flow-row max-sm:grid-cols-2 md:col-span-2",
+        getIsScreenshotting() && "hidden",
+      )}
+    >
+      <ResultButton
+        data-ui-element="restartTestButton"
+        class="max-sm:col-span-2"
+        text="Next test"
+        fa={{ icon: "fa-chevron-right" }}
+        onClick={() => void restartTest()}
+      />
+      <ResultButton
+        data-ui-element="restartTestButtonWithSameWordset"
+        text="Repeat test"
+        fa={{ icon: "fa-sync-alt" }}
+        onClick={repeatTest}
+      />
+      <ResultButton
+        id="practiseWordsButton"
+        text="Practice words"
+        fa={{ icon: "fa-exclamation-triangle" }}
+        onClick={() => {
+          if (getConfig.mode === "zen") {
+            showNoticeNotification("Practice words is unsupported in zen mode");
+            return;
+          }
+          showModal("PractiseWords");
+        }}
+      />
+      <Show when={!props.glarses}>
         <ResultButton
-          data-ui-element="restartTestButton"
+          id="showWordHistoryButton"
+          text="Toggle words history"
+          fa={{ icon: "fa-align-left" }}
+          onClick={() => toggleResultWords()}
+        />
+        <ResultButton
+          id="watchReplayButton"
+          text="Watch replay"
+          fa={{ icon: "fa-backward" }}
+          onClick={toggleReplayDisplay}
+        />
+        <ResultButton
+          id="saveScreenshotButton"
           class="max-sm:col-span-2"
-          text="Next test"
-          fa={{ icon: "fa-chevron-right" }}
-          onClick={() => void restartTest()}
-        />
-        <ResultButton
-          data-ui-element="restartTestButtonWithSameWordset"
-          text="Repeat test"
-          fa={{ icon: "fa-sync-alt" }}
-          onClick={repeatTest}
-        />
-        <ResultButton
-          id="practiseWordsButton"
-          text="Practice words"
-          fa={{ icon: "fa-exclamation-triangle" }}
-          onClick={() => {
-            if (getConfig.mode === "zen") {
-              showNoticeNotification(
-                "Practice words is unsupported in zen mode",
-              );
-              return;
+          text={"Copy screenshot to clipboard\n(shift click to download)"}
+          fa={
+            isShiftHeld()
+              ? { icon: "fa-download" }
+              : { icon: "fa-image", variant: "regular" }
+          }
+          onClick={(event) => {
+            if (event.shiftKey) {
+              void captureAndDownload();
+            } else {
+              void captureAndCopyToClipboard();
             }
-            showModal("PractiseWords");
           }}
         />
-        <Show when={!props.glarses}>
-          <ResultButton
-            id="showWordHistoryButton"
-            text="Toggle words history"
-            fa={{ icon: "fa-align-left" }}
-            onClick={() => toggleResultWords()}
-          />
-          <ResultButton
-            id="watchReplayButton"
-            text="Watch replay"
-            fa={{ icon: "fa-backward" }}
-            onClick={toggleReplayDisplay}
-          />
-          <ResultButton
-            id="saveScreenshotButton"
-            class="max-sm:col-span-2"
-            text={"Copy screenshot to clipboard\n(shift click to download)"}
-            fa={
-              isShiftHeld()
-                ? { icon: "fa-download" }
-                : { icon: "fa-image", variant: "regular" }
-            }
-            onClick={(event) => {
-              if (event.shiftKey) {
-                void captureAndDownload();
-              } else {
-                void captureAndCopyToClipboard();
-              }
-            }}
-          />
-        </Show>
-      </div>
-    </>
+      </Show>
+      <Show when={import.meta.env.DEV}>
+        <ResultButton
+          text="View in event log viewer (dev)"
+          fa={{ icon: "fa-vials" }}
+          onClick={() => {
+            const log = getResultData()?.eventLog;
+            if (log === undefined) return;
+            showEventLogInViewer(log);
+            void navigate({ to: "/event-log-viewer" });
+          }}
+        />
+      </Show>
+    </div>
   );
 }
 

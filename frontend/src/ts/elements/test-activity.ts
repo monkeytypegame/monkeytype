@@ -1,7 +1,12 @@
 import {
+  getCells,
+  getMonths,
+  getTotalTests,
   TestActivityCalendar,
   TestActivityMonth,
-} from "./test-activity-calendar";
+} from "../states/test-activity";
+
+// Stepping stone: replaced by a Solid activity calendar component in U2
 
 const tooltipViewportPadding = 8;
 
@@ -71,26 +76,26 @@ function positionTooltip(element: HTMLElement): void {
   element.style.setProperty("--activity-tooltip-offset", `${offset}px`);
 }
 
-export function init(
+export function initActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
   if (calendar === undefined) {
-    clear(element);
+    clearActivityCalendar(element);
     return;
   }
   element.classList.remove("hidden");
 
   updateLabels(element, calendar.firstDayOfWeek);
-  update(element, calendar);
+  updateActivityCalendar(element, calendar);
 }
 
-export function clear(element?: HTMLElement): void {
+export function clearActivityCalendar(element?: HTMLElement): void {
   element?.classList.add("hidden");
   element?.querySelector(".activity")?.replaceChildren();
 }
 
-export function update(
+export function updateActivityCalendar(
   element: HTMLElement,
   calendar?: TestActivityCalendar,
 ): void {
@@ -109,17 +114,17 @@ export function update(
     return;
   }
 
-  updateMonths(calendar.getMonths());
+  updateMonths(getMonths(calendar));
   element.querySelector(".nodata")?.classList.add("hidden");
 
   const title = element.querySelector(".title");
   {
     if (title !== null) {
-      title.innerHTML = `${calendar.getTotalTests()} tests`;
+      title.innerHTML = `${getTotalTests(calendar)} tests`;
     }
   }
 
-  for (const day of calendar.getDays()) {
+  for (const day of getCells(calendar)) {
     const elem = document.createElement("div");
     elem.setAttribute("data-level", day.level);
     if (day.label !== undefined) {

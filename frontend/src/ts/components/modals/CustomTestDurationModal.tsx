@@ -7,8 +7,8 @@ import { hideModalAndClearChain } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { restartTest } from "../../test/test-logic";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
 
 export function CustomTestDurationModal(): JSXElement {
   const form = createForm(() => ({
@@ -39,7 +39,7 @@ export function CustomTestDurationModal(): JSXElement {
     },
   }));
 
-  const durationValue = form.useStore((s) => s.values.duration);
+  const durationValue = form.useSelector((s) => s.values.duration);
 
   const humanTime = () => {
     const duration = parseInput(durationValue());
@@ -82,7 +82,12 @@ export function CustomTestDurationModal(): JSXElement {
             },
           }}
           children={(field) => (
-            <InputField field={field} type="text" placeholder="duration" />
+            <InputField
+              field={field}
+              type="text"
+              placeholder="duration"
+              autocomplete="off"
+            />
           )}
         />
         <div class="text-xs">

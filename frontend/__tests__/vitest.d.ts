@@ -1,8 +1,8 @@
 // oxlint-disable typescript/consistent-type-definitions
 import type { Assertion, AsymmetricMatchersContaining } from "vitest";
-import { TestActivityDay } from "../src/ts/elements/test-activity-calendar";
+import { TestActivityCell } from "../src/ts/states/test-activity";
 
-interface ActivityDayMatchers<R = TestActivityDay> {
+interface ActivityDayMatchers<R = TestActivityCell> {
   toBeDate: (date: string) => ActivityDayMatchers<R>;
   toHaveTests: (tests: number) => ActivityDayMatchers<R>;
   toHaveLevel: (level?: string | number) => ActivityDayMatchers<R>;

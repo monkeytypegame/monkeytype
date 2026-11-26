@@ -6,10 +6,10 @@ import { queryClient } from "../../../queries";
 import { getUserProfile } from "../../../queries/profile";
 import { navigate } from "../../../router/navigate";
 import { showNoticeNotification } from "../../../states/notifications";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { fromSchema } from "../../common/form/utils";
 import { H2 } from "../../common/Headers";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { fromSchema } from "../../ui/form/utils";
 
 export function ProfileSearchPage(): JSXElement {
   const [isEditable, setEditable] = createSignal(true);
@@ -63,7 +63,7 @@ export function ProfileSearchPage(): JSXElement {
                 onChangeAsyncDebounceMs: 1000,
                 onChangeAsync: async (field) => {
                   try {
-                    const result = await queryClient.fetchQuery(
+                    const result = await queryClient.query(
                       getUserProfile(field.value),
                     );
                     return result !== null ? undefined : "Unknown user";

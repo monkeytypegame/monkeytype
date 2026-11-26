@@ -1,3 +1,4 @@
+import { createEffect, createMemo, createRoot, on } from "solid-js";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -7,29 +8,22 @@ import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox/funbox";
 
 import { setConfig } from "../config/setters";
-import { Config } from "../config/store";
-import { configEvent } from "../events/config";
+import { getConfig } from "../config/store";
 
 import { ChallengeSettings, getChallenge } from "@monkeytype/challenges";
 import { ChallengeName } from "@monkeytype/schemas/challenges";
+import { Config as ConfigType } from "@monkeytype/schemas/configs";
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { typedKeys } from "@monkeytype/util/objects";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
-import {
-  isTestRestarting,
-  getLoadedChallenge,
-  setLoadedChallenge,
-} from "../states/test";
-import { areUnsortedArraysEqual } from "../utils/arrays";
+import { getLoadedChallenge, setLoadedChallenge } from "../states/test";
+import { TEST_SETTINGS_KEYS } from "../test/engine/test-settings";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 
 let challengeLoading = false;
 
 export function clearActive(): void {
-  if (
-    getLoadedChallenge() !== null &&
-    !challengeLoading &&
-    !isTestRestarting()
-  ) {
+  if (getLoadedChallenge() !== null && !challengeLoading) {
     showNoticeNotification("Challenge cleared");
     setLoadedChallenge(null);
   }
@@ -132,7 +126,7 @@ function verifyRequirement(
     const requirementValue = requirements.config;
     for (const configKey of typedKeys(requirementValue)) {
       const configValue = requirementValue[configKey];
-      if (Config[configKey] !== configValue) {
+      if (getConfig[configKey] !== configValue) {
         requirementsMet = false;
         failReasons.push(`${configKey} not set to ${configValue}`);
       }
@@ -360,26 +354,28 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   }
 }
 
-configEvent.subscribe(({ key }) => {
-  if (
-    [
-      "difficulty",
-      "numbers",
-      "punctuation",
-      "mode",
-      "funbox",
-      "paceCaret",
-      "showAllLines",
-      "showLiveWpm",
-      "highlightMode",
-      "time",
-      "words",
-      "keymapMode",
-      "keymapLayout",
-      "layout",
-      "fontFamily",
-    ].includes(key)
-  ) {
-    clearActive();
+// Changing a test setting, or a key the loaded challenge watches, clears it.
+// Only user writes reach these: funboxes write keys outside the test settings
+// (layout, keymap, show all lines), which challenges don't watch. Lazy mode is
+// left out: a restart writes it (a language's remembered lazy mode), which
+// would clear a challenge that just loaded.
+function clearOnChange(key: keyof ConfigType): void {
+  // serialized, so changes inside arrays (funbox, quote length) count
+  const value = createMemo(() => JSON.stringify(getConfig[key]));
+  createEffect(on(value, () => clearActive(), { defer: true }));
+}
+
+// a root so the effects are owned, they live as long as the page
+createRoot(() => {
+  for (const key of TEST_SETTINGS_KEYS) {
+    if (key !== "lazyMode") clearOnChange(key);
   }
+  // per loaded challenge, disposed when it changes
+  createEffect(
+    on(getLoadedChallenge, (challenge) => {
+      for (const key of challenge?.settings?.clearOnConfigChange ?? []) {
+        clearOnChange(key);
+      }
+    }),
+  );
 });

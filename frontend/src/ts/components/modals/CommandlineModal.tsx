@@ -1,4 +1,4 @@
-import { intersect } from "@monkeytype/util/arrays";
+import { areUnsortedArraysEqual, intersect } from "@monkeytype/util/arrays";
 import {
   For,
   JSXElement,
@@ -6,6 +6,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  on,
 } from "solid-js";
 import { debounce } from "throttle-debounce";
 
@@ -16,11 +17,9 @@ import {
   CommandsSubgroup,
   CommandWithValidation,
 } from "../../commandline/types";
-import { Config } from "../../config/store";
-import * as AnalyticsController from "../../controllers/analytics-controller";
-import * as ThemeController from "../../controllers/theme-controller";
+import { getConfig } from "../../config/store";
 import { createInputEventHandler } from "../../elements/input-validation";
-import { isInputElementFocused } from "../../input/input-element";
+import { logAnalyticsEvent } from "../../integrations/analytics";
 import {
   getCommandlineShowSettings,
   setCommandlineShowSettings,
@@ -36,11 +35,14 @@ import {
 } from "../../states/modals";
 import { showNoticeNotification } from "../../states/notifications";
 import { getRoutePage } from "../../states/router";
-import { setTestFocusState } from "../../states/test";
-import * as Focus from "../../test/focus";
+import {
+  isWordsInputFocused,
+  setFocusMode,
+  setTestFocusState,
+} from "../../states/test";
+import { clearThemePreview } from "../../theme";
 import { FaObject } from "../../types/font-awesome";
 import { ValidationResult } from "../../types/validation";
-import { areUnsortedArraysEqual } from "../../utils/arrays";
 import { cn } from "../../utils/cn";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Fa } from "../common/Fa";
@@ -58,11 +60,6 @@ const MAX_RENDERED_COMMANDS = 1000;
 
 type CommandlineMode = "search" | "input";
 
-/** `Command.icon` and `Command.iconType` are plain strings, so they need widening to the `Fa` props union. */
-function faProps(icon: string, variant?: "regular" | "solid"): FaObject {
-  return { icon, variant } as FaObject;
-}
-
 function isCommandActive(
   command: Command,
   subgroup: CommandsSubgroup,
@@ -77,17 +74,17 @@ function isCommandActive(
   }
 
   if (command.configValueMode !== "include") {
-    return Config[configKey] === command.configValue;
+    return getConfig[configKey] === command.configValue;
   }
 
   if (Array.isArray(command.configValue)) {
     return areUnsortedArraysEqual(
-      intersect(Config[configKey] as unknown[], command.configValue),
+      intersect(getConfig[configKey] as unknown[], command.configValue),
       command.configValue,
     );
   }
 
-  return (Config[configKey] as unknown[]).includes(command.configValue);
+  return (getConfig[configKey] as unknown[]).includes(command.configValue);
 }
 
 /**
@@ -117,9 +114,6 @@ function CommandIcon(props: {
       props.command.configValue !== undefined) ||
       props.command.active !== undefined);
 
-  const icon = (): string => props.command.icon ?? "";
-  const isTextIcon = (): boolean => icon() !== "" && !icon().startsWith("fa-");
-
   return (
     <Show
       when={!useConfigIcon()}
@@ -130,28 +124,11 @@ function CommandIcon(props: {
         />
       }
     >
-      <Show
-        when={isTextIcon()}
-        fallback={
-          <Fa
-            {...faProps(
-              icon() === "" ? "fa-chevron-right" : icon(),
-              props.command.iconType,
-            )}
-            fixedWidth
-            class={cn("mr-2", props.colorClass)}
-          />
-        }
-      >
-        <div
-          class={cn(
-            "mr-2 inline-block w-[1.25em] text-center font-black tracking-[-0.1rem]",
-            props.colorClass,
-          )}
-        >
-          {icon()}
-        </div>
-      </Show>
+      <Fa
+        {...(props.command.fa ?? { icon: "fa-chevron-right" })}
+        fixedWidth
+        class={cn("mr-2", props.colorClass)}
+      />
     </Show>
   );
 }
@@ -196,7 +173,7 @@ export function CommandlineModal(): JSXElement {
   const [inputPlaceholder, setInputPlaceholder] = createSignal<string | null>(
     null,
   );
-  const [inputIcon, setInputIcon] = createSignal<string | null>(null);
+  const [inputIcon, setInputIcon] = createSignal<FaObject | null>(null);
   const [warning, setWarning] = createSignal<string | null>(null);
   const [isChecking, setIsChecking] = createSignal(false);
   const [hiddenCount, setHiddenCount] = createSignal(0);
@@ -224,14 +201,14 @@ export function CommandlineModal(): JSXElement {
 
   const removeCommandlineBackground = (): void => {
     setNoBackground(true);
-    if (Config.showOutOfFocusWarning) {
+    if (getConfig.showOutOfFocusWarning) {
       setTestFocusState("focused");
     }
   };
 
   const addCommandlineBackground = (): void => {
     setNoBackground(false);
-    if (!isInputElementFocused()) {
+    if (!isWordsInputFocused()) {
       setTestFocusState("unfocused");
     }
   };
@@ -313,8 +290,8 @@ export function CommandlineModal(): JSXElement {
 
     const windowed = found.slice(offset, offset + MAX_RENDERED_COMMANDS);
 
-    // `isCommandActive` reads the non-reactive Config, so the result is pinned
-    // here rather than recomputed per row. Keeping it out of the list items
+    // `isCommandActive` reads config untracked here (refresh runs after an
+    // await), so the result is pinned here rather than recomputed per row. Keeping it out of the list items
     // leaves those referentially stable, which is what lets `<For>` reuse rows
     // instead of rebuilding every one of them on each keystroke.
     const activeIds = new Set<string>();
@@ -393,7 +370,7 @@ export function CommandlineModal(): JSXElement {
     setMode("input");
     setInputCommand(command);
     setInputPlaceholder(command.display);
-    setInputIcon(command.icon ?? "fa-chevron-right");
+    setInputIcon(command.fa ?? { icon: "fa-chevron-right" });
     validation = undefined;
     createValidationHandler(command);
     applyInputValue(command.defaultValue?.() ?? "", true);
@@ -413,7 +390,7 @@ export function CommandlineModal(): JSXElement {
 
   const clearPreviewsAndLock = (): void => {
     setFontPreview(null);
-    void ThemeController.clearPreview();
+    clearThemePreview();
     isAnimating = true;
   };
 
@@ -477,7 +454,7 @@ export function CommandlineModal(): JSXElement {
       command.exec?.({ input: inputValue() });
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     hide();
   };
 
@@ -502,7 +479,7 @@ export function CommandlineModal(): JSXElement {
 
     command.exec?.({});
 
-    if (Config.singleListCommandLine === "on") {
+    if (getConfig.singleListCommandLine === "on") {
       lastSingleListModeInputValue = inputValue();
     }
 
@@ -511,7 +488,7 @@ export function CommandlineModal(): JSXElement {
       return;
     }
 
-    void AnalyticsController.log("usedCommandLine", { command: command.id });
+    void logAnalyticsEvent("usedCommandLine", { command: command.id });
     if (command.opensModal === true) return;
 
     if (isModalOpen(MODAL_ID)) {
@@ -539,7 +516,7 @@ export function CommandlineModal(): JSXElement {
 
     if (subgroupOverride === null) {
       setUsingSingleList(
-        Config.singleListCommandLine === "on"
+        getConfig.singleListCommandLine === "on"
           ? true
           : inputValue().startsWith(">"),
       );
@@ -579,7 +556,7 @@ export function CommandlineModal(): JSXElement {
     if (e.key === "ArrowUp" || (e.ctrlKey && (key === "k" || key === "p"))) {
       // recall the last search when reopening the single list on an empty input
       if (
-        Config.singleListCommandLine === "on" &&
+        getConfig.singleListCommandLine === "on" &&
         subgroupOverride === null &&
         inputValue() === "" &&
         lastSingleListModeInputValue !== ""
@@ -662,10 +639,10 @@ export function CommandlineModal(): JSXElement {
       setUsingSingleList(false);
     } else {
       subgroupOverride = null;
-      setUsingSingleList(Config.singleListCommandLine === "on");
+      setUsingSingleList(getConfig.singleListCommandLine === "on");
     }
 
-    Focus.set(false);
+    setFocusMode(false);
     CommandlineLists.setStackToDefault();
     applyInputValue("");
     await refresh();
@@ -702,26 +679,28 @@ export function CommandlineModal(): JSXElement {
     }
   };
 
-  // theme and font previews follow the active command
-  createEffect(() => {
-    const command = activeCommand();
-    if (isAnimating) return;
+  // theme and font previews follow the active command, and only it: the hover
+  // reads config (eg. sound volume) and focus, which mustn't replay it
+  createEffect(
+    on(activeCommand, (command) => {
+      if (isAnimating) return;
 
-    setFontPreview(null);
+      setFontPreview(null);
 
-    if (
-      command !== undefined &&
-      (command.id.startsWith("changeTheme") ||
-        command.id.startsWith("setCustomThemeId"))
-    ) {
-      removeCommandlineBackground();
-    } else {
-      void ThemeController.clearPreview();
-      addCommandlineBackground();
-    }
+      if (
+        command !== undefined &&
+        (command.id.startsWith("changeTheme") ||
+          command.id.startsWith("setCustomThemeId"))
+      ) {
+        removeCommandlineBackground();
+      } else {
+        clearThemePreview();
+        addCommandlineBackground();
+      }
 
-    command?.hover?.();
-  });
+      command?.hover?.();
+    }),
+  );
 
   // keep the active command in view when navigating with the keyboard
   createEffect(() => {
@@ -779,11 +758,9 @@ export function CommandlineModal(): JSXElement {
             when={isChecking()}
             fallback={
               <Fa
-                {...faProps(
-                  mode() === "input"
-                    ? (inputIcon() ?? "fa-chevron-right")
-                    : "fa-search",
-                )}
+                {...(mode() === "input"
+                  ? (inputIcon() ?? { icon: "fa-chevron-right" })
+                  : { icon: "fa-search" })}
                 fixedWidth
                 class="col-[1/2] row-[1/2] mx-4 mt-px text-sub"
               />
@@ -799,6 +776,7 @@ export function CommandlineModal(): JSXElement {
           <input
             ref={(el) => (inputEl = el)}
             type="text"
+            autocomplete="off"
             class="w-full rounded-(--roundness) border-none bg-bg py-4 pr-4 pl-0 text-base text-text outline-none focus-visible:shadow-none"
             placeholder={placeholder()}
             onInput={handleInput}

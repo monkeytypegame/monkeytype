@@ -2,7 +2,7 @@ import { AnyFieldApi } from "@tanstack/solid-form";
 
 import preview from "#.storybook/preview";
 
-import { FieldIndicator } from "../../src/ts/components/ui/form/FieldIndicator";
+import { FieldIndicator } from "../../src/ts/components/common/form/FieldIndicator";
 
 type MetaState = {
   isTouched?: boolean;

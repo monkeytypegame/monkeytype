@@ -1,13 +1,9 @@
 import { getFunbox } from "@monkeytype/funbox";
 import { roundTo2 } from "@monkeytype/util/numbers";
 
-import {
-  __nonReactive as tagsNonReactive,
-  getLocalTagPB,
-  saveLocalTagPB,
-} from "../collections/tags";
-import * as DB from "../db";
-import Format from "../singletons/format";
+import { getActiveTags, getLocalTagPB, saveLocalTagPB } from "../queries/tags";
+import { getLocalPB } from "../queries/user";
+import { formatTypingSpeed } from "../utils/format";
 import { hideCrown, ResultTag, resultState, showCrown } from "../states/result";
 import { CompletedResult } from "../states/test";
 
@@ -51,7 +47,7 @@ export function updateCrown(
 
   console.debug("Result can get PB:", canGet.value, canGet.reason ?? "");
 
-  const localPb = DB.getLocalPB(
+  const localPb = getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation,
@@ -63,7 +59,7 @@ export function updateCrown(
   );
   const pbDiff = result.wpm - (localPb?.wpm ?? 0);
   console.debug("Local PB", localPb, "diff", pbDiff);
-  const diffText = Format.typingSpeed(pbDiff, { showDecimalPlaces: true });
+  const diffText = formatTypingSpeed(pbDiff, { showDecimalPlaces: true });
 
   if (canGet.value) {
     if (pbDiff <= 0) {
@@ -107,7 +103,7 @@ export function getResultTags(
 ): ResultTag[] {
   const pbAllowed = canGet?.value === true;
 
-  return tagsNonReactive.getActiveTags().map((tag) => {
+  return getActiveTags().map((tag) => {
     const tpb = getLocalTagPB(
       tag._id,
       result.mode,

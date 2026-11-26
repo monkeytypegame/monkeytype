@@ -7,7 +7,7 @@ import * as ConfigSchemas from "@monkeytype/schemas/configs";
 import { typedKeys } from "@monkeytype/util/objects";
 import { getDefaultConfig } from "../constants/default-config";
 import { sanitize } from "../utils/sanitize";
-import { Config } from "./store";
+import { getConfigSnapshot } from "./store";
 /**
  * migrates possible outdated config and merges with the default config values
  * @param config partial or possible outdated config
@@ -238,13 +238,13 @@ function replaceLegacyValues(
 
 export function getConfigChanges(): Partial<ConfigSchema> {
   const configChanges: Partial<ConfigSchema> = {};
-  typedKeys(Config)
-    .filter((key) => {
-      return Config[key] !== getDefaultConfig()[key];
-    })
-    .forEach((key) => {
+  const config = getConfigSnapshot();
+  const defaultConfig = getDefaultConfig();
+  for (const key of typedKeys(config)) {
+    if (config[key] !== defaultConfig[key]) {
       //@ts-expect-error this is fine
-      configChanges[key] = Config[key];
-    });
+      configChanges[key] = config[key];
+    }
+  }
   return configChanges;
 }

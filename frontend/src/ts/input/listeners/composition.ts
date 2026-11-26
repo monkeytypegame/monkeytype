@@ -1,15 +1,18 @@
 import * as TestLogic from "../../test/test-logic";
 import { setLastInsertCompositionTextData } from "../state";
 import { onInsertText } from "../handlers/insert-text";
-import { logTestEvent } from "../../test/events/data";
+import { logTestEvent } from "../../test/engine/events/data";
 import {
-  isTestRestarting,
-  getActiveWordIndex,
-  isResultCalculating,
-  isTestActive,
   setComposing,
   setCompositionData,
+  isRestartAnimating,
 } from "../../states/test";
+import {
+  getActiveWordIndex,
+  isTestRestarting,
+  isTestActive,
+  isTestFinished,
+} from "../../test/engine/state";
 
 export function onCompositionStart(event: CompositionEvent): void {
   console.debug("wordsInput event compositionstart", {
@@ -19,7 +22,9 @@ export function onCompositionStart(event: CompositionEvent): void {
 
   const now = performance.now();
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
+    return;
+  }
   setComposing(true);
   setCompositionData("");
   setLastInsertCompositionTextData("");
@@ -39,7 +44,9 @@ export function onCompositionUpdate(event: CompositionEvent): void {
     data: event.data,
   });
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
+    return;
+  }
   setCompositionData(event.data);
 
   const now = performance.now();
@@ -57,7 +64,9 @@ export async function onCompositionEnd(event: CompositionEvent): Promise<void> {
     data: event.data,
   });
 
-  if (isTestRestarting() || isResultCalculating()) return;
+  if (isTestRestarting() || isTestFinished() || isRestartAnimating()) {
+    return;
+  }
   setComposing(false);
   setCompositionData("");
   setLastInsertCompositionTextData("");

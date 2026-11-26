@@ -1,17 +1,20 @@
 import { checkForcedConfig, getFunbox } from "@monkeytype/funbox";
 import { Config, ConfigValue, FunboxName } from "@monkeytype/schemas/configs";
+import { DeepReadonly } from "../utils/types";
 
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: ConfigValue,
-  funbox: FunboxName[] = [],
+  value: DeepReadonly<ConfigValue>,
+  funbox: readonly FunboxName[] = [],
 ): boolean {
   const funboxes = getFunbox(funbox);
   if (key === "mode") {
     let fb = getFunbox(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
-        !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value),
+        !(
+          f.frontendForcedConfig["mode"] as DeepReadonly<ConfigValue>[]
+        ).includes(value),
     );
     if (value === "zen") {
       fb = fb.concat(
@@ -60,14 +63,38 @@ export function canSetConfigWithCurrentFunboxes(
   return true;
 }
 
+// Workaround for https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+function isOldSafari(userAgent: string): boolean {
+  if (!/^((?!chrome|android).)*safari/i.test(userAgent)) return false;
+  const versionMatch = /.*Version\/([0-9]*)\.([0-9]*).*/.exec(userAgent);
+  const mainVersion =
+    versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
+  const minorVersion =
+    versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
+  return mainVersion <= 16 && minorVersion <= 5;
+}
+
+/**
+ * Message to show when the browser can't run the funbox, undefined when it can.
+ */
+export function getFunboxUnsupportedReason(
+  funbox: FunboxName,
+  userAgent = navigator.userAgent,
+): string | undefined {
+  if (funbox === "crt" && isOldSafari(userAgent)) {
+    return "CRT is not available on Safari 16.5 or earlier.";
+  }
+  return undefined;
+}
+
 export type FunboxConfigError = {
   key: string;
-  value: ConfigValue;
+  value: DeepReadonly<ConfigValue>;
 };
 
 export function canSetFunboxWithConfig(
   funbox: FunboxName,
-  config: Config,
+  config: DeepReadonly<Config>,
 ): { ok: true } | { ok: false; errors: FunboxConfigError[] } {
   const funboxToCheck = [...config.funbox, funbox];
 

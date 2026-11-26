@@ -1,4 +1,5 @@
 import { CustomPolyglot as CustomPolyglotType } from "@monkeytype/schemas/configs";
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { Optgroup } from "slim-select/store";
 import { JSXElement } from "solid-js";
 
@@ -9,9 +10,8 @@ import {
   LanguageGroupNames,
   LanguageGroups,
 } from "../../../../constants/languages";
-import { areUnsortedArraysEqual } from "../../../../utils/arrays";
 import { getLanguageDisplayString } from "../../../../utils/strings";
-import SlimSelect from "../../../ui/SlimSelect";
+import SlimSelect from "../../../common/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
 // built once - a new array on every read would make SlimSelect rebuild its options

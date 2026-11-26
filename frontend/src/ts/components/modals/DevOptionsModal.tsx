@@ -1,12 +1,17 @@
 import { UserNameSchema } from "@monkeytype/schemas/users";
-import { createEffect, createSignal, For, JSXElement } from "solid-js";
+import { createSignal, For, JSXElement } from "solid-js";
 import { z } from "zod";
 
 import Ape from "../../ape";
 import { refetchInboxCollection } from "../../collections/inbox";
-import { addXp } from "../../db";
+import {
+  cycleUserDataLoadFail,
+  getForcedUserDataLoadFail,
+} from "../../dev/fail-user-data-load";
 import { quickLogin } from "../../dev/quick-login";
-import { toggleCaretDebug } from "../../elements/caret";
+import { useBodyClasses } from "../../hooks/useBodyClasses";
+import { addXp } from "../../queries/user";
+import { navigate } from "../../router/navigate";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -18,12 +23,13 @@ import {
   isRealWordsInputShown,
   setRealWordsInputShown,
 } from "../../states/test";
-import { disableSlowTimerFail } from "../../test/test-timer";
+import { disableSlowTimerFail } from "../../test/engine/test-timer";
 import { FaSolidIcon } from "../../types/font-awesome";
 import { isProfilerMode, setProfilerMode } from "../../utils/profiler-mode";
 import { remoteValidation } from "../../utils/remote-validation";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
+import { toggleCaretDebug } from "../pages/test/caret";
 import { toggleFakeChartData } from "../pages/test/result/ResultChart";
 
 const [mediaQueryDebugLevel, setMediaQueryDebugLevel] = createSignal(0);
@@ -35,15 +41,10 @@ type DevButton = {
 };
 
 export function DevOptionsModal(): JSXElement {
-  createEffect(() => {
-    const current = mediaQueryDebugLevel();
-    for (const level of [1, 2]) {
-      document.body.classList.toggle(
-        `mediaQueryDebugLevel${level}`,
-        level === current,
-      );
-    }
-  });
+  useBodyClasses(() => ({
+    mediaQueryDebugLevel1: mediaQueryDebugLevel() === 1,
+    mediaQueryDebugLevel2: mediaQueryDebugLevel() === 2,
+  }));
 
   const buttons: DevButton[] = [
     {
@@ -93,6 +94,19 @@ export function DevOptionsModal(): JSXElement {
       onClick: () => {
         void quickLogin();
         hideModal("DevOptions");
+      },
+    },
+    {
+      icon: "fa-bomb",
+      label: () =>
+        `Fail User Data Load (${getForcedUserDataLoadFail() === false ? "OFF" : getForcedUserDataLoadFail()})`,
+      onClick: () => {
+        const fail = cycleUserDataLoadFail();
+        showNoticeNotification(
+          fail === false
+            ? "User data loads work again: Retry"
+            : `User data loads now fail with ${fail}: refresh or sign in to see it`,
+        );
       },
     },
     {
@@ -152,7 +166,10 @@ export function DevOptionsModal(): JSXElement {
     {
       icon: "fa-vials",
       label: () => "Event Log Viewer",
-      onClick: () => showModal("EventLogViewer"),
+      onClick: () => {
+        hideModal("DevOptions");
+        void navigate({ to: "/event-log-viewer" });
+      },
     },
     {
       icon: "fa-stopwatch",

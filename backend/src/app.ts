@@ -20,7 +20,13 @@ function buildApp(): express.Application {
 
   app.use(urlencoded({ extended: true }));
   app.use(json());
-  app.use(cors({ exposedHeaders: [COMPATIBILITY_CHECK_HEADER] }));
+  app.use(
+    cors({
+      exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
+      // let browsers cache preflight responses (chrome caps this at 2h)
+      maxAge: 7200,
+    }),
+  );
   app.use(helmet());
 
   app.set("trust proxy", 1);

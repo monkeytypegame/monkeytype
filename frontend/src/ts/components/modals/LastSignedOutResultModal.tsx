@@ -1,14 +1,19 @@
 import { CompletedEvent } from "@monkeytype/schemas/results";
 import { Mode } from "@monkeytype/schemas/shared";
 import objectHash from "object-hash";
-import { createMemo, JSX } from "solid-js";
+import { createRoot, JSX } from "solid-js";
+
+import type { NormalizedLocalResult } from "../../collections/results";
 
 import Ape from "../../ape";
+import { getUserId } from "../../auth/state";
+import {
+  saveLocalResult,
+  SaveLocalResultData,
+} from "../../collections/results";
 import { getConfig } from "../../config/store";
-import { SnapshotResult } from "../../constants/default-snapshot";
-import { saveLocalResult, SaveLocalResultData } from "../../db";
-import { authEvent } from "../../events/auth";
-import { getAuthenticatedUser } from "../../firebase";
+import { createEffectOn } from "../../hooks/effects";
+import { getUserDataLoadState } from "../../session-data";
 import { hideModal, showModal } from "../../states/modals";
 import {
   showErrorNotification,
@@ -20,7 +25,11 @@ import {
   setLastSignedOutResult,
 } from "../../states/test";
 import { cn } from "../../utils/cn";
-import { Formatting } from "../../utils/format";
+import {
+  formatAccuracy,
+  formatPercentage,
+  formatTypingSpeed,
+} from "../../utils/format";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Separator } from "../common/Separator";
@@ -28,14 +37,6 @@ import { Separator } from "../common/Separator";
 const modalId = "LastSignedOutResult";
 
 export function LastSignedOutResultModal() {
-  const format = createMemo(
-    () =>
-      new Formatting({
-        alwaysShowDecimalPlaces: getConfig.alwaysShowDecimalPlaces,
-        typingSpeedUnit: getConfig.typingSpeedUnit,
-      }),
-  );
-
   const handleDiscard = () => {
     showNoticeNotification("Last test result discarded");
     hideModal(modalId);
@@ -60,23 +61,21 @@ export function LastSignedOutResultModal() {
       <div class="grid grid-cols-2 gap-2">
         <Value
           class="text-2xl"
-          label={format().typingSpeedUnit}
-          value={format().typingSpeed(getLastSignedOutResult()?.wpm ?? 0)}
+          label={getConfig.typingSpeedUnit}
+          value={formatTypingSpeed(getLastSignedOutResult()?.wpm ?? 0)}
         />
         <Value
           class="text-2xl"
           label="accuracy"
-          value={format().accuracy(getLastSignedOutResult()?.acc ?? 0)}
+          value={formatAccuracy(getLastSignedOutResult()?.acc ?? 0)}
         />
         <Value
           label="raw"
-          value={format().typingSpeed(getLastSignedOutResult()?.rawWpm ?? 0)}
+          value={formatTypingSpeed(getLastSignedOutResult()?.rawWpm ?? 0)}
         />
         <Value
           label="consistency"
-          value={format().percentage(
-            getLastSignedOutResult()?.consistency ?? 0,
-          )}
+          value={formatPercentage(getLastSignedOutResult()?.consistency ?? 0)}
         />
         <Value
           class="col-span-2"
@@ -138,9 +137,9 @@ function formatTestType(r: CompletedEvent | null): (string | JSX.Element)[] {
 }
 
 async function syncLastSignedOutResult(): Promise<void> {
-  const user = getAuthenticatedUser();
+  const uid = getUserId();
   const lastResult = getLastSignedOutResult();
-  if (user === null) {
+  if (uid === null) {
     showNoticeNotification(
       "Failed to save last test result: user not authenticated",
     );
@@ -153,7 +152,7 @@ async function syncLastSignedOutResult(): Promise<void> {
     return;
   }
 
-  const updatedResult = updateUidAndHash(user.uid, lastResult);
+  const updatedResult = updateUidAndHash(uid, lastResult);
   const response = await Ape.results.add({ body: { result: updatedResult } });
 
   if (response.status !== 200) {
@@ -166,10 +165,10 @@ async function syncLastSignedOutResult(): Promise<void> {
 
   //TODO - this type cast was not needed before because we were using JSON cloning
   // but now with the stronger types it shows that we are forcing completed event
-  // into a snapshot result - might not cause issues but worth investigating
+  // into a NormalizedLocalResult - might not cause issues but worth investigating
   const result = structuredClone(
     updatedResult,
-  ) as unknown as SnapshotResult<Mode>;
+  ) as unknown as NormalizedLocalResult<Mode>;
 
   const dataToSave: SaveLocalResultData = {
     xp: response.body.data.xp,
@@ -201,10 +200,14 @@ export function updateUidAndHash(
   return notSignedInLastResult;
 }
 
-authEvent.subscribe((event) => {
-  if (event.type === "snapshotUpdated" && event.data.isInitial) {
-    if (getLastSignedOutResult() !== null) {
-      showModal(modalId);
-    }
-  }
-});
+// once the signed in user's data loaded: offer to save the signed out result
+createRoot(() =>
+  createEffectOn(
+    () => getUserDataLoadState().status,
+    (status) => {
+      if (status === "loaded" && getLastSignedOutResult() !== null) {
+        showModal(modalId);
+      }
+    },
+  ),
+);

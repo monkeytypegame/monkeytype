@@ -16,15 +16,14 @@ export async function quickLogin(): Promise<void> {
   showLoaderBar();
   try {
     // lazy: auth reads firebase on import, and the debug handle loads eagerly
-    const { signIn } = await import("../auth");
-    const result = await signIn(
-      envConfig.quickLoginEmail,
-      envConfig.quickLoginPassword,
-      true,
-    );
-    if (!result.success) {
-      showErrorNotification(result.message);
-    }
+    const { signIn } = await import("../auth/actions");
+    // shows its own errors
+    await signIn({
+      method: "password",
+      email: envConfig.quickLoginEmail,
+      password: envConfig.quickLoginPassword,
+      rememberMe: true,
+    });
   } catch (error: unknown) {
     showErrorNotification("Quick login failed", { error });
   } finally {

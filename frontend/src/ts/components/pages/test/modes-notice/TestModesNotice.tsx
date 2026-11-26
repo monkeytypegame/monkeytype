@@ -1,21 +1,21 @@
 import { createMemo } from "solid-js";
 
-import { useActiveTagsLiveQuery } from "../../../../collections/tags";
 import { getConfig } from "../../../../config/store";
+import { getActiveTags } from "../../../../queries/tags";
 import { showCommandline } from "../../../../states/commandline";
-import { getCustomTextIndicator, getFormatting } from "../../../../states/core";
+import { getCustomTextIndicator } from "../../../../states/core";
 import { hotkeys } from "../../../../states/hotkeys";
 import {
-  getFocus,
+  isFocusMode,
   getLoadedChallenge,
   getPaceCaretWpm,
   isPaceRepeat,
   isRepeated,
-  wordsHaveNewline,
-  wordsHaveTab,
 } from "../../../../states/test";
+import { wordsHaveNewline, wordsHaveTab } from "../../../../test/engine/state";
 import { getActiveFunboxNames } from "../../../../test/funbox/list";
 import { cn } from "../../../../utils/cn";
+import { formatAccuracy, formatTypingSpeed } from "../../../../utils/format";
 import {
   getLanguageDisplayString,
   replaceUnderscoresWithSpaces,
@@ -31,7 +31,7 @@ export function TestModesNotice() {
       class={cn(
         "flex flex-wrap justify-center gap-x-4 text-base text-sub transition-opacity duration-125 select-none",
         {
-          "opacity-0": getFocus(),
+          "opacity-0": isFocusMode(),
         },
       )}
     >
@@ -144,11 +144,9 @@ function ZenMode() {
 }
 
 function Language() {
-  const isUsingPolyglot = createMemo(() => {
-    //react on config.funbox
-    const _ = getConfig.funbox;
-    return getActiveFunboxNames().includes("polyglot");
-  });
+  const isUsingPolyglot = createMemo(() =>
+    getActiveFunboxNames().includes("polyglot"),
+  );
 
   return (
     <>
@@ -215,9 +213,7 @@ function PaceCaretNotice() {
     let type: string = getConfig.paceCaret;
     if (type === "off") type = "custom";
     else if (type === "tagPb") type = "tag pb";
-
-    const format = getFormatting();
-    const speed = format.typingSpeed(getPaceCaretWpm() ?? 0, {
+    const speed = formatTypingSpeed(getPaceCaretWpm() ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });
@@ -240,8 +236,7 @@ function PaceCaretNotice() {
 
 function MinSpeed() {
   const displaySpeed = createMemo(() => {
-    const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
+    const speed = formatTypingSpeed(getConfig.minWpmCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });
@@ -261,8 +256,7 @@ function MinSpeed() {
 
 function MinAcc() {
   const displayAcc = createMemo(() => {
-    const format = getFormatting();
-    const acc = format.accuracy(getConfig.minAccCustom, {
+    const acc = formatAccuracy(getConfig.minAccCustom, {
       showDecimalPlaces: false,
       suffix: " acc",
     });
@@ -282,8 +276,7 @@ function MinAcc() {
 
 function MinBurst() {
   const displaySpeed = createMemo(() => {
-    const format = getFormatting();
-    const speed = format.typingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
+    const speed = formatTypingSpeed(getConfig.minBurstCustomSpeed ?? 0, {
       showDecimalPlaces: false,
       suffix: ` ${getConfig.typingSpeedUnit}`,
     });
@@ -378,14 +371,12 @@ function OppositeShift() {
 }
 
 function Tags() {
-  const tags = useActiveTagsLiveQuery();
-
   return (
     <Notice
-      when={tags().length > 0}
-      icon={tags().length === 1 ? "fa-tag" : "fa-tags"}
+      when={getActiveTags().length > 0}
+      icon={getActiveTags().length === 1 ? "fa-tag" : "fa-tags"}
       openCommandline="tags"
-      text={tags()
+      text={getActiveTags()
         .map((tag) => tag.name)
         .join(", ")}
     />

@@ -1,5 +1,5 @@
-import * as TestUI from "../../test/test-ui";
-import * as TestWords from "../../test/test-words";
+import { afterTestTextInput } from "../helpers/after-input";
+import * as TestWords from "../../test/engine/test-words";
 import {
   getInputElementValue,
   replaceInputElementLastValueChar,
@@ -13,7 +13,7 @@ import {
 } from "../helpers/fail-or-finish";
 import { removeLanguageSize } from "../../utils/strings";
 import * as TestLogic from "../../test/test-logic";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import * as WeakSpot from "../../test/weak-spot";
 import {
   isCorrectShiftUsed,
@@ -25,16 +25,12 @@ import { showNoticeNotification } from "../../states/notifications";
 import { goToNextWord, goToPreviousWord } from "../helpers/word-navigation";
 import { onBeforeInsertText } from "./before-insert-text";
 import { shouldGoToNextWord, isCharCorrect } from "../helpers/validation";
-import { getCurrentInput, logTestEvent } from "../../test/events/data";
+import { getCurrentInput, logTestEvent } from "../../test/engine/events/data";
 import { getCommitCharacterType, normalizeData } from "../helpers/util";
 import { areAllWordsGenerated } from "../../test/words-generator";
-import {
-  getActiveWordIndex,
-  isTestActive,
-  isComposing,
-  flashKeymapKey,
-} from "../../states/test";
-import { DeleteInputType } from "../helpers/input-type";
+import { isComposing, flashKeymapKey } from "../../states/test";
+import { getActiveWordIndex, isTestActive } from "../../test/engine/state";
+import { DeleteInputType } from "../../test/engine/input-type";
 import { isWordRendered } from "../../states/words-render";
 
 const charOverrides = new Map<string, string>([
@@ -87,10 +83,11 @@ function logDeleteOnErrorEvent(
  */
 function handleDeleteOnError(now: number): void {
   const deleteWholeWord =
-    Config.deleteOnError === "word" || Config.deleteOnError === "word_hard";
+    getConfig.deleteOnError === "word" ||
+    getConfig.deleteOnError === "word_hard";
   const goBackAWord =
-    Config.deleteOnError === "letter_hard" ||
-    Config.deleteOnError === "word_hard";
+    getConfig.deleteOnError === "letter_hard" ||
+    getConfig.deleteOnError === "word_hard";
 
   //the incorrect character has already been inserted and logged at this point
   const inputLength = getCurrentInput().length;
@@ -172,7 +169,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   }
 
   const languageOverrides = languageCharOverrides.get(
-    removeLanguageSize(Config.language),
+    removeLanguageSize(getConfig.language),
   );
   if (languageOverrides !== undefined) {
     for (const [targetChar, overrideChar] of languageOverrides) {
@@ -218,7 +215,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     lastInMultiIndex === true || lastInMultiIndex === undefined;
   const wordIndex = getActiveWordIndex();
   const correctShiftUsed =
-    Config.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
+    getConfig.oppositeShiftMode === "off" ? null : isCorrectShiftUsed();
   const commitCharacterType = getCommitCharacterType({
     data,
     inputValue: testInput,
@@ -238,8 +235,8 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // like accuracy, keypress errors, and missed words
   let removeLastChar = false;
   let visualInputOverride: string | undefined;
-  if (Config.stopOnError === "letter" && !correct) {
-    if (!Config.blindMode) {
+  if (getConfig.stopOnError === "letter" && !correct) {
+    if (!getConfig.blindMode) {
       visualInputOverride = testInput + data;
     }
     removeLastChar = true;
@@ -269,7 +266,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
       commitCharacterType,
     });
 
-  if (Config.keymapMode === "react") {
+  if (getConfig.keymapMode === "react") {
     flashKeymapKey(data, correct);
   }
 
@@ -305,12 +302,12 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   // delete on error
   // skipped when the input was stopped - nothing was inserted to delete
   // before the UI update so it renders the input after the deletion, in one go
-  if (Config.deleteOnError !== "off" && !correct && !removeLastChar) {
+  if (getConfig.deleteOnError !== "off" && !correct && !removeLastChar) {
     handleDeleteOnError(now);
   }
 
   if (lastInMultiOrSingle) {
-    TestUI.afterTestTextInput(correct, visualInputOverride, goingToNextWord);
+    afterTestTextInput(correct, visualInputOverride, goingToNextWord);
   }
 
   // going to next word
@@ -319,7 +316,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
   if (goingToNextWord) {
     const result = await goToNextWord({
       correctInsert:
-        Config.mode === "zen" ? true : testInput + data === currentWord,
+        getConfig.mode === "zen" ? true : testInput + data === currentWord,
       now,
     });
     lastBurst = result.lastBurst;
@@ -333,7 +330,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
 
   //code mode - auto insert tabs
   if (
-    Config.language.startsWith("code") &&
+    getConfig.language.startsWith("code") &&
     correct &&
     doesNextWordHaveTab &&
     isCurrentCharTab
@@ -372,7 +369,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
         allWordsGenerated: areAllWordsGenerated(),
       })
     ) {
-      void TestLogic.finish();
+      TestLogic.finish();
     }
   }
 }

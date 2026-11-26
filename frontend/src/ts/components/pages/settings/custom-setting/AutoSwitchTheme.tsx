@@ -7,7 +7,7 @@ import { getConfig } from "../../../../config/store";
 import { ThemesList } from "../../../../constants/themes";
 import { cn } from "../../../../utils/cn";
 import { Button } from "../../../common/Button";
-import SlimSelect from "../../../ui/SlimSelect";
+import SlimSelect from "../../../common/SlimSelect";
 import { SearchableSetting } from "../SearchableSetting";
 
 // built once - a new array on every read would make SlimSelect rebuild its options

@@ -6,7 +6,7 @@ import { batch, createSignal, For, JSXElement, Show, untrack } from "solid-js";
 import type { FaSolidIcon } from "../../types/font-awesome";
 
 import { setConfig } from "../../config/setters";
-import { Config } from "../../config/store";
+import { getConfig } from "../../config/store";
 import {
   getCustomTextIndicator,
   setCustomTextIndicator,
@@ -25,9 +25,9 @@ import * as Strings from "../../utils/strings";
 import { AnimatedModal } from "../common/AnimatedModal";
 import { Button } from "../common/Button";
 import { Fa } from "../common/Fa";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
 import { Separator } from "../common/Separator";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
 import { CustomGeneratorModal } from "./CustomGeneratorModal";
 import { SaveCustomTextModal } from "./SaveCustomTextModal";
 import { SavedTextsModal } from "./SavedTextsModal";
@@ -164,7 +164,7 @@ export function CustomTextModal(): JSXElement {
         showNoticeNotification("Challenge cleared");
         setLoadedChallenge(null);
       }
-      if (Config.mode !== "custom") {
+      if (getConfig.mode !== "custom") {
         setConfig("mode", "custom");
       }
       PractiseWords.resetBefore();
@@ -173,7 +173,7 @@ export function CustomTextModal(): JSXElement {
     },
   }));
 
-  const formValues = form.useStore((s) => s.values);
+  const formValues = form.useSelector((s) => s.values);
 
   const isDisabled = () => longTextWarning() || challengeWarning();
   const isLimitDisabled = () => formValues().mode === "simple" || isDisabled();

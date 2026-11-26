@@ -16,6 +16,10 @@ export function Navigation(props: {
   class?: string;
 }): JSXElement {
   const buttonClass = "px-3 sm:px-4 text-em-base";
+  const changePage = (page: number, options?: { scrollToUser?: boolean }) => {
+    props.onPageChange(page);
+    props.onScrollToUser(options?.scrollToUser ?? false);
+  };
 
   return (
     <div
@@ -28,17 +32,16 @@ export function Navigation(props: {
         <LoadingCircle color="sub" class="text-2xl" />
       </Show>
       <Button
-        onClick={() => props.onPageChange(0)}
+        onClick={() => changePage(0)}
         fa={{ icon: "fa-crown", fixedWidth: true }}
         disabled={props.currentPage === 0}
         class={buttonClass}
       />
       <Show when={props.userPage !== undefined}>
         <Button
-          onClick={() => {
-            props.onPageChange(props.userPage as number);
-            props.onScrollToUser(true);
-          }}
+          onClick={() =>
+            changePage(props.userPage as number, { scrollToUser: true })
+          }
           fa={{ icon: "fa-user", fixedWidth: true }}
           disabled={
             props.userPage === undefined || props.currentPage === props.userPage
@@ -48,10 +51,11 @@ export function Navigation(props: {
       </Show>
       <Button
         onClick={() => {
-          const lastPage = props.lastPage;
-          props.onPageChange(
-            Math.max(0, Math.min(props.currentPage, lastPage) - 1),
+          const newPage = Math.max(
+            0,
+            Math.min(props.currentPage, props.lastPage) - 1,
           );
+          changePage(newPage);
         }}
         fa={{ icon: "fa-chevron-left", fixedWidth: true }}
         disabled={props.currentPage === 0}
@@ -73,7 +77,7 @@ export function Navigation(props: {
             },
             buttonText: "Go",
             execFn: async ({ pageNumber }) => {
-              props.onPageChange(pageNumber - 1);
+              changePage(pageNumber - 1);
               return {
                 status: "success",
                 showNotification: false,
@@ -89,7 +93,7 @@ export function Navigation(props: {
         {props.currentPage + 1}
       </Button>
       <Button
-        onClick={() => props.onPageChange(props.currentPage + 1)}
+        onClick={() => changePage(props.currentPage + 1)}
         fa={{ icon: "fa-chevron-right", fixedWidth: true }}
         disabled={props.currentPage + 1 >= props.lastPage}
         class={buttonClass}

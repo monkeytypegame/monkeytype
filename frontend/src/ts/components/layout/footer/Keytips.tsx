@@ -1,17 +1,17 @@
 import { JSXElement, Show } from "solid-js";
 
 import { getConfig } from "../../../config/store";
-import { getFocus } from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
 import { cn } from "../../../utils/cn";
-import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
-import { QuickRestartHotkey } from "../../hotkeys/QuickRestartHotkey";
+import { CommandlineHotkey } from "../../core/hotkeys/CommandlineHotkey";
+import { QuickRestartHotkey } from "../../core/hotkeys/QuickRestartHotkey";
 
 export function Keytips(): JSXElement {
   return (
     <Show when={getConfig.showKeyTips}>
       <div
         class={cn("mb-8 flex flex-col items-center gap-2 transition-opacity", {
-          "opacity-0": getFocus(),
+          "opacity-0": isFocusMode(),
         })}
       >
         <div class="flex items-center gap-2">

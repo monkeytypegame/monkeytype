@@ -6,11 +6,8 @@ import { PresetNameSchema, PresetType } from "@monkeytype/schemas/presets";
 import { createForm } from "@tanstack/solid-form";
 import { createSignal, JSXElement, Show } from "solid-js";
 
-import {
-  __nonReactive as __nonReactivePresets,
-  editPreset,
-} from "../../../collections/presets";
 import { createEffectOn } from "../../../hooks/effects";
+import { editPreset, getPreset } from "../../../queries/presets";
 import { editPresetData } from "../../../states/edit-preset-modal";
 import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { hideModal, isModalOpen } from "../../../states/modals";
@@ -21,15 +18,15 @@ import {
 } from "../../../states/notifications";
 import { normalizeName } from "../../../utils/strings";
 import { AnimatedModal } from "../../common/AnimatedModal";
-import { Checkbox } from "../../ui/form/Checkbox";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { fromSchema } from "../../ui/form/utils";
+import { Checkbox } from "../../common/form/Checkbox";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { fromSchema } from "../../common/form/utils";
 import { FullOrPartial } from "./FullOrPartial";
 import {
   getActiveSettingGroups,
   getCheckboxes,
-  getConfigChanges,
+  buildPresetConfig,
 } from "./preset-modal-utils";
 
 export function EditPresetModal(): JSXElement {
@@ -73,30 +70,31 @@ export function EditPresetModal(): JSXElement {
       hideModal("EditPresetModal");
       showLoaderBar();
 
-      try {
-        if (value.updateConfig) {
-          const configChanges = getConfigChanges(presetType(), checkboxes);
-          const activeSettingGroups: ConfigGroupName[] | null =
-            presetType() === "partial"
-              ? getActiveSettingGroups(checkboxes)
-              : null;
-          await editPreset({
-            presetId: data.presetId,
-            name: parsedName.data,
-            config: configChanges,
-            settingGroups: activeSettingGroups,
-          });
-        } else {
-          await editPreset({
-            presetId: data.presetId,
-            name: parsedName.data,
-          });
-        }
+      let result;
+      if (value.updateConfig) {
+        const configChanges = buildPresetConfig(presetType(), checkboxes);
+        const activeSettingGroups: ConfigGroupName[] | null =
+          presetType() === "partial"
+            ? getActiveSettingGroups(checkboxes)
+            : null;
+        result = await editPreset({
+          presetId: data.presetId,
+          name: parsedName.data,
+          config: configChanges,
+          settingGroups: activeSettingGroups,
+        });
+      } else {
+        result = await editPreset({
+          presetId: data.presetId,
+          name: parsedName.data,
+        });
+      }
+      if (result.error === null) {
         showSuccessNotification("Preset updated");
-      } catch (e) {
-        showErrorNotification(
-          e instanceof Error ? e.message : "Failed to edit preset",
-        );
+      } else {
+        showErrorNotification("Failed to edit preset", {
+          error: result.error,
+        });
       }
 
       hideLoaderBar();
@@ -113,7 +111,7 @@ export function EditPresetModal(): JSXElement {
       form.reset();
       form.setFieldValue("presetName", data.name);
 
-      const preset = __nonReactivePresets.getPreset(data.presetId);
+      const preset = getPreset(data.presetId);
       if (preset === undefined) return;
 
       if (preset.settingGroups === undefined || preset.settingGroups === null) {
@@ -131,7 +129,7 @@ export function EditPresetModal(): JSXElement {
   );
 
   const isUpdateConfig = () => {
-    const formValues = form.useStore((s) => s.values);
+    const formValues = form.useSelector((s) => s.values);
     return formValues().updateConfig;
   };
 
@@ -151,7 +149,11 @@ export function EditPresetModal(): JSXElement {
             onChange: fromSchema(PresetNameSchema, { convert: normalizeName }),
           }}
           children={(field) => (
-            <InputField field={field} placeholder="preset name" />
+            <InputField
+              field={field}
+              placeholder="preset name"
+              autocomplete="off"
+            />
           )}
         />
         <form.Field name="updateConfig">

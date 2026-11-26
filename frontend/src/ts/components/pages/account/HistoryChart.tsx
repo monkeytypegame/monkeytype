@@ -3,13 +3,13 @@ import { Mode } from "@monkeytype/schemas/shared";
 import { format as dateFormat } from "date-fns/format";
 import { createMemo, JSXElement, Show } from "solid-js";
 
+import type { NormalizedLocalResult } from "../../../collections/results";
+
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
-import { SnapshotResult } from "../../../constants/default-snapshot";
-import { getFormatting } from "../../../states/core";
-import { getTheme } from "../../../states/theme";
+import { getTheme } from "../../../theme/state";
 import { blendTwoHexColors } from "../../../utils/colors";
-import { Formatting } from "../../../utils/format";
+import { formatAccuracy, formatTypingSpeed } from "../../../utils/format";
 import { findLineByLeastSquares } from "../../../utils/numbers";
 import { TypingSpeedUnitSettings } from "../../../utils/typing-speed-units";
 import { Button } from "../../common/Button";
@@ -20,16 +20,15 @@ export type HistoryChartClickEvent = {
   _id: string;
 };
 export function HistoryChart(props: {
-  results: SnapshotResult<Mode>[];
+  results: NormalizedLocalResult<Mode>[];
   beginAtZero: boolean;
   typingSpeedUnit: TypingSpeedUnitSettings;
-  format: Formatting;
   onClick?: (event: HistoryChartClickEvent) => void;
 }): JSXElement {
-  const formatAccuracy = (accuracy: number): string =>
-    props.format.accuracy(accuracy, { showDecimalPlaces: true });
+  const formatAcc = (accuracy: number): string =>
+    formatAccuracy(accuracy, { showDecimalPlaces: true });
   const formatSpeed = (wpm: number): string =>
-    props.format.typingSpeed(wpm, { showDecimalPlaces: true });
+    formatTypingSpeed(wpm, { showDecimalPlaces: true });
   const wpm = createMemo(() =>
     props.results.map((it) => props.typingSpeedUnit.fromWpm(it.wpm)),
   );
@@ -269,7 +268,7 @@ export function HistoryChart(props: {
                     if (result === undefined) return "unknown";
 
                     if (tooltipItem.datasetIndex !== 0) {
-                      return `error rate: ${formatAccuracy(100 - result.acc)}\nacc: ${formatAccuracy(result.acc)}`;
+                      return `error rate: ${formatAcc(100 - result.acc)}\nacc: ${formatAcc(result.acc)}`;
                     }
 
                     let label =
@@ -277,7 +276,7 @@ export function HistoryChart(props: {
                       "\n" +
                       `raw: ${formatSpeed(result.rawWpm)}` +
                       "\n" +
-                      `acc: ${formatAccuracy(result.acc)}` +
+                      `acc: ${formatAcc(result.acc)}` +
                       "\n\n" +
                       `mode: ${result.mode} `;
 
@@ -351,9 +350,7 @@ export function HistoryChart(props: {
   );
 }
 
-function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
-  const format = getFormatting;
-
+function Trend(props: { results: NormalizedLocalResult<Mode>[] }): JSXElement {
   const trend = createMemo(() => {
     const line = findLineByLeastSquares(
       props.results.map((it) => it.wpm).reverse(),
@@ -368,7 +365,7 @@ function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
     const plus = wpmChangePerHour > 0 ? "+" : "";
 
-    return `Speed change per hour spent typing: ${plus}${format().typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })} ${format().typingSpeedUnit}`;
+    return `Speed change per hour spent typing: ${plus}${formatTypingSpeed(wpmChangePerHour, { showDecimalPlaces: true })} ${getConfig.typingSpeedUnit}`;
   });
 
   return (

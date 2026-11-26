@@ -5,7 +5,7 @@ import {
   SupportsFlags,
   UserFlag,
   UserFlagOptions,
-} from "../../controllers/user-flag-controller";
+} from "../../constants/user-flags";
 import { Balloon } from "./Balloon";
 import { Fa } from "./Fa";
 export function UserFlags(

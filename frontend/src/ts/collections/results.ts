@@ -1,4 +1,10 @@
-import { ResultMinified } from "@monkeytype/schemas/results";
+import {
+  Result,
+  ResultMinified,
+  XpBreakdown,
+} from "@monkeytype/schemas/results";
+import { FunboxName } from "@monkeytype/schemas/configs";
+import { Language } from "@monkeytype/schemas/languages";
 import { Difficulty, Mode, Mode2 } from "@monkeytype/schemas/shared";
 import { ResultFilters } from "@monkeytype/schemas/users";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
@@ -21,45 +27,87 @@ import {
   useLiveQuery,
 } from "@tanstack/solid-db";
 import { queryOptions } from "@tanstack/solid-query";
-import { Accessor, createMemo, createRoot } from "solid-js";
+import { Accessor, createMemo, createRoot, createSignal } from "solid-js";
 import Ape from "../ape";
-import { SnapshotResult } from "../constants/default-snapshot";
 import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
-import { isAuthenticated } from "../states/core";
-import { getLastResult, setLastResult } from "../states/snapshot";
+import { isAuthenticated } from "../auth/state";
 import {
-  getActiveTagsOnce,
-  getTagsOnce,
+  areTagsLoaded,
+  getActiveTags,
+  getTags,
   reconcileLocalTagPB,
   saveLocalTagPB,
-  useActiveTagsLiveQuery,
-} from "./tags";
+} from "../queries/tags";
 import {
   blockingDownloadOptions,
   isDownloaded,
   waitForDownload,
 } from "./utils/blocking-download";
-import { applyIdWorkaround } from "./utils/misc";
 import { getConfig } from "../config/store";
 import { getMode2 } from "../utils/misc";
+import { keepForever } from "./utils/misc";
 import { getCurrentQuote } from "../states/test";
+import { addXp, getUserData, recordResult, setStreak } from "../queries/user";
+import { incrementTestActivity } from "../states/test-activity";
 import { removeLanguageSize } from "../utils/strings";
 
+export type NormalizedLocalResult<M extends Mode> = Omit<
+  Result<M>,
+  | "bailedOut"
+  | "blindMode"
+  | "lazyMode"
+  | "difficulty"
+  | "funbox"
+  | "language"
+  | "numbers"
+  | "punctuation"
+  | "quoteLength"
+  | "restartCount"
+  | "incompleteTestSeconds"
+  | "afkDuration"
+  | "tags"
+> & {
+  bailedOut: boolean;
+  blindMode: boolean;
+  lazyMode: boolean;
+  difficulty: Difficulty;
+  funbox: FunboxName[];
+  language: Language;
+  numbers: boolean;
+  punctuation: boolean;
+  quoteLength: number;
+  restartCount: number;
+  incompleteTestSeconds: number;
+  afkDuration: number;
+  tags: string[];
+  //calculated values
+  words: number;
+  timeTyping: number;
+  dayTimestamp: number;
+};
+
+// set from the first results fetch and on each save
+const [getLastResult, setLastResult] = createSignal<
+  NormalizedLocalResult<Mode> | undefined
+>(undefined);
+/** The user's latest saved result. */
+export { getLastResult };
+
 export type ResultsQueryState = {
-  difficulty: SnapshotResult<Mode>["difficulty"][];
-  pb: SnapshotResult<Mode>["isPb"][];
-  mode: SnapshotResult<Mode>["mode"][];
+  difficulty: NormalizedLocalResult<Mode>["difficulty"][];
+  pb: NormalizedLocalResult<Mode>["isPb"][];
+  mode: NormalizedLocalResult<Mode>["mode"][];
   words: ("10" | "25" | "50" | "100" | "custom")[];
   time: ("15" | "30" | "60" | "120" | "custom")[];
-  punctuation: SnapshotResult<Mode>["punctuation"][];
-  numbers: SnapshotResult<Mode>["numbers"][];
-  timestamp: SnapshotResult<Mode>["timestamp"];
-  quoteLength: SnapshotResult<Mode>["quoteLength"][];
-  tags: SnapshotResult<Mode>["tags"];
-  funbox: SnapshotResult<Mode>["funbox"];
-  language: SnapshotResult<Mode>["language"][];
+  punctuation: NormalizedLocalResult<Mode>["punctuation"][];
+  numbers: NormalizedLocalResult<Mode>["numbers"][];
+  timestamp: NormalizedLocalResult<Mode>["timestamp"];
+  quoteLength: NormalizedLocalResult<Mode>["quoteLength"][];
+  tags: NormalizedLocalResult<Mode>["tags"];
+  funbox: NormalizedLocalResult<Mode>["funbox"];
+  language: NormalizedLocalResult<Mode>["language"][];
 };
 
 const queryKeys = {
@@ -140,7 +188,7 @@ export function useResultStatsLiveQuery(
 export async function getResultsQueryOnce(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>;
 }) {
@@ -157,7 +205,7 @@ export async function getResultsQueryOnce(options: {
 }
 
 /**
- * get list of SnapshotResults for the current result selection
+ * get list of NormalizedLocalResult for the current result selection
  * @param queryState
  * @returns
  */
@@ -165,7 +213,7 @@ export async function getResultsQueryOnce(options: {
 export function useResultsLiveQuery(options: {
   queryState: Accessor<ResultsQueryState | undefined>;
   sorting: Accessor<{
-    field: keyof SnapshotResult<Mode>;
+    field: keyof NormalizedLocalResult<Mode>;
     direction: "asc" | "desc";
   }>;
   limit: Accessor<number>;
@@ -185,9 +233,9 @@ export function useResultsLiveQuery(options: {
 }
 
 function normalizeResult(
-  result: ResultMinified | SnapshotResult<Mode>,
+  result: ResultMinified | NormalizedLocalResult<Mode>,
   knownTagIds?: Set<string>,
-): SnapshotResult<Mode> {
+): NormalizedLocalResult<Mode> {
   const resultDate = new Date(result.timestamp);
   resultDate.setSeconds(0);
   resultDate.setMinutes(0);
@@ -218,19 +266,22 @@ function normalizeResult(
     timeTyping: calcTimeTyping(result),
     words: Math.round((result.wpm / 60) * result.testDuration),
     dayTimestamp: resultDate.getTime(),
-  } as SnapshotResult<Mode>;
+  } as NormalizedLocalResult<Mode>;
 }
 
-const resultsCollection = createCollection(
-  queryCollectionOptions({
+const resultsCollection = createCollection({
+  ...queryCollectionOptions({
+    ...keepForever,
     ...blockingDownloadOptions,
     staleTime: Infinity,
-    gcTime: Infinity, //remove when __nonReactive is removed
     queryKey: queryKeys.root(),
     enabled: isAuthenticated,
     queryFn: async () => {
-      const tagIds = await getTagsOnce();
-      const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
+      // drops deleted tags from the results; skipped until the tags are
+      // loaded, rather than dropping every tag
+      const knownTagIds = areTagsLoaded()
+        ? new Set(getTags().map((it) => it._id))
+        : undefined;
       //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
@@ -241,9 +292,9 @@ const resultsCollection = createCollection(
         throw new Error(`Error fetching results:${response.body.message}`);
       }
 
-      const results = response.body.data
-        .map((result) => normalizeResult(result, knownTagIds))
-        .map(applyIdWorkaround);
+      const results = response.body.data.map((result) =>
+        normalizeResult(result, knownTagIds),
+      );
 
       if (getLastResult() === undefined && results.length > 0) {
         const lastResult = results.reduce((acc, cur) =>
@@ -256,7 +307,8 @@ const resultsCollection = createCollection(
     queryClient,
     getKey: (it) => it._id,
   }),
-);
+  ...keepForever,
+});
 
 resultsCollection.createIndex((row) => row.timestamp, {
   indexType: BTreeIndex,
@@ -271,7 +323,7 @@ type ActionType = {
     afterUpdate?: (params: { tagPbs: string[] }) => void;
   };
   insertLocalResult: {
-    result: SnapshotResult<Mode>;
+    result: NormalizedLocalResult<Mode>;
   };
   deleteLocalTag: {
     tagId: string;
@@ -319,7 +371,7 @@ const actions = {
         );
       });
 
-      resultsCollection.utils.writeUpdate({
+      await resultsCollection.utils.writeUpdate({
         _id: resultId,
         tags: newTagIds,
       });
@@ -329,7 +381,7 @@ const actions = {
   }),
   insertLocalResult: createOptimisticAction<ActionType["insertLocalResult"]>({
     onMutate: ({ result }) => {
-      resultsCollection.utils.writeInsert(normalizeResult(result));
+      void resultsCollection.utils.writeInsert(normalizeResult(result));
     },
     mutationFn: async () => {
       //we don't sync the changes back to the backend here, it is done already
@@ -341,7 +393,7 @@ const actions = {
       for (const result of [...resultsCollection.values()].filter((it) =>
         it.tags.includes(tagId),
       )) {
-        resultsCollection.utils.writeUpdate({
+        void resultsCollection.utils.writeUpdate({
           ...result,
           tags: result.tags.filter((it) => it !== tagId),
         });
@@ -401,7 +453,7 @@ export async function updateTags(
   }
 
   const transaction = actions.updateTags(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 export async function insertLocalResult(
@@ -412,7 +464,30 @@ export async function insertLocalResult(
     return;
   }
   const transaction = actions.insertLocalResult(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
+}
+
+export type SaveLocalResultData = {
+  xp?: number;
+  xpBreakdown?: XpBreakdown;
+  streak?: number;
+  result?: NormalizedLocalResult<Mode>;
+  isPb?: boolean;
+};
+
+/** Saves a finished test locally: the results list, last result and user. */
+export function saveLocalResult(data: SaveLocalResultData): void {
+  if (getUserData() === undefined) return;
+
+  if (data.result !== undefined) {
+    void insertLocalResult({ result: data.result });
+    setLastResult(data.result);
+    recordResult(data.result, { isPb: data.isPb ?? false });
+    incrementTestActivity(data.result.timestamp);
+  }
+
+  if (data.streak !== undefined) setStreak(data.streak);
+  if (data.xp !== undefined) addXp(data.xp, data.xpBreakdown);
 }
 
 export async function deleteLocalTag(
@@ -423,7 +498,7 @@ export async function deleteLocalTag(
     return;
   }
   const transaction = actions.deleteLocalTag(params);
-  await transaction.isPersisted.promise;
+  await transaction.when("settled");
 }
 
 // oxlint-disable-next-line typescript/explicit-function-return-type
@@ -610,9 +685,7 @@ export function useUserAverage10LiveQuery(options: {
     };
   });
 
-  const activeTagsQuery = useActiveTagsLiveQuery();
-
-  return useLiveQuery((q) => {
+  const average = useLiveQuery((q) => {
     //disable query
     if (!isAuthenticated()) return undefined;
     if (!options.isEnabled()) return undefined;
@@ -621,13 +694,20 @@ export function useUserAverage10LiveQuery(options: {
       .from({
         //we use sub-query to filter first and then aggregate
         last10: buildSettingsResultsQuery(settingsFilter(), {
-          tagIds: activeTagsQuery().map((it) => it._id),
+          tagIds: getActiveTags().map((it) => it._id),
         })
           .orderBy(({ r }) => r.timestamp, "desc")
           .limit(10),
       })
       .select(({ last10 }) => ({ wpm: avg(last10.wpm), acc: avg(last10.acc) }))
       .findOne();
+  });
+
+  //a single-result live query represents its empty state as an empty array
+  return createMemo(() => {
+    const row = average();
+    if (row === undefined || Array.isArray(row)) return undefined;
+    return row;
   });
 }
 
@@ -636,7 +716,7 @@ export async function getUserAverage10Once(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+  const tagIds = getActiveTags().map((it) => it._id);
 
   const result = await queryOnce((q) =>
     q
@@ -658,7 +738,7 @@ export async function getUserDailyBestOnce(
 ): Promise<{ wpm: number; acc: number }> {
   //exit early if there is no user. Don't init the result collection
   if (!isAuthenticated()) return { wpm: 0, acc: 0 };
-  const tagIds = (await getActiveTagsOnce()).map((it) => it._id);
+  const tagIds = getActiveTags().map((it) => it._id);
 
   const result = await queryOnce(() =>
     buildSettingsResultsQuery(options, { tagIds })
@@ -718,16 +798,36 @@ createRoot(() =>
   createEffectOn(isAuthenticated, (hasUser) => {
     if (hasUser) {
       void resultsCollection.utils.refetch();
+    } else {
+      setLastResult(undefined);
     }
   }),
 );
 
-function getResults(): SnapshotResult<Mode>[] {
+function getResults(): NormalizedLocalResult<Mode>[] {
   return [...resultsCollection.values()];
 }
+
 /**
- * Used for non reactive access. Do not use in Solid components.
+ * Seconds typed in results since `since` (a timestamp): incomplete tests
+ * included, afk time excluded.
  */
-export const __nonReactive = {
-  getResults,
-};
+export async function getSecondsTypedSinceOnce(since: number): Promise<number> {
+  if (!isAuthenticated()) return 0;
+  const results = await queryOnce((q) =>
+    q
+      .from({ r: resultsCollection })
+      .where(({ r }) => gte(r.timestamp, since))
+      .select(({ r }) => ({
+        testDuration: sum(r.testDuration),
+        incompleteTestSeconds: sum(r.incompleteTestSeconds),
+        afkDuration: sum(r.afkDuration),
+      })),
+  );
+  // no results today: no row
+  const totals = results[0];
+  if (totals === undefined) return 0;
+  return (
+    totals.testDuration + totals.incompleteTestSeconds - totals.afkDuration
+  );
+}

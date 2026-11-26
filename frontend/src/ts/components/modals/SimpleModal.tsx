@@ -28,11 +28,11 @@ import {
 import { cn } from "../../utils/cn";
 import { getZodType, unwrapSchema } from "../../utils/zod";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Checkbox } from "../ui/form/Checkbox";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { TextareaField } from "../ui/form/TextareaField";
-import { fieldMandatory, fromSchema, handleResult } from "../ui/form/utils";
+import { Checkbox } from "../common/form/Checkbox";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { TextareaField } from "../common/form/TextareaField";
+import { fieldMandatory, fromSchema, handleResult } from "../common/form/utils";
 
 type SyncValidator = (opts: {
   value: string | boolean;
@@ -52,7 +52,7 @@ type SimpleModalValidators = {
 function getDefaultValues(
   // oxlint-disable-next-line typescript/no-explicit-any
   inputs: InputsFromSchema<any> | undefined,
-): Object {
+): object {
   if (inputs === undefined || Object.keys(inputs).length === 0) {
     return {};
   }

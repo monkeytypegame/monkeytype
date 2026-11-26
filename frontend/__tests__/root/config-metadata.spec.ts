@@ -1,5 +1,6 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
 import { configMetadata } from "../../src/ts/config/metadata";
+import { TEST_SETTINGS_KEYS } from "../../src/ts/test/engine/test-settings";
 import { __testing } from "../../src/ts/config/testing";
 import { setConfig } from "../../src/ts/config/setters";
 import { ConfigKey, Config as ConfigType } from "@monkeytype/schemas/configs";
@@ -17,7 +18,8 @@ describe("ConfigMeta", () => {
   });
   it("should have changeRequiresRestart defined", () => {
     const configsRequiringRestarts = Object.entries(configMetadata)
-      .filter(([_key, value]) => value.changeRequiresRestart)
+      // a function narrows when it restarts: still a test setting
+      .filter(([_key, value]) => value.changeRequiresRestart !== false)
       .map(([key]) => key)
       .sort();
 
@@ -40,13 +42,15 @@ describe("ConfigMeta", () => {
         "britishEnglish",
         "funbox",
         "customLayoutfluid",
+        "customPolyglot",
         "strictSpace",
         "stopOnError",
         "lazyMode",
-        "layout",
         "codeUnindentOnBackspace",
       ].sort(),
     );
+    // the engine's test settings are exactly these keys
+    expect([...TEST_SETTINGS_KEYS].sort()).toEqual(configsRequiringRestarts);
   });
 
   it("should have triggerResize defined", () => {
@@ -309,6 +313,51 @@ describe("ConfigMeta", () => {
           value: "8008",
           given: { customTheme: true },
           expected: { customTheme: false },
+        },
+        {
+          value: "8008",
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+        {
+          value: "8008",
+          given: { customTheme: true, autoSwitchTheme: true },
+          expected: { customTheme: false, autoSwitchTheme: false },
+        },
+      ],
+      customTheme: [
+        {
+          value: true,
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+        {
+          value: false,
+          given: { customTheme: true, autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
+        },
+        {
+          value: false,
+          given: { customTheme: false, autoSwitchTheme: true },
+          expected: { autoSwitchTheme: true },
+        },
+      ],
+      customThemeColors: [
+        {
+          value: [
+            "#000",
+            "#111",
+            "#222",
+            "#333",
+            "#444",
+            "#555",
+            "#666",
+            "#777",
+            "#888",
+            "#999",
+          ],
+          given: { autoSwitchTheme: true },
+          expected: { autoSwitchTheme: false },
         },
       ],
       keymapLayout: [

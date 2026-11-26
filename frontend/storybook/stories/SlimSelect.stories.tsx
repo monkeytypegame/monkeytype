@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 
 import preview from "#.storybook/preview";
 
-import SlimSelect from "../../src/ts/components/ui/SlimSelect";
+import SlimSelect from "../../src/ts/components/common/SlimSelect";
 
 const meta = preview.meta({
   title: "UI/SlimSelect",

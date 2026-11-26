@@ -11,10 +11,10 @@ import {
 } from "../../states/notifications";
 import * as CustomText from "../../test/custom-text";
 import { AnimatedModal } from "../common/AnimatedModal";
-import { Checkbox } from "../ui/form/Checkbox";
-import { InputField } from "../ui/form/InputField";
-import { SubmitButton } from "../ui/form/SubmitButton";
-import { fromSchema } from "../ui/form/utils";
+import { Checkbox } from "../common/form/Checkbox";
+import { InputField } from "../common/form/InputField";
+import { SubmitButton } from "../common/form/SubmitButton";
+import { fromSchema } from "../common/form/utils";
 
 const nameSchema = z
   .string()

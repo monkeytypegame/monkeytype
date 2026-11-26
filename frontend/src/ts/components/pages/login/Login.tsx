@@ -1,43 +1,31 @@
 import { createForm } from "@tanstack/solid-form";
-import { JSXElement } from "solid-js";
+import { For, JSXElement } from "solid-js";
 
-import {
-  AuthResult,
-  getAuthMethodDisplay,
-  signIn,
-  signInWithProvider,
-} from "../../../auth";
+import { AuthActionResult, signIn } from "../../../auth/actions";
+import { getThirdParties } from "../../../auth/state";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
   getLoginPageInputsEnabled,
 } from "../../../states/login";
 import { showModal } from "../../../states/modals";
-import {
-  showErrorNotification,
-  showNoticeNotification,
-} from "../../../states/notifications";
+import { showNoticeNotification } from "../../../states/notifications";
 import { Button } from "../../common/Button";
+import { Checkbox } from "../../common/form/Checkbox";
+import { InputField } from "../../common/form/InputField";
+import { SubmitButton } from "../../common/form/SubmitButton";
+import { allFieldsMandatory } from "../../common/form/utils";
 import { H3 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
-import { Checkbox } from "../../ui/form/Checkbox";
-import { InputField } from "../../ui/form/InputField";
-import { SubmitButton } from "../../ui/form/SubmitButton";
-import { allFieldsMandatory } from "../../ui/form/utils";
 
 export function Login(): JSXElement {
+  // the sign in action shows its own errors
   const trySignIn = async (
-    auth: () => Promise<AuthResult>,
-    label?: string,
+    auth: () => Promise<AuthActionResult>,
   ): Promise<void> => {
     disableLoginPageInputs();
     try {
-      const data = await auth();
-      if (!data.success) {
-        showErrorNotification(
-          `Failed to sign in${label !== undefined ? ` with ${label}` : ""}: ${data.message}`,
-        );
-      }
+      await auth();
     } finally {
       enableLoginPageInputs();
     }
@@ -51,7 +39,12 @@ export function Login(): JSXElement {
     },
     onSubmit: async ({ value }) =>
       await trySignIn(async () =>
-        signIn(value.email, value.password, value.rememberMe),
+        signIn({
+          method: "password",
+          email: value.email,
+          password: value.password,
+          rememberMe: value.rememberMe,
+        }),
       ),
     onSubmitInvalid: () => {
       showNoticeNotification("Please fill in all fields");
@@ -71,32 +64,22 @@ export function Login(): JSXElement {
         class="p-0"
       />
       <div class="grid grid-cols-2 gap-4">
-        <Button
-          fa={{ icon: "fa-google", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signInWithProvider("google", {
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("google"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
-        <Button
-          fa={{ icon: "fa-github", variant: "brand" }}
-          onClick={() =>
-            void trySignIn(
-              async () =>
-                signInWithProvider("github", {
-                  rememberMe: form.getFieldValue("rememberMe"),
-                }),
-              getAuthMethodDisplay("github"),
-            )
-          }
-          disabled={!getLoginPageInputsEnabled()}
-        />
+        <For each={getThirdParties()}>
+          {(thirdParty) => (
+            <Button
+              fa={thirdParty.fa}
+              onClick={() =>
+                void trySignIn(async () =>
+                  signIn({
+                    method: thirdParty.id,
+                    rememberMe: form.getFieldValue("rememberMe"),
+                  }),
+                )
+              }
+              disabled={!getLoginPageInputsEnabled()}
+            />
+          )}
+        </For>
       </div>
       <form
         class="grid w-full gap-2"

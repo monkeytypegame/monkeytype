@@ -6,7 +6,7 @@ import {
   getfpsLimit,
   resetFpsLimit,
   setfpsLimit,
-} from "../../anim";
+} from "../../states/fps-limit";
 import {
   getGlarsesMode,
   resetGlarsesMode,
@@ -51,7 +51,7 @@ function defineSetting<T extends SettingValue>(definition: {
   schema?: z.ZodType<T>;
 }): SettingDefinition {
   return {
-    ...(definition ?? {}),
+    ...definition,
     set: (value) => definition.set(value as T),
   };
 }
@@ -163,6 +163,7 @@ function Setting(props: { setting: SettingDefinition }): JSXElement {
               invalid() && "text-error",
             )}
             type={typeof value() === "number" ? "number" : "text"}
+            autocomplete="off"
             value={String(value())}
             onInput={() => setInvalid(false)}
             onBlur={(e) => {

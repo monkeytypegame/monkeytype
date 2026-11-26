@@ -1,19 +1,15 @@
 import { createSignal, JSXElement, Show } from "solid-js";
 import { z } from "zod";
 
+import { playTimeWarning, previewClick, previewError } from "../../../audio";
+import { isAuthenticated } from "../../../auth/state";
 import { resetConfig } from "../../../config/lifecycle";
 import { getConfig } from "../../../config/store";
-import {
-  playTimeWarning,
-  previewClick,
-  previewError,
-} from "../../../controllers/sound-controller";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { isAuthenticated } from "../../../states/core";
+import { createLocalStorageSignal } from "../../../hooks/createLocalStorageSignal";
+import { isCustomBackgroundLoaded } from "../../../states/custom-background";
 import { showModal } from "../../../states/modals";
 import { isSettingsSearchActive } from "../../../states/settings-search";
 import { showSimpleModal } from "../../../states/simple-modal";
-import { isCustomBackgroundLoaded } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
 import fileStorage from "../../../utils/file-storage";
 import { wordsToCamelCase } from "../../../utils/strings";
@@ -21,7 +17,7 @@ import { Advertisement } from "../../common/Advertisement";
 import { Anime, AnimeShow } from "../../common/anime";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { CommandlineHotkey } from "../../hotkeys/CommandlineHotkey";
+import { CommandlineHotkey } from "../../core/hotkeys/CommandlineHotkey";
 import { AutoSwitchTheme } from "./custom-setting/AutoSwitchTheme";
 import { CustomBackground } from "./custom-setting/CustomBackground";
 import { CustomBackgroundFilters } from "./custom-setting/CustomBackgroundFilters";
@@ -50,7 +46,7 @@ import { SettingsSearch } from "./SettingsSearch";
 
 export function SettingsPage(): JSXElement {
   return (
-    <div class="grid gap-8">
+    <div class="grid content-start gap-8">
       {/* while filtering, only the matching settings stay visible; everything
             else is hidden with css so nothing unmounts while typing */}
       <QuickNav class={cn(isSettingsSearchActive() && "hidden")} />
@@ -274,7 +270,7 @@ export function SettingsPage(): JSXElement {
 }
 
 function AccountSettingsNotice(): JSXElement {
-  const [dismissed, setDismissed] = useLocalStorage({
+  const [dismissed, setDismissed] = createLocalStorageSignal({
     key: "accountSettingsMessageDismissed",
     schema: z.boolean(),
     fallback: false,

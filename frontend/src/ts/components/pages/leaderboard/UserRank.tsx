@@ -5,7 +5,8 @@ import {
 import { formatDuration, intervalToDuration } from "date-fns";
 import { JSXElement, Match, Show, Switch } from "solid-js";
 
-import { getFormatting } from "../../../states/core";
+import { getConfig } from "../../../config/store";
+import { formatTypingSpeed } from "../../../utils/format";
 import { Fa } from "../../common/Fa";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { Table, TableEntry } from "./Table";
@@ -22,8 +23,6 @@ export function UserRank(props: {
   minTimeTyping: number;
   userTimeTyping: number;
 }): JSXElement {
-  const format = getFormatting;
-
   const userOverride = () => {
     if (props.data === undefined || props.data === null) {
       return "";
@@ -99,9 +98,9 @@ export function UserRank(props: {
                 <Match when={props.minWpm !== undefined}>
                   <div>
                     Not qualified (min speed required:{" "}
-                    {format().typingSpeed(props.minWpm, {
+                    {formatTypingSpeed(props.minWpm, {
                       showDecimalPlaces: true,
-                      suffix: ` ${format().typingSpeedUnit}`,
+                      suffix: ` ${getConfig.typingSpeedUnit}`,
                     })}
                     )
                   </div>

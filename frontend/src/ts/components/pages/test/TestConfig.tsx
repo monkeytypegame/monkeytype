@@ -1,20 +1,17 @@
+import { areUnsortedArraysEqual } from "@monkeytype/util/arrays";
 import { ComponentProps, For, JSXElement, Show } from "solid-js";
 
+import { isAuthenticated } from "../../../auth/state";
 import { configMetadata } from "../../../config/metadata";
 import { setConfig, setQuoteLengthAll } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { createEffectOn } from "../../../hooks/effects";
 import { useRefWithUtils } from "../../../hooks/useRefWithUtils";
-import { isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
-import {
-  isTestFinished,
-  getFocus,
-  isTestRestarting,
-} from "../../../states/test";
+import { isFocusMode } from "../../../states/test";
+import { isTestRestarting, isTestFinished } from "../../../test/engine/state";
 import { restartTest } from "../../../test/test-logic";
 import { FaObject } from "../../../types/font-awesome";
-import { areUnsortedArraysEqual } from "../../../utils/arrays";
 import { cn } from "../../../utils/cn";
 import { Anime } from "../../common/anime";
 import { Button } from "../../common/Button";
@@ -38,7 +35,9 @@ export function TestConfig(): JSXElement {
           variables,
           "group relative mb-8 hidden w-max grid-cols-[1fr_auto_1fr] justify-center place-self-center [font-size:var(--font-size)] md:grid",
           "mx-auto transition-opacity duration-125",
-          getFocus() || isTestFinished() ? "pointer-events-none opacity-0" : "",
+          isFocusMode() || isTestFinished()
+            ? "pointer-events-none opacity-0"
+            : "",
         )}
         data-ui-element="testConfig"
       >
@@ -82,7 +81,7 @@ function TCButton(props: {
         if (isTestRestarting()) return;
         props.onClick();
       }}
-      disabled={getFocus() || isTestFinished() || props.disabled}
+      disabled={isFocusMode() || isTestFinished() || props.disabled}
     />
   );
 }
