@@ -72,6 +72,18 @@
       "source": "ChatGPT - Read from console",
       "id": 11,
       "length": 97
+    },
+    {
+      "text": "class ExampleService : Service() {\n\tprivate var startMode: Int = 0\n\tprivate var binder: IBinder? = null\n\tprivate var allowRebind: Boolean = false\n\n\toverride fun onCreate() {\n\t\t// The service is being created\n\t}\n\n\toverride fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {\n\t\t// The service is starting, due to a call to startService()\n\t\treturn startMode\n\t}\n\n\toverride fun onBind(intent: Intent): IBinder? {\n\t\t// A client is binding to the service with bindService()\n\t\treturn binder\n\t}\n\n\toverride fun onUnbind(intent: Intent): Boolean {\n\t\t// All clients have unbound with unbindService()\n\t\treturn allowRebind\n\t}\n\n\toverride fun onRebind(intent: Intent) {\n\t\t// A client is binding, after onUnbind() has already been called\n\t}\n\n\toverride fun onDestroy() {\n\t\t// The service is no longer used and is being destroyed\n\t}\n}",
+      "source": "developer.android.com - Service lifecycle",
+      "id": 12,
+      "length": 832
+    },
+    {
+      "text": "class MainActivity : ComponentActivity() {\n\toverride fun onCreate(savedInstanceState: Bundle?) {\n\t\tsuper.onCreate(savedInstanceState)\n\n\t\tenableEdgeToEdge()\n\n\t\tsetContent {\n\t\t\tPasskeysTheme {\n\t\t\t\tScaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->\n\t\t\t\t\tButton(onClick = {}) {\n\t\t\t\t\t\tText(\"Click me!\")\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}",
+      "source": "developer.android.com - Compose MainActivity",
+      "id": 13,
+      "length": 335
     }
   ]
 }
