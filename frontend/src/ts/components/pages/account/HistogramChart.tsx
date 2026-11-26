@@ -139,7 +139,6 @@ export function buildHistogramChartDefinition(rows: HistogramChartRow[]) {
           scaleBand()
             .domain(rows.map((it) => it.label))
             .padding(0.28),
-        grid: true,
       },
       y: {
         scale: () => scaleLinear(),
