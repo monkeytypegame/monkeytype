@@ -11,20 +11,23 @@ type FileDB = DBSchema & {
 type Filename = "LocalBackgroundFile" | "LocalFontFamilyFile";
 
 class FileStorage {
-  private dbPromise: Promise<IDBPDatabase<FileDB>>;
+  private dbPromise?: Promise<IDBPDatabase<FileDB>>;
   private signals = new Map<
     Filename,
     [get: () => number, set: (v: number | ((prev: number) => number)) => void]
   >();
 
-  constructor(dbName = "file-storage-db") {
-    this.dbPromise = openDB<FileDB>(dbName, 1, {
+  // opened lazily: importing this module must not touch indexedDB, so tests and
+  // browsers without it can load code that only optionally uses stored files
+  private async getDb(): Promise<IDBPDatabase<FileDB>> {
+    this.dbPromise ??= openDB<FileDB>("file-storage-db", 1, {
       upgrade(db) {
         if (!db.objectStoreNames.contains("files")) {
           db.createObjectStore("files");
         }
       },
     });
+    return this.dbPromise;
   }
 
   private getSignal(
@@ -54,29 +57,29 @@ class FileStorage {
   }
 
   async storeFile(filename: Filename, dataUrl: string): Promise<void> {
-    const db = await this.dbPromise;
+    const db = await this.getDb();
     await db.put("files", dataUrl, filename);
     this.notify(filename);
   }
 
   async getFile(filename: Filename): Promise<string | undefined> {
-    const db = await this.dbPromise;
+    const db = await this.getDb();
     return db.get("files", filename);
   }
 
   async deleteFile(filename: Filename): Promise<void> {
-    const db = await this.dbPromise;
+    const db = await this.getDb();
     await db.delete("files", filename);
     this.notify(filename);
   }
 
   async listFilenames(): Promise<Filename[]> {
-    const db = await this.dbPromise;
+    const db = await this.getDb();
     return db.getAllKeys("files") as Promise<Filename[]>;
   }
 
   async hasFile(filename: Filename): Promise<boolean> {
-    const db = await this.dbPromise;
+    const db = await this.getDb();
     return (await db.count("files", filename)) > 0;
   }
 }

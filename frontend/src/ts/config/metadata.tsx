@@ -1757,11 +1757,16 @@ const configMetadataEntries = {
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
     overrideConfig: ({ value, currentConfig }) => {
-      // re-picking changes nothing, so the theme controller can't react to it
+      // re-picking changes nothing, so the theme effects can't react to it
       if (value === currentConfig.theme) setRandomTheme(null);
-      // turning the custom theme off disables auto switch itself, so the
-      // notice isn't shown twice
-      if (currentConfig.customTheme) return { customTheme: false };
+      // turning custom/wallpaper theme off disables auto switch itself, so
+      // the notice isn't shown twice
+      if (currentConfig.customTheme || currentConfig.wallpaperTheme) {
+        return {
+          ...(currentConfig.customTheme ? { customTheme: false } : {}),
+          ...(currentConfig.wallpaperTheme ? { wallpaperTheme: false } : {}),
+        };
+      }
       return disableAutoSwitchTheme(currentConfig);
     },
     // hand-built list (themes): sorted by color and affected by config.favThemes
@@ -1775,9 +1780,13 @@ const configMetadataEntries = {
     group: "theme",
     overrideConfig: ({ value, currentConfig }) => {
       if (value !== currentConfig.customTheme) {
-        return disableAutoSwitchTheme(currentConfig);
+        // the wallpaper theme is a custom theme, so either direction leaves it off
+        return {
+          ...disableAutoSwitchTheme(currentConfig),
+          wallpaperTheme: false,
+        };
       }
-      // re-picking changes nothing, so the theme controller can't react to it
+      // re-picking changes nothing, so the theme effects can't react to it
       setRandomTheme(null);
       return {};
     },
@@ -1786,6 +1795,43 @@ const configMetadataEntries = {
         options: "fromSchema",
       },
     },
+  },
+  wallpaperTheme: {
+    key: "wallpaperTheme",
+    fa: { icon: "fa-image" },
+    displayString: "wallpaper theme",
+    changeRequiresRestart: false,
+    group: "theme",
+    description:
+      "Generate page colors from the current Monkeytype wallpaper image and apply them as a palette. The theme section of the settings offers the generated palettes, their tone and fine tuning.",
+    overrideConfig: ({ value, currentConfig }) => {
+      if (value) {
+        return {
+          ...disableAutoSwitchTheme(currentConfig),
+          customTheme: true,
+        };
+      }
+      return {};
+    },
+    // set on the theme settings page and through the wallpaper commands
+    commandline: null,
+  },
+  wallpaperThemeVariant: {
+    key: "wallpaperThemeVariant",
+    fa: { icon: "fa-palette" },
+    displayString: "wallpaper theme variant",
+    changeRequiresRestart: false,
+    group: "theme",
+    // applied through the wallpaper commands, they also regenerate the colors
+    commandline: null,
+  },
+  wallpaperThemeMode: {
+    key: "wallpaperThemeMode",
+    fa: { icon: "fa-circle" },
+    displayString: "wallpaper theme appearance",
+    changeRequiresRestart: false,
+    group: "theme",
+    commandline: null,
   },
   customThemeColors: {
     key: "customThemeColors",

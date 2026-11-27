@@ -1,3 +1,5 @@
+import type { CustomThemeColors } from "@monkeytype/schemas/configs";
+
 import { CustomThemeNameSchema } from "@monkeytype/schemas/users";
 import { For, JSXElement, Show, untrack } from "solid-js";
 import { debounce } from "throttle-debounce";
@@ -31,6 +33,15 @@ import {
   setCustomThemeDraft,
   updateCustomThemeDraftColor,
 } from "../../../../theme/state";
+import {
+  applyWallpaperVariant,
+  generateWallpaperThemes,
+  regenerateFromLastSource,
+  wallpaperError,
+  wallpaperLoading,
+  wallpaperSchemes,
+  wallpaperSourceLabel,
+} from "../../../../theme/wallpaper";
 import { buildCustomThemeLink } from "../../../../url-actions/actions/custom-theme";
 import { cn } from "../../../../utils/cn";
 import {
@@ -236,6 +247,182 @@ export function Theme(): JSXElement {
     </div>
   );
 
+  /** Generated wallpaper palettes: applied straight to the saved config colors. */
+  const WallpaperPicker = (props: { color: ColorName }): JSXElement => {
+    const colorIndex = (): number =>
+      [
+        "bg",
+        "main",
+        "caret",
+        "sub",
+        "subAlt",
+        "text",
+        "error",
+        "errorExtra",
+        "colorfulError",
+        "colorfulErrorExtra",
+      ].indexOf(props.color);
+
+    return (
+      <div class="grid w-full grid-cols-2 items-center gap-2">
+        <div>{props.color === "subAlt" ? "sub alt" : props.color}</div>
+        <input
+          class="w-full"
+          type="text"
+          autocomplete="off"
+          value={getTheme()[props.color]}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            if (!/^#([0-9A-Fa-f]{3}){1,2}$/.test(value)) {
+              // invalid hex color
+              e.currentTarget.value = getTheme()[props.color];
+              return;
+            }
+            const current = [...getConfig.customThemeColors];
+            current[colorIndex()] = value;
+            setConfig("customThemeColors", current as CustomThemeColors);
+          }}
+        />
+      </div>
+    );
+  };
+
+  const WallpaperPanel = (): JSXElement => {
+    let fileInputRef: HTMLInputElement | undefined;
+
+    return (
+      <div class="grid gap-4">
+        <div class="text-center text-sub">
+          generate page colors from your current monkeytype wallpaper and apply
+          them as a palette
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2">
+          <Button
+            text="extract from current wallpaper"
+            fa={{ icon: "fa-image" }}
+            onClick={() => {
+              void generateWallpaperThemes("custom-background");
+            }}
+          />
+          <Button
+            text="upload image"
+            fa={{ icon: "fa-file-import" }}
+            onClick={() => {
+              fileInputRef?.click();
+            }}
+          />
+          <input
+            ref={(el) => (fileInputRef = el)}
+            type="file"
+            accept="image/*"
+            class="hidden"
+            onChange={(e) => {
+              const file = e.currentTarget.files?.[0];
+              if (file !== undefined) {
+                void generateWallpaperThemes(file);
+              }
+              e.currentTarget.value = "";
+            }}
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+          <span class="text-sub">tone:</span>
+          <Button
+            text="light"
+            active={getConfig.wallpaperThemeMode === "light"}
+            onClick={() => {
+              setConfig("wallpaperThemeMode", "light");
+              void regenerateFromLastSource();
+            }}
+          />
+          <Button
+            text="dark"
+            active={getConfig.wallpaperThemeMode === "dark"}
+            onClick={() => {
+              setConfig("wallpaperThemeMode", "dark");
+              void regenerateFromLastSource();
+            }}
+          />
+        </div>
+
+        <Show when={wallpaperLoading()}>
+          <div class="text-center text-sub">generating colors...</div>
+        </Show>
+
+        <Show when={wallpaperError() !== null}>
+          <div class="text-center text-(--error)">{wallpaperError()}</div>
+        </Show>
+
+        <Show when={wallpaperSourceLabel() !== "" && !wallpaperLoading()}>
+          <div class="text-center text-sm text-sub">
+            source: {wallpaperSourceLabel()}
+          </div>
+        </Show>
+
+        <Show when={wallpaperSchemes().length > 0}>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <For each={wallpaperSchemes()}>
+              {(scheme) => (
+                <button
+                  type="button"
+                  aria-pressed={getConfig.wallpaperThemeVariant === scheme.id}
+                  class={cn(
+                    "flex flex-col gap-2 rounded-lg border-2 p-3 text-left transition-colors",
+                    getConfig.wallpaperThemeVariant === scheme.id
+                      ? "border-(--main) bg-(--sub-alt)"
+                      : "border-transparent bg-(--sub-alt) hover:border-(--sub)",
+                  )}
+                  onClick={() => applyWallpaperVariant(scheme)}
+                >
+                  <div class="font-medium text-(--text)">{scheme.name}</div>
+                  <ThemeBubbles
+                    inset={false}
+                    colors={{
+                      bg: scheme.colors[0],
+                      main: scheme.colors[1],
+                      sub: scheme.colors[3],
+                      text: scheme.colors[5],
+                    }}
+                  />
+                </button>
+              )}
+            </For>
+          </div>
+        </Show>
+
+        <Show
+          when={
+            wallpaperSchemes().length === 0 &&
+            !wallpaperLoading() &&
+            wallpaperError() === null
+          }
+        >
+          <div class="text-center text-sm text-sub">
+            no generated colors yet
+          </div>
+        </Show>
+
+        <div class="text-center text-sm text-sub">
+          fine-tune the applied colors:
+        </div>
+        <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+          <WallpaperPicker color="bg" />
+          <WallpaperPicker color="main" />
+          <WallpaperPicker color="caret" />
+          <WallpaperPicker color="sub" />
+          <WallpaperPicker color="subAlt" />
+          <WallpaperPicker color="text" />
+          <WallpaperPicker color="error" />
+          <WallpaperPicker color="errorExtra" />
+          <WallpaperPicker color="colorfulError" />
+          <WallpaperPicker color="colorfulErrorExtra" />
+        </div>
+      </div>
+    );
+  };
+
   createEffectOn(
     () => getConfig.customTheme,
     (custom) => {
@@ -251,16 +438,29 @@ export function Theme(): JSXElement {
       fa={configMetadata.theme.fa}
       description={configMetadata.theme.description}
       inputs={
-        <div class="grid w-full grid-cols-2 gap-2">
+        <div class="grid w-full grid-cols-3 gap-2">
           <Button
-            onClick={() => setConfig("customTheme", false)}
+            onClick={() => {
+              setConfig("wallpaperTheme", false);
+              setConfig("customTheme", false);
+            }}
             active={!getConfig.customTheme}
             text="preset"
           />
           <Button
-            onClick={() => setConfig("customTheme", true)}
-            active={getConfig.customTheme}
+            onClick={() => {
+              setConfig("wallpaperTheme", false);
+              setConfig("customTheme", true);
+            }}
+            active={getConfig.customTheme && !getConfig.wallpaperTheme}
             text="custom"
+          />
+          <Button
+            onClick={() => {
+              setConfig("wallpaperTheme", true);
+            }}
+            active={getConfig.customTheme && getConfig.wallpaperTheme}
+            text="wallpaper"
           />
         </div>
       }
@@ -294,8 +494,11 @@ export function Theme(): JSXElement {
           <AnimeMatch when={!getConfig.customTheme}>
             <Presets />
           </AnimeMatch>
-          <AnimeMatch when={getConfig.customTheme}>
+          <AnimeMatch when={getConfig.customTheme && !getConfig.wallpaperTheme}>
             <Customs />
+          </AnimeMatch>
+          <AnimeMatch when={getConfig.customTheme && getConfig.wallpaperTheme}>
+            <WallpaperPanel />
           </AnimeMatch>
         </AnimeSwitch>
       }

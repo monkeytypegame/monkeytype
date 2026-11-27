@@ -9,6 +9,7 @@ import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
+import WallpaperThemeCommands from "./lists/wallpaper-theme";
 import PresetsCommands from "./lists/presets";
 import FunboxCommands from "./lists/funbox";
 import ThemesCommands from "./lists/themes";
@@ -176,6 +177,7 @@ export const commands: CommandsSubgroup = {
       "customTheme",
 
       ...CustomThemesListCommands,
+      ...WallpaperThemeCommands,
       "flipTestColors",
       "colorfulMode",
       ...AddOrRemoveThemeToFavorite,

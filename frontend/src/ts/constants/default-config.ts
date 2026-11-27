@@ -6,6 +6,9 @@ const obj: Config = {
   themeDark: "serika_dark",
   autoSwitchTheme: false,
   customTheme: false,
+  wallpaperTheme: false,
+  wallpaperThemeVariant: "tonal-spot",
+  wallpaperThemeMode: "dark",
   customThemeColors: [
     "#323437",
     "#e2b714",
