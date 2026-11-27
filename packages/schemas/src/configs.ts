@@ -289,6 +289,22 @@ export const CustomThemeColorsSchema = z.tuple([
 ]);
 export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
 
+export const WallpaperThemeVariantSchema = z.enum([
+  "tonal-spot",
+  "vibrant",
+  "expressive",
+  "content",
+  "neutral",
+  "monochrome",
+  "fidelity",
+  "rainbow",
+  "fruit-salad",
+]);
+export type WallpaperThemeVariant = z.infer<typeof WallpaperThemeVariantSchema>;
+
+export const WallpaperThemeModeSchema = z.enum(["dark", "light"]);
+export type WallpaperThemeMode = z.infer<typeof WallpaperThemeModeSchema>;
+
 export const ThemeNameSchema = Themes.ThemeNameSchema;
 export type ThemeName = z.infer<typeof ThemeNameSchema>;
 
@@ -501,6 +517,9 @@ export const ConfigSchema = z
     theme: ThemeNameSchema,
     customTheme: z.boolean(),
     customThemeColors: CustomThemeColorsSchema,
+    wallpaperTheme: z.boolean(),
+    wallpaperThemeVariant: WallpaperThemeVariantSchema,
+    wallpaperThemeMode: WallpaperThemeModeSchema,
 
     // hide elements
     showKeyTips: z.boolean(),

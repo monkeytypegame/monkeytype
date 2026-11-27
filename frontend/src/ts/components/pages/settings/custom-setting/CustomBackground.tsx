@@ -180,6 +180,13 @@ export function CustomBackground(): JSXElement {
               }}
             </For>
           </div>
+          <Button
+            fa={{ icon: "fa-palette" }}
+            text="use wallpaper colors"
+            onClick={() => {
+              setConfig("wallpaperTheme", true);
+            }}
+          />
         </div>
       }
     />
