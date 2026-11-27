@@ -16,6 +16,7 @@ export const LanguageSchema = z.enum(
     "english_shakespearean",
     "english_old",
     "english_medical",
+    "simplified_technical_english",
     "spanish",
     "spanish_1k",
     "spanish_10k",
