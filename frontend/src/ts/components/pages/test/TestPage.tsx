@@ -19,6 +19,7 @@ import { getGlarsesMode } from "../../../states/glarses-mode";
 import { skipBreakdownEvent } from "../../../states/header";
 import { listenForModifierKeys } from "../../../states/modifiers";
 import { listenForMonkeyKeys } from "../../../states/monkey";
+import { setHighlightedWordRange } from "../../../states/result";
 import {
   isFocusMode,
   getLayoutfluidTimerText,
@@ -78,7 +79,6 @@ import { MonkeyPower } from "./MonkeyPower";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
 import * as Replay from "./result/replay";
-import * as ResultWordHighlight from "./result/result-word-highlight";
 import { TestResult } from "./result/TestResult";
 import { TestConfig } from "./TestConfig";
 import { TestInitFailed } from "./TestInitFailed";
@@ -312,7 +312,7 @@ export function TestPage(): JSXElement {
       // the fade-in (isRestartAnimating)
       focusWordsEvent.dispatch({ force: true });
       // the restart's side effects
-      ResultWordHighlight.destroy();
+      setHighlightedWordRange(undefined);
       if (source === "resultPage") {
         if (getConfig.randomTheme !== "off") {
           randomizeTheme();

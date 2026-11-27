@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import { z } from "zod";
 
@@ -107,3 +108,13 @@ export function toggleSmoothedBurst(): void {
   setSmoothedBurst(!getSmoothedBurst());
   showSuccessNotification(getSmoothedBurst() ? "on" : "off");
 }
+
+// result chart hover: the words history highlights the words typed in the
+// hovered second
+export type HighlightedWordRange = { first: number; last: number };
+
+export const [getHighlightedWordRange, setHighlightedWordRange] = createSignal<
+  HighlightedWordRange | undefined
+>(undefined, {
+  equals: (a, b) => a?.first === b?.first && a?.last === b?.last,
+});

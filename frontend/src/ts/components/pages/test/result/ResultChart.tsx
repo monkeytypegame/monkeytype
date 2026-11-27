@@ -30,7 +30,11 @@ import { createLocalStorageSignal } from "../../../../hooks/createLocalStorageSi
 import { getTag } from "../../../../queries/tags";
 import { getLocalPB } from "../../../../queries/user";
 import { showSuccessNotification } from "../../../../states/notifications";
-import { getSmoothedBurst, resultState } from "../../../../states/result";
+import {
+  getSmoothedBurst,
+  resultState,
+  setHighlightedWordRange,
+} from "../../../../states/result";
 import { CompletedResult } from "../../../../states/test";
 import {
   getRawHistory,
@@ -55,7 +59,6 @@ import {
 import { Button } from "../../../common/Button";
 import { ChartJs } from "../../../common/ChartJs";
 import { Fa } from "../../../common/Fa";
-import * as ResultWordHighlight from "./result-word-highlight";
 
 type ChartData = {
   labels: string[];
@@ -368,9 +371,11 @@ export function toggleFakeChartData(): void {
 }
 
 let prevTooltipItem: TooltipItem<"line" | "scatter"> | undefined;
+// a tooltip callback can land after the pointer left
+let isHoveringChart = false;
 
 function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
-  if (prevTooltipItem === ti) return "";
+  if (prevTooltipItem === ti || !isHoveringChart) return "";
   const eventLog = getResultData()?.eventLog;
   if (eventLog === undefined) return "";
 
@@ -383,7 +388,8 @@ function highlightWordsForTooltip(ti: TooltipItem<"line" | "scatter">): string {
     const first = unique[0];
     const last = lastElementFromArray(unique);
     if (first === undefined || last === undefined) return "";
-    void ResultWordHighlight.highlightWordsInRange(first, last);
+    if (last < first) return "";
+    setHighlightedWordRange({ first, last });
   } catch {}
   return "";
 }
@@ -666,10 +672,10 @@ export function ResultChart(props: {
       </div>
       <div
         class="h-full"
-        onMouseEnter={() => ResultWordHighlight.setIsHoverChart(true)}
+        onMouseEnter={() => (isHoveringChart = true)}
         onMouseLeave={() => {
-          ResultWordHighlight.setIsHoverChart(false);
-          ResultWordHighlight.clear();
+          isHoveringChart = false;
+          setHighlightedWordRange(undefined);
         }}
       >
         <ChartJs

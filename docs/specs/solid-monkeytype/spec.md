@@ -209,7 +209,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 - **Focus mode**: a signal. The root layout binds focus state on the app, header, footer and banners; cursor hiding is CSS keyed off that state. One component owns the mouse-move exit listener.
 - **Funbox component** owns funbox document state (body funbox state, the funbox stylesheet link, CRT scanline), derived from active funboxes.
 - **Monkey power**: a component owning its canvas, positioned from the caret. TestPage renders it (the canvas portals to the body); its sparks start at `mainCaretPosition`, a signal the main caret's handle sets on each move (where the caret is heading, in page coordinates), and it stops its shake when the engine phase turns `restarting`.
-- **Result**: fully component-driven. Word highlight on chart hover is part of the words-history component, driven by a highlighted-range signal the chart writes.
+- **Result**: fully component-driven. Word highlight on chart hover is part of the words-history component, driven by a highlighted-range signal the chart writes (`getHighlightedWordRange` in `states/result`); it measures the words it is handed on the first highlight after mount, a resize or new words.
 - **Screenshot**: a screenshot-mode signal. Elements that hide during capture do it through state; the capture reads the result element through its ref.
 - Visibility rules (blind mode, hidden letters, out-of-focus blur) are CSS on `data-ui-*` state, not JS.
 

@@ -37,7 +37,9 @@
   }
 
   .inputWordsContainer {
-    position: relative;
+    position: absolute;
+    top: 0;
+    height: 100%;
     &.withAnimation {
       transition: all 0.25s ease;
     }

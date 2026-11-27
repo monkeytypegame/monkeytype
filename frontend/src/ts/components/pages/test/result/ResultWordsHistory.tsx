@@ -1,11 +1,8 @@
 import {
-  createEffect,
   createMemo,
   createSignal,
   For,
   JSXElement,
-  on,
-  onCleanup,
   Show,
   untrack,
 } from "solid-js";
@@ -35,7 +32,6 @@ import { get as getTypingSpeedUnit } from "../../../../utils/typing-speed-units"
 import { AnimeShow } from "../../../common/anime";
 import { buildBalloonHtmlProperties } from "../../../common/Balloon";
 import { Fa } from "../../../common/Fa";
-import * as ResultWordHighlight from "./result-word-highlight";
 import {
   letterAttributes,
   letterClass,
@@ -43,6 +39,7 @@ import {
   wordClass,
   wordsClass,
 } from "./result-words";
+import { ResultWordHighlight } from "./ResultWordHighlight";
 
 type Heatmap = {
   steps: { val: number; colorId: number }[];
@@ -118,21 +115,10 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
 
   const toggleHeatmap = (): void => {
     setConfig("burstHeatmap", !getConfig.burstHeatmap);
-    ResultWordHighlight.destroy();
   };
 
-  // highlights are positioned absolutely, stale after a resize
-  window.addEventListener("resize", ResultWordHighlight.destroy);
-  onCleanup(() =>
-    window.removeEventListener("resize", ResultWordHighlight.destroy),
-  );
-
-  // element is remounted on every open, so drop highlights tied to the old one
-  createEffect(
-    on(isWordsHistoryOpen, () => ResultWordHighlight.destroy(), {
-      defer: true,
-    }),
-  );
+  // by word index, for the highlight to measure
+  const wordEls: HTMLElement[] = [];
 
   return (
     <AnimeShow
@@ -191,9 +177,16 @@ export function ResultWordsHistory(props: { eventLog: EventLog }): JSXElement {
         </div>
         <div class={wordsClass()} data-ui-element="wordsHistory">
           <For each={words()}>
-            {(word) => <Word word={word} heatmap={heatmap()} />}
+            {(word, i) => (
+              <Word
+                word={word}
+                heatmap={heatmap()}
+                ref={(el) => (wordEls[i()] = el)}
+              />
+            )}
           </For>
         </div>
+        <ResultWordHighlight words={words()} getWordEls={() => wordEls} />
       </div>
     </AnimeShow>
   );
@@ -240,6 +233,7 @@ function getWordColor(
 function Word(props: {
   word: HistoryWord;
   heatmap: Heatmap | null;
+  ref: (el: HTMLElement) => void;
 }): JSXElement {
   const [isHovered, setHovered] = createSignal(false);
 
@@ -263,14 +257,13 @@ function Word(props: {
 
   return (
     <div
+      ref={(el) => props.ref(el)}
       class={cn(wordClass, {
         nocursor: props.word.input !== "",
         error: props.word.error,
       })}
       style={{ color: color() }}
       {...wordAttributes(props.word)}
-      // read by result-word-highlight
-      data-input={props.word.input}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

@@ -3,7 +3,6 @@ import { createSignal } from "solid-js";
 import { z } from "zod";
 
 import { getConfig } from "../config/store";
-import * as ResultWordHighlight from "../components/pages/test/result/result-word-highlight";
 import { getKoreanStatus, getResultData, isTestFinished } from "./engine/state";
 import {
   showErrorNotification,
@@ -38,7 +37,7 @@ export type HistoryLetter = {
 };
 
 export type HistoryWord = {
-  // what the user typed, spaces replaced with underscores. Read by result-word-highlight.
+  // what the user typed, spaces replaced with underscores. Shown by the chart hover highlight.
   input: string;
   burst?: number;
   // committed with space or newline
@@ -161,7 +160,6 @@ export function buildWordsHistory(eventLog: EventLog): HistoryWord[] {
 
 export function toggleResultWords(noAnimation = false): void {
   if (!isTestFinished()) return;
-  ResultWordHighlight.updateToggleWordsHistoryTime();
 
   const open = !isWordsHistoryOpen();
   setWordsHistoryAnimated(!open || !noAnimation);
