@@ -21,6 +21,26 @@
   --ts-chart-tooltip-font: 400 12px / 1.3 var(--font);
   --ts-chart-tooltip-max-width: 200px;
 
+  // animate the tooltip (125 ms): the Solid adapter
+  // hardcodes the static renderer, so the library's tooltip motion is
+  // unavailable. The library positions it via left/top and hides it with the
+  // `hidden` attribute; allow-discrete + @starting-style fade it in and out
+  .ts-chart-tooltip {
+    transition:
+      opacity 125ms ease-out,
+      left 125ms ease-out,
+      top 125ms ease-out,
+      display 125ms allow-discrete;
+
+    &[hidden] {
+      opacity: 0;
+    }
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
   // suppress the pointer-focus ring; the keyboard ring stays (:focus-visible)
   svg:focus:not(:focus-visible) {
     outline: none;
