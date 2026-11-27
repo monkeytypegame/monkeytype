@@ -1,3 +1,5 @@
+import { onCleanup } from "solid-js";
+
 import { setIsScreenshotting } from "../states/core";
 import { hideLoaderBar, showLoaderBar } from "../states/loader-bar";
 import {
@@ -5,7 +7,6 @@ import {
   showSuccessNotification,
 } from "../states/notifications";
 import * as Replay from "../components/pages/test/result/replay";
-import { qs, qsa } from "../utils/dom";
 import { download as downloadFile } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import {
@@ -14,6 +15,17 @@ import {
   copyImageToClipboard,
 } from "../utils/screenshot";
 
+// the result element to capture
+let target: HTMLElement | undefined;
+
+/** TestResult's ref: captures read `el` until its owner cleans up. */
+export function registerScreenshotTarget(el: HTMLElement): void {
+  target = el;
+  onCleanup(() => {
+    if (target === el) target = undefined;
+  });
+}
+
 function prepare(): void {
   showLoaderBar(true);
 
@@ -21,27 +33,22 @@ function prepare(): void {
     Replay.pauseReplay();
   }
 
-  // the result components and Funbox (crt) hide the buttons, replay, login tip and ads and show the watermark
+  // elements hide through this signal: the result components, word highlight,
+  // header, footer, overlays, crt and the static no-CSS box (NoCssDetails)
   setIsScreenshotting(true);
-  qs("noscript")?.hide();
-  qs("#nocss")?.hide();
-  qsa(".highlightContainer")?.hide();
 }
 
 function revert(): void {
   setIsScreenshotting(false);
   hideLoaderBar();
-  qs("noscript")?.show();
-  qs("#nocss")?.show();
-  qsa(".highlightContainer")?.show();
-  qs("html")?.setStyle({ scrollBehavior: "smooth" });
+  document.documentElement.style.scrollBehavior = "smooth";
 }
 
 async function captureResult(): Promise<Blob | null> {
   prepare();
   try {
-    const src = qs("#resultScreenshotTarget");
-    if (src === null) {
+    const src = target;
+    if (src === undefined) {
       console.error("Result wrapper not found for screenshot");
       showErrorNotification("Screenshot target element not found");
       return null;

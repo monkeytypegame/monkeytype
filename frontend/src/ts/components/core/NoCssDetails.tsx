@@ -1,6 +1,8 @@
-import { For, JSXElement, Show } from "solid-js";
+import { createEffect, For, JSXElement, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import { envConfig } from "virtual:env-config";
+
+import { getIsScreenshotting } from "../../states/core";
 
 const keyStyle = {
   padding: "1rem",
@@ -11,10 +13,15 @@ const keyStyle = {
 
 /**
  * Fills the static no-CSS warning (warnings.html) with the reload shortcut for
- * this platform and the requested stylesheets and scripts. Inline styles only:
- * it shows when the CSS failed to load.
+ * this platform and the requested stylesheets and scripts, and hides the box
+ * while screenshotting. Inline styles only: it shows when the CSS failed to
+ * load.
  */
 export function NoCssDetails(): JSXElement {
+  // static markup outside the render root, so it can't be bound in JSX
+  const box = document.getElementById("nocss");
+  createEffect(() => box?.classList.toggle("hidden", getIsScreenshotting()));
+
   const isMac = window.navigator.userAgent.toLowerCase().includes("mac");
   const stylesheets = (
     [...document.querySelectorAll("link[rel=stylesheet]")] as HTMLLinkElement[]

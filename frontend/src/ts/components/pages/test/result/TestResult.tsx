@@ -11,6 +11,7 @@ import { getIsScreenshotting } from "../../../../states/core";
 import { getGlarsesMode } from "../../../../states/glarses-mode";
 import * as Engine from "../../../../test/engine/commands";
 import { getResultData, getSaveStatus } from "../../../../test/engine/state";
+import { registerScreenshotTarget } from "../../../../test/screenshot";
 import { restartTest } from "../../../../test/test-logic";
 import { cn } from "../../../../utils/cn";
 import { scrollToCenterOrTop } from "../../../../utils/misc";
@@ -81,7 +82,7 @@ export function TestResult(props: {
         }
       >
         {(test) => (
-          <div id="resultScreenshotTarget">
+          <div id="resultScreenshotTarget" ref={registerScreenshotTarget}>
             <Show when={!getGlarsesMode()}>
               <div class={cn("mb-4 grid gap-4 md:grid-cols-[auto_1fr]")}>
                 <ResultMainStats

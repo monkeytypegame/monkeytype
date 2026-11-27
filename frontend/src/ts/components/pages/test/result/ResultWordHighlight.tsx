@@ -12,6 +12,7 @@ import {
 import type { HistoryWord } from "../../../../test/words-history";
 
 import { createTrigger } from "../../../../hooks/createTrigger";
+import { getIsScreenshotting } from "../../../../states/core";
 import {
   getHighlightedWordRange,
   HighlightedWordRange,
@@ -186,7 +187,10 @@ export function ResultWordHighlight(props: {
               positions()?.[i()] ?? { start: 0, end: 0 };
             return (
               <div
-                class="highlightContainer"
+                class={cn(
+                  "highlightContainer",
+                  getIsScreenshotting() && "hidden",
+                )}
                 style={{
                   top: `${line.top - PADDING_Y / 2}px`,
                   left: `${line.left - PADDING_X / 2}px`,

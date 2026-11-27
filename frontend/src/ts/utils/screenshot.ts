@@ -4,7 +4,6 @@ import {
   showNoticeNotification,
   showSuccessNotification,
 } from "../states/notifications";
-import { ElementWithUtils } from "./dom";
 
 let firefoxClipboardNotificationShown = false;
 
@@ -13,7 +12,7 @@ let firefoxClipboardNotificationShown = false;
  * Returns null on failure (error notification already shown).
  */
 export async function captureElement(
-  src: ElementWithUtils,
+  src: HTMLElement,
   padding: { x: number; y: number },
 ): Promise<HTMLCanvasElement | null> {
   const { domToCanvas } = await import("modern-screenshot");
@@ -26,11 +25,15 @@ export async function captureElement(
   // Wait a frame to ensure all UI changes are rendered
   await new Promise((resolve) => requestAnimationFrame(resolve));
 
-  const sourceX = src.screenBounds().left ?? 0;
-  const sourceY = src.screenBounds().top ?? 0;
-
-  const sourceWidth = src.getOuterWidth();
-  const sourceHeight = src.getOuterHeight();
+  // page coordinates; size includes margins
+  const rect = src.getBoundingClientRect();
+  const style = getComputedStyle(src);
+  const sourceX = rect.left + window.scrollX;
+  const sourceY = rect.top + window.scrollY;
+  const sourceWidth =
+    rect.width + parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+  const sourceHeight =
+    rect.height + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
   const paddingX = padding.x;
   const paddingY = padding.y;
 
@@ -61,6 +64,8 @@ export async function captureElement(
         if (!(el instanceof HTMLElement)) return true;
         // dev only, thousands of nodes, makes capture ~10x slower
         if (el.id === "tanstack_devtools") return false;
+        // inert while JS runs, but would render in the capture
+        if (el.tagName === "NOSCRIPT") return false;
         const cs = getComputedStyle(el);
         return !(el.classList.contains("hidden") || cs.display === "none");
       },

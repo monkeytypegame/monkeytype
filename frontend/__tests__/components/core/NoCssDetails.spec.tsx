@@ -2,6 +2,7 @@ import { render } from "@solidjs/testing-library";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { NoCssDetails } from "../../../src/ts/components/core/NoCssDetails";
+import { setIsScreenshotting } from "../../../src/ts/states/core";
 
 function text(id: string): string {
   return (document.getElementById(id)?.textContent ?? "")
@@ -22,6 +23,7 @@ describe("NoCssDetails", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    setIsScreenshotting(false);
     document.head.innerHTML = "";
   });
 
@@ -47,5 +49,16 @@ describe("NoCssDetails", () => {
     );
     expect(text("nocss-js")).toMatch(/^Requested Javascript files:/);
     expect(text("nocss-js")).toMatch(/Client version:\S+$/);
+  });
+
+  it("hides the box while screenshotting", () => {
+    render(() => <NoCssDetails />);
+    const box = document.getElementById("nocss");
+
+    expect(box?.classList.contains("hidden")).toBe(false);
+    setIsScreenshotting(true);
+    expect(box?.classList.contains("hidden")).toBe(true);
+    setIsScreenshotting(false);
+    expect(box?.classList.contains("hidden")).toBe(false);
   });
 });
