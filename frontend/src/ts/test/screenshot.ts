@@ -34,7 +34,7 @@ function prepare(): void {
   }
 
   // elements hide through this signal: the result components, word highlight,
-  // header, footer, overlays, crt and the static no-CSS box (NoCssDetails)
+  // header, footer, overlays and crt
   setIsScreenshotting(true);
 }
 

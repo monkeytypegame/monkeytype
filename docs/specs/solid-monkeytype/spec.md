@@ -124,7 +124,7 @@ Users should see no behaviour change, except where a bug at today's seams disapp
 ### App shell
 
 - One Solid render root. Boot work that today waits on DOM-ready (body transition, app-ready flag, server-configuration sync, merch banner, service worker) moves into the App component's lifecycle or a DOM-free boot module. `onDOMReady` and the ready module are deleted.
-- The static HTML keeps only: the theme fallback variables and CSS layer order, the no-JS/no-CSS warnings (they must render without JS/CSS), the funbox stylesheet link hook, the captcha script and the entry. Showing or hiding the warnings is done by state (no-CSS detection, screenshot mode), not by DOM queries scattered across modules.
+- The static HTML keeps only: the theme fallback variables and CSS layer order, the no-JS/no-CSS warnings (they must render without JS/CSS), the funbox stylesheet link hook, the captcha script and the entry. Showing or hiding the warnings is done by state or CSS (the stylesheet hides the no-CSS box, so screenshots skip it), not by DOM queries scattered across modules.
 - The page wrapper stops delaying content mount until the element is attached, once nothing measures on mount outside a component's own ref lifecycle.
 - Routing stays on the TanStack Solid Router (route tree, guards, loaders, loading steps, blocking vs background data as in the glossary). Vanilla modules that need to navigate use the router instance handle; that bridge may remain.
 
