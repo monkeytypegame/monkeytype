@@ -165,6 +165,17 @@ describe("AnimeShow", () => {
       );
       expect(heightCalls.length).toBeGreaterThan(0);
     });
+
+    it("clips the content before the enter animation's frame", () => {
+      render(() => (
+        <AnimeShow when={true} slide>
+          <div data-testid="slide-content">content</div>
+        </AnimeShow>
+      ));
+
+      const wrapper = screen.getByTestId("slide-content").parentElement;
+      expect(wrapper?.style.overflow).toBe("hidden");
+    });
   });
 
   describe("animateOnMount prop", () => {

@@ -78,7 +78,12 @@ export function AnimeShow(
     const animateIn = shouldAnimateIn();
     return (
       <Anime
-        ref={(el) => (ref = el)}
+        ref={(el) => {
+          ref = el;
+          // clipped from the start: the enter animation begins a frame after
+          // the zero height applies, and the content would paint over it
+          if (animateIn) el.style.overflow = "hidden";
+        }}
         initial={
           animateIn ? ({ height: 0 } as Partial<AnimationParams>) : undefined
         }
@@ -87,9 +92,6 @@ export function AnimeShow(
             ? ({
                 height: "auto",
                 duration: duration(),
-                onBegin: () => {
-                  if (ref) ref.style.overflow = "hidden";
-                },
                 onComplete: () => {
                   if (ref) ref.style.overflow = "";
                 },
