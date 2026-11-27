@@ -51,6 +51,13 @@ export type AnimePresenceProps = ParentProps<{
   exitBeforeEnter?: boolean;
 
   /**
+   * Called once an exiting child is out of the DOM (single-child mode). With
+   * exitBeforeEnter the slot is then empty; without, the next child may
+   * already be in.
+   */
+  onExitComplete?: () => void;
+
+  /**
    * Enable list mode for animating multiple children (e.g., with For loops).
    * - `"list"`: uses MutationObserver to handle exit animations for dynamic lists.
    * - `"single"`: uses single-child transition logic (for Show, Switch, etc.).
@@ -261,7 +268,11 @@ export function AnimePresence(props: AnimePresenceProps): JSXElement {
           {
             appear: state.initial,
             mode: props.exitBeforeEnter ? "out-in" : "parallel",
-            onExit(el: Element, done: () => void) {
+            onExit(el: Element, removeEl: () => void) {
+              const done = (): void => {
+                removeEl();
+                props.onExitComplete?.();
+              };
               const htmlEl = el as HTMLElement;
               const api = exitRegistry.get(htmlEl);
 

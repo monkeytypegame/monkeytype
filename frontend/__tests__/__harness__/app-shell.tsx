@@ -61,7 +61,8 @@
  *   the browser history.
  * - Animations (page fades, the bar fill) finish as soon as they start: the
  *   tests check which page shows, the fades themselves are tested with the
- *   anime components. `flush()` runs timers and one animation frame (an
+ *   anime components. `app.pageExits.hold()` keeps the old page fading out
+ *   until `release()`. `flush()` runs timers and one animation frame (an
  *   enter animation starts on a frame).
  */
 // static json (layouts...) read from disk, the test state module loads some
@@ -116,7 +117,7 @@ import {
 /** A page's content mounting, and whether it was in the document by then. */
 export type PageMount = { page: string; attached: boolean };
 
-const { pageMounts, pageContent, blockingData } = vi.hoisted(() => {
+const { pageMounts, pageContent, blockingData, pageExits } = vi.hoisted(() => {
   type Waiting = { resolve: () => void; reject: (error: Error) => void };
   // the friends page's refetch on every visit, ready by default
   function readiness(): {
@@ -191,6 +192,8 @@ const { pageMounts, pageContent, blockingData } = vi.hoisted(() => {
   return {
     pageMounts: [] as PageMount[],
     pageContent: new Map<string, () => JSXElement>(),
+    // fade outs (opacity to 0, with a duration) waiting while held
+    pageExits: { isHeld: false, waiting: [] as Array<() => void> },
     blockingData: {
       results: server(),
       friends: server(),
@@ -233,12 +236,35 @@ vi.mock(
   },
 );
 
-// animations finish as soon as they start
+// animations finish as soon as they start, fade outs only once released
+// while held (app.pageExits)
 vi.mock("animejs", () => ({
   animate: (
     el: HTMLElement,
-    params: { opacity?: number; width?: string; onComplete?: () => void },
+    params: {
+      opacity?: number;
+      width?: string;
+      duration?: number;
+      onComplete?: () => void;
+    },
   ) => {
+    if (
+      pageExits.isHeld &&
+      params.opacity === 0 &&
+      (params.duration ?? 0) > 0
+    ) {
+      let release = (): void => undefined;
+      const released = new Promise<void>((resolve) => (release = resolve));
+      pageExits.waiting.push(release);
+      return {
+        pause: vi.fn(),
+        then: async (callback: () => void): Promise<void> => {
+          await released;
+          el.style.opacity = "0";
+          callback();
+        },
+      };
+    }
     if (params.opacity !== undefined) {
       el.style.opacity = String(params.opacity);
     }
@@ -505,6 +531,11 @@ export type App = {
   /** Page contents mounted so far, oldest first (stub page names, eg. "About"). */
   pageMounts: () => readonly PageMount[];
   /**
+   * Holds fade outs (the old page's) until `release`, which finishes the
+   * waiting ones and stops holding.
+   */
+  pageExits: { hold: () => void; release: () => void };
+  /**
    * Waits for the router to be idle and the page swap to finish.
    * `waitForRouter: false` only lets a navigation still loading show its
    * loading page.
@@ -690,8 +721,8 @@ export function renderApp(options: RenderAppOptions = {}): App {
         { interval: 5 },
       );
     }
-    // the page swap: the old page leaves, the new one is attached and its
-    // content mounts on the next frame, its fade in starts on a frame
+    // the page swap: the old page leaves, then the new one is built in the
+    // document (AnimeSwap) and its fade in starts on the next frame
     for (let i = 0; i < 3; i++) await flush();
   }
 
@@ -712,6 +743,13 @@ export function renderApp(options: RenderAppOptions = {}): App {
     pagesInDom: () => [...container.querySelectorAll(".page")].map(pageName),
     pageElement: () => container.querySelector<HTMLElement>(".page"),
     pageMounts: () => pageMounts,
+    pageExits: {
+      hold: () => (pageExits.isHeld = true),
+      release: () => {
+        pageExits.isHeld = false;
+        for (const release of pageExits.waiting.splice(0)) release();
+      },
+    },
     settle,
     blockingData: {
       loadResults: () => blockingData.results.set(true),
@@ -761,6 +799,8 @@ export function cleanupApp(): void {
   destroyRouter = undefined;
   pageMounts.length = 0;
   pageContent.clear();
+  pageExits.isHeld = false;
+  pageExits.waiting.length = 0;
   setRouter(undefined);
   setPreloading(true);
   resetLoadingBar();
