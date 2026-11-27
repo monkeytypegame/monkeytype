@@ -2,6 +2,7 @@
 // vi.mock calls, so import order doesn't matter). Animations run until the
 // spec finishes them (`finish`, `settle`); non-zero ones are logged
 // (`animate <data-name> to <opacity>`) in `log`, which specs may push to
+// too, to order their own events against the animations.
 import { screen } from "@solidjs/testing-library";
 import { JSXElement } from "solid-js";
 import { vi } from "vitest";

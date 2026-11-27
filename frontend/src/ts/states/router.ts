@@ -29,7 +29,7 @@ export const getRoutePage = createRoot(() =>
  * The page whose element is in the document (one at a time, see
  * PageSwitcher), set by the page wrapper on mount: a page is built once the
  * old one is gone, in the document (AnimeSwap). Unlike the route page it
- * stays while the page fades out, after the page unmounted.
+ * stays while the page fades out, until the next page mounts.
  * Starts on the loading page, the first page shown.
  */
 export const [getVisiblePage, setVisiblePage] =
