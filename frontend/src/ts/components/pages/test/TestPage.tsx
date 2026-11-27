@@ -12,7 +12,6 @@ import { debounce } from "throttle-debounce";
 
 import { clearAllSounds, playFartReverb } from "../../../audio";
 import { getConfig } from "../../../config/store";
-import * as MonkeyPower from "../../../elements/monkey-power";
 import { blurInputElement } from "../../../input/input-element";
 import { destroyResultAds, renderResultAds } from "../../../integrations/ads";
 import { isOnline, showOfflineBanner } from "../../../states/connection";
@@ -75,6 +74,7 @@ import { LiveStatsTextTop } from "./live-stats/LiveStatsTextTop";
 import { MemoryFunboxTimer } from "./MemoryFunboxTimer";
 import { TestModesNotice } from "./modes-notice/TestModesNotice";
 import { Monkey } from "./Monkey";
+import { MonkeyPower } from "./MonkeyPower";
 import { OutOfFocusWarning } from "./OutOfFocusWarning";
 import { Premid } from "./Premid";
 import * as Replay from "./result/replay";
@@ -321,7 +321,6 @@ export function TestPage(): JSXElement {
       }
       destroyResultAds();
       void clearAllSounds();
-      MonkeyPower.reset();
     }
     // fade hides the test synchronously, before the new words paint
     await fade(typingTestRef, "in", untrack(getRestartOptions).noAnim);
@@ -393,6 +392,7 @@ export function TestPage(): JSXElement {
 
   return (
     <>
+      <MonkeyPower />
       <div class="full-width">
         <TestConfig />
       </div>

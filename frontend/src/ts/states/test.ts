@@ -116,6 +116,20 @@ export const [isWordsInputFocused, setWordsInputFocused] = createSignal(false);
 export const [trackScrollWindowToActiveWord, triggerScrollWindowToActiveWord] =
   createTrigger();
 
+/** Where the caret is heading, in page coordinates. */
+export type CaretPosition = {
+  /** the caret's left edge */
+  x: number;
+  /** the caret's vertical centre */
+  y: number;
+};
+
+// set by the main caret's handle on each move (also while its style is off:
+// where it would be). Monkey power sparks from it
+export const [mainCaretPosition, setMainCaretPosition] = createSignal<
+  CaretPosition | undefined
+>();
+
 // dev options: shows #wordsInput below the words
 export const [isRealWordsInputShown, setRealWordsInputShown] =
   createSignal(false);

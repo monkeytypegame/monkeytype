@@ -4,6 +4,7 @@ import { EasingParam, JSAnimation } from "animejs";
 import { createSignal } from "solid-js";
 
 import { getConfig } from "../../../config/store";
+import { setMainCaretPosition } from "../../../states/test";
 import * as TestWords from "../../../test/engine/test-words";
 import { ElementWithUtils } from "../../../utils/dom";
 import { getTotalInlineMargin } from "../../../utils/misc";
@@ -293,7 +294,9 @@ export class Caret {
       easing?: string;
     };
   }): void {
-    if (this.style === "off") return;
+    // the main caret still measures while off: monkey power sparks where it
+    // would be
+    if (this.style === "off" && !this.isMainCaret) return;
     const testWord = TestWords.words.get(options.wordIndex);
     const wordLength = Array.from(testWord?.display ?? "").length;
     // the typed letters, before clamping to the word's letters below
@@ -342,6 +345,10 @@ export class Caret {
         options.zenWordDirection ??
         options.testDirection,
     });
+
+    // read before the style writes below, while the layout is still clean
+    if (this.isMainCaret) this.publishPosition(left, top);
+    if (this.style === "off") return;
 
     // animation uses inline styles, so its fine to read inline here instead
     // of computed styles which would be much slower
@@ -395,6 +402,17 @@ export class Caret {
     } else {
       this.setPosition(animateOrPositionOptions);
     }
+  }
+
+  /** Publishes where the caret is heading (`left`/`top` in its offset parent). */
+  private publishPosition(left: number, top: number): void {
+    const parent = this.element.native.offsetParent;
+    if (parent === null) return;
+    const rect = parent.getBoundingClientRect();
+    setMainCaretPosition({
+      x: rect.left + window.scrollX + left,
+      y: rect.top + window.scrollY + top + this.getHeight() / 2,
+    });
   }
 
   private getTargetPositionAndWidth(options: {

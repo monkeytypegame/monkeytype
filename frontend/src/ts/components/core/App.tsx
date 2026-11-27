@@ -3,9 +3,8 @@ import {
   RouterContextProvider,
   RouterProvider as RouteRenderer,
 } from "@tanstack/solid-router";
-import { createEffect, JSXElement, onMount } from "solid-js";
+import { createEffect, JSXElement } from "solid-js";
 
-import * as MonkeyPower from "../../elements/monkey-power";
 import { queryClient } from "../../queries";
 import { router } from "../../router/app-router";
 import { getGlobalOffsetTop, isAppReady } from "../../states/core";
@@ -30,9 +29,6 @@ import { PreventSpaceScroll } from "./PreventSpaceScroll";
 import { Theme } from "./Theme";
 
 export function App(): JSXElement {
-  // until monkey power owns its canvas (L3)
-  onMount(() => MonkeyPower.init());
-
   // on the root, not #app: the focus mode cursor rule then needs no :has(),
   // which is slow to match and invalidate on every style recalc
   createEffect(() => {
