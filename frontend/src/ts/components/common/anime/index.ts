@@ -9,6 +9,8 @@ export type { AnimePresenceProps } from "./AnimePresence";
 
 export { AnimeShow } from "./AnimeShow";
 export { AnimeSuspense } from "./AnimeSuspense";
+export { AnimeSwap } from "./AnimeSwap";
+export type { AnimeSwapProps } from "./AnimeSwap";
 export { AnimeSwitch } from "./AnimeSwitch";
 
 export type { AnimationParams, JSAnimation } from "animejs";

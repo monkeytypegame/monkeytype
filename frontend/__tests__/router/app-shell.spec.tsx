@@ -677,18 +677,25 @@ describe("app shell routing", () => {
       expect(app.pagesInDom()).toEqual(["profileSearch"]);
     });
 
-    it("mounts page content only once its wrapper is in the document", async () => {
+    it("builds the next page only once the old one faded out", async () => {
       const app = renderApp({ url: "/about" });
       await app.settle();
 
+      app.pageExits.hold();
       await app.navigate({ to: "/settings" });
       await app.settle();
+      // fading out: the next page isn't built yet
+      expect(app.pagesInDom()).toEqual(["about"]);
+      expect(app.pageMounts().map((mount) => mount.page)).toEqual(["About"]);
 
-      expect(app.pageMounts()).toContainEqual({
-        page: "Settings",
-        attached: true,
-      });
-      expect(app.pageMounts().every((mount) => mount.attached)).toBe(true);
+      app.pageExits.release();
+      await app.settle();
+
+      expect(app.pagesInDom()).toEqual(["settings"]);
+      expect(app.pageMounts()).toEqual([
+        { page: "About", attached: true },
+        { page: "Settings", attached: true },
+      ]);
     });
   });
 

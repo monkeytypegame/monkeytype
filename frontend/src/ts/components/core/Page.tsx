@@ -1,13 +1,5 @@
 import { useMatch } from "@tanstack/solid-router";
-import {
-  Component,
-  createSignal,
-  JSXElement,
-  onCleanup,
-  onMount,
-  Show,
-  Suspense,
-} from "solid-js";
+import { Component, JSXElement, onMount, Suspense } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import type { PageName } from "../../router/routes";
@@ -24,34 +16,11 @@ type PageProps = {
 
 /**
  * The wrapper of one page (`.page#page<Name>`). The page fade moves the
- * element around it in and out (see PageSwitcher). The content mounts only
- * once the wrapper is in the document: the next page is built before it is
- * inserted, and page code queries `document` and measures layout on mount.
+ * element around it in and out (see PageSwitcher), which builds a page only
+ * once the old one is gone: it mounts in the document.
  */
 function Page(props: PageProps): JSXElement {
-  const [isAttached, setAttached] = createSignal(false);
-  let pageEl: HTMLElement | undefined;
-  let frame: number | undefined;
-  let isDisposed = false;
-  onCleanup(() => {
-    isDisposed = true;
-    if (frame !== undefined) cancelAnimationFrame(frame);
-  });
-
-  // runs before the page switcher inserts the page: wait until it is attached
-  onMount(() => {
-    const check = (): void => {
-      if (isDisposed) return;
-      if (pageEl?.isConnected === true) {
-        frame = undefined;
-        setVisiblePage(props.name);
-        setAttached(true);
-        return;
-      }
-      frame = requestAnimationFrame(check);
-    };
-    queueMicrotask(check);
-  });
+  onMount(() => setVisiblePage(props.name));
 
   const id = (): string => `page${capitalizeFirstLetter(props.name)}`;
 
@@ -60,26 +29,23 @@ function Page(props: PageProps): JSXElement {
       id={id()}
       class={cn("page", id(), "full-width content-grid")}
       data-nosnippet={props.name === "test" ? "" : undefined}
-      ref={(el) => (pageEl = el)}
     >
-      <Show when={isAttached()}>
-        {/* last-resort net: the router wraps every match in Suspense
-            (solid-router #7829) showing its pending component (nothing), so
-            a read that suspends without a closer boundary would blank the
-            whole page. Caught here it shows the loading page's spinner
-            instead */}
-        <Suspense
-          fallback={
-            <LoadingPage
-              spinner={{
-                text: `${capitalizeFirstLetter(props.name)} page is still loading...`,
-              }}
-            />
-          }
-        >
-          <Dynamic component={props.content} />
-        </Suspense>
-      </Show>
+      {/* last-resort net: the router wraps every match in Suspense
+          (solid-router #7829) showing its pending component (nothing), so
+          a read that suspends without a closer boundary would blank the
+          whole page. Caught here it shows the loading page's spinner
+          instead */}
+      <Suspense
+        fallback={
+          <LoadingPage
+            spinner={{
+              text: `${capitalizeFirstLetter(props.name)} page is still loading...`,
+            }}
+          />
+        }
+      >
+        <Dynamic component={props.content} />
+      </Suspense>
     </div>
   );
 }
