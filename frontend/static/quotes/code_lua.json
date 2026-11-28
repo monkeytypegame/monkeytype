@@ -78,6 +78,30 @@
       "source": "Lua pil - strings",
       "length": 114,
       "id": 12
+    },
+    {
+      "text": "local Tablify = require(\"tablify/tablify\")\nlocal Commands = \n{\n\t[\"NORMAL\"] = function(Input)\n\t\tif #Input % 2 == 1 then\n\t\t\treturn \" > Failed, wrong number of arguments\n\"\n\t\tend\n\t\ttable.remove(Input, 1)\n\t\tlocal File = io.open(Input[1], \"r\")\n\t\tlocal Data = File:read(\"*all\")\n\t\tFile:close()\n\t\tfor i = 2, #Input, 2 do\n\t\t\tData = Data:gsub(Input[i], Input[i+1])\n\t\tend\n\t\tlocal OutputFile = io.open(\"output.txt\", \"w\")\n\t\tOutputFile:write(Data)\n\t\tOutputFile:close()\n\t\treturn \" > Complete\n\"\n\tend\n}\nrepeat\n\tio.write(\" < \")\n\tlocal Input = Tablify.Execute(\"NORMAL\", io.read(\"*line\"), \" \")\n\tInput[1] = Input[1]:upper()\n\tif Commands[Input[1]] then\n\t\tlocal Result = Commands[Input[1]](Input)\n\t\tio.write(Result)\n\tend\nuntil Input[1] == \"EXIT\"",
+      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 1",
+      "length": 721,
+      "id": 13
+    },
+    {
+      "text": "io.write(\"What is your name: \")\nlocal input = io.read(\"*line\")\nio.write(\"Hello there, \" input, \"\n\")",
+      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 2",
+      "length": 99,
+      "id": 14
+    },
+    {
+      "text": "local list = {1, 4, 6, 9, 23}\nlocal largest_number = 0\nlocal temporary = 0\nfor i, v in ipairs(list) do\n\ttemporary = v\n\tif temporary > largest_number then\n\t\tlargest_number = temporary\n\tend\nend\nio.write(\"The largest number in this set is \", largest_number, \"\\n\")",
+      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 3",
+      "length": 260,
+      "id": 15
+    },
+    {
+      "text": "io.write(\" > \")\nlocal input = io.read(\"*line\")\ninputUpper = input:upper()\ninputLower = input:lower()\nlocal output = \"\"\nlocal map = {[0] = inputUpper, [1] = inputLower}\nfor i = 1, input:len() do\n\toutput = output..map[i%2]:sub(i,i)\nend\nio.write(output, \"\\n\")",
+      "source": "LiKTOi1029, Github - MonkeytypeCodeSubmissions -> 4",
+      "length": 256,
+      "id": 16
     }
   ]
 }
